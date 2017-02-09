@@ -7,12 +7,12 @@ using Microsoft.Extensions.Options;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyVolunteerForTaskSignupHandler : IAsyncNotificationHandler<VolunteerSignedUpNotification>
+    public class NotifyVolunteerForVolunteerTaskSignupHandler : IAsyncNotificationHandler<VolunteerSignedUpNotification>
     {
         private readonly IMediator _mediator;
         private readonly IOptions<GeneralSettings> _options;
 
-        public NotifyVolunteerForTaskSignupHandler(IMediator mediator, IOptions<GeneralSettings> options)
+        public NotifyVolunteerForVolunteerTaskSignupHandler(IMediator mediator, IOptions<GeneralSettings> options)
         {
             _mediator = mediator;
             _options = options;
@@ -20,7 +20,7 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(VolunteerSignedUpNotification notification)
         {
-            var volunteerTaskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { VolunteerTaskId = notification.VolunteerTaskId, UserId = notification.UserId });
+            var volunteerTaskInfo = await _mediator.SendAsync(new VolunteerTaskDetailForNotificationQuery { VolunteerTaskId = notification.VolunteerTaskId, UserId = notification.UserId });
 
             var emailRecipient = volunteerTaskInfo?.Volunteer.Email;
 

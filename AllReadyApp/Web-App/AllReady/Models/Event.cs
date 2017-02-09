@@ -54,7 +54,7 @@ namespace AllReady.Models
         [MaxLength(150)]
         public string Headline { get; set; }
         
-        public bool IsUserInAnyTask(string userId)
+        public bool IsUserInAnyVolunteerTask(string userId)
         {
             return VolunteerTasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
         }

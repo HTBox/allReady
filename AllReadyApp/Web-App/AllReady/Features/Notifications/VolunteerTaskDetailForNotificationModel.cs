@@ -4,7 +4,7 @@ using AllReady.Models;
 
 namespace AllReady.Features.Notifications
 {
-    public class TaskDetailForNotificationModel
+    public class VolunteerTaskDetailForNotificationModel
     {
         public int EventId { get; set; }
         public string CampaignName { get; set; }

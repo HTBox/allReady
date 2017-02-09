@@ -275,7 +275,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var viewModel = await _mediator.SendAsync(new TaskSignupSummaryQuery { VolunteerTaskSignupId = volunteerTaskSignupId });
+            var viewModel = await _mediator.SendAsync(new VolunteerTaskSignupSummaryQuery { VolunteerTaskSignupId = volunteerTaskSignupId });
             if (viewModel == null)
             {
                 return NotFound();
@@ -291,7 +291,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
-        public async Task<IActionResult> RemoveTeamMember(TaskSignupSummaryViewModel viewModel)
+        public async Task<IActionResult> RemoveTeamMember(VolunteerTaskSignupSummaryViewModel viewModel)
         {
             if (!viewModel.UserIsOrgAdmin)
             {

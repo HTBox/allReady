@@ -11,12 +11,12 @@ namespace AllReady.UnitTest.Features.Notifications
     public class NotifyAssignedVolunteersForTheTaskHandlerShould : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly NotifyAssignedVolunteersForTheTaskHandler sut;
+        private readonly NotifyAssignedVolunteersForTheVolunteerTaskHandler sut;
 
         public NotifyAssignedVolunteersForTheTaskHandlerShould()
         {
             mediator = new Mock<IMediator>();
-            sut = new NotifyAssignedVolunteersForTheTaskHandler(Context, mediator.Object);
+            sut = new NotifyAssignedVolunteersForTheVolunteerTaskHandler(Context, mediator.Object);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Features.Notifications
             Context.Add(volunteerTask);
             Context.SaveChanges();
 
-            var message = new TaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
+            var message = new VolunteerTaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
@@ -65,7 +65,7 @@ namespace AllReady.UnitTest.Features.Notifications
             Context.Add(volunteerTask);
             Context.SaveChanges();
 
-            var message = new TaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
+            var message = new VolunteerTaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
@@ -89,7 +89,7 @@ namespace AllReady.UnitTest.Features.Notifications
             Context.Add(volunteerTask);
             Context.SaveChanges();
 
-            var message = new TaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
+            var message = new VolunteerTaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>

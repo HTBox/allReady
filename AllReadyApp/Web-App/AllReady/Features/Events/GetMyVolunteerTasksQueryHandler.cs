@@ -7,16 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Events
 {
-    public class GetMyTasksQueryHandler : IRequestHandler<GetMyTasksQuery, IEnumerable<TaskSignupViewModel>>
+    public class GetMyVolunteerTasksQueryHandler : IRequestHandler<GetMyVolunteerTasksQuery, IEnumerable<VolunteerTaskSignupViewModel>>
     {
         private readonly AllReadyContext dataContext;
 
-        public GetMyTasksQueryHandler(AllReadyContext dataContext)
+        public GetMyVolunteerTasksQueryHandler(AllReadyContext dataContext)
         {
             this.dataContext = dataContext;
         }
 
-        public IEnumerable<TaskSignupViewModel> Handle(GetMyTasksQuery message)
+        public IEnumerable<VolunteerTaskSignupViewModel> Handle(GetMyVolunteerTasksQuery message)
         {
             var unfilteredTasks = this.dataContext.VolunteerTaskSignups
                 .Include(ts => ts.VolunteerTask)
@@ -26,7 +26,7 @@ namespace AllReady.Features.Events
                 .ToList();
 
             var finalTasks = unfilteredTasks.Where(ts => ts.VolunteerTask.Event.Id == message.EventId && ts.User.Id == message.UserId && !ts.VolunteerTask.Event.Campaign.Locked)
-                .Select(t => new TaskSignupViewModel(t))
+                .Select(t => new VolunteerTaskSignupViewModel(t))
                 .ToList();
 
             return finalTasks;;

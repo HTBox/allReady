@@ -5,6 +5,6 @@ namespace AllReady.Features.Tasks
 {
     public class VolunteerTaskSignupCommand : IAsyncRequest<VolunteerTaskSignupResult>
     {
-        public TaskSignupViewModel TaskSignupModel { get; set; }
+        public VolunteerTaskSignupViewModel TaskSignupModel { get; set; }
     }
 }

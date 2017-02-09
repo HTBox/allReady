@@ -24,14 +24,14 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings {SiteBaseUrl = "allready.com"});
 
-            var notification = new TaskSignupStatusChanged {SignupId = volunteerTaskSignupId};
+            var notification = new VolunteerTaskSignupStatusChanged {SignupId = volunteerTaskSignupId};
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email, userMail: userMail);
             context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.VerifyAll();
@@ -52,13 +52,13 @@ namespace AllReady.UnitTest.Features.Notifications
             var options = new Mock<IOptions<GeneralSettings>>();
             options.Setup(o => o.Value).Returns(new GeneralSettings { SiteBaseUrl = "allready.com" });
 
-            var notification = new TaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email, firstName, lastName, userEmail);
             Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             Context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(Context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(Context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(y => y.ViewModel.Subject == $"{firstName} {lastName}")));
@@ -74,14 +74,14 @@ namespace AllReady.UnitTest.Features.Notifications
             var mediator = new Mock<IMediator>();
             var options = new Mock<IOptions<GeneralSettings>>();
 
-            var notification = new TaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignup(volunteerTaskSignupId, volunteerTaskId, email);
             context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -96,14 +96,14 @@ namespace AllReady.UnitTest.Features.Notifications
             var mediator = new Mock<IMediator>();
             var options = new Mock<IOptions<GeneralSettings>>();
 
-            var notification = new TaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignupWithoutCampaignContact(volunteerTaskSignupId, volunteerTaskId);
             context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);
@@ -118,14 +118,14 @@ namespace AllReady.UnitTest.Features.Notifications
             var mediator = new Mock<IMediator>();
             var options = new Mock<IOptions<GeneralSettings>>();
 
-            var notification = new TaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
+            var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignupId };
 
             var context = Context;
             var volunteerTaskSignup = CreateTaskSignupWithoutCampaignContacts(volunteerTaskSignupId, volunteerTaskId);
             context.VolunteerTaskSignups.Add(volunteerTaskSignup);
             context.SaveChanges();
 
-            var target = new NotifyAdminForTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
+            var target = new NotifyAdminForVolunteerTaskSignupStatusChangeHandler(context, mediator.Object, options.Object);
             await target.Handle(notification);
 
             mediator.Verify(m => m.SendAsync(It.IsAny<NotifyVolunteersCommand>()), Times.Never);

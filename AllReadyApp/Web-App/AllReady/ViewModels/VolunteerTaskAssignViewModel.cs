@@ -2,7 +2,7 @@
 
 namespace AllReady.ViewModels
 {
-    public class TaskAssignViewModel
+    public class VolunteerTaskAssignViewModel
     {
         public int EventId { get; set; }
         public int VolunteerTaskId { get; set; }

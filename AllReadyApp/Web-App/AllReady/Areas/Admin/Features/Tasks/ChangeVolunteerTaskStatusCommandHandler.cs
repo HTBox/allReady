@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
       public async Task<VolunteerTaskChangeResult> Handle(ChangeVolunteerTaskStatusCommand message)
       {
-         var volunteerTask = await GetTask(message);
+         var volunteerTask = await GetVolunteerTask(message);
          if (volunteerTask == null)
          {
             throw new InvalidOperationException($"Task {message.VolunteerTaskId} does not exist");
@@ -65,13 +65,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
          await _context.SaveChangesAsync();
 
-         var notification = new TaskSignupStatusChanged { SignupId = volunteerTaskSignup.Id };
+         var notification = new VolunteerTaskSignupStatusChanged { SignupId = volunteerTaskSignup.Id };
          await _mediator.PublishAsync(notification);
             
          return new VolunteerTaskChangeResult { Status = "success", VolunteerTask = volunteerTask };
       }
 
-      private async Task<VolunteerTask> GetTask(ChangeVolunteerTaskStatusCommand message)
+      private async Task<VolunteerTask> GetVolunteerTask(ChangeVolunteerTaskStatusCommand message)
       {
          return await _context.VolunteerTasks
             .Include(t => t.AssignedVolunteers).ThenInclude(ts => ts.User)

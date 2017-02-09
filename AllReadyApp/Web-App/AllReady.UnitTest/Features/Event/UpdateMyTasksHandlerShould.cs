@@ -26,11 +26,11 @@ namespace AllReady.UnitTest.Features.Event
                 await context.SaveChangesAsync();
             }
 
-            var message = new UpdateMyTasksCommand { UserId =userId, VolunteerTaskSignups = new List<TaskSignupViewModel>() };
+            var message = new UpdateMyVolunteerTasksCommand { UserId =userId, VolunteerTaskSignups = new List<VolunteerTaskSignupViewModel>() };
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new UpdateMyTasksCommandHandler(context);
+                var sut = new UpdateMyVolunteerTasksCommandHandler(context);
                 await sut.Handle(message);
             }
 
@@ -51,10 +51,10 @@ namespace AllReady.UnitTest.Features.Event
             const int secondId = 2;
 
             var user = new ApplicationUser {Id = userId};
-            var volunteerTaskSignupViewModels = new List<TaskSignupViewModel>
+            var volunteerTaskSignupViewModels = new List<VolunteerTaskSignupViewModel>
             {
-                new TaskSignupViewModel { Id = firstId, Status = "Accepted" },
-                new TaskSignupViewModel { Id = secondId, Status = "Accepted" }
+                new VolunteerTaskSignupViewModel { Id = firstId, Status = "Accepted" },
+                new VolunteerTaskSignupViewModel { Id = secondId, Status = "Accepted" }
             };
 
             using (var context = new AllReadyContext(options))
@@ -67,8 +67,8 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new UpdateMyTasksCommandHandler(context) { DateTimeUtcNow = () => DateTime.UtcNow };
-                await sut.Handle(new UpdateMyTasksCommand { VolunteerTaskSignups = volunteerTaskSignupViewModels });
+                var sut = new UpdateMyVolunteerTasksCommandHandler(context) { DateTimeUtcNow = () => DateTime.UtcNow };
+                await sut.Handle(new UpdateMyVolunteerTasksCommand { VolunteerTaskSignups = volunteerTaskSignupViewModels });
             }
 
             using (var context = new AllReadyContext(options))
@@ -89,12 +89,12 @@ namespace AllReady.UnitTest.Features.Event
             const int volunteerTaskSignupId = 1;
             var user = new ApplicationUser {Id = userId};
             var dateTimeUtcNow = DateTime.UtcNow;
-            var taskSignupViewModels = new List<TaskSignupViewModel>
+            var taskSignupViewModels = new List<VolunteerTaskSignupViewModel>
             {
-                new TaskSignupViewModel { Id = volunteerTaskSignupId, StatusDescription = "statusDescription1", Status = "Accepted", VolunteerTaskId = 1 }
+                new VolunteerTaskSignupViewModel { Id = volunteerTaskSignupId, StatusDescription = "statusDescription1", Status = "Accepted", VolunteerTaskId = 1 }
             };
 
-            var message = new UpdateMyTasksCommand { VolunteerTaskSignups = taskSignupViewModels, UserId = userId};
+            var message = new UpdateMyVolunteerTasksCommand { VolunteerTaskSignups = taskSignupViewModels, UserId = userId};
 
             using (var context = new AllReadyContext(options))
             {
@@ -106,7 +106,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new UpdateMyTasksCommandHandler(context) { DateTimeUtcNow = () => dateTimeUtcNow };
+                var sut = new UpdateMyVolunteerTasksCommandHandler(context) { DateTimeUtcNow = () => dateTimeUtcNow };
                 await sut.Handle(message);
             }
 

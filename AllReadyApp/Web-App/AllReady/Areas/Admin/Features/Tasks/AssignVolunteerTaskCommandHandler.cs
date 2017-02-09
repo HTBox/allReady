@@ -54,7 +54,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
             await _context.SaveChangesAsync();
 
-            await _mediator.PublishAsync(new TaskAssignedToVolunteersNotification
+            await _mediator.PublishAsync(new VolunteerTaskAssignedToVolunteersNotification
             {
                 VolunteerTaskId = message.VolunteerTaskId,
                 NewlyAssignedVolunteers = volunteerTaskSignups.Select(x => x.User.Id).ToList()

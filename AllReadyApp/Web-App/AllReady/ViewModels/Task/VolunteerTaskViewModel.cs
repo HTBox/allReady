@@ -7,13 +7,13 @@ using AllReady.ViewModels.Event;
 
 namespace AllReady.ViewModels.Task
 {
-    public class TaskViewModel
+    public class VolunteerTaskViewModel
     {
-        public TaskViewModel()
+        public VolunteerTaskViewModel()
         {
         }
 
-        public TaskViewModel(VolunteerTask task, string userId = null)
+        public VolunteerTaskViewModel(VolunteerTask task, string userId = null)
         {
             Id = task.Id;
             Name = task.Name;
@@ -39,22 +39,22 @@ namespace AllReady.ViewModels.Task
                 OrganizationName = task.Organization.Name;
             }
 
-            IsUserSignedUpForTask = false;
+            IsUserSignedUpForVolunteerTask = false;
 
             if (task.AssignedVolunteers != null)
             {
                 if (!string.IsNullOrWhiteSpace(userId))
                 {
-                    IsUserSignedUpForTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
+                    IsUserSignedUpForVolunteerTask = task.AssignedVolunteers.Any(au => au.User.Id == userId);
                 }
 
-                AssignedVolunteers = new List<TaskSignupViewModel>();
+                AssignedVolunteers = new List<VolunteerTaskSignupViewModel>();
 
-                if (IsUserSignedUpForTask)
+                if (IsUserSignedUpForVolunteerTask)
                 {
                     foreach (var t in task.AssignedVolunteers.Where(au => au.User.Id == userId))
                     {
-                        AssignedVolunteers.Add(new TaskSignupViewModel(t));
+                        AssignedVolunteers.Add(new VolunteerTaskSignupViewModel(t));
                     }
                 }
             }
@@ -106,9 +106,9 @@ namespace AllReady.ViewModels.Task
         [Display(Name = "Ending time")]
         public DateTimeOffset EndDateTime { get; set; }
 
-        public bool IsUserSignedUpForTask { get; }
+        public bool IsUserSignedUpForVolunteerTask { get; }
 
-        public List<TaskSignupViewModel> AssignedVolunteers { get; set; } = new List<TaskSignupViewModel>();
+        public List<VolunteerTaskSignupViewModel> AssignedVolunteers { get; set; } = new List<VolunteerTaskSignupViewModel>();
 
         public bool IsClosed { get; private set; }
      
@@ -145,9 +145,9 @@ namespace AllReady.ViewModels.Task
             return $"{StartDateTime:dddd, MMMM dd, yyyy} at {StartDateTime:t} to {EndDateTime:dddd, MMMM dd, yyyy} at {EndDateTime:t}";
         }
 
-        public TaskViewModel(VolunteerTask task, bool isUserSignedupForTask) : this(task)
+        public VolunteerTaskViewModel(VolunteerTask task, bool isUserSignedupForTask) : this(task)
         {
-            IsUserSignedUpForTask = isUserSignedupForTask;
+            IsUserSignedUpForVolunteerTask = isUserSignedupForTask;
         }
     }
 }

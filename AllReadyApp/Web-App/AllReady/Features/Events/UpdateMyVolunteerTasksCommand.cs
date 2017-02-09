@@ -4,9 +4,9 @@ using MediatR;
 
 namespace AllReady.Features.Events
 {
-    public class UpdateMyTasksCommand : IAsyncRequest
+    public class UpdateMyVolunteerTasksCommand : IAsyncRequest
     {
         public string UserId { get; set; }
-        public IEnumerable<TaskSignupViewModel> VolunteerTaskSignups { get; set; }
+        public IEnumerable<VolunteerTaskSignupViewModel> VolunteerTaskSignups { get; set; }
     }
 }

@@ -21,12 +21,12 @@ namespace AllReady.UnitTest.ViewModels.Event
             var location = new AllReady.ViewModels.Shared.LocationViewModel { City = "Amsterdam" };
             var skills = new List<SkillViewModel> { new SkillViewModel { Name = "F sharp" } };
             var userSkills = new List<SkillViewModel> { new SkillViewModel { Name = "Medic", Description = "first aid helper", HierarchicalName = "med01", Id = 1 } };
-            var signup =  new AllReady.ViewModels.Shared.TaskSignupViewModel { Name = "task1", VolunteerTaskId = 1 };
+            var signup =  new AllReady.ViewModels.Shared.VolunteerTaskSignupViewModel { Name = "task1", VolunteerTaskId = 1 };
             var @event = new Event { Campaign = campaign, TimeZoneId = "EventTimeZoneId" };
            
             var sut = new EventViewModel(@event);
-            var volunteerTask = new TaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, EventName = sut.Title, Name = "volunteerTasks" };
-            var volunteerTasks = new List<TaskViewModel> { volunteerTask };
+            var volunteerTask = new VolunteerTaskViewModel { CampaignName = sut.CampaignName, CampaignId = sut.CampaignId, EventName = sut.Title, Name = "volunteerTasks" };
+            var volunteerTasks = new List<VolunteerTaskViewModel> { volunteerTask };
           
             sut.Description = "Testing the allReady from htbox";
             sut.EndDateTime = DateTimeOffset.Now.AddDays(3650);
@@ -143,7 +143,7 @@ namespace AllReady.UnitTest.ViewModels.Event
             var @event = new Event { VolunteerTasks = new List<VolunteerTask> { new VolunteerTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(2) }, new VolunteerTask { StartDateTime = DateTimeOffset.UtcNow.AddDays(1) } } };
             var sut = new EventViewModel(@event);
 
-            Assert.IsType<List<TaskViewModel>>(sut.Tasks);
+            Assert.IsType<List<VolunteerTaskViewModel>>(sut.Tasks);
             Assert.Equal(sut.Tasks.IsOrderedByAscending(x => x.StartDateTime), true);
         }
 
@@ -151,7 +151,7 @@ namespace AllReady.UnitTest.ViewModels.Event
         public void SetTasksToEmptyListOfTaskViewModels_WhenEventsTasksAreNull()
         {
             var sut = new EventViewModel(new Event());
-            Assert.IsType<List<TaskViewModel>>(sut.Tasks);
+            Assert.IsType<List<VolunteerTaskViewModel>>(sut.Tasks);
             Assert.True(sut.Tasks.Count == 0);
         }
 

@@ -3,7 +3,7 @@ using AllReady.Models;
 
 namespace AllReady.ViewModels.Event
 {
-    public class TaskSignupViewModel
+    public class VolunteerTaskSignupViewModel
     {
         public int Id { get; set; }
         public string Status { get; set; }
@@ -14,9 +14,9 @@ namespace AllReady.ViewModels.Event
         public string UserId { get; set; }
         public string UserName { get; set; }
 
-        public TaskSignupViewModel() { }
+        public VolunteerTaskSignupViewModel() { }
 
-        public TaskSignupViewModel(VolunteerTaskSignup volunteerTaskSignup)
+        public VolunteerTaskSignupViewModel(VolunteerTaskSignup volunteerTaskSignup)
         {
             Id = volunteerTaskSignup.Id;
             Status = volunteerTaskSignup.Status.ToString();

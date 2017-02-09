@@ -36,7 +36,7 @@ namespace AllReady.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Post([FromBody]TaskViewModel task)
+        public async Task<IActionResult> Post([FromBody]VolunteerTaskViewModel task)
         {
             var volunteerTask = await ToModel(task, _mediator);
             if (volunteerTask == null)
@@ -62,7 +62,7 @@ namespace AllReady.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody]TaskViewModel value)
+        public async Task<IActionResult> Put(int id, [FromBody]VolunteerTaskViewModel value)
         {
             var volunteerTask = await GetTaskBy(id);
             if (volunteerTask == null)
@@ -114,7 +114,7 @@ namespace AllReady.Controllers
         [HttpPost("signup")]
         [Authorize]
         [Produces("application/json")]
-        public async Task<ActionResult> RegisterTask(TaskSignupViewModel signupModel)
+        public async Task<ActionResult> RegisterTask(VolunteerTaskSignupViewModel signupModel)
         {
             if (signupModel == null)
             {
@@ -136,7 +136,7 @@ namespace AllReady.Controllers
               return Json(new
               {
                 isSuccess = true,
-                task = result.VolunteerTask == null ? null : new TaskViewModel(result.VolunteerTask, signupModel.UserId)
+                task = result.VolunteerTask == null ? null : new VolunteerTaskViewModel(result.VolunteerTask, signupModel.UserId)
               });
 
             case VolunteerTaskSignupResult.FAILURE_CLOSEDTASK:
@@ -181,7 +181,7 @@ namespace AllReady.Controllers
             return Json(new
             {
                 result.Status,
-                Task = result.VolunteerTask == null ? null : new TaskViewModel(result.VolunteerTask, userId)
+                Task = result.VolunteerTask == null ? null : new VolunteerTaskViewModel(result.VolunteerTask, userId)
             });
         }
 
@@ -190,10 +190,10 @@ namespace AllReady.Controllers
         [ValidateAntiForgeryToken]
         [Route("changestatus")]
         [Authorize]
-        public async Task<JsonResult> ChangeStatus(TaskChangeModel model)
+        public async Task<JsonResult> ChangeStatus(VolunteerTaskChangeModel model)
         {
             var result = await _mediator.SendAsync(new ChangeVolunteerTaskStatusCommand { VolunteerTaskStatus = model.Status, VolunteerTaskId = model.VolunteerTaskId, UserId = model.UserId, VolunteerTaskStatusDescription = model.StatusDescription });
-            return Json(new { result.Status, Task = result.VolunteerTask == null ? null : new TaskViewModel(result.VolunteerTask, model.UserId) });
+            return Json(new { result.Status, Task = result.VolunteerTask == null ? null : new VolunteerTaskViewModel(result.VolunteerTask, model.UserId) });
         }
 
         private async Task<bool> TaskExists(int volunteerTaskId)
@@ -206,7 +206,7 @@ namespace AllReady.Controllers
             return await _mediator.SendAsync(new VolunteerTaskByVolunteerTaskIdQuery { VolunteerTaskId = volunteerTaskId });
         }
 
-        private async Task<VolunteerTask> ToModel(TaskViewModel taskViewModel, IMediator mediator)
+        private async Task<VolunteerTask> ToModel(VolunteerTaskViewModel taskViewModel, IMediator mediator)
         {
             var @event = await mediator.SendAsync(new EventByEventIdQuery { EventId = taskViewModel.EventId });
             if (@event == null)
@@ -259,7 +259,7 @@ namespace AllReady.Controllers
             {
                 var assignedVolunteers = taskViewModel.AssignedVolunteers.ToList();
 
-                var volunteerTaskUsersList = await assignedVolunteers.ToTaskSignups(volunteerTask, _mediator);
+                var volunteerTaskUsersList = await assignedVolunteers.ToVolunteerTaskSignups(volunteerTask, _mediator);
 
                 // We may be updating an existing task
                 if (newTask || volunteerTask.AssignedVolunteers.Count == 0)
@@ -284,16 +284,16 @@ namespace AllReady.Controllers
         }
     }
 
-    public static class TaskSignupViewModelExtensions
+    public static class VolunteerTaskSignupViewModelExtensions
     {
-        public static async Task<List<VolunteerTaskSignup>> ToTaskSignups(this List<ViewModels.Event.TaskSignupViewModel> viewModels, VolunteerTask task, IMediator mediator)
+        public static async Task<List<VolunteerTaskSignup>> ToVolunteerTaskSignups(this List<ViewModels.Event.VolunteerTaskSignupViewModel> viewModels, VolunteerTask volunteerTask, IMediator mediator)
         {
             var volunteerTaskSignups = new List<VolunteerTaskSignup>();
             foreach (var viewModel in viewModels)
             {
                 volunteerTaskSignups.Add(new VolunteerTaskSignup
                 {
-                    VolunteerTask = task,
+                    VolunteerTask = volunteerTask,
                     User = await mediator.SendAsync(new UserByUserIdQuery { UserId = viewModel.UserId })
                 });
             }

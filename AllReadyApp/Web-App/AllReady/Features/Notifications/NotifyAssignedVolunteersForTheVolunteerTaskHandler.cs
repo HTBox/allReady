@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Notifications
 {
-    public class NotifyAssignedVolunteersForTheTaskHandler : IAsyncNotificationHandler<TaskAssignedToVolunteersNotification>
+    public class NotifyAssignedVolunteersForTheVolunteerTaskHandler : IAsyncNotificationHandler<VolunteerTaskAssignedToVolunteersNotification>
     {
         private readonly AllReadyContext _context;
         private readonly IMediator _mediator;
 
-        public NotifyAssignedVolunteersForTheTaskHandler(AllReadyContext context, IMediator mediator)
+        public NotifyAssignedVolunteersForTheVolunteerTaskHandler(AllReadyContext context, IMediator mediator)
         {
             _context = context;
             _mediator = mediator;
         }
 
-        public async Task Handle(TaskAssignedToVolunteersNotification notification)
+        public async Task Handle(VolunteerTaskAssignedToVolunteersNotification notification)
         {
             var users = await _context.Users.Where(x => notification.NewlyAssignedVolunteers.Contains(x.Id)).ToListAsync();
             var smsRecipients = users.Where(u => u.PhoneNumberConfirmed).Select(v => v.PhoneNumber).ToList();

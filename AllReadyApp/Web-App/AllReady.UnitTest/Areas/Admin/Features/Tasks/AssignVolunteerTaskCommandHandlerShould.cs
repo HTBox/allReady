@@ -82,7 +82,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var message = new AssignVolunteerTaskCommand { VolunteerTaskId = volunteerTask.Id, UserIds = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
-            mediator.Verify(b => b.PublishAsync(It.Is<TaskAssignedToVolunteersNotification>(notification =>
+            mediator.Verify(b => b.PublishAsync(It.Is<VolunteerTaskAssignedToVolunteersNotification>(notification =>
                    notification.VolunteerTaskId == message.VolunteerTaskId &&
                    notification.NewlyAssignedVolunteers.Contains(volunteer.Id)
             )), Times.Once());
@@ -108,7 +108,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var message = new AssignVolunteerTaskCommand { VolunteerTaskId = volunteerTask.Id, UserIds = new List<string> { previouslySignedupUser.Id } };
             await sut.Handle(message);
 
-            mediator.Verify(b => b.PublishAsync(It.Is<TaskAssignedToVolunteersNotification>(notification => !notification.NewlyAssignedVolunteers.Contains(previouslySignedupUser.Id) )), Times.Once);
+            mediator.Verify(b => b.PublishAsync(It.Is<VolunteerTaskAssignedToVolunteersNotification>(notification => !notification.NewlyAssignedVolunteers.Contains(previouslySignedupUser.Id) )), Times.Once);
         }
     }
 }

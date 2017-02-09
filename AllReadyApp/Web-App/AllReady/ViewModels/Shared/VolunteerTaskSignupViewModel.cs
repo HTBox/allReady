@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.ViewModels.Shared
 {
-    public class TaskSignupViewModel
+    public class VolunteerTaskSignupViewModel
     {
         public int EventId { get; set; }
 

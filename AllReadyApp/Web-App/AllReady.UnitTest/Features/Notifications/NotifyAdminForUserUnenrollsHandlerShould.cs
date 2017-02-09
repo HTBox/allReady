@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(volunteerTaskId, eventId));
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(volunteerTaskId, eventId));
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(volunteerTaskDetail);
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
@@ -118,7 +118,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(volunteerTaskId, eventId));
 
             // Setup exception
@@ -153,7 +153,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(volunteerTaskId, eventId));
 
             // Setup exception
@@ -190,7 +190,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(GetTaskDetailForNotificationModel(volunteerTaskId, eventId));
 
             // Setup exception
@@ -228,7 +228,7 @@ namespace AllReady.UnitTest.Features.Notifications
 
             // Setup mock data load
             mediator
-                .Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+                .Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(eventDetails);
 
             var logger = Mock.Of<ILogger<NotifyAdminForUserUnenrollsHandler>>();
@@ -255,13 +255,13 @@ namespace AllReady.UnitTest.Features.Notifications
             return new UserUnenrolled { VolunteerTaskId = volunteerTaskId };
         }
 
-        private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int volunteerTaskId, int eventId)
+        private static VolunteerTaskDetailForNotificationModel GetTaskDetailForNotificationModel(int volunteerTaskId, int eventId)
         {
             const string adminEmail = "test@contactemail.com";
             return GetTaskDetailForNotificationModel(volunteerTaskId, eventId, adminEmail);
         }
 
-        private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int volunteerTaskId, int eventId, string adminEmail)
+        private static VolunteerTaskDetailForNotificationModel GetTaskDetailForNotificationModel(int volunteerTaskId, int eventId, string adminEmail)
         {
             var testUserId = Guid.NewGuid().ToString();
             string testUserEmail = $"{Guid.NewGuid()}@email.com";
@@ -276,9 +276,9 @@ namespace AllReady.UnitTest.Features.Notifications
             return GetTaskDetailForNotificationModel(volunteerTaskId, eventId, adminEmail, testUserId, testUserEmail, testUserFirstName, testUserLastName, testCampaignName, testEventName, testTaskName, testTaskDescription, testTaskStart);
         }
 
-        private static TaskDetailForNotificationModel GetTaskDetailForNotificationModel(int volunteerTaskId, int eventId, string adminEmail, string testUserId, string testUserEmail, string testUserFirstName, string testUserLastName, string testCampaignName, string testEventName, string testTaskName, string testTaskDescription, DateTime testTaskStart)
+        private static VolunteerTaskDetailForNotificationModel GetTaskDetailForNotificationModel(int volunteerTaskId, int eventId, string adminEmail, string testUserId, string testUserEmail, string testUserFirstName, string testUserLastName, string testCampaignName, string testEventName, string testTaskName, string testTaskDescription, DateTime testTaskStart)
         {
-            return new TaskDetailForNotificationModel
+            return new VolunteerTaskDetailForNotificationModel
             {
                 CampaignContacts = new List<CampaignContact> { new CampaignContact
                 {

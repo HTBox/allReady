@@ -2,7 +2,7 @@
 
 namespace AllReady.ViewModels.Task
 {
-    public class TaskChangeModel
+    public class VolunteerTaskChangeModel
     {
         public int VolunteerTaskId { get; set; }
         public string UserId { get; set; }

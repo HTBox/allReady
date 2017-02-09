@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 TimeZoneId = @event.TimeZoneId,
                 EndDateTime = @event.EndDateTime,
                 Location = CloneLocation(@event.Location),
-                VolunteerTasks = CloneTasks(@event.VolunteerTasks).ToList(),
+                VolunteerTasks = CloneVolunteerTasks(@event.VolunteerTasks).ToList(),
                 Organizer = @event.Organizer,
                 ImageUrl = @event.ImageUrl,
                 RequiredSkills = CloneEventRequiredSkills(@event).ToList(),
@@ -65,14 +65,14 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        private IEnumerable<VolunteerTask> CloneTasks(IEnumerable<VolunteerTask> volunteerTasks)
+        private IEnumerable<VolunteerTask> CloneVolunteerTasks(IEnumerable<VolunteerTask> volunteerTasks)
         {
             if (volunteerTasks == null || !volunteerTasks.Any())
             {
                 return Enumerable.Empty<VolunteerTask>();
             }
             
-            return volunteerTasks.Select(volunteerTask => CloneTask(volunteerTask));
+            return volunteerTasks.Select(volunteerTask => CloneVolunteerTask(volunteerTask));
         }
 
         private static IEnumerable<EventSkill> CloneEventRequiredSkills(Event @event)
@@ -80,7 +80,7 @@ namespace AllReady.Areas.Admin.Features.Events
             return @event.RequiredSkills.Select(eventSkill => new EventSkill { SkillId = eventSkill.SkillId });
         }
 
-        private static VolunteerTask CloneTask(VolunteerTask volunteerTask)
+        private static VolunteerTask CloneVolunteerTask(VolunteerTask volunteerTask)
         {
             return new VolunteerTask
             {
@@ -90,24 +90,24 @@ namespace AllReady.Areas.Admin.Features.Events
                 NumberOfVolunteersRequired = volunteerTask.NumberOfVolunteersRequired,
                 StartDateTime = volunteerTask.StartDateTime,
                 EndDateTime = volunteerTask.EndDateTime,
-                RequiredSkills = CloneTaskRequiredSkills(volunteerTask).ToList(),
+                RequiredSkills = CloneVolunteerTaskRequiredSkills(volunteerTask).ToList(),
                 IsLimitVolunteers = volunteerTask.IsLimitVolunteers,
                 IsAllowWaitList = volunteerTask.IsAllowWaitList
             };
         }
 
-        private static IEnumerable<VolunteerTaskSkill> CloneTaskRequiredSkills(VolunteerTask volunteerTask)
+        private static IEnumerable<VolunteerTaskSkill> CloneVolunteerTaskRequiredSkills(VolunteerTask volunteerTask)
         {
             return volunteerTask.RequiredSkills.Select(taskSkill => new VolunteerTaskSkill { SkillId = taskSkill.SkillId });
         }
 
         private void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
         {
-            UpdateTasks(@event, updateModel);
+            UpdateVolunteerTasks(@event, updateModel);
             UpdateEvent(@event, updateModel);
         }
 
-        static void UpdateTasks(Event @event, DuplicateEventViewModel updateModel)
+        static void UpdateVolunteerTasks(Event @event, DuplicateEventViewModel updateModel)
         {
             foreach (var volunteerTask in @event.VolunteerTasks)
             {

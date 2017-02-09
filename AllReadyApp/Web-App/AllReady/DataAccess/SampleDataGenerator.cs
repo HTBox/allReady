@@ -191,7 +191,7 @@ namespace AllReady.DataAccess
                 RequiredSkills = new List<EventSkill>(),
                 EventType = EventType.Itinerary,
             };
-            queenAnne.VolunteerTasks = GetSomeTasks(queenAnne, organization);
+            queenAnne.VolunteerTasks = GetSomeVolunteerTasks(queenAnne, organization);
             var ask = new EventSkill { Skill = surgeon, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
             eventSkills.Add(ask);
@@ -210,7 +210,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            ballard.VolunteerTasks = GetSomeTasks(ballard, organization);
+            ballard.VolunteerTasks = GetSomeVolunteerTasks(ballard, organization);
             volunteerTasks.AddRange(ballard.VolunteerTasks);
             var madrona = new Event
             {
@@ -222,7 +222,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            madrona.VolunteerTasks = GetSomeTasks(madrona, organization);
+            madrona.VolunteerTasks = GetSomeVolunteerTasks(madrona, organization);
             volunteerTasks.AddRange(madrona.VolunteerTasks);
             var southLoopSmoke = new Event
             {
@@ -234,7 +234,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            southLoopSmoke.VolunteerTasks = GetSomeTasks(southLoopSmoke, organization);
+            southLoopSmoke.VolunteerTasks = GetSomeVolunteerTasks(southLoopSmoke, organization);
             volunteerTasks.AddRange(southLoopSmoke.VolunteerTasks);
             var northLoopSmoke = new Event
             {
@@ -246,7 +246,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            northLoopSmoke.VolunteerTasks = GetSomeTasks(northLoopSmoke, organization);
+            northLoopSmoke.VolunteerTasks = GetSomeVolunteerTasks(northLoopSmoke, organization);
             volunteerTasks.AddRange(northLoopSmoke.VolunteerTasks);
             var dateTimeToday = DateTime.Today;
             var rentersInsurance = new Event
@@ -260,7 +260,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Rally,
             };
-            rentersInsurance.VolunteerTasks = GetSomeTasks(rentersInsurance, organization);
+            rentersInsurance.VolunteerTasks = GetSomeVolunteerTasks(rentersInsurance, organization);
             volunteerTasks.AddRange(rentersInsurance.VolunteerTasks);
             var rentersInsuranceEd = new Event
             {
@@ -273,7 +273,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            rentersInsuranceEd.VolunteerTasks = GetSomeTasks(rentersInsuranceEd, organization);
+            rentersInsuranceEd.VolunteerTasks = GetSomeVolunteerTasks(rentersInsuranceEd, organization);
             volunteerTasks.AddRange(rentersInsuranceEd.VolunteerTasks);
             var safetyKitBuild = new Event
             {
@@ -286,7 +286,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            safetyKitBuild.VolunteerTasks = GetSomeTasks(safetyKitBuild, organization);
+            safetyKitBuild.VolunteerTasks = GetSomeVolunteerTasks(safetyKitBuild, organization);
             volunteerTasks.AddRange(safetyKitBuild.VolunteerTasks);
 
             var safetyKitHandout = new Event
@@ -300,7 +300,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            safetyKitHandout.VolunteerTasks = GetSomeTasks(safetyKitHandout, organization);
+            safetyKitHandout.VolunteerTasks = GetSomeVolunteerTasks(safetyKitHandout, organization);
             volunteerTasks.AddRange(safetyKitHandout.VolunteerTasks);
             var carSeatTest1 = new Event
             {
@@ -313,7 +313,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            carSeatTest1.VolunteerTasks = GetSomeTasks(carSeatTest1, organization);
+            carSeatTest1.VolunteerTasks = GetSomeVolunteerTasks(carSeatTest1, organization);
             volunteerTasks.AddRange(carSeatTest1.VolunteerTasks);
             var carSeatTest2 = new Event
             {
@@ -326,7 +326,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            carSeatTest2.VolunteerTasks = GetSomeTasks(carSeatTest2, organization);
+            carSeatTest2.VolunteerTasks = GetSomeVolunteerTasks(carSeatTest2, organization);
             volunteerTasks.AddRange(carSeatTest2.VolunteerTasks);
             var homeFestival = new Event
             {
@@ -339,7 +339,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            homeFestival.VolunteerTasks = GetSomeTasks(homeFestival, organization);
+            homeFestival.VolunteerTasks = GetSomeVolunteerTasks(homeFestival, organization);
             volunteerTasks.AddRange(homeFestival.VolunteerTasks);
             var homeEscape = new Event
             {
@@ -352,7 +352,7 @@ namespace AllReady.DataAccess
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            homeEscape.VolunteerTasks = GetSomeTasks(homeEscape, organization);
+            homeEscape.VolunteerTasks = GetSomeVolunteerTasks(homeEscape, organization);
             volunteerTasks.AddRange(homeEscape.VolunteerTasks);
             #endregion
 
@@ -484,12 +484,12 @@ namespace AllReady.DataAccess
             return list[rand.Next(list.Count)];
         }
 
-        private List<VolunteerTask> GetSomeTasks(Event campaignEvent, Organization organization)
+        private List<VolunteerTask> GetSomeVolunteerTasks(Event campaignEvent, Organization organization)
         {
-            var value = new List<VolunteerTask>();
+            var volunteerTasks = new List<VolunteerTask>();
             for (var i = 0; i < 5; i++)
             {
-                value.Add(new VolunteerTask
+                volunteerTasks.Add(new VolunteerTask
                 {
                     Event = campaignEvent,
                     Description = "Description of a very important volunteerTask # " + i,
@@ -500,7 +500,7 @@ namespace AllReady.DataAccess
                     NumberOfVolunteersRequired = 5
                 });
             }
-            return value;
+            return volunteerTasks;
         }
 
         private static Location CreateLocation(string address1, string city, string state, string postalCode)

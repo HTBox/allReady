@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.TaskSignups
 {
-    public class TaskSignupSummaryQuery : IAsyncRequest<TaskSignupSummaryViewModel>
+    public class VolunteerTaskSignupSummaryQuery : IAsyncRequest<VolunteerTaskSignupSummaryViewModel>
     {
         public int VolunteerTaskSignupId { get; set; }
     }

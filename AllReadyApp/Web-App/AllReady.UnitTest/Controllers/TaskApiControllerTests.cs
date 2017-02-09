@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Controllers
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<VolunteerTask>(), null)).Returns(false);
 
             var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
-            var result = await sut.Post(new TaskViewModel { EventId = 1 });
+            var result = await sut.Post(new VolunteerTaskViewModel { EventId = 1 });
 
             Assert.IsType<UnauthorizedResult>(result);
         }
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<VolunteerTask>(), null)).Returns(true);
 
             var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
-            var result = await sut.Post(new TaskViewModel { EventId = 1 });
+            var result = await sut.Post(new VolunteerTaskViewModel { EventId = 1 });
 
             Assert.IsType<BadRequestResult>(result);
         }
@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Controllers
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<VolunteerTask>(), null)).Returns(true);
 
             var sut = new TaskApiController(Mock.Of<IMediator>(), determineIfATaskIsEditable.Object, null);
-            var result = await sut.Post(new TaskViewModel()) as BadRequestObjectResult;
+            var result = await sut.Post(new VolunteerTaskViewModel()) as BadRequestObjectResult;
 
             Assert.IsType<BadRequestObjectResult>(result);
             Assert.Equal(result.StatusCode, 400);
@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task PostSendsAddTaskCommandAsyncWithCorrectData()
         {
-            var model = new TaskViewModel { EventId = 1, Id = 1 };
+            var model = new VolunteerTaskViewModel { EventId = 1, Id = 1 };
             var volunteerTask = new VolunteerTask();
 
             var mediator = new Mock<IMediator>();
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task PostSendsTaskByTaskIdQueryWithCorrectTaskId()
         {
-            var model = new TaskViewModel { EventId = 1, Id = 1 };
+            var model = new VolunteerTaskViewModel { EventId = 1, Id = 1 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event());
@@ -108,7 +108,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task PostReturnsHttpStatusCodeResultOf201()
         {
-            var model = new TaskViewModel { EventId = 1, Id = 0 };
+            var model = new VolunteerTaskViewModel { EventId = 1, Id = 0 };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event());
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Controllers
         public void PostHasHttpPostAttribute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<TaskViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<VolunteerTaskViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -135,7 +135,7 @@ namespace AllReady.UnitTest.Controllers
         public void PostHasValidateAntiForgeryTokenAttribute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<TaskViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Post(It.IsAny<VolunteerTaskViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
         #endregion
@@ -148,7 +148,7 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             var sut = new TaskApiController(mediator.Object, null, null);
-            await sut.Put(volunteerTaskId, It.IsAny<TaskViewModel>());
+            await sut.Put(volunteerTaskId, It.IsAny<VolunteerTaskViewModel>());
 
             mediator.Verify(x => x.SendAsync(It.Is<VolunteerTaskByVolunteerTaskIdQuery>(y => y.VolunteerTaskId == volunteerTaskId)));
         }
@@ -157,7 +157,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PutReturnsBadRequestResultWhenCannotFindTaskByTaskId()
         {
             var sut = new TaskApiController(Mock.Of<IMediator>(), null, null);
-            var result = await sut.Put(It.IsAny<int>(), It.IsAny<TaskViewModel>());
+            var result = await sut.Put(It.IsAny<int>(), It.IsAny<VolunteerTaskViewModel>());
 
             Assert.IsType<BadRequestResult>(result);
         }
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Controllers
             determineIfATaskIsEditable.Setup(x => x.For(It.IsAny<ClaimsPrincipal>(), It.IsAny<VolunteerTask>(), null)).Returns(false);
 
             var sut = new TaskApiController(mediator.Object, determineIfATaskIsEditable.Object, null);
-            var result = await sut.Put(volunteerTaskId, It.IsAny<TaskViewModel>());
+            var result = await sut.Put(volunteerTaskId, It.IsAny<VolunteerTaskViewModel>());
 
             Assert.IsType<UnauthorizedResult>(result);
         }
@@ -183,7 +183,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PutSendsUpdateTaskCommandWithCorrectAllReadyTask()
         {
             var volunteerTask = new VolunteerTask();
-            var model = new TaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
+            var model = new VolunteerTaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskByVolunteerTaskIdQuery>())).ReturnsAsync(volunteerTask);
@@ -201,7 +201,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task PutReturnsHttpStatusCodeResultOf204()
         {
             var volunteerTask = new VolunteerTask();
-            var model = new TaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
+            var model = new VolunteerTaskViewModel { Name = "name", Description = "description", StartDateTime = DateTime.UtcNow, EndDateTime = DateTime.UtcNow };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskByVolunteerTaskIdQuery>())).ReturnsAsync(volunteerTask);
@@ -220,7 +220,7 @@ namespace AllReady.UnitTest.Controllers
         public void PutHasHttpPutAttributeWithCorrectTemplate()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.Put(It.IsAny<int>(), It.IsAny<TaskViewModel>())).OfType<HttpPutAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Put(It.IsAny<int>(), It.IsAny<VolunteerTaskViewModel>())).OfType<HttpPutAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "{id}");
         }
@@ -308,7 +308,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             sut.AddModelStateErrorWithErrorMessage(modelStateErrorMessage);
 
-            var jsonResult = await sut.RegisterTask(new TaskSignupViewModel()) as JsonResult;
+            var jsonResult = await sut.RegisterTask(new VolunteerTaskSignupViewModel()) as JsonResult;
             var result = jsonResult.GetValueForProperty<List<string>>("errors");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -319,7 +319,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterTaskSendsTaskSignupCommandWithCorrectTaskSignupModel()
         {
-            var model = new TaskSignupViewModel();
+            var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<VolunteerTaskSignupCommand>(y => y.TaskSignupModel == model))).ReturnsAsync(new VolunteerTaskSignupResult());
 
@@ -333,7 +333,7 @@ namespace AllReady.UnitTest.Controllers
         public async Task Register_ReturnsCorrectJson_WhenApiResult_IsSuccess()
         {
             const string volunteerTaskSignUpResultStatus = VolunteerTaskSignupResult.SUCCESS;
-            var model = new TaskSignupViewModel();
+            var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<VolunteerTaskSignupCommand>(y => y.TaskSignupModel == model)))
                 .ReturnsAsync(new VolunteerTaskSignupResult
@@ -347,7 +347,7 @@ namespace AllReady.UnitTest.Controllers
             var jsonResult = await sut.RegisterTask(model) as JsonResult;
 
             var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
-            var volunteerTaskModel = jsonResult.GetValueForProperty<TaskViewModel>("task");
+            var volunteerTaskModel = jsonResult.GetValueForProperty<VolunteerTaskViewModel>("task");
 
             Assert.True(successStatus);
             Assert.NotNull(volunteerTaskModel);
@@ -358,7 +358,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string volunteerTaskSignUpResultStatus = VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND;
 
-            var model = new TaskSignupViewModel();
+            var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<VolunteerTaskSignupCommand>(y => y.TaskSignupModel == model)))
                 .ReturnsAsync(new VolunteerTaskSignupResult
@@ -384,7 +384,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string volunteerTaskSignUpResultStatus = VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND;
 
-            var model = new TaskSignupViewModel();
+            var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<VolunteerTaskSignupCommand>(y => y.TaskSignupModel == model)))
                 .ReturnsAsync(new VolunteerTaskSignupResult
@@ -410,7 +410,7 @@ namespace AllReady.UnitTest.Controllers
         {
             const string volunteerTaskSignUpResultStatus = VolunteerTaskSignupResult.FAILURE_CLOSEDTASK;
 
-            var model = new TaskSignupViewModel();
+            var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<VolunteerTaskSignupCommand>(y => y.TaskSignupModel == model)))
                 .ReturnsAsync(new VolunteerTaskSignupResult
@@ -435,7 +435,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasValidateAntiForgeryTokenAttrbiute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<VolunteerTaskSignupViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -443,7 +443,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasHttpPostAttributeWithCorrectTemplate()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<VolunteerTaskSignupViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "signup");
@@ -453,7 +453,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasAuthorizeAttrbiute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<VolunteerTaskSignupViewModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
         }
@@ -462,7 +462,7 @@ namespace AllReady.UnitTest.Controllers
         public void RegisterTaskHasHasProducesAtttributeWithTheCorrectContentType()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<TaskSignupViewModel>())).OfType<ProducesAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<VolunteerTaskSignupViewModel>())).OfType<ProducesAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
             Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
@@ -544,10 +544,10 @@ namespace AllReady.UnitTest.Controllers
             sut.SetDefaultHttpContext();
             
             var jsonResult = await sut.UnregisterTask(It.IsAny<int>());
-            var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
+            var result = jsonResult.GetValueForProperty<VolunteerTaskViewModel>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
-            Assert.IsType<TaskViewModel>(result);
+            Assert.IsType<VolunteerTaskViewModel>(result);
         }
 
         [Fact]
@@ -572,7 +572,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ChangeStatusInvokesSendAsyncWithCorrectTaskStatusChangeCommand()
         {
-            var model = new TaskChangeModel { VolunteerTaskId = 1, UserId = "1", Status = VolunteerTaskStatus.Accepted, StatusDescription = "statusDescription" };
+            var model = new VolunteerTaskChangeModel { VolunteerTaskId = 1, UserId = "1", Status = VolunteerTaskStatus.Accepted, StatusDescription = "statusDescription" };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ChangeVolunteerTaskStatusCommand>())).ReturnsAsync(new VolunteerTaskChangeResult());
@@ -597,7 +597,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(mediator.Object, null, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.ChangeStatus(new TaskChangeModel());
+            var jsonResult = await sut.ChangeStatus(new VolunteerTaskChangeModel());
             var result = jsonResult.GetValueForProperty<string>("Status");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -614,7 +614,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(mediator.Object, null, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.ChangeStatus(new TaskChangeModel());
+            var jsonResult = await sut.ChangeStatus(new VolunteerTaskChangeModel());
             var result = jsonResult.GetValueForProperty<string>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
@@ -630,18 +630,18 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(mediator.Object, null, null);
             sut.SetDefaultHttpContext();
 
-            var jsonResult = await sut.ChangeStatus(new TaskChangeModel());
-            var result = jsonResult.GetValueForProperty<TaskViewModel>("Task");
+            var jsonResult = await sut.ChangeStatus(new VolunteerTaskChangeModel());
+            var result = jsonResult.GetValueForProperty<VolunteerTaskViewModel>("Task");
 
             Assert.IsType<JsonResult>(jsonResult);
-            Assert.IsType<TaskViewModel>(result);
+            Assert.IsType<VolunteerTaskViewModel>(result);
         }
 
         [Fact]
         public void ChangeStatusHasHttpPostAttribute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<VolunteerTaskChangeModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -649,7 +649,7 @@ namespace AllReady.UnitTest.Controllers
         public void ChangeStatusHasAuthorizeAttribute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<VolunteerTaskChangeModel>())).OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -657,7 +657,7 @@ namespace AllReady.UnitTest.Controllers
         public void ChangeStatusHasValidateAntiForgeryTokenAttribute()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<VolunteerTaskChangeModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -665,7 +665,7 @@ namespace AllReady.UnitTest.Controllers
         public void ChangeStatusHasRouteAttributeWithCorrectTemplate()
         {
             var sut = new TaskApiController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<TaskChangeModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<VolunteerTaskChangeModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Template, "changestatus");
         }

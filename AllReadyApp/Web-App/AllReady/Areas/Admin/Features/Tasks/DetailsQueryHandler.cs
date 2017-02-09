@@ -19,7 +19,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<DetailsViewModel> Handle(DetailsQuery message)
         {
-            var volunteerTask = await GetTask(message);
+            var volunteerTask = await GetVolunteerTask(message);
 
             var model = new DetailsViewModel
             {
@@ -49,7 +49,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return model;
         }
 
-        private async Task<VolunteerTask> GetTask(DetailsQuery message)
+        private async Task<VolunteerTask> GetVolunteerTask(DetailsQuery message)
         {
             return await _context.VolunteerTasks
                 .AsNoTracking()

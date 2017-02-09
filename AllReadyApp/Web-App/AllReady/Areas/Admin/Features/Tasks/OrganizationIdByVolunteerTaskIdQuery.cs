@@ -2,7 +2,7 @@
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
-    public class OrganizationIdByTaskIdQuery : IAsyncRequest<int>
+    public class OrganizationIdByVolunteerTaskIdQuery : IAsyncRequest<int>
     {
         public int VolunteerTaskId { get; set; }
     }

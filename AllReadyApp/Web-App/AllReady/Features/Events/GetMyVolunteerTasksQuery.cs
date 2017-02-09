@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Features.Events
 {
-    public class GetMyTasksQuery : IRequest<IEnumerable<TaskSignupViewModel>>
+    public class GetMyVolunteerTasksQuery : IRequest<IEnumerable<VolunteerTaskSignupViewModel>>
     {
         public int EventId { get; set; }
         public string UserId { get; set; }

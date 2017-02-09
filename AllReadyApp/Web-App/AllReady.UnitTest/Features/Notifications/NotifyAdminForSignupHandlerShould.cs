@@ -125,7 +125,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async void PassANotifyVolunteersCommandToTheMediator()
         {
-            var taskDetailForNotificationModel = new TaskDetailForNotificationModel
+            var taskDetailForNotificationModel = new VolunteerTaskDetailForNotificationModel
             {
                 Volunteer = new ApplicationUser {Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber"},
                 CampaignContacts = new List<CampaignContact>
@@ -139,7 +139,7 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
@@ -170,7 +170,7 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             const string adminEmail = "AdminEmail";
 
-            var taskDetailForNotificationModel = new TaskDetailForNotificationModel
+            var taskDetailForNotificationModel = new VolunteerTaskDetailForNotificationModel
             {
                 Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
                 CampaignContacts = new List<CampaignContact>
@@ -184,7 +184,7 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();
@@ -211,7 +211,7 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             const string adminEmail = "AdminEmail";
 
-            var taskDetailForNotificationModel = new TaskDetailForNotificationModel
+            var taskDetailForNotificationModel = new VolunteerTaskDetailForNotificationModel
             {
                 Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
                 CampaignContacts = new List<CampaignContact>
@@ -225,7 +225,7 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<TaskDetailForNotificationQuery>()))
+            mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>()))
                 .ReturnsAsync(taskDetailForNotificationModel);
 
             var options = new TestOptions<GeneralSettings>();

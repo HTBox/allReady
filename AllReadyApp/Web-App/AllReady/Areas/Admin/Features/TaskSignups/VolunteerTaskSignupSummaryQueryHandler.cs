@@ -7,22 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.TaskSignups
 {
-    public class TaskSignupSummaryQueryHandler : IAsyncRequestHandler<TaskSignupSummaryQuery, TaskSignupSummaryViewModel>
+    public class VolunteerTaskSignupSummaryQueryHandler : IAsyncRequestHandler<VolunteerTaskSignupSummaryQuery, VolunteerTaskSignupSummaryViewModel>
     {
         private readonly AllReadyContext _context;
 
-        public TaskSignupSummaryQueryHandler(AllReadyContext context)
+        public VolunteerTaskSignupSummaryQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
 
-        public async Task<TaskSignupSummaryViewModel> Handle(TaskSignupSummaryQuery message)
+        public async Task<VolunteerTaskSignupSummaryViewModel> Handle(VolunteerTaskSignupSummaryQuery message)
         {
             return await _context.VolunteerTaskSignups.AsNoTracking()
                 .Include(x => x.User)
                 .Where(x => x.Id == message.VolunteerTaskSignupId)
                 .Select( x =>
-                new TaskSignupSummaryViewModel
+                new VolunteerTaskSignupSummaryViewModel
                 {
                     VolunteerTaskSignupId = x.Id,
                     VolunteerName = x.User.Name,

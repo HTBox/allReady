@@ -6,7 +6,7 @@ using AllReady.ViewModels.Event;
 using AllReady.ViewModels.Task;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TaskSignupViewModel = AllReady.ViewModels.Shared.TaskSignupViewModel;
+using VolunteerTaskSignupViewModel = AllReady.ViewModels.Shared.VolunteerTaskSignupViewModel;
 
 namespace AllReady.Features.Events
 {
@@ -46,13 +46,13 @@ namespace AllReady.Features.Events
                 eventViewModel.UserSkills = applicationUser?.AssociatedSkills?.Select(us => new SkillViewModel(us.Skill)).ToList();
 
                 var assignedTasks = @event.VolunteerTasks.Where(t => t.AssignedVolunteers.Any(au => au.User.Id == message.UserId)).ToList();
-                eventViewModel.UserTasks = new List<TaskViewModel>(assignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
+                eventViewModel.UserTasks = new List<VolunteerTaskViewModel>(assignedTasks.Select(data => new VolunteerTaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
 
                 var unassignedTasks = @event.VolunteerTasks.Where(t => t.AssignedVolunteers.All(au => au.User.Id != message.UserId)).ToList();
-                eventViewModel.Tasks = new List<TaskViewModel>(unassignedTasks.Select(data => new TaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
+                eventViewModel.Tasks = new List<VolunteerTaskViewModel>(unassignedTasks.Select(data => new VolunteerTaskViewModel(data, message.UserId)).OrderBy(task => task.StartDateTime));
             }
 
-            eventViewModel.SignupModel = new TaskSignupViewModel
+            eventViewModel.SignupModel = new VolunteerTaskSignupViewModel
             {
                 EventId = eventViewModel.Id,
                 UserId = message.UserId,

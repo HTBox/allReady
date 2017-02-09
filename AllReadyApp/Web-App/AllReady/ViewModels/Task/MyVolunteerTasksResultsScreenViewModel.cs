@@ -3,9 +3,9 @@ using System.Linq;
 
 namespace AllReady.ViewModels.Task
 {
-    public class MyTasksResultsScreenViewModel
+    public class MyVolunteerTasksResultsScreenViewModel
     {
-        public MyTasksResultsScreenViewModel(string title, IEnumerable<TaskViewModel> items)
+        public MyVolunteerTasksResultsScreenViewModel(string title, IEnumerable<VolunteerTaskViewModel> items)
         {
             Title = title;
             Items = items.ToList();
@@ -13,6 +13,6 @@ namespace AllReady.ViewModels.Task
 
         public string Title { get; set; }
 
-        public List<TaskViewModel> Items { get; set; }
+        public List<VolunteerTaskViewModel> Items { get; set; }
     }
 }

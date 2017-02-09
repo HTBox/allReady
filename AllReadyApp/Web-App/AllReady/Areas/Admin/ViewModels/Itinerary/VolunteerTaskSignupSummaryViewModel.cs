@@ -1,6 +1,6 @@
 ﻿namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
-    public class TaskSignupSummaryViewModel
+    public class VolunteerTaskSignupSummaryViewModel
     {
         public int VolunteerTaskSignupId { get; set; }
 

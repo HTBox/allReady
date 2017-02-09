@@ -2,7 +2,7 @@
 
 namespace AllReady.Features.Notifications
 {
-    public class TaskDetailForNotificationQuery : IAsyncRequest<TaskDetailForNotificationModel>
+    public class VolunteerTaskDetailForNotificationQuery : IAsyncRequest<VolunteerTaskDetailForNotificationModel>
     {
         public int VolunteerTaskId { get; set; }
         public string UserId { get; set; }

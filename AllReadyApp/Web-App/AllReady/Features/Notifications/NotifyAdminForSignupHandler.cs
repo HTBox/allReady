@@ -33,7 +33,7 @@ namespace AllReady.Features.Notifications
             // don't let problem with notification keep us from continuing
             try
             {
-                var volunteerTaskInfo = await _mediator.SendAsync(new TaskDetailForNotificationQuery { VolunteerTaskId = notification.VolunteerTaskId, UserId = notification.UserId });
+                var volunteerTaskInfo = await _mediator.SendAsync(new VolunteerTaskDetailForNotificationQuery { VolunteerTaskId = notification.VolunteerTaskId, UserId = notification.UserId });
 
                 var campaignContact = volunteerTaskInfo.CampaignContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
                 var adminEmail = campaignContact?.Contact?.Email;
@@ -75,7 +75,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Volunteer PhoneNumber: {volunteerPhoneNumber}");
                 message.AppendLine($"   Volunteer Comments: {volunteerComments}");
                 message.AppendLine();
-                message.AppendLine(GetTaskSkillsInfo(volunteerTask, volunteerTaskInfo.Volunteer));
+                message.AppendLine(GetVolunteerTaskSkillsInfo(volunteerTask, volunteerTaskInfo.Volunteer));
 
                 var command = new NotifyVolunteersCommand
                 {
@@ -96,15 +96,15 @@ namespace AllReady.Features.Notifications
             }
         }
 
-        private static string GetTaskSkillsInfo(VolunteerTask task, ApplicationUser volunteer)
+        private static string GetVolunteerTaskSkillsInfo(VolunteerTask volunteerTask, ApplicationUser volunteer)
         {
             var result = new StringBuilder();
-            if (task.RequiredSkills.Count == 0)
+            if (volunteerTask.RequiredSkills.Count == 0)
             {
                 return result.ToString();
             }
             result.AppendLine("   Skills Required:");
-            foreach (var skill in task.RequiredSkills)
+            foreach (var skill in volunteerTask.RequiredSkills)
             {
                 var userMatch = volunteer.AssociatedSkills.Any(vs => vs.SkillId == skill.SkillId);
                 result.AppendLine($"      {skill.Skill.Name} {(userMatch ? "(match)" : string.Empty)}");

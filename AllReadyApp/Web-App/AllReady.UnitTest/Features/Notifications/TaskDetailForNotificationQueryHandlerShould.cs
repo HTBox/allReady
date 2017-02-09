@@ -9,7 +9,7 @@ namespace AllReady.UnitTest.Features.Notifications
 {
     using Event = AllReady.Models.Event;
 
-    public class TaskDetailForNotificationQueryHandlerShould : InMemoryContextTest
+    public class VolunteerTaskDetailForNotificationQueryHandlerShould : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private Organization _htb;
@@ -107,8 +107,8 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task EventDoesNotExist()
         {
-            var query = new TaskDetailForNotificationQuery { VolunteerTaskId = 999, UserId = _user1.Id };
-            var handler = new TaskDetailForNotificationQueryHandler(Context);
+            var query = new VolunteerTaskDetailForNotificationQuery { VolunteerTaskId = 999, UserId = _user1.Id };
+            var handler = new VolunteerTaskDetailForNotificationQueryHandler(Context);
 
             var result = await handler.Handle(query);
 
