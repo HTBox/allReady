@@ -160,7 +160,7 @@ namespace AllReady.UnitTest.Features.Notifications
             var eventLink = $"View event: {siteBaseUrl}Event/Details/{eventId}";
 
             var message = new StringBuilder();
-            message.AppendLine($"This is to confirm that you have elected to un-enroll from the following volunteerTask:");
+            message.AppendLine($"This is to confirm that you have elected to un-enroll from the following task:");
             message.AppendLine();
             message.AppendLine($"   Campaign: {campaignName}");
             message.AppendLine($"   Event: {eventName} ({eventLink})");
