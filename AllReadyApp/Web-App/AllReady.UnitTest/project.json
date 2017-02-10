@@ -29,7 +29,7 @@
 
   "testRunner": "xunit",
 
-    "frameworks": {
+  "frameworks": {
       "netcoreapp1.0": {
         "imports": [
           "portable-net45+win8+wp8+wpa81"
