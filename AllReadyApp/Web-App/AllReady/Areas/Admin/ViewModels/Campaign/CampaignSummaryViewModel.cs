@@ -53,7 +53,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset EndDate { get; set; }
 
-        public List<CampaignImpact> CampaignImpacts { get; set; } = new List<CampaignImpact>();
+        public List<CampaignGoal> CampaignGoals { get; set; } = new List<CampaignGoal>();
 
         [UIHint("Location")]
         public LocationEditViewModel Location { get; set; }

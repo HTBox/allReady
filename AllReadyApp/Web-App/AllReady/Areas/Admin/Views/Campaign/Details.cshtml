@@ -131,10 +131,10 @@
         <a asp-controller="Goal" asp-action="Create" asp-area="Admin" asp-route-campaignId="@Model.Id"
            class="btn btn-default">Create New</a>
     </div>
-    @foreach (var campaignImpact in Model.CampaignImpacts.Where(i => i.Display))
+    @foreach (var campaignGoal in Model.CampaignGoals.Where(i => i.Display))
     {
         <div class="col-md-4">
-            @Html.Partial("_CampaignImpact", campaignImpact)
+            @Html.Partial("_CampaignGoal", campaignGoal)
         </div>
     }
 </div>

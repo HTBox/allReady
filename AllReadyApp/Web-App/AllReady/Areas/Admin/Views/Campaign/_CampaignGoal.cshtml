@@ -1,0 +1,29 @@
+﻿@using System.Threading.Tasks
+@model AllReady.Models.CampaignGoal
+
+<div class="panel panel-success campaign-goal">
+    <div class="panel-heading">@Html.Raw(Model.TextualGoal) </div>
+    <div class="panel-body">
+        @if (Model.GoalType == GoalType.Numeric)
+            {
+            <div class="progress">
+                <div class="progress-bar" role="progressbar"
+                     aria-valuenow="@Model.PercentComplete"
+                     aria-valuemin="@Model.CurrentGoalLevel"
+                     aria-valuemax="@Model.NumericGoal"
+                     style="width: @Model.PercentComplete%;">
+                    @if (Model.PercentComplete > 30)
+                    {
+                        <text>@Model.CurrentGoalLevel / @Model.NumericGoal</text>
+                    }
+                    else
+                    {
+                        <text>
+                            @Model.PercentComplete
+                        </text>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

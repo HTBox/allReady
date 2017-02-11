@@ -25,7 +25,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             var campaign = await _context.Campaigns
                 .AsNoTracking()
-                .Include(ci => ci.CampaignImpacts)
+                .Include(ci => ci.CampaignGoals)
                 .Include(mt => mt.ManagingOrganization)
                 .Include(l => l.Location)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     StartDate = campaign.StartDateTime,
                     EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
-                    CampaignImpacts = campaign.CampaignImpacts ?? new List<CampaignImpact>(),
+                    CampaignGoals = campaign.CampaignGoals ?? new List<CampaignGoal>(),
                     Headline = campaign.Headline
                 };
 

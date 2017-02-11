@@ -1,36 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using AllReady.Models;
 
-namespace AllReady.Areas.Admin.ViewModels.Goal
+namespace AllReady.Models
 {
-    public class GoalSummaryViewModel
+    public class CampaignGoal
     {
         public int Id { get; set; }
-
-        [Display(Name = "Campaign")]
         public int CampaignId { get; set; }
-
-        [Display(Name = "Campaign")]
-        public string CampaignName { get; set; }
-
-        [Display(Name = "Organization")]
-        public int OrganizationId { get; set; }
-
-        [Display(Name = "Organization")]
-        public string OrganizationName { get; set; }
+        public Campaign Campaign { get; set; }
 
         public GoalType GoalType { get; set; }
-
         /// <summary>
         /// If the goal type is numeric, the value is the number
         /// of x to reach the goal.
         /// </summary>
         public int NumericGoal { get; set; }
-
         /// <summary>
         /// If the goal type is numeric, the value is the current
         /// number of x achieved to reach the NumericGoal value.
@@ -38,7 +21,6 @@ namespace AllReady.Areas.Admin.ViewModels.Goal
         /// may be certain scenarios where it's greater.
         /// </summary>
         public int CurrentGoalLevel { get; set; }
-
         /// <summary>
         /// If the goal type is textual, the TextualGoal value
         /// is displayed. This value is also displayed (if not empty)
@@ -59,6 +41,5 @@ namespace AllReady.Areas.Admin.ViewModels.Goal
             }
 
         }
-
     }
 }

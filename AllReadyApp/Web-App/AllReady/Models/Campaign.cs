@@ -65,7 +65,7 @@ namespace AllReady.Models
 
         public ApplicationUser Organizer { get; set; }
 
-        public List<CampaignImpact> CampaignImpacts { get; set; }
+        public List<CampaignGoal> CampaignGoals { get; set; }
 
         public Location Location { get; set; }
 

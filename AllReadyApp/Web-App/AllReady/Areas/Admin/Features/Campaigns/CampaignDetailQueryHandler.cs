@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .AsNoTracking()
                 .Include(c => c.Events)
                 .Include(m => m.ManagingOrganization)
-                .Include(ci => ci.CampaignImpacts)
+                .Include(ci => ci.CampaignGoals)
                 .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
                 .Include(l => l.Location)
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId);
@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     TimeZoneId = campaign.TimeZoneId,
                     StartDate = campaign.StartDateTime,
                     EndDate = campaign.EndDateTime,
-                    CampaignImpacts = campaign.CampaignImpacts,
+                    CampaignGoals = campaign.CampaignGoals,
                     Location = campaign.Location.ToModel(),
                     Locked = campaign.Locked,
                     Featured = campaign.Featured,

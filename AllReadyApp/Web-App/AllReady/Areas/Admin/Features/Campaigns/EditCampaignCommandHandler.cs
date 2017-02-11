@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = await _context.Campaigns
                 .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
-                .Include(i => i.CampaignImpacts)
+                .Include(i => i.CampaignGoals)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
@@ -41,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             CreateUpdateOrDeleteCampaignPrimaryContact(campaign, message.Campaign);
-            CreateUpdateOrDeleteCampaignImpacts(campaign, message.Campaign.CampaignImpacts);
+            CreateUpdateOrDeleteCampaignGoals(campaign, message.Campaign.CampaignGoals);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;
@@ -55,21 +55,21 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             return campaign.Id;
         }
 
-        private void CreateUpdateOrDeleteCampaignImpacts(Campaign campaign, IList<CampaignImpact> editModelCampaignImpacts)
+        private void CreateUpdateOrDeleteCampaignGoals(Campaign campaign, IList<CampaignGoal> editModelCampaignGoals)
         {
-            var originalCampaignImpacts = campaign.CampaignImpacts ?? (campaign.CampaignImpacts = new List<CampaignImpact>());
-            originalCampaignImpacts.RemoveAll(original => !editModelCampaignImpacts.Select(c => c.Id).Contains(original.Id));
+            var originalCampaignGoals = campaign.CampaignGoals ?? (campaign.CampaignGoals = new List<CampaignGoal>());
+            originalCampaignGoals.RemoveAll(original => !editModelCampaignGoals.Select(c => c.Id).Contains(original.Id));
 
-            foreach (var editModel in editModelCampaignImpacts)
+            foreach (var editModel in editModelCampaignGoals)
             {
-                var originalImpact = (editModel.Id == 0 ? null : originalCampaignImpacts.FirstOrDefault(i => i.Id == editModel.Id)) ?? new CampaignImpact();
-                if (originalImpact.Id == 0)
+                var originalGoal = (editModel.Id == 0 ? null : originalCampaignGoals.FirstOrDefault(i => i.Id == editModel.Id)) ?? new CampaignGoal();
+                if (originalGoal.Id == 0)
                 {
-                    originalCampaignImpacts.Add(originalImpact);
-                    originalImpact.Campaign = campaign;
-                    originalImpact.CampaignId = campaign.Id;
+                    originalCampaignGoals.Add(originalGoal);
+                    originalGoal.Campaign = campaign;
+                    originalGoal.CampaignId = campaign.Id;
                 }
-                originalImpact.UpdateModel(editModel);
+                originalGoal.UpdateModel(editModel);
             }
         }
 

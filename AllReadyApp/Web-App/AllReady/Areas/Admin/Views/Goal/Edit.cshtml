@@ -36,7 +36,7 @@
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
             @if (isEdit)
             {
-                <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.TextualImpactGoal</a></li>
+                <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.TextualGoal</a></li>
                 <li>Edit</li>
             }
             else
@@ -67,50 +67,50 @@
             <input asp-for="OrganizationId" type="hidden" />
             <input asp-for="OrganizationName" type="hidden" />
             <div class="form-group">
-                <label asp-for="TextualImpactGoal" class="control-label col-md-2"></label>
+                <label asp-for="TextualGoal" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    <input asp-for="TextualImpactGoal" class="form-control" />
-                    <span asp-validation-for="TextualImpactGoal" class="text-danger"></span>
+                    <input asp-for="TextualGoal" class="form-control" />
+                    <span asp-validation-for="TextualGoal" class="text-danger"></span>
                 </div>
             </div>
         </div>
         
         <div class="row">
             <div class="form-group">
-                <label class="col-md-2 control-label">Display Impact Goal</label>
+                <label class="col-md-2 control-label">Display Goal</label>
                 <div class="form-horizontal">
                     <input type="checkbox" asp-for="Display" />
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-2 control-label">Campaign Impact Goal</label>
+                <label class="col-md-2 control-label">Campaign Goal</label>
                 <div class="form-horizontal">
-                    <input type="text" asp-for="TextualImpactGoal" class="form-control" />
+                    <input type="text" asp-for="TextualGoal" class="form-control" />
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-2 control-label">Impact Type</label>
+                <label class="col-md-2 control-label">Goal Type</label>
                 <div class="form-horizontal">
-                    @Html.DropDownListFor(model => model.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.GoalType, SelectListService.GetCampaignGoalTypes(), htmlAttributes: new { @class = "form-control" })
                 </div>
             </div>
-            <div id="numericImpactSection">
+            <div id="numericGoalSection">
                 <div class="form-group">
-                    <label class="col-md-2 control-label">Current Impact Level</label>
+                    <label class="col-md-2 control-label">Current Goal Level</label>
                     <div class="form-horizontal">
-                        <input type="text" asp-for="CurrentImpactLevel" class="form-control" />
+                        <input type="text" asp-for="CurrentGoalLevel" class="form-control" />
                         <span class="help-block">
                             <em>
-                                This value is the current number of x achieved to reach the Numeric Impact Goal value.<br />
-                                Ideally less than or equal to Numeric Impact Goal, but there may be certain scenarios where it's greater.
+                                This value is the current number of x achieved to reach the Numeric Goal value.<br />
+                                Ideally less than or equal to Numeric Goal, but there may be certain scenarios where it's greater.
                             </em>
                         </span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-2 control-label">Numeric Impact Goal</label>
+                    <label class="col-md-2 control-label">Numeric Goal</label>
                     <div class="form-horizontal">
-                        <input type="text" asp-for="NumericImpactGoal" class="form-control" />
+                        <input type="text" asp-for="NumericGoal" class="form-control" />
                         <span class="help-block">
                             <em>This value is the number of x to reach the goal.</em>
                         </span>

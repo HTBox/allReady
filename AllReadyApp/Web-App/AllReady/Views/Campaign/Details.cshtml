@@ -121,22 +121,22 @@
         </div>
     </div>
 
-    @if (Model.CampaignImpacts.Any(i => i.Display))
+    @if (Model.CampaignGoals.Any(i => i.Display))
     {
         <div class="col-sm-4 col-md-3">
-        @foreach (var campaignImpact in Model.CampaignImpacts)
+        @foreach (var campaignGoal in Model.CampaignGoals)
             {
-                if (campaignImpact.Display)
+                if (campaignGoal.Display)
                 {
-                    @Html.Partial("_CampaignImpact", campaignImpact)
+                    @Html.Partial("_CampaignGoal", campaignGoal)
                 }
             }
         </div>
-        @Html.Raw(@"<div class=""col-sm-8 col-md-9"">") <!-- starts the events table div at partial width when displaying campaign impact-->
+        @Html.Raw(@"<div class=""col-sm-8 col-md-9"">") <!-- starts the events table div at partial width when displaying campaign goal-->
     }
     else
     {
-        @Html.Raw(@"<div class=""col-md-12"">") <!-- starts the events table div at full width when no campaign impact-->
+        @Html.Raw(@"<div class=""col-md-12"">") <!-- starts the events table div at full width when no campaign goal-->
     }
     <div class="table-responsive">
         <table class="table" data-bind="css: { hide: !events.filtered().length }">

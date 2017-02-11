@@ -44,7 +44,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         public IEnumerable<EventList> Events { get; set; }
 
-        public List<CampaignImpact> CampaignImpacts { get; set; }
+        public List<CampaignGoal> CampaignGoals { get; set; }
 
         [UIHint("Location")]
         public LocationDisplayViewModel Location { get; set; }
