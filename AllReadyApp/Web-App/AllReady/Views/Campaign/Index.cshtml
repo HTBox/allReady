@@ -75,6 +75,9 @@
                     <td>
                         <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
                         <i data-bind="visible: Featured" class="fa fa-star star-highlight" title="Featured" aria-hidden="true"></i>
+                        <div data-bind="foreach: ['lorem', 'ipsum', 'dolor']">
+                            <span class="badge" data-bind="text: $data"></span>
+                        </div>
                     </td>
                     <td>
                         <span data-bind="text: ManagingOrganizationName"></span>
