@@ -2,6 +2,11 @@
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
+
+@section styles{
+    <link href="~/css/Admin/Campaign/Details.css" rel="stylesheet" />
+}
+
 @{ ViewBag.Title = Model.Name; }
 <div class="row">
     <div class="col-12">
@@ -131,7 +136,7 @@
         <a asp-controller="Goal" asp-action="Create" asp-area="Admin" asp-route-campaignId="@Model.Id"
            class="btn btn-default">Create New</a>
     </div>
-    @foreach (var campaignGoal in Model.CampaignGoals.Where(i => i.Display))
+    @foreach (var campaignGoal in Model.CampaignGoals)
     {
         <div class="col-md-4">
             @Html.Partial("_CampaignGoal", campaignGoal)

@@ -20,9 +20,7 @@ namespace AllReady.Areas.Admin.ViewModels.Goal
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
 
-        [Display(Name = "Organization")]
-        public string OrganizationName { get; set; }
-
+        [Required]
         public GoalType GoalType { get; set; }
 
         /// <summary>

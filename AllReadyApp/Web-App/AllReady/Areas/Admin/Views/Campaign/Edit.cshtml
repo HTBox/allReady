@@ -254,61 +254,16 @@
                                 <p>
                                     <strong>Define your campaign's goals in a way that will inspire people to help you reach those goals.</strong>
                                 </p>
-                                <p>
-                                    If you choose <em>numeric</em> as a goal type, then a "thermometer" will be displayed on the landing page
-                                    showing the current progress of the campaign as you update the current goal level.
-                                </p>
                             </div>
                         </div>
                     </div>
+                    
                     foreach (var campaignGoal in Model.CampaignGoals)
                     {
-                 /*        <input type="hidden" asp-for="campaignGoal.Id"/>
-                         <div class="row">
-                             <div class="form-group">
-                                 <label class="col-md-2 control-label">Display Goal</label>
-                                 <div class="form-horizontal">
-                                     <input type="checkbox" asp-for="campaignGoal.Display"/>
-                                 </div>
-                             </div>
-                             <div class="form-group">
-                                 <label class="col-md-2 control-label">Campaign Goal</label>
-                                 <div class="form-horizontal">
-                                     <input type="text" asp-for="CampaignGoal.TextualGoal" class="form-control"/>
-                                 </div>
-                             </div>
-                             <div class="form-group">
-                                 <label class="col-md-2 control-label">Goal Type</label>
-                                 <div class="form-horizontal">
-                                     @Html.DropDownListFor(model => model.CampaignGoal.GoalType, SelectListService.GetCampaignGoalTypes(), htmlAttributes: new {@class = "form-control"})
-                                 </div>
-                             </div>
-                             <div id="numericGoalSection">
-                                 <div class="form-group">
-                                     <label class="col-md-2 control-label">Current Goal Level</label>
-                                     <div class="form-horizontal">
-                                         <input type="text" asp-for="CampaignGoal.CurrentGoalLevel" class="form-control"/>
-                                         <span class="help-block">
-                                             <em>
-                                                 This value is the current number of x achieved to reach the Numeric Goal value.<br/>
-                                                 Ideally less than or equal to Numeric Goal, but there may be certain scenarios where it's greater.
-                                             </em>
-                                         </span>
-                                     </div>
-                                 </div>
-                                 <div class="form-group">
-                                     <label class="col-md-2 control-label">Numeric Goal</label>
-                                     <div class="form-horizontal">
-                                         <input type="text" asp-for="CampaignGoal.NumericGoal" class="form-control"/>
-                                         <span class="help-block">
-                                             <em>This value is the number of x to reach the goal.</em>
-                                         </span>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         */
-                     }
+                        <div class="col-md-4">
+                            @Html.Partial("_CampaignGoal", campaignGoal)
+                        </div>
+                    }
                 }
             </div>
             <div class="row">
