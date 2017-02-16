@@ -98,6 +98,7 @@ namespace AllReady.DataAccess
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = organization,
+                 Resources = resources,
                 TimeZoneId = _timeZone.Id,
                 StartDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(3), _timeZone),
@@ -134,10 +135,10 @@ namespace AllReady.DataAccess
                 Name = "Everyday Financial Safety",
                 ManagingOrganization = organization,
                 TimeZoneId = _timeZone.Id,
-                StartDateTime =  AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _timeZone),
                 Location = GetRandom(locations),
-                 Published = true
+                Published = true
             };
             organization.Campaigns.Add(financialCampaign);
 
@@ -158,7 +159,7 @@ namespace AllReady.DataAccess
                 Name = "Family Safety In the Car",
                 ManagingOrganization = organization,
                 TimeZoneId = _timeZone.Id,
-                StartDateTime =  AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _timeZone),
                 Location = GetRandom(locations),
                 Published = true
@@ -393,7 +394,8 @@ namespace AllReady.DataAccess
                 PublishDateEnd = DateTime.Today.AddDays(14),
                 MediaUrl = "",
                 ResourceUrl = "",
-                CategoryTag = "Partners"
+                CategoryTag = "Partners",
+                CampaignId = 1
             });
             resources.Add(new Resource
             {
@@ -403,7 +405,8 @@ namespace AllReady.DataAccess
                 PublishDateEnd = DateTime.Today.AddDays(-1),
                 MediaUrl = "",
                 ResourceUrl = "",
-                CategoryTag = "Partners"
+                CategoryTag = "Partners",
+                CampaignId = 1,
             });
             #endregion
 
@@ -425,18 +428,42 @@ namespace AllReady.DataAccess
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { FirstName = "FirstName1", LastName = "LastName1", UserName = username1, Email = username1, EmailConfirmed = true,
-                TimeZoneId = _timeZone.Id, PhoneNumber = "111-111-1111" };
+            var user1 = new ApplicationUser
+            {
+                FirstName = "FirstName1",
+                LastName = "LastName1",
+                UserName = username1,
+                Email = username1,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "111-111-1111"
+            };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
 
-            var user2 = new ApplicationUser { FirstName = "FirstName2", LastName = "LastName2", UserName = username2, Email = username2, EmailConfirmed = true,
-                TimeZoneId = _timeZone.Id, PhoneNumber = "222-222-2222" };
+            var user2 = new ApplicationUser
+            {
+                FirstName = "FirstName2",
+                LastName = "LastName2",
+                UserName = username2,
+                Email = username2,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "222-222-2222"
+            };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
 
-            var user3 = new ApplicationUser { FirstName = "FirstName3", LastName = "LastName3", UserName = username3, Email = username3, EmailConfirmed = true,
-                TimeZoneId = _timeZone.Id, PhoneNumber = "333-333-3333" };
+            var user3 = new ApplicationUser
+            {
+                FirstName = "FirstName3",
+                LastName = "LastName3",
+                UserName = username3,
+                Email = username3,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "333-333-3333"
+            };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
             #endregion
