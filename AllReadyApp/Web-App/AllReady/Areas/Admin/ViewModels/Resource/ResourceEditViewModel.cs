@@ -7,7 +7,6 @@ namespace AllReady.Areas.Admin.ViewModels.Resource
     {
         public int Id { get; set; }
         public int CampaignId { get; set; }
-        public string CampaignName { get; set; }
 
         [Display(Name = "Resource name")]
         [Required]

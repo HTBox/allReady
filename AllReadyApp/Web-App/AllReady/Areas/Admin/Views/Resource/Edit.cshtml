@@ -23,7 +23,7 @@
 
 <h2>@ViewBag.Title</h2>
 
-<form asp-controller="Resource" asp-area="Admin" method="post" enctype="multipart/form-data">
+<form asp-controller="Resource" asp-action="Create" asp-area="Admin" method="post" enctype="multipart/form-data">
 
     <div class="form-horizontal row">
         <hr />
@@ -58,7 +58,7 @@
             
             <div class="row">
                 <div class="col-md-12">
-                    <button type="submit" value="@actionTitle" class="btn btn-default submit-form">@actionTitle</button>
+                    <button type="submit" value="@actionTitle" class="btn btn-default submit-form" data-bind="enable: requiredSkills.isValid">@actionTitle</button>
                     <a href="@cancelUrl" class="btn btn-default">Cancel</a>
                 </div>
             </div>
