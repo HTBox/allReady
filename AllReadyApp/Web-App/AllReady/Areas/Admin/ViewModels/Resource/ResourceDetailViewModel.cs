@@ -1,9 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Resource
 {
-    public class ResourceEditViewModel
+    public class ResourceDetailViewModel
     {
         public int Id { get; set; }
         public int CampaignId { get; set; }
@@ -14,7 +13,7 @@ namespace AllReady.Areas.Admin.ViewModels.Resource
         public string Name { get; set; }
 
         [Display(Name = "Resource description")]
-        
+
         public string Description { get; set; }
 
         [Required]

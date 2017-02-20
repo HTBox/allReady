@@ -44,7 +44,8 @@ namespace AllReady.Areas.Admin.Controllers
 
             var viewModel = new ResourceEditViewModel
             {
-                CampaignId = campaign.Id
+                CampaignId = campaign.Id,
+                CampaignName = campaign.Name
             };
 
             return View("Edit", viewModel);
@@ -65,9 +66,19 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (!ModelState.IsValid) return View("Edit", viewModel);
 
-            var id = await _mediator.SendAsync(new EditResourceCommand {Resource = viewModel});
+            var id = await _mediator.SendAsync(new EditResourceCommand { Resource = viewModel });
 
             return RedirectToAction(nameof(CampaignController.Details), nameof(Campaign), new { area = "Admin", id = viewModel.CampaignId });
+        }
+
+        [HttpGet]
+        [Route("Admin/Resource/Details/{resourceId}")]
+        public async Task<IActionResult> Details(int resourceId)
+        {
+            
+
+
+
         }
     }
 }
