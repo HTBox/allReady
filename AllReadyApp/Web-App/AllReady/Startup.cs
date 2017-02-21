@@ -40,9 +40,7 @@ namespace AllReady
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
                 builder.AddUserSecrets();
 
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                //builder.AddApplicationInsightsSettings(developerMode: true);
-                builder.AddApplicationInsightsSettings(developerMode: false);
+                builder.AddApplicationInsightsSettings(developerMode: true);
             }
             else if (env.IsStaging() || env.IsProduction())
             {
@@ -106,6 +104,10 @@ namespace AllReady
                 options.SupportedUICultures = supportedCultures;
             });
 
+            services.AddMemoryCache();
+
+            services.AddApplicationInsightsTelemetry(Configuration);
+
             // Add MVC services to the services container.
             // config add to get passed Angular failing on Options request when logging in.
             services.AddMvc(config =>
@@ -153,9 +155,6 @@ namespace AllReady
                 });
             }
 
-            // Add Application Insights to the request pipeline to track HTTP request telemetry data.
-            app.UseApplicationInsightsRequestTelemetry();
-
             // Add the following to the request pipeline only in development environment.
             if (env.IsDevelopment())
             {
@@ -174,9 +173,6 @@ namespace AllReady
                 // sends the request to the following path or controller action.
                 app.UseExceptionHandler("/Home/Error");
             }
-
-            // Track data about exceptions from the application. Should be configured after all error handling middleware in the request pipeline.
-            app.UseApplicationInsightsExceptionTelemetry();
 
             // Add static files to the request pipeline.
             app.UseStaticFiles();
@@ -214,8 +210,5 @@ namespace AllReady
                 await sampleData.CreateAdminUser();
             }
         }
-
-
-
     }
 }

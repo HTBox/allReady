@@ -1,13 +1,13 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using AllReady.Areas.Admin.ViewModels.Itinerary;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AllReady.Areas.Admin.ViewModels.UnlinkedRequests
 {
     public class UnlinkedRequestViewModel
-    {
-        public string Name { get; set; }
-        public string Address { get; set; }
-        public string City { get; set; }
-        public string Zip { get; set; }
-        public DateTime DateAdded { get; set; }
+    {   
+        public List<RequestSelectViewModel> Requests { get; set; } = new List<RequestSelectViewModel>();
+        public List<SelectListItem> Events { get; set; } = new List<SelectListItem>();
+        public int EventId { get; set; }
     }
 }

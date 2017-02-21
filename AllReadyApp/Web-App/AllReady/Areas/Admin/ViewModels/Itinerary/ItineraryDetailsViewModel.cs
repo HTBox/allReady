@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AllReady.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using AllReady.Services.Mapping.Routing;
 
 namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
@@ -63,5 +64,10 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public string RequestKeywords { get; set; }
 
         public RequestStatus? RequestStatus { get; set; }
+
+        /// <summary>
+        /// Only set if an optimize route result is found in the cache for the current user
+        /// </summary>
+        public OptimizeRouteResultStatus OptimizeRouteStatus { get; set; }
     }
 }

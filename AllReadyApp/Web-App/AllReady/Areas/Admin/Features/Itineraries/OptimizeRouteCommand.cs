@@ -11,5 +11,10 @@ namespace AllReady.Areas.Admin.Features.Itineraries
         /// The id of itinerary for which the requests will be optimized
         /// </summary>
         public int ItineraryId { get; set; }
+
+        /// <summary>
+        /// The user id of the user initiating the command - Used for UI feedback
+        /// </summary>
+        public string UserId { get; set; }
     }
 }

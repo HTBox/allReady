@@ -44,7 +44,10 @@ namespace AllReady.Areas.Admin.ViewModels.Request
         [Required]
         public RequestStatus Status { get; set; } = RequestStatus.Unassigned;
 
+        [Range(-90, 90, ErrorMessage = "Invalid Latitude.")]
         public double Latitude { get; set; }
+
+        [Range(-180, 180, ErrorMessage = "Invalid Longitude.")]
         public double Longitude { get; set; }
 
         public DateTime DateAdded { get; set; }

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Threading.Tasks
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -25,10 +27,9 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
-    @if (TelemetryConfiguration != null && !string.IsNullOrEmpty(TelemetryConfiguration.InstrumentationKey) && !TelemetryConfiguration.InstrumentationKey.StartsWith("["))
-    {
-        @Html.ApplicationInsightsJavaScript(TelemetryConfiguration)
-    }
+
+    @Html.Raw(JavaScriptSnippet.FullScript)
+   
     @RenderSection("styles", required: false)
 
     <script type="text/javascript">

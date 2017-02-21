@@ -204,6 +204,11 @@ namespace AllReady.Models
             builder.HasMany(x => x.TeamMembers).WithOne(x => x.Itinerary).HasForeignKey(x => x.ItineraryId).IsRequired(false);
             builder.HasOne(x => x.StartLocation);
             builder.HasOne(x => x.EndLocation);
+
+            // Ignore computed properties which are not stored in the database
+            builder.Ignore(b => b.StartAddress);
+            builder.Ignore(b => b.EndAddress);
+            builder.Ignore(b => b.HasAddresses);
         }
 
         public void Map(EntityTypeBuilder<ItineraryRequest> builder)

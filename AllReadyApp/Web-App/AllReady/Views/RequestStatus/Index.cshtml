@@ -1,0 +1,55 @@
+﻿@using AllReady.ViewModels.Requests
+@model RequestStatusViewModel
+@{
+    ViewData["Title"] = "Request Status Page";
+    Layout = "_Layout";
+}
+
+<div class="row logo-background">
+    <div class="col-md-12">
+        <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
+        <h3 class="text-center sub-title">Get connected. Work together. Be prepared.</h3>
+    </div>
+</div>
+
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="featured-campaign">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h2>Request Status</h2>
+                    </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-3">
+                     Status:
+                  </div>
+                    <div class="col-md-3">
+                        @Model.Status
+                    </div> 
+                </div>
+                @if(@Model.HasItineraryItems){
+                <div class="row">
+                    <div class="col-md-3">
+                        Planned deployment date:
+                    </div>
+                    <div class="col-md-3">
+                        @Model.PlannedDeploymentDate.Date
+                    </div>
+                </div> 
+                } else
+                {
+                <div class="row">
+                    <div class="col-md-12">
+                     No planned deployment date set yet
+                    </div>
+                </div>
+                }            
+            </div>
+        </div>
+    </div>
+
+
+
+
+   

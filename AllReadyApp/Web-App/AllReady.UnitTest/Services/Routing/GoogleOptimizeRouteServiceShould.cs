@@ -10,6 +10,7 @@ using System.Text;
 using AllReady.Configuration;
 using AllReady.Services.Mapping.Routing;
 using AllReady.Services;
+using Shouldly;
 
 namespace AllReady.UnitTest.Services.Routing
 {
@@ -78,7 +79,7 @@ namespace AllReady.UnitTest.Services.Routing
         }
 
         [Fact]
-        public async Task ReturnNull_WhenNon200Returned()
+        public async Task ReturnFailedOptimizeRouteResult_WhenNon200Returned()
         {
             var mappingSettings = new MappingSettings { GoogleMapsApiKey = "some key" };
             var mockedHttpClient = new Mock<IHttpClient>();
@@ -87,7 +88,8 @@ namespace AllReady.UnitTest.Services.Routing
 
             var result = await service.OptimizeRoute(_optimiseRouteCriteria);
 
-            Assert.Null(result);
+            result.Status.IsSuccess.ShouldBe(false);
+            result.Status.StatusMessage.ShouldBe(OptimizeRouteStatusMessages.GeneralOptimizeFailure);
         }
 
         [Fact]

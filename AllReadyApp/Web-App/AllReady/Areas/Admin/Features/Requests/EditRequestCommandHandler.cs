@@ -5,7 +5,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using AllReady.Extensions;
-using AllReady.Services.Mapping;
 using AllReady.Services.Mapping.GeoCoding;
 
 namespace AllReady.Areas.Admin.Features.Requests
@@ -43,10 +42,12 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.State = message.RequestModel.State;
             request.Zip = message.RequestModel.Zip;
             request.Email = message.RequestModel.Email;
-            request.Phone = message.RequestModel.Phone;            
+            request.Phone = message.RequestModel.Phone;
+            request.Latitude = message.RequestModel.Latitude;
+            request.Longitude = message.RequestModel.Longitude;
 
-            //If lat/long not provided or we detect the address changed, then use geocoding API to get the lat/long
-            if ((request.Latitude == 0 && request.Longitude == 0) || addressChanged)
+            //If lat/long not provided and we detect the address changed, then use geocoding API to get the lat/long
+            if (request.Latitude == 0 && request.Longitude == 0 && addressChanged)
             {
                 var coordinates = await _geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty);
 

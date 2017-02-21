@@ -1,7 +1,7 @@
 version: 1.0.0.{build}.{branch}
 
 nuget:
-  account_feed: true
+  account_feed: false
   
 init:
  - git config --global core.autocrlf true
