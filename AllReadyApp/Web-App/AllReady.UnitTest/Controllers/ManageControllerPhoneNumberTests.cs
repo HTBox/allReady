@@ -122,7 +122,6 @@ namespace AllReady.UnitTest.Controllers
             var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<SendAccountSecurityTokenSms>())).ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -151,7 +150,6 @@ namespace AllReady.UnitTest.Controllers
             var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<SendAccountSecurityTokenSms>())).ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -261,7 +259,6 @@ namespace AllReady.UnitTest.Controllers
             var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<SendAccountSecurityTokenSms>())).ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -290,7 +287,6 @@ namespace AllReady.UnitTest.Controllers
             var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<SendAccountSecurityTokenSms>())).ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -471,8 +467,6 @@ namespace AllReady.UnitTest.Controllers
             var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -504,8 +498,6 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -537,8 +529,6 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -573,8 +563,6 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -726,8 +714,6 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -758,8 +744,6 @@ namespace AllReady.UnitTest.Controllers
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -788,8 +772,6 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -818,8 +800,6 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>()))
-                    .ReturnsAsync(new Unit());
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
             controller.SetFakeUser(userId);

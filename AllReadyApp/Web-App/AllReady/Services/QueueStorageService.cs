@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AllReady.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Queue;

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using AllReady.Features.Requests;
+using AllReady.Configuration;
 using AllReady.Hangfire.Jobs;
 using AllReady.Models;
-using AllReady.Services.Mapping;
 using AllReady.Services.Mapping.GeoCoding;
 using AllReady.Services.Mapping.GeoCoding.Models;
 using AllReady.ViewModels.Requests;
-using MediatR;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
 using Microsoft.Extensions.Options;
 using Moq;
 using Shouldly;
@@ -19,6 +19,26 @@ namespace AllReady.UnitTest.Hangfire.Jobs
 {
     public class ProcessApiRequestsShould : InMemoryContextTest
     {
+        [Fact]
+        public void NotSaveRequestNotInvokeIGeocodeServiceAndNotNotEnqueueISendRequestStatusToGetASmokeAlarm_WhenRequestExists()
+        {
+            const string providerRequestId = "1";
+            var model = new RequestApiViewModel { ProviderRequestId = providerRequestId };
+
+            Context.Requests.Add(new Request { ProviderRequestId = providerRequestId });
+            Context.SaveChanges();
+
+            var geocodeService = new Mock<IGeocodeService>();
+            var backgroundJobClient = new Mock<IBackgroundJobClient>();
+
+            var sut = new ProcessApiRequests(Context, geocodeService.Object, Mock.Of<IOptions<ApprovedRegionsSettings>>(), backgroundJobClient.Object);
+            sut.Process(model);
+
+            Assert.Equal(Context.Requests.Count(x => x.ProviderRequestId == providerRequestId), 1);
+            geocodeService.Verify(x => x.GetCoordinatesFromAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+            backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => job.Method.Name == nameof(ISendRequestStatusToGetASmokeAlarm.Send)), It.IsAny<EnqueuedState>()), Times.Never);
+        }
+
         [Fact]
         public void AddRequest()
         {
@@ -40,7 +60,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
                 ProviderData = "ProviderData"
             };
 
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), Mock.Of<IGeocodeService>(), Options.Create(new ApprovedRegionsSettings()))
+            var sut = new ProcessApiRequests(Context, Mock.Of<IGeocodeService>(), Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())
             {
                 NewRequestId = () => requestId,
                 DateTimeUtcNow = () => dateAdded
@@ -65,6 +85,22 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
+        public void InvokeIGeocoderWithTheCorrectParameters()
+        {
+            var requestId = Guid.NewGuid();
+            var geoCoder = new Mock<IGeocodeService>();
+            var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", Zip = "zip" };
+            var sut = new ProcessApiRequests(Context, geoCoder.Object, Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())
+            {
+                NewRequestId = () => requestId
+            };
+
+            sut.Process(viewModel);
+
+            geoCoder.Verify(x => x.GetCoordinatesFromAddress(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty), Times.Once);
+        }
+
+        [Fact]
         public void AssignCorrectValuesToRequestsLatitiudeAndLongitudeWhenIGeocoderReturnedAdressIsNull()
         {
             var requestId = Guid.NewGuid();
@@ -73,8 +109,8 @@ namespace AllReady.UnitTest.Hangfire.Jobs
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(null);
 
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geocoder.Object,
-                Options.Create(new ApprovedRegionsSettings()))
+            var sut = new ProcessApiRequests(Context, geocoder.Object,
+                Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())
             {
                 NewRequestId = () => requestId
             };
@@ -91,16 +127,16 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         public void AssignCorrectValuesToRequestsLatitiudeAndLongitudeWhenIGeocoderReturnedAdressIsNotNull()
         {
             var requestId = Guid.NewGuid();
-            var latitude = 20.013;
-            var longitude = 40.058;
+            const double latitude = 20.013;
+            const double longitude = 40.058;
 
             var geocoder = new Mock<IGeocodeService>();
             geocoder.Setup(service => service.GetCoordinatesFromAddress(It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new Coordinates(latitude, longitude));
 
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geocoder.Object,
-                Options.Create(new ApprovedRegionsSettings()))
+            var sut = new ProcessApiRequests(Context, geocoder.Object,
+                Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())
             {
                 NewRequestId = () => requestId
             };
@@ -114,112 +150,63 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void InvokeIGeocoderWithTheCorrectParameters()
+        public void InvokeISendRequestStatusToGetASmokeAlarmWithTheCorrectProviderRequestIdAndStatus()
         {
-            var requestId = Guid.NewGuid();
-            var geoCoder = new Mock<IGeocodeService>();
-            var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", Zip = "zip" };
-            var sut = new ProcessApiRequests(Context, Mock.Of<IMediator>(), geoCoder.Object, Options.Create(new ApprovedRegionsSettings()))
-            {
-                NewRequestId = () => requestId
-            };
+            var viewModel = new RequestApiViewModel { ProviderRequestId = "1" };
+            var backgroundJobClient = new Mock<IBackgroundJobClient>();
+
+            var sut = new ProcessApiRequests(Context, Mock.Of<IGeocodeService>(), 
+                Options.Create(new ApprovedRegionsSettings()), backgroundJobClient.Object);
 
             sut.Process(viewModel);
 
-            geoCoder.Verify(x => x.GetCoordinatesFromAddress(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty), Times.Once);
+            backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => job.Method.Name == nameof(ISendRequestStatusToGetASmokeAlarm.Send) && 
+                job.Args[0].ToString() == viewModel.ProviderRequestId &&
+                job.Args[1].ToString() == GasaStatus.New), It.IsAny<EnqueuedState>()));
         }
 
         [Fact]
-        public void PublishApiRequestAddedNotificationWithTheCorrectRequestId()
+        public void InvokeISendRequestStatusToGetASmokeAlarmWithAnAcceptanceOfTrue_WhenApprovedRegionsAreDisabled()
         {
-            var requestId = Guid.NewGuid();
-            var mediator = new Mock<IMediator>();
+            var viewModel = new RequestApiViewModel { ProviderRequestId = "1" };
+            var backgroundJobClient = new Mock<IBackgroundJobClient>();
 
-            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), Options.Create(new ApprovedRegionsSettings()))
-            {
-                NewRequestId = () => requestId
-            };
+            var sut = new ProcessApiRequests(Context, Mock.Of<IGeocodeService>(),
+                Options.Create(new ApprovedRegionsSettings()), backgroundJobClient.Object);
 
-            sut.Process(new RequestApiViewModel());
+            sut.Process(viewModel);
 
-            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.RequestId == requestId)), Times.Once);
+            backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => (bool)job.Args[2]), It.IsAny<EnqueuedState>()));
         }
 
         [Fact]
-        public void PublishApiRequestAddedNotificationWithTrueAcceptanceApprovedRegionsAreDisabled()
+        public void InvokeISendRequestStatusToGetASmokeAlarmWithAnAcceptanceOfTrue_WhenApprovedRegionsAreEnabledAndRegionIsApproved()
         {
-            var mediator = new Mock<IMediator>();
+            const string providerData = "region";
 
-            var approvedRegions = Options.Create(new ApprovedRegionsSettings
-            {
-                Enabled = false
-            });
+            var viewModel = new RequestApiViewModel { ProviderRequestId = "1", ProviderData = providerData };
+            var backgroundJobClient = new Mock<IBackgroundJobClient>();
 
-            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), approvedRegions)
-            {
-                NewRequestId = () => Guid.NewGuid()
-            };
+            var sut = new ProcessApiRequests(Context, Mock.Of<IGeocodeService>(),
+                Options.Create(new ApprovedRegionsSettings { Enabled = true, Regions = new List<string> { providerData } }), backgroundJobClient.Object);
 
-            sut.Process(new RequestApiViewModel
-            {
-                ProviderData = "approved_region"
-            });
+            sut.Process(viewModel);
 
-            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.Acceptance == true)), Times.Once);
+            backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => (bool)job.Args[2]), It.IsAny<EnqueuedState>()));
         }
 
         [Fact]
-        public void PublishApiRequestAddedNotificationWithTrueAcceptanceWhenInsideApprovedRegions()
+        public void InvokeISendRequestStatusToGetASmokeAlarmWithAnAcceptanceOfFalse_WhenApprovedRegionsAreEnabledAndRegionIsNotApproved()
         {
-            var mediator = new Mock<IMediator>();
+            var viewModel = new RequestApiViewModel { ProviderRequestId = "1", ProviderData = "region" };
+            var backgroundJobClient = new Mock<IBackgroundJobClient>();
 
-            var approvedRegions = Options.Create(new ApprovedRegionsSettings
-            {
-                Enabled = true,
-                Regions = new List<string>
-                {
-                    "approved_region"
-                }
-            });
+            var sut = new ProcessApiRequests(Context, Mock.Of<IGeocodeService>(),
+                Options.Create(new ApprovedRegionsSettings { Enabled = true, Regions = new List<string> { "UnapprovedRegion" } }), backgroundJobClient.Object);
 
-            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), approvedRegions)
-            {
-                NewRequestId = () => Guid.NewGuid()
-            };
+            sut.Process(viewModel);
 
-            sut.Process(new RequestApiViewModel
-            {
-                ProviderData = "approved_region"
-            });
-
-            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.Acceptance == true)), Times.Once);
-        }
-
-        [Fact]
-        public void PublishApiRequestAddedNotificationWithFalseAcceptanceWhenOutsideApprovedRegions()
-        {
-            var mediator = new Mock<IMediator>();
-
-            var approvedRegions = Options.Create(new ApprovedRegionsSettings
-            {
-                Enabled = true,
-                Regions = new List<string>
-                {
-                    "approved_region"
-                }
-            });
-
-            var sut = new ProcessApiRequests(Context, mediator.Object, Mock.Of<IGeocodeService>(), approvedRegions)
-            {
-                NewRequestId = () => Guid.NewGuid()
-            };
-
-            sut.Process(new RequestApiViewModel
-            {
-                ProviderData = "non_approved_region"
-            });
-
-            mediator.Verify(x => x.Publish(It.Is<ApiRequestProcessedNotification>(y => y.Acceptance == false)), Times.Once);
+            backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => (bool)job.Args[2] == false), It.IsAny<EnqueuedState>()));
         }
     }
 }

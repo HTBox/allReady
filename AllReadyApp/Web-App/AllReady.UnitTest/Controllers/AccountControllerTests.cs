@@ -12,20 +12,20 @@ using AllReady.UnitTest.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Security.Claims;
+using AllReady.Configuration;
 using AllReady.Extensions;
 using AllReady.Features.Login;
-using System.Collections.Generic;
 using AllReady.Features.Manage;
+using AllReady.Providers.ExternalUserInformationProviders;
+using AllReady.Providers.ExternalUserInformationProviders.Providers;
 using AllReady.ViewModels.Account;
+using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Routing;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class AccountControllerTests
     {
-        //delete this line when all unit tests using it have been completed
-        private readonly Task taskFromResultZero = Task.FromResult(0);
-
         [Fact]
         public void LoginGetPopulatesViewDataWithTheCorrectTestUrl()
         {
@@ -182,7 +182,7 @@ namespace AllReady.UnitTest.Controllers
             };
             await sut.Login(new LoginViewModel(), returnUrl);
 
-            redirectAccountControllerRequests.Verify(x => x.RedirectToLocal(returnUrl, applicationUser, urlHelper.Object));
+            redirectAccountControllerRequests.Verify(x => x.RedirectToLocal(returnUrl, applicationUser));
         }
 
         [Fact]
@@ -402,18 +402,91 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(x => x.SendAsync(It.Is<SendConfirmAccountEmail>(y => y.Email == model.Email && y.CallbackUrl == callbackUrl)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostInvokesGenerateChangePhoneNumberTokenAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var viewModel = new RegisterViewModel
+            {
+                FirstName = "firstName",
+                LastName = "lastName",
+                Password = "password",
+                PhoneNumber = "566777222"
+            };
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(
+                u =>
+                    u.CreateAsync(
+                        It.Is<ApplicationUser>(
+                            user => user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName),
+                        It.Is<string>(pass => pass == viewModel.Password)))
+                .ReturnsAsync(IdentityResult.Success);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var urlHelper = new Mock<IUrlHelper>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.Register(viewModel);
+
+            userManager.Verify(
+                u =>
+                    u.GenerateChangePhoneNumberTokenAsync(
+                        It.Is<ApplicationUser>(
+                            user => user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName),
+                        It.Is<string>(phone => phone == viewModel.PhoneNumber)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RegisterPostSendsSendAccountSecurityTokenSmsWithCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var viewModel = new RegisterViewModel
+            {
+                FirstName = "firstName",
+                LastName = "lastName",
+                Password = "password",
+                PhoneNumber = "566777222"
+            };
+
+            const string token = "abcdef12345";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(
+                u =>
+                    u.CreateAsync(
+                        It.Is<ApplicationUser>(
+                            user => user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName),
+                        It.Is<string>(pass => pass == viewModel.Password)))
+                .ReturnsAsync(IdentityResult.Success);
+            userManager.Setup(u => u.GenerateChangePhoneNumberTokenAsync(It.Is<ApplicationUser>(
+                user => user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName),
+                It.Is<string>(phoneNumber => phoneNumber == viewModel.PhoneNumber)))
+                .ReturnsAsync(token);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var urlHelper = new Mock<IUrlHelper>();
+            var mediator = new Mock<IMediator>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, null);
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+
+            await sut.Register(viewModel);
+
+            mediator.Verify(
+                m =>
+                    m.SendAsync(
+                        It.Is<SendAccountSecurityTokenSms>(
+                            tokenSms => tokenSms.PhoneNumber == viewModel.PhoneNumber && tokenSms.Token == token)),
+                Times.Once);
         }
 
         [Fact]
@@ -655,7 +728,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(x => x.ConfirmEmailAsync(It.Is<ApplicationUser>(y => y == user), It.Is<string>(y => y == token)), Times.Once);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ConfirmEmailInvokesSendAsyncWithTheCorrectParameters_WhenUsersProfileIsComplete_AndUsersEmailIsConfirmed_AndUserAndUserIdAndTokenAreNotNull()
         {
             const string userId = "userId";
@@ -674,18 +747,19 @@ namespace AllReady.UnitTest.Controllers
             };
             userManager.Setup(x => x.FindByIdAsync(userId)).ReturnsAsync(user);
             userManager.Setup(x => x.ConfirmEmailAsync(user, token)).ReturnsAsync(IdentityResult.Success);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id })).ReturnsAsync(It.IsAny<Unit>());
 
-            var sut = new AccountController(userManager.Object, null, null, null, mediator.Object, null, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object, null, null);
             sut.SetFakeUser(userId);
             await sut.ConfirmEmail(userId, token);
 
             mediator.Verify(x => x.SendAsync(It.Is<RemoveUserProfileIncompleteClaimCommand>(y => y.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ConfirmEmailInvokesRefreshSignInAsyncWithTheCorrectParameters_WhenUserIsSignedIn_AndUsersProfileIsComplete_AndUsersEmailIsConfirmed_AndUserAndUserIdAndTokenAreNotNull()
         {
             const string userId = "userId";
@@ -706,10 +780,13 @@ namespace AllReady.UnitTest.Controllers
             userManager.Setup(x => x.ConfirmEmailAsync(user, token)).ReturnsAsync(IdentityResult.Success);
 
             var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(new RemoveUserProfileIncompleteClaimCommand { UserId = user.Id })).ReturnsAsync(It.IsAny<Unit>());
 
             var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object, null, null);
             sut.SetFakeUserWithCookieAuthenticationType(userId);
+            signInManager.Setup(x => x.IsSignedIn(sut.User)).Returns(true);
             await sut.ConfirmEmail(userId, token);
 
             signInManager.Verify(x => x.RefreshSignInAsync(It.Is<ApplicationUser>(y => y.Id == user.Id)));
@@ -1186,19 +1263,70 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginInvokesUrlActionWithCorrectParameters()
         {
+            const string provider = "provider";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var properties = new AuthenticationProperties();
+
+            signInManager.Setup(s => s.ConfigureExternalAuthenticationProperties(provider, null, null)).Returns(properties);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(), null, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            sut.ExternalLogin(provider);
+
+            urlHelper.Verify(u => u.Action(It.Is<UrlActionContext>(a => a.Action == "ExternalLoginCallback")),
+                Times.Once());
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginInvokesConfigureExternalAuthenticationPropertiesWithCorrectParameters()
         {
+            const string provider = "provider";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var properties = new AuthenticationProperties();
+
+            signInManager.Setup(s => s.ConfigureExternalAuthenticationProperties(provider, null, null)).Returns(properties);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(), null, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            sut.ExternalLogin(provider);
+
+            signInManager.VerifyAll();
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ExternalLoginReturnsChallengeResult()
         {
+            const string provider = "provider";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var properties = new AuthenticationProperties();
+
+            signInManager.Setup(s => s.ConfigureExternalAuthenticationProperties(provider, null, null)).Returns(properties);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(), null, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            var result = sut.ExternalLogin(provider) as ChallengeResult;
+            Assert.NotNull(result);
+            Assert.Contains(provider, result.AuthenticationSchemes);
+            Assert.Equal(1, result.AuthenticationSchemes.Count);
+            Assert.Same(properties, result.Properties);
         }
 
         [Fact]
@@ -1225,107 +1353,287 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackInvokesGetExternalLoginInfoAsync()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(), null, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.ExternalLoginCallback(returnUrl);
+
+            signInManager.Verify(s => s.GetExternalLoginInfoAsync(null), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackRedirectsToCorrectAction_WhenExternalLoginInfoIsNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(), null, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            var result = await sut.ExternalLoginCallback(returnUrl) as RedirectToActionResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("Login", result.ActionName);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackInvokesExternalLoginSignInAsyncWithCorrectParameters_WhenExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation();
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(),
+                externalUserInformationProviderFactory.Object, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.ExternalLoginCallback(returnUrl);
+
+            signInManager.VerifyAll();
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackInvokesGetExternalUserInformationProviderWithTheCorrectLoginProvider_WhenExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation();
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(),
+                externalUserInformationProviderFactory.Object, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.ExternalLoginCallback(returnUrl);
+
+            externalUserInformationProviderFactory.Verify(e => e.GetExternalUserInformationProvider(loginProvider), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackInvokesGetExternalUserInformationWithTheCorrectExternalLoginInfo_WhenExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation();
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, Mock.Of<IMediator>(),
+                externalUserInformationProviderFactory.Object, null);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.ExternalLoginCallback(returnUrl);
+
+            provideExternalUserInformation.Verify(p => p.GetExternalUserInformation(loginInfo), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackSendsApplicationUserQueryWithCorrectUsername_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation { Email = "email@email.pl" };
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+            var mediator = new Mock<IMediator>();
+            var user = new ApplicationUser();
+            mediator.Setup(m => m.SendAsync(It.Is<ApplicationUserQuery>(a => a.UserName == userInfo.Email)))
+                .ReturnsAsync(user);
+            var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object,
+                externalUserInformationProviderFactory.Object, redirectAccountControllerRequests.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.ExternalLoginCallback(returnUrl);
+
+            mediator.Verify(m => m.SendAsync(It.Is<ApplicationUserQuery>(a => a.UserName == userInfo.Email)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginCallbackInvokesRedirectToLocalWithCorrectParameters_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Success);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation { Email = "email@email.pl" };
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+            var mediator = new Mock<IMediator>();
+            var user = new ApplicationUser();
+            mediator.Setup(m => m.SendAsync(It.Is<ApplicationUserQuery>(a => a.UserName == userInfo.Email)))
+                .ReturnsAsync(user);
+            var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object,
+                externalUserInformationProviderFactory.Object, redirectAccountControllerRequests.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            await sut.ExternalLoginCallback(returnUrl);
+
+            redirectAccountControllerRequests.Verify(r => r.RedirectToLocal(returnUrl, user), Times.Once);
         }
 
-        #region tests for the different conditionals in AccountController's prviate RedirectToLocal method
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUrlIsALocalUrl()
+        [Fact]
+        public async Task ExternalLoginCallbackReturnsCorrectViewAndViewModel_WhenEmailIsProvidedByExternalUserInfomration_AndExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+            const string mail = "email@email.pl";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation { Email = mail };
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+            var mediator = new Mock<IMediator>();
+            var user = new ApplicationUser();
+            mediator.Setup(m => m.SendAsync(It.Is<ApplicationUserQuery>(a => a.UserName == userInfo.Email)))
+                .ReturnsAsync(user);
+            var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object,
+                externalUserInformationProviderFactory.Object, redirectAccountControllerRequests.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            var result = await sut.ExternalLoginCallback(returnUrl) as ViewResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("ExternalLoginConfirmation", result.ViewName);
+            var viewModel = result.Model as ExternalLoginConfirmationViewModel;
+            Assert.NotNull(viewModel);
+            Assert.Equal(true, viewModel.EmailIsVerifiedByExternalLoginProvider);
+            Assert.Equal(mail, viewModel.Email);
+            Assert.Equal(returnUrl, viewModel.ReturnUrl);
+            Assert.Equal(loginProvider, viewModel.LoginProvider);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUserIsASiteAdmin()
+        [Fact]
+        public async Task ExternalLoginCallbackReturnsCorrectViewAndViewModel_WhenEmailIsNotProvidedByExternalUserInfomration_AndExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string returnUrl = "www.returnUrl";
+            const string loginProvider = "loginProvider";
+            const string providerKey = "ptoviderKey";
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var loginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), loginProvider, providerKey, "displayName");
+            signInManager.Setup(s => s.GetExternalLoginInfoAsync(null)).ReturnsAsync(loginInfo);
+            signInManager.Setup(s => s.ExternalLoginSignInAsync(loginProvider, providerKey, false))
+                .ReturnsAsync(Microsoft.AspNetCore.Identity.SignInResult.Failed);
+            var provideExternalUserInformation = new Mock<IProvideExternalUserInformation>();
+            var userInfo = new ExternalUserInformation();
+            provideExternalUserInformation.Setup(p => p.GetExternalUserInformation(loginInfo)).ReturnsAsync(userInfo);
+            var externalUserInformationProviderFactory = new Mock<IExternalUserInformationProviderFactory>();
+            externalUserInformationProviderFactory.Setup(e => e.GetExternalUserInformationProvider(loginProvider))
+                .Returns(provideExternalUserInformation.Object);
+            var mediator = new Mock<IMediator>();
+            var user = new ApplicationUser();
+            mediator.Setup(m => m.SendAsync(It.Is<ApplicationUserQuery>(a => a.UserName == userInfo.Email)))
+                .ReturnsAsync(user);
+            var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object,
+                externalUserInformationProviderFactory.Object, redirectAccountControllerRequests.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            sut.Url = urlHelper.Object;
+
+            var result = await sut.ExternalLoginCallback(returnUrl) as ViewResult;
+
+            Assert.NotNull(result);
+            Assert.Equal("ExternalLoginConfirmation", result.ViewName);
+            var viewModel = result.Model as ExternalLoginConfirmationViewModel;
+            Assert.NotNull(viewModel);
+            Assert.Equal(false, viewModel.EmailIsVerifiedByExternalLoginProvider);
+            Assert.Equal(null, viewModel.Email);
+            Assert.Equal(returnUrl, viewModel.ReturnUrl);
+            Assert.Equal(loginProvider, viewModel.LoginProvider);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndControllerWithCorrerctRouteValues__WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUserIsAnOrgAdmin()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackRedirectsToCorrectActionAndController_WhenExternalLoginSignInAsyncResultIsSuccessful_AndExternalLoginInfoIsNotNull_AndUrlIsNotALocalUrl_AndUserTypeIsNotASiteAdminOrAnOrgAdmin()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-        #endregion
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackAddsCorrectDataToViewData_WhenEmailIsProvidedByExternalUserInfomration_AndExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNull()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackAddsCorrectDataToViewData_WhenEmailIsNotProvidedByExternalUserInfomration_AndExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNull()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task ExternalLoginCallbackReturnsCorrectViewAndViewModel_WhenExternalLoginSignInAsyncResultIsUnsuccessfulAndExternalLoginInfoIsNull()
-        {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
-        }
-
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExternalLoginCallbackHasHttpGetAttribute()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
@@ -1333,7 +1641,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExternalLoginCallbackHasAllowAnonymousAttribute()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
@@ -1341,28 +1649,38 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesIsSignedInWithCorrectUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var mediator = new Mock<IMediator>();
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object, null, null);
+            signInManager.Setup(x => x.IsSignedIn(sut.User)).Returns(true);
+
+            await sut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel());
+
+            signInManager.VerifyAll();
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationRedirectsToCorrectActionIfUserIsSignedIn()
         {
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, "test") }, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
+            var userManager = MockHelper.CreateUserManagerMock();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var mediator = new Mock<IMediator>();
 
-            var sut = AccountController();
-            sut.SetFakeUser("userId");
-            sut.HttpContext.User.AddIdentity(identity);
+            var sut = new AccountController(userManager.Object, signInManager.Object, null, null, mediator.Object, null, null);
+            signInManager.Setup(x => x.IsSignedIn(sut.User)).Returns(true);
+
             var result = await sut.ExternalLoginConfirmation(new ExternalLoginConfirmationViewModel()) as RedirectToActionResult;
 
             Assert.Equal<string>(result.ControllerName, "Manage");
             Assert.Equal<string>(result.ActionName, nameof(ManageController.Index));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesGetExternalLoginInfoAsync_WhenModelStateIsValid()
         {
             var userManager = MockHelper.CreateUserManagerMock();
@@ -1377,7 +1695,7 @@ namespace AllReady.UnitTest.Controllers
             signInManager.Verify(s => s.GetExternalLoginInfoAsync(It.Is<string>(xsrf => xsrf == null)), Times.Once());
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationReturnsExternalLoginFailureView_WhenUserIsNull_AndModelStateIsValid()
         {
             var userManager = MockHelper.CreateUserManagerMock();
@@ -1392,7 +1710,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(result.ViewName, "ExternalLoginFailure");
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesCreateAsyncWithCorrectUser_WhenExternalLoginInfoIsSuccessful_AndModelStateIsValid()
         {
             var userManager = MockHelper.CreateUserManagerMock();
@@ -1409,7 +1727,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(u => u.CreateAsync(It.Is<ApplicationUser>(au => au.Email == viewModel.Email && au.FirstName == viewModel.FirstName && au.LastName == viewModel.LastName && au.PhoneNumber == viewModel.PhoneNumber)));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesAddLoginAsyncWithCorrectParameters_WhenUserIsCreatedSuccessfully_AndExternalLoginInfoIsSuccessful_AndModelStateIsValid()
         {
             const string loginProvider = "test";
@@ -1426,7 +1744,7 @@ namespace AllReady.UnitTest.Controllers
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
             generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = "DefaultTimeZone" });
 
-            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
             sut.Url = urlHelperMock.Object;
             await sut.ExternalLoginConfirmation(viewModel, "testUrl");
@@ -1440,46 +1758,249 @@ namespace AllReady.UnitTest.Controllers
                 && ei.ProviderDisplayName == displayName)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectApplicationUser_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            userManager.Verify(
+                u =>
+                    u.GenerateEmailConfirmationTokenAsync(
+                        It.Is<ApplicationUser>(
+                            user =>
+                                user.UserName == viewModel.Email && user.Email == viewModel.Email &&
+                                user.TimeZoneId == timeZone &&
+                                user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName &&
+                                user.PhoneNumber == viewModel.PhoneNumber)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesUrlAction_WithTheCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+            const string emailConfirmationToken = "ect";
+
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            userManager.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(emailConfirmationToken);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            urlHelperMock.Verify(u => u.Action(It.Is<UrlActionContext>(a => a.Action == "ConfirmEmail" && a.Controller == "Account")));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
+        public async Task ExternalLoginConfirmationInvokesConfirmEmailAsync_WhenEmailIsVerifiedByExternalLoginProvider_WithTheCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
+        {
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+            const string emailConfirmationToken = "ect";
+
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            userManager.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(emailConfirmationToken);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+            viewModel.EmailIsVerifiedByExternalLoginProvider = true;
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            userManager.Verify(u => u.ConfirmEmailAsync(It.Is<ApplicationUser>(user =>
+                user.UserName == viewModel.Email && user.Email == viewModel.Email &&
+                user.TimeZoneId == timeZone &&
+                user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName &&
+                user.PhoneNumber == viewModel.PhoneNumber), emailConfirmationToken));
+        }
+
+        [Fact]
         public async Task ExternalLoginConfirmationSendsSendConfirmAccountEmailWithCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+            const string emailConfirmationToken = "ect";
+            const string callback = "www.callback";
+
+            var mediator = new Mock<IMediator>();
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            userManager.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(emailConfirmationToken);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            urlHelperMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns(callback);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            mediator.Setup(
+                m =>
+                    m.SendAsync(
+                        It.Is<SendConfirmAccountEmail>(s => s.Email == viewModel.Email && s.CallbackUrl == callback)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesGenerateChangePhoneNumberTokenAsyncWithTheCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+            const string emailConfirmationToken = "ect";
+            const string callback = "www.callback";
+
+            var mediator = new Mock<IMediator>();
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            userManager.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(emailConfirmationToken);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            urlHelperMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns(callback);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            userManager.Setup(u => u.GenerateChangePhoneNumberTokenAsync(It.Is<ApplicationUser>(user =>
+                user.UserName == viewModel.Email && user.Email == viewModel.Email &&
+                user.TimeZoneId == timeZone &&
+                user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName &&
+                user.PhoneNumber == viewModel.PhoneNumber), viewModel.PhoneNumber));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationSendsSendAccountSecurityTokenSmsWithCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+            const string emailConfirmationToken = "ect";
+            const string callback = "www.callback";
+            const string changePhoneNumberToken = "cpnt";
+
+            var mediator = new Mock<IMediator>();
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            userManager.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(emailConfirmationToken);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            urlHelperMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns(callback);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+            userManager.Setup(
+                u => u.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), viewModel.PhoneNumber))
+                .ReturnsAsync(changePhoneNumberToken);
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            mediator.Setup(
+                m =>
+                    m.SendAsync(
+                        It.Is<SendAccountSecurityTokenSms>(
+                            s => s.PhoneNumber == viewModel.PhoneNumber && s.Token == changePhoneNumberToken)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesSignInAsyncWithCorrectParameters_WhenUserIsSignedIn_AndModelStateIsValid_AndExternalLoginInfoIsRetreived_AndUserCreationIsSuccessful_AndExternalLoginInfoIsAddedToUser()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            const string loginProvider = "test";
+            const string providerKey = "test";
+            const string displayName = "testDisplayName";
+            const string timeZone = "DefaultTimeZone";
+            const string emailConfirmationToken = "ect";
+            const string callback = "www.callback";
+            const string changePhoneNumberToken = "cpnt";
+
+            var mediator = new Mock<IMediator>();
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            userManager.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(emailConfirmationToken);
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, loginProvider, providerKey, displayName);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            urlHelperMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns(callback);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+            userManager.Setup(
+                u => u.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), viewModel.PhoneNumber))
+                .ReturnsAsync(changePhoneNumberToken);
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            signInManager.Verify(s => s.SignInAsync(
+                It.Is<ApplicationUser>(au => au.Email == viewModel.Email
+                && au.FirstName == viewModel.FirstName
+                && au.LastName == viewModel.LastName
+                && au.PhoneNumber == viewModel.PhoneNumber),
+                false, null));
         }
 
         [Fact]
@@ -1509,14 +2030,35 @@ namespace AllReady.UnitTest.Controllers
                 It.Is<string>(auth => auth == null)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ExternalLoginConfirmationInvokesRedirectToLocalWithCorrectParameters_WhenExternalLoginIsAddedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await taskFromResultZero;
+            var userManager = CreateUserManagerMockWithSucessIdentityResult();
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            SetupSignInManagerWithTestExternalLoginValue(signInManager, "test", "testKey", "testDisplayName");
+            SetupSignInManagerWithTestExternalLoginValue(signInManager);
+            var urlHelperMock = CreateUrlHelperMockObject();
+            SetupUrlHelperMockToReturnTrueForLocalUrl(urlHelperMock);
+            var viewModel = CreateExternalLoginConfirmationViewModel();
+            var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
+
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = "DefaultTimeZone" });
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, redirectAccountControllerRequests.Object);
+            sut.SetFakeUser("userId");
+            sut.Url = urlHelperMock.Object;
+
+            await sut.ExternalLoginConfirmation(viewModel, "testUrl");
+
+            redirectAccountControllerRequests.Verify(r => r.RedirectToLocal("testUrl",
+                It.Is<ApplicationUser>(au => au.Email == viewModel.Email
+                && au.FirstName == viewModel.FirstName
+                && au.LastName == viewModel.LastName
+                && au.PhoneNumber == viewModel.PhoneNumber)));
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationAddsIdentityResultErrorsToModelStateError_WhenUserIsCreatedSuccessfully()
         {
             var userManager = MockHelper.CreateUserManagerMock();
@@ -1547,7 +2089,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(secondModelStateError.ErrorMessage, "TestDescription2");
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationPutsCorrectDataInViewDataWithCorrectKey_WhenModelStateIsInvalid()
         {
             const string returnUrlKey = "ReturnUrl";
@@ -1565,7 +2107,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(viewDataKey);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task ExternalLoginConfirmationReturnsCorrectViewModel_WhenModelStateIsInvalid()
         {
             var model = new ExternalLoginConfirmationViewModel();
@@ -1581,7 +2123,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.Same(modelResult, model);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExternalLoginConfirmationHasHttpPostAttribute()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
@@ -1589,7 +2131,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExternalLoginConfirmationHasAllowAnonymousAttribute()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();
@@ -1597,7 +2139,7 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void ExternalLoginConfirmationHasValidateAntiForgeryTokenAttribute()
         {
             var sut = CreateAccountControllerWithNoInjectedDependencies();

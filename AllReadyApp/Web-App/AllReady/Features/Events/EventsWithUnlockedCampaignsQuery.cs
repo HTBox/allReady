@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AllReady.Features.Events
 {
-    public class EventsWithUnlockedCampaignsQuery : IRequest<List<EventViewModel>>
+    public class EventsWithUnlockedCampaignsQuery : IAsyncRequest<List<EventViewModel>>
     {
     }
 }

@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     public class EventAdminControllerTests
     {
         //delete this line when all unit tests using it have been completed
-        private static readonly Task<int> TaskFromResultZero = Task.FromResult(0);
+        private static readonly Task TaskCompletedTask = Task.CompletedTask;
 
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResult_WhenEventIsNull()
@@ -65,7 +65,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 		public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
         {
 			// delete this line when starting work on this unit test
-			await TaskFromResultZero;
+			await TaskCompletedTask;
 		}
 
 		[Fact]
@@ -89,7 +89,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task CreateGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -237,7 +237,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async void EditGetSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -265,7 +265,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async void EditGetReturnsCorrectViewModel()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -279,91 +279,91 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostSendsManagingOrganizationIdByEventIdQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdminUser()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostSendsCampaignSummaryQueryWithTheCorrectCampaignId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostAddsValidationErrorsToModelStateErrors_WhenEventDetailsModelValidatorHasErrors()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostReturnsCorrectView_WhenEventDetailsModelValidatorHasErrors()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostInvokesUploadEventImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostInvokesDeleteImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType_AndThereIsAnExistingImage()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostDoesNotInvokeDeleteImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType_AndThereIsAnExistingImage()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostAddsCorrectKey_AndValueToModelStateErrors_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsNotAnAcceptableImageContentType()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostReturnsCorrectViewModel_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsNotAnAcceptableImageContentType()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostSendsEditEventCommandWithCorrectEvent_WhenModelStateIsValid()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostRedirectsToCorrectAction_AndControllerWithCorrectRouteValues_WhenModelStateIsValid()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task EditPostReturnsCorrectViewModel_WhenModelStateIsNotValid()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -386,7 +386,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteGetSendsDeleteQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -468,7 +468,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteConfirmedSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -482,14 +482,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteConfirmedSendsDeleteEventCommandWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task DeleteConfirmedRedirectToCorrectAction_AndControllerWithCorrectRouteValues()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -683,42 +683,42 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task MessageAllVolunteersReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersSendsEventDetailQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersReturnsHttpNotFoundResult_WhenEventIsNull()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandWithCorrectData()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task MessageAllVolunteersReturnsHttpOkResult()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]
@@ -741,21 +741,21 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task PostEventFileSendsEventByEventIdQueryWithCorrectEventId()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task PostEventFileSendsUpdateEventAsyncWithCorrectData()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact(Skip = "NotImplemented")]
         public async Task PostEventFileRedirectsToCorrectRoute()
         {
             // delete this line when starting work on this unit test
-            await TaskFromResultZero;
+            await TaskCompletedTask;
         }
 
         [Fact]

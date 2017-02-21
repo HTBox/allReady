@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AllReady
+namespace AllReady.Configuration
 {
     public class AzureStorageSettings
     {
@@ -63,7 +63,6 @@ namespace AllReady
     public class ApprovedRegionsSettings
     {
         public bool Enabled { get; set; }
-
         public List<string> Regions { get; set; }
     }
 }
