@@ -7,6 +7,7 @@ using AllReady.Models;
 using Xunit;
 using System.Linq;
 using Moq;
+using AllReady.Services;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
