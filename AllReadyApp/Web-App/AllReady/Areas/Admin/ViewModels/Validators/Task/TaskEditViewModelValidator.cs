@@ -54,12 +54,12 @@ namespace AllReady.Areas.Admin.ViewModels.Validators.Task
                 {
                     result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment is empty"));
                 }
-                
+
                 // Rule - Attachment must not be executable
                 string ext = Path.GetExtension(viewModel.NewAttachment.FileName).ToLower();
                 if (ForbiddenExtensions.Contains(ext))
                 {
-                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. Allowed file types are :" + string.Join(", ", ForbiddenExtensions)));
+                    result.Add(new KeyValuePair<string, string>(nameof(viewModel.NewAttachment), "The attachment has an invalid extension. The disallowed file types are :" + string.Join(", ", ForbiddenExtensions)));
                 }
             }
 
