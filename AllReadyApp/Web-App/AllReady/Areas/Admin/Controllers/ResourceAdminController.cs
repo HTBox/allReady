@@ -33,7 +33,7 @@ namespace AllReady.Areas.Admin.Controllers
             _mediator = mediator;
         }
 
-        // POST: Resouce/Get
+        // Get: Resouce/Create
         [HttpGet]
         [Route("Admin/Resource/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId)
@@ -77,7 +77,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Resource/Details/{resourceId}")]
         public async Task<IActionResult> Details(int resourceId)
         {
-            var resource = await _mediator.SendAsync(new ResourceDetailQuery {ResourceId = resourceId});
+            var resource = await _mediator.SendAsync(new ResourceDetailQuery { ResourceId = resourceId });
 
             return View(resource);
         }
@@ -114,7 +114,51 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new DeleteResourceCommand { ResourceId = viewModel.Id });
 
-            return RedirectToAction(nameof(Index), new { area = "Admin" });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
+        }
+
+        // Get: Resouce/Edit
+        [HttpGet]
+        [Route("Admin/Resource/Edit/{id}")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var resource = await _mediator.SendAsync(new ResourceDetailQuery { ResourceId = id });
+
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = resource.CampaignId });
+            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            var viewModel = new ResourceEditViewModel
+            {
+                CampaignId = campaign.Id,
+                CampaignName = campaign.Name,
+                Id = resource.Id,
+                Name = resource.Name,
+                Description = resource.Description,
+                ResourceUrl = resource.ResourceUrl
+            };
+
+            return View("Edit", viewModel);
+        }
+
+        // Post: Resouce/Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ResourceEditViewModel viewModel)
+        {
+            if (!ModelState.IsValid) return View(viewModel);
+
+            var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = viewModel.CampaignId });
+            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            var resourceId = await _mediator.SendAsync(new EditResourceCommand { Resource = viewModel });
+
+            return RedirectToAction(nameof(Details), nameof(Resource), new { resourceId });
         }
     }
 }
