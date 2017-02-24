@@ -17,10 +17,10 @@
         <link rel="stylesheet" href="~/lib/fullcalendar/dist/fullcalendar.css" />
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/css/bootstrap.min.css"
+        <link rel="stylesheet" href="//ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
-        <link rel="stylesheet" href="//gitcdn.github.io/bootstrap-toggle/2.2.0/css/bootstrap-toggle.min.css"
+        <link rel="stylesheet" href="//gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css"
               asp-fallback-href="~/lib/bootstrap-toggle/css/bootstrap-toggle.css" />
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.9.1/fullcalendar.min.css"
               asp-fallback-href="~/lib/fullcalendar/dist/fullcalendar.css" />
@@ -29,7 +29,7 @@
     </environment>
 
     @Html.Raw(JavaScriptSnippet.FullScript)
-   
+
     @RenderSection("styles", required: false)
 
     <script type="text/javascript">
@@ -95,11 +95,11 @@
                 asp-fallback-test="window.jQuery">
         </script>
         <script src="//ajax.aspnetcdn.com/ajax/knockout/knockout-3.3.0.js"></script>
-        <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.0.0/bootstrap.min.js"
+        <script src="//ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal">
         </script>
-        <script src="//gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"
+        <script src="//gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"
                 asp-fallback-src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.bootstrapToggle">
         </script>
