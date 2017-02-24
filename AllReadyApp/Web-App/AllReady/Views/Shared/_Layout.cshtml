@@ -30,7 +30,7 @@
     </environment>
 
     @Html.Raw(JavaScriptSnippet.FullScript)
-
+   
     @RenderSection("styles", required: false)
 
     <script type="text/javascript">
@@ -131,48 +131,48 @@
     <script src="~/lib/knockout-bootstrap/src/knockout-bootstrap.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
-    <script src="~/js/ko.validation.js" asp-append-version="true"></script>
-    <script>
+<script src="~/js/ko.validation.js" asp-append-version="true"></script>
+<script>
 
-        $(function () {
-            $(".datepicker").datetimepicker({
-                format: 'L',
-                showClose: false,
-                toolbarPlacement: 'bottom'
-            });
-            $(".datepicker").each(function (index, element) {
-                $(element).data("DateTimePicker").date(moment($(element).attr("value")));
-            });
-            var language = window.navigator.userLanguage || window.navigator.language;
-            $(".datetimepicker").datetimepicker({
-                format: 'L LT',
-                showClose: false,
-                sideBySide: true,
-                toolbarPlacement: 'bottom',
-                locale: language
-            });
-            $(".datetimepicker").each(function (index, element) {
-                if ($(element).attr("min")) {
-                    $(element).data("DateTimePicker").minDate($(element).attr("min"));
-                }
-                if ($(element).attr("max")) {
-                    $(element).data("DateTimePicker").maxDate($(element).attr("max"));
-                }
-
-                $(element).data("DateTimePicker").date(moment($(element).attr("value")));
-            });
-            tinymce.init({
-                selector: '.wysiwyg',
-                plugins: [
-                    "advlist autolink lists link image charmap print preview anchor",
-                    "searchreplace visualblocks code fullscreen",
-                    "insertdatetime media table contextmenu paste imagetools"
-                ],
-                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
-                autosave_ask_before_unload: false
-            });
+    $(function () {
+        $(".datepicker").datetimepicker({
+            format: 'L',
+            showClose: false,
+            toolbarPlacement: 'bottom'
         });
-    </script>
+        $(".datepicker").each(function (index, element) {
+            $(element).data("DateTimePicker").date(moment($(element).attr("value")));
+        });
+        var language = window.navigator.userLanguage || window.navigator.language;
+        $(".datetimepicker").datetimepicker({
+            format: 'L LT',
+            showClose: false,
+            sideBySide: true,
+            toolbarPlacement: 'bottom',
+            locale: language
+        });
+        $(".datetimepicker").each(function (index, element) {
+            if ($(element).attr("min")) {
+                $(element).data("DateTimePicker").minDate($(element).attr("min"));
+            }
+            if ($(element).attr("max")) {
+                $(element).data("DateTimePicker").maxDate($(element).attr("max"));
+            }
+
+            $(element).data("DateTimePicker").date(moment($(element).attr("value")));
+        });
+        tinymce.init({
+            selector: '.wysiwyg',
+            plugins: [
+                "advlist autolink lists link image charmap print preview anchor",
+                "searchreplace visualblocks code fullscreen",
+                "insertdatetime media table contextmenu paste imagetools"
+            ],
+            toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
+            autosave_ask_before_unload: false
+        });
+    });
+</script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

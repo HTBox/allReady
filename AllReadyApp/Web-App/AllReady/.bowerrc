@@ -1,5 +1,3 @@
 {
-  "directory": "wwwroot/lib",
-  "proxy": "http://eul0856:Dony2210!@proxyfull.servizi.ras:80",
-  "https-proxy": "http://eul0856:Dony2210!@proxyfull.servizi.ras:80"
+  "directory": "wwwroot/lib"
 }
