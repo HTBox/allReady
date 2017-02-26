@@ -16,28 +16,28 @@ namespace AllReady.UnitTest.Features.Tasks
         {
             var options = this.CreateNewContextOptions();
 
-            const int taskId = 1;
-            var message = new UpdateTaskCommand { AllReadyTask = new AllReadyTask {Id = taskId} };
+            const int volunteerTaskId = 1;
+            var message = new UpdateVolunteerTaskCommand { VolunteerTask = new VolunteerTask {Id = volunteerTaskId} };
 
             using (var context = new AllReadyContext(options)) {
-                context.Tasks.Add(new AllReadyTask {
-                    Id = taskId,
-                    RequiredSkills = new List<TaskSkill> {
-                        new TaskSkill()
+                context.VolunteerTasks.Add(new VolunteerTask {
+                    Id = volunteerTaskId,
+                    RequiredSkills = new List<VolunteerTaskSkill> {
+                        new VolunteerTaskSkill()
                     }
                 });
                 await context.SaveChangesAsync();
             }
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new UpdateTaskCommandHandler(context);
+                var sut = new UpdateVolunteerTaskCommandHandler(context);
                 await sut.Handle(message);
             }
 
             using (var context = new AllReadyContext(options)) {
-                var @task = context.Tasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == taskId);
-                Assert.NotNull(@task);
-                Assert.Equal(@task.RequiredSkills.Count, 0);
+                var volunteerTask = context.VolunteerTasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == volunteerTaskId);
+                Assert.NotNull(volunteerTask);
+                Assert.Equal(volunteerTask.RequiredSkills.Count, 0);
             }
         }
     }

@@ -9,23 +9,23 @@ namespace AllReady.UnitTest.Features.Tasks
 {
     public class TasksByApplicationUserIdQueryHandlerShould : InMemoryContextTest
     {
-        private readonly TasksByApplicationUserIdQuery message;
-        private readonly TaskSignup task;
-        private readonly AllReadyTask alreadyTask;
-        private readonly TasksByApplicationUserIdQueryHandler sut;
+        private readonly VolunteerTasksByApplicationUserIdQuery message;
+        private readonly VolunteerTaskSignup task;
+        private readonly VolunteerTask alreadyTask;
+        private readonly VolunteerTasksByApplicationUserIdQueryHandler sut;
 
 
         public TasksByApplicationUserIdQueryHandlerShould()
         {
-            message = new TasksByApplicationUserIdQuery { ApplicationUserId = Guid.NewGuid().ToString() };
-            alreadyTask = new AllReadyTask { Name = "name" };
-            task = new TaskSignup { User = new ApplicationUser { Id = message.ApplicationUserId }, Task = alreadyTask };
+            message = new VolunteerTasksByApplicationUserIdQuery { ApplicationUserId = Guid.NewGuid().ToString() };
+            alreadyTask = new VolunteerTask { Name = "name" };
+            task = new VolunteerTaskSignup { User = new ApplicationUser { Id = message.ApplicationUserId }, VolunteerTask = alreadyTask };
 
             Context.Add(alreadyTask);
             Context.Add(task);
             Context.SaveChanges();
 
-            sut = new TasksByApplicationUserIdQueryHandler(Context);
+            sut = new VolunteerTasksByApplicationUserIdQueryHandler(Context);
         }
 
 
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task ReturnCorrectType()
         {
             var result = await sut.Handle(message);
-            Assert.IsType<AllReadyTask>(result.First());
+            Assert.IsType<VolunteerTask>(result.First());
         }
     }
 }

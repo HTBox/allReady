@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 EventType = EventType.Rally
             };
 
-            var task1 = new AllReadyTask
+            var volunteerTask1 = new VolunteerTask
             {
                 Event = rallyEvent,
                 Name = "Task1",
@@ -138,10 +138,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 UserName = "bgates@example.com"
             };
 
-            var taskSignup = new TaskSignup
+            var volunteerTaskSignup = new VolunteerTaskSignup
             {
                 Itinerary = itinerary1,
-                Task = task1,
+                VolunteerTask = volunteerTask1,
             };
             Context.Locations.Add(seattle);
             Context.Requests.AddRange(request1, request2, request3);
@@ -151,8 +151,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Context.Events.Add(queenAnne);
             Context.Events.Add(rallyEvent);
             Context.Users.Add(user1);
-            Context.Tasks.Add(task1);
-            Context.TaskSignups.Add(taskSignup);
+            Context.VolunteerTasks.Add(volunteerTask1);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
         }

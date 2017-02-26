@@ -201,7 +201,7 @@
         self.validationErrors = ko.observableArray([]);
 
         if (task) {
-            self.TaskId = task.Id;
+            self.VolunteerTaskId = task.Id;
             self.Task = task;
         }
 
@@ -293,9 +293,9 @@
         }
     }
 
-    TaskStatusChangeViewModel = function(taskId, userId, status, statusDescription) {
+    TaskStatusChangeViewModel = function(volunteerTaskId, userId, status, statusDescription) {
         var self = this;
-        self.TaskId = taskId;
+        self.VolunteerTaskId = volunteerTaskId;
         self.UserId = userId;
         self.Status = status;
         self.StatusDescription = statusDescription;

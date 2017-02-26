@@ -4,20 +4,19 @@ using System.Threading.Tasks;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using Xunit;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Features.Notifications
 {
     using Event = AllReady.Models.Event;
 
-    public class TaskDetailForNotificationQueryHandlerShould : InMemoryContextTest
+    public class VolunteerTaskDetailForNotificationQueryHandlerShould : InMemoryContextTest
     {
         private ApplicationUser _user1;
         private Organization _htb;
         private Campaign _firePrev;
         private Event _queenAnne;
         private Contact _contact1;
-        private AllReadyTask _task1;
+        private VolunteerTask _task1;
 
         protected override void LoadTestData()
         {
@@ -72,10 +71,10 @@ namespace AllReady.UnitTest.Features.Notifications
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = new Location { Id = 1 },
                 RequiredSkills = new List<EventSkill>(),
-                Tasks = new List<AllReadyTask>()
+                VolunteerTasks = new List<VolunteerTask>()
             };
 
-            _task1 = new AllReadyTask
+            _task1 = new VolunteerTask
             {
                 Id = 1,
                 Event = _queenAnne,
@@ -85,19 +84,19 @@ namespace AllReady.UnitTest.Features.Notifications
                 Organization = _htb
             };
 
-            _task1.AssignedVolunteers = new List<TaskSignup>
+            _task1.AssignedVolunteers = new List<VolunteerTaskSignup>
             {
-                new TaskSignup
+                new VolunteerTaskSignup
                 {
                     Id = 1,
                     User = _user1,
-                    Task = _task1,
-                    Status = TaskStatus.Assigned,
+                    VolunteerTask = _task1,
+                    Status = VolunteerTaskStatus.Assigned,
                     StatusDateTimeUtc = new DateTime(2015, 7, 4, 10, 0, 0).ToUniversalTime()
                 }
             };
 
-            _queenAnne.Tasks.Add(_task1);
+            _queenAnne.VolunteerTasks.Add(_task1);
             Context.Users.Add(_user1);
             Context.Contacts.Add(_contact1);
             Context.Organizations.Add(_htb);
@@ -108,8 +107,8 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task EventDoesNotExist()
         {
-            var query = new TaskDetailForNotificationQuery { TaskId = 999, UserId = _user1.Id };
-            var handler = new TaskDetailForNotificationQueryHandler(Context);
+            var query = new VolunteerTaskDetailForNotificationQuery { VolunteerTaskId = 999, UserId = _user1.Id };
+            var handler = new VolunteerTaskDetailForNotificationQueryHandler(Context);
 
             var result = await handler.Handle(query);
 

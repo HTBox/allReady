@@ -16,39 +16,6 @@ namespace AllReady.Migrations
                 .HasAnnotation("ProductVersion", "1.0.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<DateTimeOffset>("EndDateTime");
-
-                    b.Property<int>("EventId");
-
-                    b.Property<bool>("IsAllowWaitList");
-
-                    b.Property<bool>("IsLimitVolunteers");
-
-                    b.Property<string>("Name")
-                        .IsRequired();
-
-                    b.Property<int>("NumberOfVolunteersRequired");
-
-                    b.Property<int?>("OrganizationId");
-
-                    b.Property<DateTimeOffset>("StartDateTime");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("AllReadyTask");
-                });
-
             modelBuilder.Entity("AllReady.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id");
@@ -570,7 +537,55 @@ namespace AllReady.Migrations
                     b.ToTable("Skill");
                 });
 
-            modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
+            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("SkillId");
+
+                    b.HasKey("UserId", "SkillId");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserSkill");
+                });
+
+            modelBuilder.Entity("AllReady.Models.VolunteerTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<DateTimeOffset>("EndDateTime");
+
+                    b.Property<int>("EventId");
+
+                    b.Property<bool>("IsAllowWaitList");
+
+                    b.Property<bool>("IsLimitVolunteers");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("NumberOfVolunteersRequired");
+
+                    b.Property<int?>("OrganizationId");
+
+                    b.Property<DateTimeOffset>("StartDateTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.ToTable("VolunteerTask");
+                });
+
+            modelBuilder.Entity("AllReady.Models.VolunteerTaskSignup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -585,49 +600,34 @@ namespace AllReady.Migrations
 
                     b.Property<string>("StatusDescription");
 
-                    b.Property<int>("TaskId");
-
                     b.Property<string>("UserId");
+
+                    b.Property<int>("VolunteerTaskId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItineraryId");
 
-                    b.HasIndex("TaskId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("TaskSignup");
+                    b.HasIndex("VolunteerTaskId");
+
+                    b.ToTable("VolunteerTaskSignup");
                 });
 
-            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
+            modelBuilder.Entity("AllReady.Models.VolunteerTaskSkill", b =>
                 {
-                    b.Property<int>("TaskId");
+                    b.Property<int>("VolunteerTaskId");
 
                     b.Property<int>("SkillId");
 
-                    b.HasKey("TaskId", "SkillId");
+                    b.HasKey("VolunteerTaskId", "SkillId");
 
                     b.HasIndex("SkillId");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("VolunteerTaskId");
 
-                    b.ToTable("TaskSkill");
-                });
-
-            modelBuilder.Entity("AllReady.Models.UserSkill", b =>
-                {
-                    b.Property<string>("UserId");
-
-                    b.Property<int>("SkillId");
-
-                    b.HasKey("UserId", "SkillId");
-
-                    b.HasIndex("SkillId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserSkill");
+                    b.ToTable("VolunteerTaskSkill");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -735,18 +735,6 @@ namespace AllReady.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("IdentityUserToken<string>");
-                });
-
-            modelBuilder.Entity("AllReady.Models.AllReadyTask", b =>
-                {
-                    b.HasOne("AllReady.Models.Event", "Event")
-                        .WithMany("Tasks")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AllReady.Models.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId");
                 });
 
             modelBuilder.Entity("AllReady.Models.ApplicationUser", b =>
@@ -909,35 +897,6 @@ namespace AllReady.Migrations
                         .HasForeignKey("ParentSkillId");
                 });
 
-            modelBuilder.Entity("AllReady.Models.TaskSignup", b =>
-                {
-                    b.HasOne("AllReady.Models.Itinerary", "Itinerary")
-                        .WithMany("TeamMembers")
-                        .HasForeignKey("ItineraryId");
-
-                    b.HasOne("AllReady.Models.AllReadyTask", "Task")
-                        .WithMany("AssignedVolunteers")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AllReady.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("AllReady.Models.TaskSkill", b =>
-                {
-                    b.HasOne("AllReady.Models.Skill", "Skill")
-                        .WithMany()
-                        .HasForeignKey("SkillId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AllReady.Models.AllReadyTask", "Task")
-                        .WithMany("RequiredSkills")
-                        .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("AllReady.Models.UserSkill", b =>
                 {
                     b.HasOne("AllReady.Models.Skill", "Skill")
@@ -948,6 +907,47 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.ApplicationUser", "User")
                         .WithMany("AssociatedSkills")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AllReady.Models.VolunteerTask", b =>
+                {
+                    b.HasOne("AllReady.Models.Event", "Event")
+                        .WithMany("Tasks")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.VolunteerTaskSignup", b =>
+                {
+                    b.HasOne("AllReady.Models.Itinerary", "Itinerary")
+                        .WithMany("TeamMembers")
+                        .HasForeignKey("ItineraryId");
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("AllReady.Models.VolunteerTask", "VolunteerTask")
+                        .WithMany("AssignedVolunteers")
+                        .HasForeignKey("VolunteerTaskId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AllReady.Models.VolunteerTaskSkill", b =>
+                {
+                    b.HasOne("AllReady.Models.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.VolunteerTask", "VolunteerTask")
+                        .WithMany("RequiredSkills")
+                        .HasForeignKey("VolunteerTaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
