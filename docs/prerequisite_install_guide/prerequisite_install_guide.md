@@ -161,7 +161,7 @@ http.proxy=[Your Proxy Server and Port]
 ```
 
 Behind the scenes these will commands created entries in the .gitconfig file that is located in
-your user profile directory.  On Windows this would be c:\users\[your idsid]. 
+your user profile directory.  On Windows this would be c:\users\\[your idsid]. 
 
  The file will look similar to:
 
