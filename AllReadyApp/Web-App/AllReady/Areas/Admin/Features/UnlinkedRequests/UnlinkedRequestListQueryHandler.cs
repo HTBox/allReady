@@ -31,7 +31,7 @@ namespace AllReady.Areas.Admin.Features.UnlinkedRequests
                     Address = r.Address,
                     City = r.City,
                     DateAdded = r.DateAdded,
-                    Postcode = r.PostalCode
+                    PostalCode = r.PostalCode
                 })
                 .ToListAsync();
 

@@ -76,7 +76,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Latitude = r.Latitude,
                 Longitude = r.Longitude,
                 City = r.City,
-                Postcode = r.PostalCode,
+                PostalCode = r.PostalCode,
                 Status = r.Status,
                 DateAdded = r.DateAdded,
             }).ToListAsync();

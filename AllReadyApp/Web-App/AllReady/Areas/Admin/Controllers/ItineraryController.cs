@@ -480,7 +480,7 @@ namespace AllReady.Areas.Admin.Controllers
                     Address = request.Address,
                     Latitude = request.Latitude,
                     Longitude = request.Longitude,
-                    Postcode = request.Postcode
+                    PostalCode = request.PostalCode
                 };
 
                 model.Requests.Add(selectItem);

@@ -2069,7 +2069,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Assert.Equal(request.Address, requestModel.Address);
                 Assert.Equal(request.Latitude, requestModel.Latitude);
                 Assert.Equal(request.Longitude, requestModel.Longitude);
-                Assert.Equal(request.Postcode, requestModel.Postcode);
+                Assert.Equal(request.PostalCode, requestModel.PostalCode);
             }
         }
 
@@ -2086,7 +2086,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     Address = "123 Main St",
                     Latitude = 123.123123,
                     Longitude = -125.234,
-                    Postcode = "53741"
+                    PostalCode = "53741"
                 },
                 new RequestListViewModel
                 {
@@ -2097,7 +2097,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     Address = "123 Main St",
                     Latitude = 38.123,
                     Longitude = -38.124,
-                    Postcode = "12345"
+                    PostalCode = "12345"
                 },
             };
         }
