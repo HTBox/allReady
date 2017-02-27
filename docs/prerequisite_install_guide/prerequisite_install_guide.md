@@ -538,7 +538,7 @@ To run the test you will use the Visual Studio Test Explorer.
 
 ### UI Tests
 
-There is also a suite of UI test in the  Test\AllReady.ScenarioTest project.  The test use  [Canopy](http://lefthandedgoat.github.io/canopy/index.html)which is an F# library that makes it easier to work with the Selenium Web Driver to automated web site UI tests.   
+There is also a suite of UI test in the  Test\AllReady.ScenarioTest project.  The test use  [Canopy](http://lefthandedgoat.github.io/canopy/index.html) which is an F# library that makes it easier to work with the Selenium Web Driver to automated web site UI tests.   
 
 > In order to run the Canopy test, you need to have Chrome installed.  You can download Chrome at [https://www.google.com/chrome/browser/desktop/index.html](https://www.google.com/chrome/browser/desktop/index.html)
 
