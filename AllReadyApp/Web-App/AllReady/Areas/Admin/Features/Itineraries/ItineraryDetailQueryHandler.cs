@@ -51,7 +51,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                         VolunteerTaskSignupId = tm.Id,
                         VolunteerEmail = tm.User.Email,
                         VolunteerTaskName = tm.VolunteerTask.Name,
-                        FullName = tm.User.Name
+                        FullName = tm.User.Name,
+                        IsTeamLead = tm.IsTeamLead
                     }).ToList(),
                     Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListViewModel
                     {
