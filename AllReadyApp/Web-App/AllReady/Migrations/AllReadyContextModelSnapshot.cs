@@ -592,6 +592,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("AdditionalInfo");
 
+                    b.Property<bool>("IsTeamLead");
+
                     b.Property<int?>("ItineraryId");
 
                     b.Property<int>("Status");
@@ -917,7 +919,7 @@ namespace AllReady.Migrations
             modelBuilder.Entity("AllReady.Models.VolunteerTask", b =>
                 {
                     b.HasOne("AllReady.Models.Event", "Event")
-                        .WithMany("Tasks")
+                        .WithMany("VolunteerTasks")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade);
 
