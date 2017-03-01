@@ -106,8 +106,6 @@ namespace AllReady
 
             services.AddMemoryCache();
 
-            services.AddApplicationInsightsTelemetry(Configuration);
-
             // Add MVC services to the services container.
             // config add to get passed Angular failing on Options request when logging in.
             services.AddMvc(config =>
