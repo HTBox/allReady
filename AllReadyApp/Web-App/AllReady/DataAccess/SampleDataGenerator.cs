@@ -106,15 +106,15 @@ namespace AllReady.DataAccess
             };
             organization.Campaigns.Add(firePreventionCampaign);
 
-            var smokeDetectorCampaignImpact = new CampaignImpact
+            var smokeDetectorCampaignGoal = new CampaignGoal
             {
-                ImpactType = ImpactType.Numeric,
-                NumericImpactGoal = 10000,
-                CurrentImpactLevel = 6722,
+                GoalType = GoalType.Numeric,
+                NumericGoal = 10000,
+                CurrentGoalLevel = 6722,
                 Display = true,
-                TextualImpactGoal = "Total number of smoke detectors installed."
+                TextualGoal = "Total number of smoke detectors installed."
             };
-            _context.CampaignImpacts.Add(smokeDetectorCampaignImpact);
+            _context.CampaignGoals.Add(smokeDetectorCampaignGoal);
 
             var smokeDetectorCampaign = new Campaign
             {
@@ -122,7 +122,7 @@ namespace AllReady.DataAccess
                 ManagingOrganization = organization,
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _timeZone),
-                CampaignImpact = smokeDetectorCampaignImpact,
+                CampaignGoals = new List<CampaignGoal> { smokeDetectorCampaignGoal },
                 TimeZoneId = _timeZone.Id,
                 Location = GetRandom(locations),
                 Published = true

@@ -120,16 +120,23 @@
             <strong>No matching events.</strong>
         </div>
     </div>
-    @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
+
+    @if (Model.CampaignGoals.Any(i => i.Display))
     {
         <div class="col-sm-4 col-md-3">
-            @Html.Partial("_CampaignImpact")
+        @foreach (var campaignGoal in Model.CampaignGoals)
+            {
+                if (campaignGoal.Display)
+                {
+                    @Html.Partial("_CampaignGoal", campaignGoal)
+                }
+            }
         </div>
-        @Html.Raw(@"<div class=""col-sm-8 col-md-9"">") <!-- starts the events table div at partial width when displaying campaign impact-->
+        @Html.Raw(@"<div class=""col-sm-8 col-md-9"">") <!-- starts the events table div at partial width when displaying campaign goal-->
     }
     else
     {
-        @Html.Raw(@"<div class=""col-md-12"">") <!-- starts the events table div at full width when no campaign impact-->
+        @Html.Raw(@"<div class=""col-md-12"">") <!-- starts the events table div at full width when no campaign goal-->
     }
     <div class="table-responsive">
         <table class="table" data-bind="css: { hide: !events.filtered().length }">
@@ -203,10 +210,12 @@ else if (Model.HasPrivacyPolicy)
             baseURL: location.protocol + "//" + location.host + '/js/'
         });
 
-        System.import('Controls/Thermometer.js').then(function (sys) {
-            if($("[data-control=thermometer]"))
-                new sys.AllReady.Controls.Thermometer($("[data-control=thermometer]"));
-        });;
+        System.import('Controls/Thermometer.js').then(function(sys) {
+            if ($("[data-control=thermometer]"))
+                $("[data-control=thermometer]").each(function() {
+                    new sys.AllReady.Controls.Thermometer($(this));
+                });
+        });
     </script>
 
     <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>

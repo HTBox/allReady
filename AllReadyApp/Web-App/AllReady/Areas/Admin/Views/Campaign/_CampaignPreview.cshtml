@@ -152,29 +152,29 @@
         @if (isEdit)
         {
             <tr>
-                <td><label class="col-md-4 control-label">Display Impact Goal</label></td>
-                <td>@(Model.CampaignImpact.Display == true ? "Yes" : "No")</td>
+                <td><label class="col-md-4 control-label">Display Goal</label></td>
+                <td>@(Model.CampaignGoal.Display == true ? "Yes" : "No")</td>
             </tr>
 
             <tr>
-                <td><label class="col-md-4 control-label">Campaign Impact Goal</label></td>
-                <td>@Model.CampaignImpact.TextualImpactGoal</td>
+                <td><label class="col-md-4 control-label">Campaign Goal</label></td>
+                <td>@Model.CampaignGoal.TextualGoal</td>
             </tr>
 
             <tr>
-                <td><label class="col-md-4 control-label">Impact Type</label></td>
-                <td>@Model.CampaignImpact.ImpactType</td>
+                <td><label class="col-md-4 control-label">Goal Type</label></td>
+                <td>@Model.CampaignGoal.GoalType</td>
             </tr>
-                    @if (Model.CampaignImpact.ImpactType == ImpactType.Numeric)
+                    @if (Model.CampaignGoal.GoalType == GoalType.Numeric)
                     {
                         <tr>
-                            <td><label class="col-md-4 control-label">Current Impact Level</label></td>
-                            <td>@Model.CampaignImpact.CurrentImpactLevel</td>
+                            <td><label class="col-md-4 control-label">Current Goal Level</label></td>
+                            <td>@Model.CampaignGoal.CurrentGoalLevel</td>
                         </tr>
 
                         <tr>
-                            <td><label class="col-md-4 control-label">Numeric Impact Goal</label></td>
-                            <td>@Model.CampaignImpact.NumericImpactGoal</td>
+                            <td><label class="col-md-4 control-label">Numeric Goal Goal</label></td>
+                            <td>@Model.CampaignGoal.NumericGoal</td>
                         </tr>
                     }
         }

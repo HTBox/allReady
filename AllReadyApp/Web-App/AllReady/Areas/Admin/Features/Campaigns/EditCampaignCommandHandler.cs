@@ -5,7 +5,6 @@ using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Extensions;
 using AllReady.Models;
-using AllReady.Providers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = await _context.Campaigns
                 .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
-                .Include(i => i.CampaignImpact)
+                .Include(i => i.CampaignGoals)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
@@ -42,7 +41,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             CreateUpdateOrDeleteCampaignPrimaryContact(campaign, message.Campaign);
-            campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
+            CreateUpdateOrDeleteCampaignGoals(campaign, message.Campaign.CampaignGoals);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;
@@ -54,6 +53,24 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             await _context.SaveChangesAsync();
 
             return campaign.Id;
+        }
+
+        private void CreateUpdateOrDeleteCampaignGoals(Campaign campaign, IList<CampaignGoal> editModelCampaignGoals)
+        {
+            var originalCampaignGoals = campaign.CampaignGoals ?? (campaign.CampaignGoals = new List<CampaignGoal>());
+            originalCampaignGoals.RemoveAll(original => !editModelCampaignGoals.Select(c => c.Id).Contains(original.Id));
+
+            foreach (var editModel in editModelCampaignGoals)
+            {
+                var originalGoal = (editModel.Id == 0 ? null : originalCampaignGoals.FirstOrDefault(i => i.Id == editModel.Id)) ?? new CampaignGoal();
+                if (originalGoal.Id == 0)
+                {
+                    originalCampaignGoals.Add(originalGoal);
+                    originalGoal.Campaign = campaign;
+                    originalGoal.CampaignId = campaign.Id;
+                }
+                originalGoal.UpdateModel(editModel);
+            }
         }
 
         private void CreateUpdateOrDeleteCampaignPrimaryContact(Campaign campaign, IPrimaryContactViewModel contactModel)

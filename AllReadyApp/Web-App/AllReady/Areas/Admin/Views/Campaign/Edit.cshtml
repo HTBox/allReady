@@ -247,64 +247,23 @@
 
                 @if (isEdit)
                 {
-                    <input type="hidden" asp-for="CampaignImpact.Id" />
-                    <h3>Campaign Impact Goal</h3>
+                    <h3>Campaign Goals</h3>
                     <div class="row">
                         <div class="col-md-5">
                             <div class="alert alert-warning">
                                 <p>
-                                    <strong>Define your campaign's impact in a way that will inspire people to help you reach those goals.</strong>
-                                </p>
-                                <p>
-                                    If you choose <em>numeric</em> as an impact type, then a "thermometer" will be displayed on the landing page
-                                    showing the current progress of the campaign as you update the current impact level.
+                                    <strong>Define your campaign's goals in a way that will inspire people to help you reach those goals.</strong>
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Display Impact Goal</label>
-                            <div class="form-horizontal">
-                                <input type="checkbox" asp-for="CampaignImpact.Display" />
-                            </div>
+                    
+                    foreach (var campaignGoal in Model.CampaignGoals)
+                    {
+                        <div class="col-md-4">
+                            @Html.Partial("_CampaignGoal", campaignGoal)
                         </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Campaign Impact Goal</label>
-                            <div class="form-horizontal">
-                                <input type="text" asp-for="CampaignImpact.TextualImpactGoal" class="form-control" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-2 control-label">Impact Type</label>
-                            <div class="form-horizontal">
-                                @Html.DropDownListFor(model => model.CampaignImpact.ImpactType, SelectListService.GetCampaignImpactTypes(), htmlAttributes: new { @class = "form-control" })
-                            </div>
-                        </div>
-                        <div id="numericImpactSection">
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">Current Impact Level</label>
-                                <div class="form-horizontal">
-                                    <input type="text" asp-for="CampaignImpact.CurrentImpactLevel" class="form-control" />
-                                    <span class="help-block">
-                                        <em>
-                                            This value is the current number of x achieved to reach the Numeric Impact Goal value.<br />
-                                            Ideally less than or equal to Numeric Impact Goal, but there may be certain scenarios where it's greater.
-                                        </em>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="col-md-2 control-label">Numeric Impact Goal</label>
-                                <div class="form-horizontal">
-                                    <input type="text" asp-for="CampaignImpact.NumericImpactGoal" class="form-control" />
-                                    <span class="help-block">
-                                        <em>This value is the number of x to reach the goal.</em>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    }
                 }
             </div>
             <div class="row">

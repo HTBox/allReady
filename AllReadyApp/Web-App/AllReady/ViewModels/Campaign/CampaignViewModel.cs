@@ -31,7 +31,7 @@ namespace AllReady.ViewModels.Campaign
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;            
             Events = campaign.Events != null ? campaign.Events.ToViewModel() : Enumerable.Empty<EventViewModel>();
-            CampaignImpact = campaign.CampaignImpact;
+            CampaignGoals = campaign.CampaignGoals;
             ImageUrl = campaign.ImageUrl;
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
             PrivacyPolicyUrl = campaign.ManagingOrganization?.PrivacyPolicyUrl;
@@ -79,7 +79,7 @@ namespace AllReady.ViewModels.Campaign
 
         public string ManagingOrganizationLogo { get; set; }
 
-        public CampaignImpact CampaignImpact { get; set; }
+        public List<CampaignGoal> CampaignGoals { get; set; }
 
         public List<CampaignSponsors> ParticipatingOrganizations { get; set; }
 

@@ -83,8 +83,6 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CampaignImpactId");
-
                     b.Property<string>("Description");
 
                     b.Property<DateTimeOffset>("EndDateTime");
@@ -122,8 +120,6 @@ namespace AllReady.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CampaignImpactId");
-
                     b.HasIndex("LocationId");
 
                     b.HasIndex("ManagingOrganizationId");
@@ -154,24 +150,28 @@ namespace AllReady.Migrations
                     b.ToTable("CampaignContact");
                 });
 
-            modelBuilder.Entity("AllReady.Models.CampaignImpact", b =>
+            modelBuilder.Entity("AllReady.Models.CampaignGoal", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("CurrentImpactLevel");
+                    b.Property<int>("CampaignId");
+
+                    b.Property<int>("CurrentGoalLevel");
 
                     b.Property<bool>("Display");
 
-                    b.Property<int>("ImpactType");
+                    b.Property<int>("GoalType");
 
-                    b.Property<int>("NumericImpactGoal");
+                    b.Property<int>("NumericGoal");
 
-                    b.Property<string>("TextualImpactGoal");
+                    b.Property<string>("TextualGoal");
 
                     b.HasKey("Id");
 
-                    b.ToTable("CampaignImpact");
+                    b.HasIndex("CampaignId");
+
+                    b.ToTable("CampaignGoal");
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
@@ -746,10 +746,6 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.Campaign", b =>
                 {
-                    b.HasOne("AllReady.Models.CampaignImpact", "CampaignImpact")
-                        .WithMany()
-                        .HasForeignKey("CampaignImpactId");
-
                     b.HasOne("AllReady.Models.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
@@ -779,6 +775,14 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Contact")
                         .WithMany("CampaignContacts")
                         .HasForeignKey("ContactId1");
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignGoal", b =>
+                {
+                    b.HasOne("AllReady.Models.Campaign", "Campaign")
+                        .WithMany("CampaignGoals")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>

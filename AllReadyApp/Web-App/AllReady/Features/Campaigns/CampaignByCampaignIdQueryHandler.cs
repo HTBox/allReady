@@ -18,7 +18,7 @@ namespace AllReady.Features.Campaigns
         {
             return await _context.Campaigns
                 .Include(x => x.ManagingOrganization)
-                .Include(x => x.CampaignImpact)
+                .Include(x => x.CampaignGoals)
                 .Include(x => x.Events)
                 .ThenInclude(a => a.Location)
                 .Include(x => x.Location)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
@@ -52,7 +53,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset EndDate { get; set; }
 
-        public CampaignImpact CampaignImpact { get; set; } = new CampaignImpact();
+        public List<CampaignGoal> CampaignGoals { get; set; } = new List<CampaignGoal>();
 
         [UIHint("Location")]
         public LocationEditViewModel Location { get; set; }

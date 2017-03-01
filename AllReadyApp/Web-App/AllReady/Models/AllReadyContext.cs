@@ -14,7 +14,7 @@ namespace AllReady.Models
 
         public virtual DbSet<Organization> Organizations { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
-        public DbSet<CampaignImpact> CampaignImpacts { get; set; }
+        public DbSet<CampaignGoal> CampaignGoals { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<EventSkill> EventSkills { get; set; }
         public DbSet<Location> Locations { get; set; }
@@ -59,7 +59,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<OrganizationContact>());
             Map(modelBuilder.Entity<CampaignContact>());
             Map(modelBuilder.Entity<Contact>());
-            Map(modelBuilder.Entity<CampaignImpact>());
+            Map(modelBuilder.Entity<CampaignGoal>());
             Map(modelBuilder.Entity<ClosestLocation>());
             Map(modelBuilder.Entity<PostalCodeGeoCoordinate>());
             Map(modelBuilder.Entity<Request>());
@@ -74,8 +74,9 @@ namespace AllReady.Models
             builder.HasOne(r => r.Itinerary);
         }
 
-        private void Map(EntityTypeBuilder<CampaignImpact> builder)
+        private void Map(EntityTypeBuilder<CampaignGoal> builder)
         {
+            builder.HasOne(c => c.Campaign);
             builder.Ignore(c => c.PercentComplete);
         }
 
@@ -167,7 +168,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingOrganization);
-            builder.HasOne(c => c.CampaignImpact);
+            builder.HasMany(c => c.CampaignGoals);
             builder.HasMany(c => c.Events);
             builder.HasOne(t => t.Location);
             builder.HasMany(t => t.CampaignContacts);
