@@ -11,7 +11,7 @@ This repo contains the code for **allReady**, an open-source solution focused on
 + [How you can help](#how-you-can-help)
 
 ##Upcoming v1.0 Release
-We are on the path to our first production v1.0 release!  We are tracking requirements in our [v1.0 Release Milestone](https://github.com/HTBox/allReady/milestone/15) and currently directing efforts to closing out issues starting with P1-P3 priority items that are currently being triaged and tagged.
+We are on the path to our first production v1.0 release!  We are tracking requirements in our [v1.0 Release Milestone](https://github.com/HTBox/allReady/milestone/21) and currently directing efforts to closing out issues starting with P1-P3 priority items that are currently being triaged and tagged.
 
 More info to come in our [biweekly standups](https://www.youtube.com/channel/UCMHQ4xrqudcTtaXFw4Bw54Q/)
 
