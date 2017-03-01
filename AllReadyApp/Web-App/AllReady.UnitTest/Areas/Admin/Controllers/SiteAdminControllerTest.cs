@@ -312,7 +312,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "Login" &&
-                uac.Controller == "Admin" &&
+                uac.Controller == "Account" &&
                 uac.Protocol == requestScheme)),
                 Times.Once);
         }
@@ -520,7 +520,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "ResetPassword" &&
-                uac.Controller == "Admin" &&
+                uac.Controller == "Account" &&
                 uac.Protocol == requestScheme)),
                 Times.Once);
         }
