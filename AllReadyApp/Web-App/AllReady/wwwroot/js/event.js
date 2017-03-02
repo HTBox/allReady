@@ -159,7 +159,7 @@
                     self.changeTaskStatus("CanNotComplete", viewModel.NotCompleteReason, taskSave);
                 });
         };
-        
+
         self.confirmGoToLogin = function () {
             hideAlert();
             var title = "Confirm";
@@ -245,6 +245,7 @@
                 }
             }).fail(function(fail) {
                 self.isSubmitting(false);
+                self.validationErrors([fail.statusText]);
                 console.log(fail);
             });
         }
@@ -264,7 +265,7 @@
             clearTimeout(alertVm.timer);
         }
     }
- 
+
    CannotCompleteViewModel = function (task) {
         var self = this;
         self.Name = task.Name;
