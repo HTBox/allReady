@@ -49,9 +49,11 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         @if (isEdit)
-            {
+        {
             <input type="hidden" asp-for="Id" />
         }
+        
+        <h3>Organization Information</h3>
 
         <div class="form-group">
             <label asp-for="LogoUrl" class="col-md-2 control-label"></label>
@@ -93,6 +95,23 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
         </div>
+        <div class="form-group">
+            <label asp-for="PrivacyPolicyUrl" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="PrivacyPolicyUrl" class="form-control" />
+                <span asp-validation-for="PrivacyPolicyUrl" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="control-label col-md-2">
+                <label asp-for="PrivacyPolicy"></label>
+                <p><cite>This formatted text will be used as the organization's privacy policy content</cite></p>
+            </div>
+            <div class="col-md-10">
+                <textarea asp-for="PrivacyPolicy" class="form-control wysiwyg" rows="6"></textarea>
+                <span asp-validation-for="PrivacyPolicy" class="text-danger"></span>
+            </div>
+        </div>
 
         <h3>Location</h3>
 
@@ -126,23 +145,6 @@
             <div class="col-md-10">
                 <input asp-for="PrimaryContactEmail" class="form-control" />
                 <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="PrivacyPolicyUrl" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="PrivacyPolicyUrl" class="form-control" />
-                <span asp-validation-for="PrivacyPolicyUrl" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="control-label col-md-2">
-                <label asp-for="PrivacyPolicy"></label>
-                <p><cite>This formatted text will be used as the organization's privacy policy content</cite></p>
-            </div>
-            <div class="col-md-10">
-                <textarea asp-for="PrivacyPolicy" class="form-control wysiwyg" rows="6"></textarea>
-                <span asp-validation-for="PrivacyPolicy" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
