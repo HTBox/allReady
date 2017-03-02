@@ -39,6 +39,7 @@ namespace AllReady.ViewModels.Campaign
             Featured = campaign.Featured;
             Headline = campaign.Headline;
             Published = campaign.Published;
+            Tags = campaign.Tags.Split('|');
 
         }
 
@@ -101,6 +102,8 @@ namespace AllReady.ViewModels.Campaign
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
         public bool Published { get; set; }
         public bool IsCampaignManager { get; set; }
+
+        public string[] Tags { get; set; }
     }
 
     public static class CampaignViewModelExtensions
