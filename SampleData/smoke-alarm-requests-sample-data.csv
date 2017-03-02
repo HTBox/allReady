@@ -1,4 +1,4 @@
-id,name,address,city,state,zip,phone,email,date created,region
+id,name,address,city,state,postalcode,phone,email,date created,region
 ZNWRN-16-0007,Corey Jensen,11412 124th Street Ct E,Everett,Washington,98204,2163314005,chrisss9@yahoo.com,2016-06-11T17:01:46.161Z,Northwest Region
 ZNWRN-16-0008,Raj Agraal,4520 SW 320th St,Renton,Washington,98056,2132026652,chucky@chuckie.com,2016-06-11T16:24:35.038Z,Northwest Region
 ZNWRN-16-0009,Allison Peets,37204 35th Ave S,Seattle,Washington,98144,3105093359,KCulleyK06@gmail.com,2016-06-12T04:41:25.192Z,Northwest Region

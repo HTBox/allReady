@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 Phone = "555-555-5555",
                 Email = "something@example.com",
                 State = "WA",
-                Zip = "55555",
+                PostalCode = "55555",
                 Latitude = 10,
                 Longitude = 10
             };
@@ -92,7 +92,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             await handler.Handle(new EditRequestCommand
             {
-                RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, Zip = _existingRequest.Zip }
+                RequestModel = new EditRequestViewModel { Id = _existingRequest.RequestId, Address = _existingRequest.Address, City = _existingRequest.City, State = _existingRequest.State, PostalCode = _existingRequest.PostalCode }
             });
 
             mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
@@ -113,7 +113,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                     Address = changedAddress,
                     City = _existingRequest.City,
                     State = _existingRequest.State,
-                    Zip = _existingRequest.Zip,
+                    PostalCode = _existingRequest.PostalCode,
                     Latitude = 47.6,
                     Longitude = -122.3
                 }
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             string changedAddress = "4444 Changed Address Ln";
 
             // Because the Geocode method takes a set of strings as arguments, actually verify the arguments are passed in to the mock in the correct order.
-            mockGeocoder.Setup(g => g.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>())).ReturnsAsync(new Coordinates(0,0));
+            mockGeocoder.Setup(g => g.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.PostalCode, It.IsAny<string>())).ReturnsAsync(new Coordinates(0,0));
 
             var handler = new EditRequestCommandHandler(Context, mockGeocoder.Object);
             await handler.Handle(new EditRequestCommand
@@ -140,13 +140,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                     Address = changedAddress,
                     City = _existingRequest.City,
                     State = _existingRequest.State,
-                    Zip = _existingRequest.Zip,
+                    PostalCode = _existingRequest.PostalCode,
                     Latitude = 0,
                     Longitude = 0
                 }
             });
 
-            mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.Zip, It.IsAny<string>()), Times.Once);
+            mockGeocoder.Verify(x => x.GetCoordinatesFromAddress(changedAddress, _existingRequest.City, _existingRequest.State, _existingRequest.PostalCode, It.IsAny<string>()), Times.Once);
         }
 
         [Fact]

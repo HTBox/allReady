@@ -8,7 +8,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
         public RedCrossRequestMap()
         {
             // columns from Red Cross CSV
-            // "id","name","address","city","state","zip","phone","email","date created","region","latitude","longitude"
+            // "id","name","address","city","state","postalcode","phone","email","date created","region","latitude","longitude"
 
             // map from Red Cross data
             Map(r => r.Id).Name("id");
@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
             Map(r => r.Address).Name("address");
             Map(r => r.City).Name("city");
             Map(r => r.State).Name("state");
-            Map(r => r.Zip).Name("zip");
+            Map(r => r.PostalCode).Name("postalcode");
             Map(r => r.Phone).Name("phone");
             Map(r => r.Email).Name("email");
             Map(r => r.ProviderData).Name("region");

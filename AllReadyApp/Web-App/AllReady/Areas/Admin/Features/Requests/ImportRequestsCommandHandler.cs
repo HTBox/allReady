@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                     Name = viewModel.Name,
                     Phone = viewModel.Phone,
                     State = viewModel.State,
-                    Zip = viewModel.Zip,
+                    PostalCode = viewModel.PostalCode,
                     Status = RequestStatus.Unassigned,
                     Source = RequestSource.Csv
                 }).ToList();
@@ -58,7 +58,7 @@ namespace AllReady.Areas.Admin.Features.Requests
                 {
                     if (request.Latitude == 0 && request.Longitude == 0)
                     {
-                        var coordinates = await geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty);
+                        var coordinates = await geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.PostalCode, string.Empty);
 
                         request.Latitude = coordinates?.Latitude ?? 0;
                         request.Longitude = coordinates?.Longitude ?? 0;

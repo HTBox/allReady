@@ -54,7 +54,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
                 Address = "Address",
                 City = "City",
                 State = "state",
-                Zip = postalCode,
+                PostalCode = postalCode,
                 Phone = "111-111-1111",
                 Email = "email@email.com",
                 ProviderData = "ProviderData"
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Assert.Equal(request.Email, viewModel.Email);
             Assert.Equal(request.Name, viewModel.Name);
             Assert.Equal(request.State, viewModel.State);
-            Assert.Equal(request.Zip, viewModel.Zip);
+            Assert.Equal(request.PostalCode, viewModel.PostalCode);
             Assert.Equal(request.Status, RequestStatus.Unassigned);
             Assert.Equal(request.Source, RequestSource.Api);
         }
@@ -89,7 +89,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         {
             var requestId = Guid.NewGuid();
             var geoCoder = new Mock<IGeocodeService>();
-            var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", Zip = "zip" };
+            var viewModel = new RequestApiViewModel { Address = "address", City = "city", State = "state", PostalCode = "postcode" };
             var sut = new ProcessApiRequests(Context, geoCoder.Object, Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())
             {
                 NewRequestId = () => requestId
@@ -97,7 +97,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
 
             sut.Process(viewModel);
 
-            geoCoder.Verify(x => x.GetCoordinatesFromAddress(viewModel.Address, viewModel.City, viewModel.State, viewModel.Zip, string.Empty), Times.Once);
+            geoCoder.Verify(x => x.GetCoordinatesFromAddress(viewModel.Address, viewModel.City, viewModel.State, viewModel.PostalCode, string.Empty), Times.Once);
         }
 
         [Fact]

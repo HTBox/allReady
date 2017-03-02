@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
     public class OptimizeRouteCommandHandlerShould : InMemoryContextTest
     {
-        private const string EncodedFullAddress = "1%20Some%20Road,%20A%20town,%20A%20state,%20ZIP,%20United%20Kingdom";
+        private const string EncodedFullAddress = "1%20Some%20Road,%20A%20town,%20A%20state,%20postalcode,%20United%20Kingdom";
 
         private static readonly Guid Request1Id = new Guid("de4f4639-86ea-419f-96c8-509defa4d9a3");
         private static readonly Guid Request2Id = new Guid("602b3f58-c8e0-4f59-82b0-f940c1aa1caa");
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Address1 = "1 Some Road",
                 City = "A town",
                 State = "A state",
-                PostalCode = "ZIP",
+                PostalCode = "postalcode",
                 Country = "United Kingdom"
             };
 

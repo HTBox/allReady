@@ -37,7 +37,7 @@
                         <th>Request Name</th>
                         <th>Address</th>
                         <th>City</th>
-                        <th>Postcode</th>
+                        <th>Postal Code</th>
                         <th>Date Added</th>
                     </tr>
                     @for (var i = 0; i < Model.Requests.Count(); i++)
@@ -50,7 +50,7 @@
                             <td>@Model.Requests[i].Name</td>
                             <td>@Model.Requests[i].Address</td>
                             <td>@Model.Requests[i].City</td>
-                            <td>@Model.Requests[i].Postcode</td>
+                            <td>@Model.Requests[i].PostalCode</td>
                             <td>@Model.Requests[i].DateAdded</td>
                         </tr>
                     }
