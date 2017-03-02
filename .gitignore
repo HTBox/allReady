@@ -230,3 +230,7 @@ FakesAssemblies/
 config.development.json
 *.orig
 bower_components
+/smoke-alarm-requests-sample-data_SINGLE_ROW.csv
+/smoke-alarm-requests-sample-data-INVALID.csv
+/smoke-alarm-requests-sample-data-EMPTY.csv
+/smoke-alarm-requests-sample-data-DUPLICATE.csv
