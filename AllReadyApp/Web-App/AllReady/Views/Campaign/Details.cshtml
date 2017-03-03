@@ -55,9 +55,7 @@
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
         <p>@Model.LocationSummary</p>
-        <div data-bind="foreach: tags">
-            <span class="badge" data-bind="text: $data"></span>
-        </div>
+        @Html.DisplayFor(model => model.Keywords)
     </div>
 </div>
 
@@ -215,7 +213,6 @@ else if (Model.HasPrivacyPolicy)
 @section scripts {
     <script>
         var modelEvents = @Json.Serialize(Model.Events);
-        var tags = @Json.Serialize(Model.Tags);
     </script>
     <script type="text/javascript" src="~/lib/system.js/dist/system.js"></script>
     <script type="text/javascript" src="~/js/campaign.js"></script>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.ViewModels.Campaign
 {
@@ -39,7 +40,7 @@ namespace AllReady.ViewModels.Campaign
             Featured = campaign.Featured;
             Headline = campaign.Headline;
             Published = campaign.Published;
-            Tags = campaign.Tags.Split('|');
+            Keywords = new KeywordCollection(campaign.Tags);
 
         }
 
@@ -102,6 +103,7 @@ namespace AllReady.ViewModels.Campaign
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
         public bool Published { get; set; }
         public bool IsCampaignManager { get; set; }
+        public KeywordCollection Keywords { get; set; }
 
         public string[] Tags { get; set; }
     }

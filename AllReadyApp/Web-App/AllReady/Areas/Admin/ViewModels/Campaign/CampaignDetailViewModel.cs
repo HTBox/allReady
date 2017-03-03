@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
@@ -70,6 +71,8 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public bool Featured { get; set; }
 
         public bool Published { get; set; }
+
+        public KeywordCollection Keywords { get; set; }
 
         public class EventList
         {

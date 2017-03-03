@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Extensions;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Models;
+using AllReady.ViewModels.Shared;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -54,6 +55,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Locked = campaign.Locked,
                     Featured = campaign.Featured,
                     Published = campaign.Published,
+                    Keywords = new KeywordCollection(campaign.Tags),
                     Events = campaign.Events.Select(a => new CampaignDetailViewModel.EventList
                     {
                         Id = a.Id,
