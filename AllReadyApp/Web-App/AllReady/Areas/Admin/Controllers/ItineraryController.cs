@@ -266,7 +266,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{volunteerTaskSignupId}")]
         public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int volunteerTaskSignupId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
