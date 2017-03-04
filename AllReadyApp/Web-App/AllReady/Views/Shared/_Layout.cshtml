@@ -1,4 +1,5 @@
-﻿@using System.Threading.Tasks
+﻿@using Microsoft.ApplicationInsights.AspNetCore
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 <!DOCTYPE html>
 <html lang="en">
@@ -80,7 +81,7 @@
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"></script>
         <script src="~/lib/knockout/dist/knockout.js"></script>
-        <script src="~/lib/moment/moment.js"></script>
+        <script src="~/lib/moment/min/moment-with-locales.js"></script>
         <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
         <script src="~/lib/tota11y/build/tota11y.js"></script>
         <script src="~/lib/tinymce/tinymce.js"></script>
@@ -103,8 +104,8 @@
                 asp-fallback-src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.bootstrapToggle">
         </script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"
-                asp-fallback-src="~/lib/moment/moment.js"
+        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment-with-locales.min.js"
+                asp-fallback-src="~/lib/moment/min/moment-with-locales.js"
                 asp-fallback-test="window.moment">
         </script>
         <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
@@ -132,6 +133,7 @@
     <script src="~/js/ko.filterableList.js" asp-append-version="true"></script>
     <script src="~/js/ko.validation.js" asp-append-version="true"></script>
     <script>
+
         $(function () {
             $(".datepicker").datetimepicker({
                 format: 'L',
@@ -141,11 +143,13 @@
             $(".datepicker").each(function (index, element) {
                 $(element).data("DateTimePicker").date(moment($(element).attr("value")));
             });
+            var language = window.navigator.userLanguage || window.navigator.language;
             $(".datetimepicker").datetimepicker({
                 format: 'L LT',
                 showClose: false,
                 sideBySide: true,
-                toolbarPlacement: 'bottom'
+                toolbarPlacement: 'bottom',
+                locale: language
             });
             $(".datetimepicker").each(function (index, element) {
                 if ($(element).attr("min")) {
@@ -160,9 +164,9 @@
             tinymce.init({
                 selector: '.wysiwyg',
                 plugins: [
-                            "advlist autolink lists link image charmap print preview anchor",
-                            "searchreplace visualblocks code fullscreen",
-                            "insertdatetime media table contextmenu paste imagetools"
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen",
+                    "insertdatetime media table contextmenu paste imagetools"
                 ],
                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist | link image",
                 autosave_ask_before_unload: false
