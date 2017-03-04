@@ -592,6 +592,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("AdditionalInfo");
 
+                    b.Property<bool>("IsTeamLead");
+
                     b.Property<int?>("ItineraryId");
 
                     b.Property<int>("Status");

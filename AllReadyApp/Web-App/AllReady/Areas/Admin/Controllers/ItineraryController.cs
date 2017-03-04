@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("Admin/Itinerary/Details/{id}")]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, bool? teamLeadSuccess = null)
         {
             var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
             if (itinerary == null)
@@ -53,6 +53,8 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return Unauthorized();
             }
+
+            itinerary.TeamLeadChangedSuccess = teamLeadSuccess;
 
             return View("Details", itinerary);
         }
@@ -451,6 +453,27 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId, UserId = user?.Id });
 
             return RedirectToAction("Details", new { id = itineraryId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]")]
+        public async Task<IActionResult> SetTeamLead(int itineraryId, [FromForm] int volunteerTaskSignupId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new SetTeamLeadCommand(itineraryId, volunteerTaskSignupId));
+
+            // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
+
+            var isSuccess = result == SetTeamLeadResult.Success;
+
+            return RedirectToAction("Details", new { id = itineraryId, teamLeadSuccess = isSuccess });
         }
 
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)

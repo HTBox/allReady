@@ -17,6 +17,26 @@
     </div>
 </div>
 
+@if (Model.HasTeamLeadResult)
+{
+    <div class="row">
+        <div class="col-md-12">
+            @if (!Model.TeamLeadChangedSuccess.Value)
+            {
+                <div class="alert alert-danger">
+                    <strong>Failure to set team lead!</strong>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <strong>Successfully set team lead</strong>
+                </div>
+            }
+        </div>
+    </div>
+}
+
 @if (Model.OptimizeRouteStatus != null)
 {
     <div class="row">
@@ -77,6 +97,25 @@
     <div class="row">
         <div class="col-md-8">
             <h4>Assigned Team Members</h4>
+            @if (Model.HasPotentialTeamLeads)
+            {
+                <div class="row">
+                    <div class="col-md-12">
+                        @if (Model.HasTeamLead)
+                        {
+                            <p>Select a new team lead: </p>
+                        }
+                        else
+                        {
+                            <p>Select a new team lead: </p>
+                        }
+                        <form asp-action="SetTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                            <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control"></select><br />
+                            <button type="submit" class="btn btn-default submit-form">Set Team Lead</button>
+                        </form>
+                    </div>
+                </div>
+            }
             <table class="table" style="display: none;" data-bind="visible: hasTeamMembers">
                 <thead>
                     <tr>
@@ -288,15 +327,15 @@
                 if (request.Status == RequestStatus.Completed)
                 {
                     @:reqData.color = 'green';
-                                                                                                }
+                                                                                                                                                            }
 
                 if (request.Status == RequestStatus.Canceled)
                 {
                     @:reqData.color = 'red';
-                                                                                                }
+                                                                                                                                                            }
 
                 @:requestData.push(reqData);
-                                                                                            }
+                                                                                                                                                        }
             return requestData;
         }
 

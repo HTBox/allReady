@@ -23,5 +23,10 @@ namespace AllReady.Models
         public int? ItineraryId { get; set; }
 
         public Itinerary Itinerary { get; set; }
+
+        /// <summary>
+        /// Indicates that this task signup represents the team leader
+        /// </summary>
+        public bool IsTeamLead { get; set; }
     }
 }
