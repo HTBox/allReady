@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace AllReady.Services.Mapping.Routing
 {
@@ -12,7 +13,7 @@ namespace AllReady.Services.Mapping.Routing
         /// </summary>
         public OptimizeRouteWaypoint(double latitude, double longitude, Guid requestId)
         {
-            Coordinates = string.Join(",", latitude.ToString(), longitude.ToString());
+            Coordinates = string.Join(",", latitude.ToString(CultureInfo.InvariantCulture), longitude.ToString(CultureInfo.InvariantCulture));
             RequestId = requestId;
         }
 

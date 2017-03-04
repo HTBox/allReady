@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace AllReady.Services.Mapping.GeoCoding.Models
 {
@@ -67,10 +68,10 @@ namespace AllReady.Services.Mapping.GeoCoding.Models
         public Coordinates(string latitude, string longitude)
         {
             double latitudeOut;
-            if (!double.TryParse(latitude, out latitudeOut)) return;
+            if (!double.TryParse(latitude, NumberStyles.Float, CultureInfo.InvariantCulture, out latitudeOut)) return;
 
             double longitudeOut;
-            if (!double.TryParse(longitude, out longitudeOut)) return;
+            if (!double.TryParse(longitude, NumberStyles.Float, CultureInfo.InvariantCulture, out longitudeOut)) return;
 
             Latitude = latitudeOut;
             Longitude = longitudeOut;
