@@ -91,11 +91,14 @@ namespace AllReady.Areas.Admin.Controllers
                     RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId }) :
                     RedirectToAction(nameof(Details), "Task", new { id = taskId });
             }
-            // Check for saved data
-            if (viewModel.Id == 0) 
+            if (viewModel.Id == 0)
+            {
                 viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = "Admin" } });
+            }
             else
+            {
                 viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
+            }
             return View(viewModel);
         }
 
