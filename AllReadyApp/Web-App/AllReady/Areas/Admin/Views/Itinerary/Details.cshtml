@@ -186,21 +186,24 @@
         </div>
     </div>
 }
-<form method="post" action="@Url.Action("Details", "Itinerary", new {area = "Admin"})#requests" class="form-horizontal">
-    @Html.AntiForgeryToken()
-    <div class="row">
-        <label class="col-md-1 control-label">Filter:</label>
-        <div class="col-md-2">
-            <input type="text" asp-for="RequestKeywords" class="form-control" />
+@if (Model.Requests.Any())
+{
+    <form method="post" action="@Url.Action("Details", "Itinerary", new {area = "Admin"})#requests" class="form-horizontal">
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <label class="col-md-1 control-label">Filter:</label>
+            <div class="col-md-2">
+                <input type="text" asp-for="RequestKeywords" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <select asp-for="RequestStatus" asp-items="@SelectListService.GetRequestTypes().AddNullOptionToFront("<All>")" class="form-control"></select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-default submit-form">Filter</button>
+            </div>
         </div>
-        <div class="col-md-2">
-            <select asp-for="RequestStatus" asp-items="@SelectListService.GetRequestTypes().AddNullOptionToFront("<All>")" class="form-control"></select>
-        </div>
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-default submit-form">Filter</button>
-        </div>
-    </div>
-</form>
+    </form>
+}
 <div class="row">
     <div class="col-md-12">
         @if (Model.Requests.Any())
