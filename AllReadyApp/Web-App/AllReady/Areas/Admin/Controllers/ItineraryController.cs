@@ -476,6 +476,27 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction("Details", new { id = itineraryId, teamLeadSuccess = isSuccess });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]")]
+        public async Task<IActionResult> RemoveTeamLead(int itineraryId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new RemoveTeamLeadCommand(itineraryId));
+
+            // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
+
+            //var isSuccess = result == SetTeamLeadResult.Success;
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)
         {
             var model = new SelectItineraryRequestsViewModel();
