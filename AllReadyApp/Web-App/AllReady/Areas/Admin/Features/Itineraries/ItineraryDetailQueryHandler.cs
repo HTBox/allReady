@@ -47,14 +47,18 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     StartAddress = i.StartLocation != null ? i.StartLocation.FullAddress : null,
                     EndAddress = GetEndAddress(i.StartLocation, i.EndLocation, i.UseStartAddressAsEndAddress),
                     UseStartAddressAsEndAddress = i.UseStartAddressAsEndAddress,
-                    TeamMembers = i.TeamMembers.Select(tm => new TeamListViewModel
-                    {
-                        VolunteerTaskSignupId = tm.Id,
-                        VolunteerEmail = tm.User.Email,
-                        VolunteerTaskName = tm.VolunteerTask.Name,
-                        FullName = !string.IsNullOrWhiteSpace(tm.User.Name) ? tm.User.Name: "* Name Missing *",
-                        IsTeamLead = tm.IsTeamLead
-                    }).ToList(),
+                    TeamMembers = i.TeamMembers
+                        .OrderBy(tm => tm.IsTeamLead != true)
+                        .ThenBy(tm => tm.User.LastName)
+                        .ThenBy(tm => tm.User.FirstName)
+                        .Select(tm => new TeamListViewModel
+                        {
+                            VolunteerTaskSignupId = tm.Id,
+                            VolunteerEmail = tm.User.Email,
+                            VolunteerTaskName = tm.VolunteerTask.Name,
+                            FullName = !string.IsNullOrWhiteSpace(tm.User.Name) ? tm.User.Name : "* Name Missing *",
+                            IsTeamLead = tm.IsTeamLead
+                        }).ToList(),
                     Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListViewModel
                     {
                         Id = r.Request.RequestId,
