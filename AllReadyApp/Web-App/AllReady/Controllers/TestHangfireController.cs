@@ -20,7 +20,9 @@ namespace AllReady.Controllers
             //backgroundJob.Enqueue(() => Debug.WriteLine("Background Job completed successfully!"));
             //Debug.WriteLine("Background job has been created.");
 
+#if Debug
             backgroundJob.Schedule(() => Debug.WriteLine("Scheduled Job completed successfully!"), TimeSpan.FromSeconds(5));
+#endif
             Debug.WriteLine("Scheduled job has been created.");
 
             return RedirectToAction("Index", "Home");
