@@ -2068,6 +2068,50 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             result.RouteValues["teamLeadSuccess"].ShouldBe(false);
         }
 
+        [Fact]
+        public async Task RemoveTeamLead_ReturnsHttpUnauthorized_WhenUserIsNotOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var itineraryController = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            itineraryController.MakeUserNotAnOrgAdmin();
+
+            Assert.IsType<UnauthorizedResult>(await itineraryController.RemoveTeamLead(It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task RemoveTeamLead_ReturnsViewResult()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveTeamLeadCommand>())).ReturnsAsync(true);
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.RemoveTeamLead(1) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task RemoveTeamLead_SendsRemoveTeamLeadCommand_Once_WhenUserIsOrgAdmin()
+        {
+            const int orgId = 1;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+
+            var sut = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.RemoveTeamLead(1);
+            mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamLeadCommand>(y => y.ItineraryId == 1)), Times.Once);
+        }
+
         private class FakeUserManager : UserManager<ApplicationUser>
         {
             public FakeUserManager()

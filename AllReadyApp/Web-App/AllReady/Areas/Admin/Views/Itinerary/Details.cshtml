@@ -116,6 +116,16 @@
                     </div>
                 </div>
             }
+            @if (Model.HasTeamLead)
+            {
+                <div class="row">
+                    <div class="col-md-12">
+                        <form asp-action="RemoveTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                            <button type="submit" class="btn btn-default submit-form">Remove Team Lead</button>
+                        </form>
+                    </div>
+                </div>
+            }
             <table class="table" style="display: none;" data-bind="visible: hasTeamMembers">
                 <thead>
                     <tr>
@@ -327,15 +337,15 @@
                 if (request.Status == RequestStatus.Completed)
                 {
                     @:reqData.color = 'green';
-                                                                                                                                                            }
+                                                                                                                                                                                    }
 
                 if (request.Status == RequestStatus.Canceled)
                 {
                     @:reqData.color = 'red';
-                                                                                                                                                            }
+                                                                                                                                                                                    }
 
                 @:requestData.push(reqData);
-                                                                                                                                                        }
+                                                                                                                                                                                }
             return requestData;
         }
 
