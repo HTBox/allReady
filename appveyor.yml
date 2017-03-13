@@ -18,7 +18,7 @@ install:
  - choco install firefox
  
 before_build:
- - cmd: dotnet restore AllReadyApp
+ - cmd: dotnet restore
  - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
  - cmd: npm install gulp bower -g
 
