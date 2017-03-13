@@ -174,6 +174,21 @@ namespace AllReady.Migrations
                     b.ToTable("CampaignGoal");
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignManager", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("CampaignId");
+
+                    b.HasKey("UserId", "CampaignId");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CampaignManager");
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.Property<int>("Id")
@@ -784,6 +799,19 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Campaign", "Campaign")
                         .WithMany("CampaignGoals")
                         .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AllReady.Models.CampaignManager", b =>
+                {
+                    b.HasOne("AllReady.Models.Campaign", "Campaign")
+                        .WithMany("CampaignManagers")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany("ManagedCampaigns")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

@@ -33,6 +33,7 @@ namespace AllReady.Models
         public DbSet<Request> Requests { get; set; }
         public DbSet<Itinerary> Itineraries { get; set; }
         public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
+        public DbSet<CampaignManager> CampaignManagers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -65,6 +66,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<Request>());
             Map(modelBuilder.Entity<Itinerary>());
             Map(modelBuilder.Entity<ItineraryRequest>());
+            Map(modelBuilder.Entity<CampaignManager>());
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
@@ -213,6 +215,19 @@ namespace AllReady.Models
         {
             builder.HasKey(x => new { x.ItineraryId, x.RequestId });
             builder.HasIndex(x => x.RequestId).IsUnique();
+        }
+
+        private void Map(EntityTypeBuilder<CampaignManager> builder)
+        {
+            builder.HasKey(x => new { x.UserId, x.CampaignId });
+
+            builder.HasOne(x => x.User)
+                .WithMany(u => u.ManagedCampaigns)
+                .HasForeignKey(x => x.UserId);
+
+            builder.HasOne(x => x.Campaign)
+                .WithMany(u => u.CampaignManagers)
+                .HasForeignKey(x => x.CampaignId);
         }
     }
 }

@@ -75,5 +75,7 @@ namespace AllReady.Models
 
         public bool Featured { get; set; }
         public bool Published { get; set; }
+
+        public List<CampaignManager> CampaignManagers { get; set; }
     }
 }

@@ -25,6 +25,8 @@ namespace AllReady.Models
 
         public string PendingNewEmail { get; set; }
 
+        public List<CampaignManager> ManagedCampaigns { get; set; }
+
         public IEnumerable<ValidationResult> ValidateProfileCompleteness()
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
