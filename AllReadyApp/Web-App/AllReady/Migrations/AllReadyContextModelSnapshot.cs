@@ -285,6 +285,21 @@ namespace AllReady.Migrations
                     b.ToTable("Event");
                 });
 
+            modelBuilder.Entity("AllReady.Models.EventManager", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("EventId");
+
+                    b.HasKey("UserId", "EventId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventManager");
+                });
+
             modelBuilder.Entity("AllReady.Models.EventSkill", b =>
                 {
                     b.Property<int>("EventId");
@@ -840,6 +855,19 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.ApplicationUser", "Organizer")
                         .WithMany()
                         .HasForeignKey("OrganizerId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventManager", b =>
+                {
+                    b.HasOne("AllReady.Models.Event", "Event")
+                        .WithMany("EventManagers")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany("ManagedEvents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AllReady.Models.EventSkill", b =>
