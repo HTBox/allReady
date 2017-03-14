@@ -4,6 +4,11 @@ namespace AllReady.Areas.Admin.ViewModels.Resource
 {
     public class ResourceDetailViewModel
     {
+
+        public ResourceDetailViewModel()
+        {
+            
+        }
         public ResourceDetailViewModel(AllReady.Models.Resource resource)
         {
             if (resource == null) return;
