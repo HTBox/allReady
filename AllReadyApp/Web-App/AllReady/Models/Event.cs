@@ -61,6 +61,11 @@ namespace AllReady.Models
 
         public ICollection<Request> Requests { get; set; }
         public ICollection<Itinerary> Itineraries { get; set; }
+
+        /// <summary>
+        /// Navigation to users who can manage this event
+        /// </summary>
+        public List<EventManager> EventManagers { get; set; }
     }
 
     public static class EventExtensions
