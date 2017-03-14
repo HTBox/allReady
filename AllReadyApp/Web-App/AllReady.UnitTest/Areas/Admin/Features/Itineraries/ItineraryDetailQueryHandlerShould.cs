@@ -203,8 +203,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             // Team lead is first
             Assert.True(result.TeamMembers[0].IsTeamLead);
             // then ordered by LastName and FirstName
-            Assert.Equal("Steve Gordon",result.TeamMembers[1].DisplayName);
-            Assert.Equal("Carol Jones",result.TeamMembers[2].DisplayName);
+            Assert.Equal("Gordon, Steve", result.TeamMembers[1].DisplayName);
+            Assert.Equal("Jones, Carol", result.TeamMembers[2].DisplayName);
         }
 
         [Fact]
