@@ -135,7 +135,7 @@
                 </tr>
                 @foreach(var tm in Model.TeamMembers)
                 {
-                    string style = tm.DisplayName.Contains("Team Lead") ? "font-weight:bold" : null;
+                    string style = tm.IsTeamLead ? "font-weight:bold" : null;
                     <tr>
                         <td style=@style>@tm.DisplayName</td>
                         <td>@tm.VolunteerEmail</td>
