@@ -127,36 +127,24 @@
                 </div>
             }
             <table class="table" style="display: none;" data-bind="visible: hasTeamMembers">
-                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Assigned Task</th>
+                    <th></th>
+                </tr>
+                @foreach(var tm in Model.TeamMembers)
+                {
+                    string style = tm.IsTeamLead ? "font-weight:bold" : null;
                     <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Email
-                        </th>
-                        <th>
-                            Assigned Task
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: teamMembers">
-                    <tr>
+                        <td style=@style>@tm.DisplayName</td>
+                        <td>@tm.VolunteerEmail</td>
+                        <td>@tm.VolunteerTaskName</td>
                         <td>
-                            <p data-bind="text: DisplayName"></p>
-                        </td>
-                        <td>
-                            <p data-bind="text: VolunteerEmail"></p>
-                        </td>
-                        <td>
-                            <p data-bind="text: VolunteerTaskName"></p>
-                        </td>
-                        <td>
-                            <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" data-bind="attr: { href: '/Admin/Itinerary/' + $parent.itineraryId + '/ConfirmRemoveTeamMember/' + VolunteerTaskSignupId }"><span class="fa fa-remove"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" href=@("/Admin/Itinerary/" + @Model.Id + "/ConfirmRemoveTeamMember/" + @tm.VolunteerTaskSignupId)><span class="fa fa-remove"></span></a>
                         </td>
                     </tr>
-                </tbody>
+                }
             </table>
             <p style="display: none;" data-bind="visible: !hasTeamMembers()">There are currently no assigned team members for this itinerary.</p>
         </div>
