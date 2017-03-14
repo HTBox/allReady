@@ -24,6 +24,8 @@ namespace AllReady.Configuration
             // Add cookie-based authentication to the request pipeline.
             app.UseIdentity();
 
+            app.UseAssociateUser();
+
             // Add token-based protection to the request inject pipeline
             app.UseTokenProtection(new TokenProtectedResourceOptions
             {

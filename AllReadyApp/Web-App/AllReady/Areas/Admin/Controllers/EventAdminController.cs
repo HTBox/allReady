@@ -19,7 +19,7 @@ using AllReady.Areas.Admin.ViewModels.Request;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize]
     public class EventController : Controller
     {
         public Func<DateTime> DateTimeTodayDate = () => DateTime.Today.Date;
@@ -27,15 +27,18 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
         private readonly IValidateEventEditViewModels _eventEditViewModelValidator;
+        private readonly IAuthorizableEventBuilder _authorizableEventBuilder;
+        private readonly IUserAuthorizationService _userAuthorizationService;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator, IAuthorizableEventBuilder authorizableEventBuilder, IUserAuthorizationService userAuthorizationService)
         {
             _imageService = imageService;
             _mediator = mediator;
             _eventEditViewModelValidator = eventEditViewModelValidator;
+            _authorizableEventBuilder = authorizableEventBuilder;
+            _userAuthorizationService = userAuthorizationService;
         }
 
-        // GET: Event/Details/5
         [HttpGet]
         [Route("Admin/Event/Details/{id}")]
         public async Task<IActionResult> Details(int id)
@@ -46,7 +49,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            var authorizableEvent = await _authorizableEventBuilder.Build(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId);
+
+            if (!await _userAuthorizationService.CanManageEvent(authorizableEvent))
             {
                 return Unauthorized();
             }
