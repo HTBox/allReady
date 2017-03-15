@@ -27,7 +27,7 @@ namespace AllReady.Security
         {
             if (HasAssociatedUser)
             {
-                throw new InvalidOperationException("AssociateUser cannot be called when a user has been previously associated");    
+                throw new InvalidOperationException("AssociateUser cannot be called when a user has been previously associated");
             }
 
             if (claimsPrincipal.Identity.IsAuthenticated)
@@ -43,10 +43,10 @@ namespace AllReady.Security
         public bool HasAssociatedUser => _user != null;
 
         public string AssociatedUserId => _user.Id;
-        
+
         private List<int> _managedEventIds;
-        
-        private async Task<List<int>> GetManagedEventIds()
+
+        public async Task<List<int>> GetManagedEventIds()
         {
             if (_managedEventIds != null)
             {
@@ -63,7 +63,7 @@ namespace AllReady.Security
 
         private List<int> _managedCampaignIds;
 
-        private async Task<List<int>> GetManagedCampaignIds()
+        public async Task<List<int>> GetManagedCampaignIds()
         {
             if (_managedCampaignIds != null)
             {
@@ -78,33 +78,11 @@ namespace AllReady.Security
             return _managedCampaignIds;
         }
 
-        public async Task<bool> CanManageEvent(IAuthorizableEvent authorizableEvent)
+        public bool IsSiteAdmin => _user.IsUserType(UserType.SiteAdmin);
+
+        public bool IsOrgAdmin(int OrgId)
         {
-            if (!HasAssociatedUser)
-            {
-                return false;
-            }
-
-            if (_user.IsUserType(UserType.SiteAdmin) || _claimsPrincipal.IsOrganizationAdmin(authorizableEvent.OrganizationId))
-            {
-                return true;
-            }
-
-            var managedEventIds = await GetManagedEventIds();
-
-            if (managedEventIds.Contains(authorizableEvent.EventId))
-            {
-                return true;
-            }
-
-            var managedCampaignIds = await GetManagedCampaignIds();
-
-            if (managedCampaignIds.Contains(authorizableEvent.CampaignId))
-            {
-                return true;
-            }
-            
-            return false;
+            return _claimsPrincipal.IsOrganizationAdmin(OrgId);
         }
     }
 }

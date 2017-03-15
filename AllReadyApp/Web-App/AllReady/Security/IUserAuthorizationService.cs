@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AllReady.Security
@@ -11,6 +12,13 @@ namespace AllReady.Security
 
         string AssociatedUserId { get; }
 
-        Task<bool> CanManageEvent(IAuthorizableEvent authorizableEvent);
+        
+        bool IsOrgAdmin(int OrgId);
+
+        bool IsSiteAdmin { get; }
+
+        Task<List<int>> GetManagedCampaignIds();
+
+        Task<List<int>> GetManagedEventIds();
     }
 }

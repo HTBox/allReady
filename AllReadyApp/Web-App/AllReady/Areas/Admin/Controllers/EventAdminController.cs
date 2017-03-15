@@ -28,15 +28,13 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IMediator _mediator;
         private readonly IValidateEventEditViewModels _eventEditViewModelValidator;
         private readonly IAuthorizableEventBuilder _authorizableEventBuilder;
-        private readonly IUserAuthorizationService _userAuthorizationService;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator, IAuthorizableEventBuilder authorizableEventBuilder, IUserAuthorizationService userAuthorizationService)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator, IAuthorizableEventBuilder authorizableEventBuilder)
         {
             _imageService = imageService;
             _mediator = mediator;
             _eventEditViewModelValidator = eventEditViewModelValidator;
             _authorizableEventBuilder = authorizableEventBuilder;
-            _userAuthorizationService = userAuthorizationService;
         }
 
         [HttpGet]
@@ -51,7 +49,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var authorizableEvent = await _authorizableEventBuilder.Build(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId);
 
-            if (!await _userAuthorizationService.CanManageEvent(authorizableEvent))
+            if (! await authorizableEvent.UserIsAuthorized())
             {
                 return Unauthorized();
             }

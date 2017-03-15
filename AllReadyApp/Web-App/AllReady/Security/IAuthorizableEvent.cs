@@ -1,6 +1,6 @@
 ﻿namespace AllReady.Security
 {
-    public interface IAuthorizableEvent
+    public interface IAuthorizableEvent : IAuthorizable
     {
         int CampaignId { get; }
         int EventId { get; }
