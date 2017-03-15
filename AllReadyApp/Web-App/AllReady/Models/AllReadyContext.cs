@@ -266,6 +266,11 @@ namespace AllReady.Models
                 .WithMany(u => u.ManagementInvites)
                 .HasForeignKey(x => x.EventId)
                 .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
         }
 
         private void Map(EntityTypeBuilder<CampaignManagerInvite> builder)
@@ -285,6 +290,11 @@ namespace AllReady.Models
                 .WithMany(u => u.ManagementInvites)
                 .HasForeignKey(x => x.CampaignId)
                 .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
         }
     }
 }

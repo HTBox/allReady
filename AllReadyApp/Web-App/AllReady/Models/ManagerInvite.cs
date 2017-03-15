@@ -56,25 +56,21 @@ namespace AllReady.Models
         /// <summary>
         /// Indicates of the invite is accepted
         /// </summary>
-        [NotMapped]
         public bool IsAccepted => AcceptedDateTimeUtc.HasValue;
         
         /// <summary>
         /// Indicates of the invite is rejected
         /// </summary>
-        [NotMapped]
         public bool IsRejected => RejectedDateTimeUtc.HasValue;
 
         /// <summary>
         /// Indicates of the invite is revoked
         /// </summary>
-        [NotMapped]
         public bool IsRevoked => RevokedDateTimeUtc.HasValue;
 
         /// <summary>
         /// Indicates of the invite is pending
         /// </summary>
-        [NotMapped]
         public bool IsPending => !IsAccepted && !IsRejected && !IsRevoked;
     }
 
