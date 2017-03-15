@@ -80,5 +80,10 @@ namespace AllReady.Models
         /// Navigation to users who can manage this campaign
         /// </summary>
         public List<CampaignManager> CampaignManagers { get; set; }
+
+        /// <summary>
+        /// Navigation property to an invited campaign managers
+        /// </summary>
+        public List<CampaignManagerInvite> ManagementInvites { get; set; }
     }
 }

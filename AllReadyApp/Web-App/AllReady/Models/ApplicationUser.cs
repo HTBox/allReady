@@ -35,6 +35,11 @@ namespace AllReady.Models
         /// </summary>
         public List<EventManager> ManagedEvents { get; set; }
 
+        public List<EventManagerInvite> SentEventManagerInvites { get; set; }
+
+        public List<CampaignManagerInvite> SentCampaignManagerInvites { get; set; }
+
+
         public IEnumerable<ValidationResult> ValidateProfileCompleteness()
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();
