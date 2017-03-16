@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Resource
 {
-    public class EditResourceCommand : IAsyncRequest<int>
+    public class CreateOrEditResourceCommand : IAsyncRequest<int>
     {
         public ResourceEditViewModel Resource { get; set; }
     }

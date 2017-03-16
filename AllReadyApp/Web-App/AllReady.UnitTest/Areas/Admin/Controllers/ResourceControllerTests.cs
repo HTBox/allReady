@@ -157,7 +157,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.Create(resourceEditViewModel) as RedirectToActionResult;
 
             result.ShouldNotBeNull();
-            mockMediator.Verify(m => m.SendAsync(It.Is<EditResourceCommand>(e => e.Resource == resourceEditViewModel)), Times.Once);
+            mockMediator.Verify(m => m.SendAsync(It.Is<CreateOrEditResourceCommand>(e => e.Resource == resourceEditViewModel)), Times.Once);
         }
 
         [Fact]
@@ -570,7 +570,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 2, OrganizationId = 5, Name = "OrgName" };
             mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
-            mockMediator.Setup(m => m.SendAsync(It.IsAny<EditResourceCommand>())).ReturnsAsync(It.IsAny<int>());
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CreateOrEditResourceCommand>())).ReturnsAsync(It.IsAny<int>());
             var sut = new ResourceController(mockMediator.Object);
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
             var resourceEditViewModel = new ResourceEditViewModel();
@@ -578,7 +578,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.Edit(resourceEditViewModel) as RedirectToActionResult;
 
             result.ShouldNotBeNull();
-            mockMediator.Verify(m => m.SendAsync(It.Is<EditResourceCommand>(e => e.Resource == resourceEditViewModel)), Times.Once);
+            mockMediator.Verify(m => m.SendAsync(It.Is<CreateOrEditResourceCommand>(e => e.Resource == resourceEditViewModel)), Times.Once);
         }
 
         [Fact]
@@ -587,7 +587,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 2, OrganizationId = 5, Name = "OrgName" };
             mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
-            mockMediator.Setup(m => m.SendAsync(It.IsAny<EditResourceCommand>())).ReturnsAsync(2);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CreateOrEditResourceCommand>())).ReturnsAsync(2);
             var sut = new ResourceController(mockMediator.Object);
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
             var resourceEditViewModel = new ResourceEditViewModel { Id = 1, CampaignId = 2 };
@@ -606,7 +606,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 2, OrganizationId = 5, Name = "OrgName" };
             mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
-            mockMediator.Setup(m => m.SendAsync(It.IsAny<EditResourceCommand>())).ReturnsAsync(resourceId);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CreateOrEditResourceCommand>())).ReturnsAsync(resourceId);
             var sut = new ResourceController(mockMediator.Object);
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
             var resourceEditViewModel = new ResourceEditViewModel { Id = 1, CampaignId = 2 };

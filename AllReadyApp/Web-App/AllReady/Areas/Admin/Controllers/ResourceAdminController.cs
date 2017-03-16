@@ -68,7 +68,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (!ModelState.IsValid) return View("Edit", viewModel);
 
-            var id = await _mediator.SendAsync(new EditResourceCommand { Resource = viewModel });
+            var id = await _mediator.SendAsync(new CreateOrEditResourceCommand { Resource = viewModel });
 
             return RedirectToAction(nameof(CampaignController.Details), nameof(Campaign), new { area = "Admin", id = viewModel.CampaignId });
         }
@@ -156,7 +156,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var resourceId = await _mediator.SendAsync(new EditResourceCommand { Resource = viewModel });
+            var resourceId = await _mediator.SendAsync(new CreateOrEditResourceCommand { Resource = viewModel });
 
             return RedirectToAction(nameof(Details), nameof(Resource), new { resourceId });
         }
