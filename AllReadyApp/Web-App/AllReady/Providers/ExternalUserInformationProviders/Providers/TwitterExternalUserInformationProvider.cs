@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
-    {      
+    {
         private readonly ILogger _logger;
 
         public TwitterExternalUserInformationProvider(ILogger<TwitterExternalUserInformationProvider> logger)
@@ -15,7 +15,7 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
             _logger = logger;
         }
 
-        public async Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
+        public Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation();
 
@@ -25,11 +25,11 @@ namespace AllReady.Providers.ExternalUserInformationProviders.Providers
             if (string.IsNullOrEmpty(email))
             {
                 _logger.LogError($"Failed to retrieve user email address for user {screenName} from Twitter, this could be due to either the setup of the app (ensure the app requests email address permissions) or this user has a blank/unverified email in Twitter");
-                return externalUserInformation;
+                return Task.FromResult(externalUserInformation);
             }
 
             externalUserInformation.Email = email;
-            return externalUserInformation;
+            return Task.FromResult(externalUserInformation);
         }
     }
 }

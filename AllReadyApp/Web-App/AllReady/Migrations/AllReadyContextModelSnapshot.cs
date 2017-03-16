@@ -174,6 +174,21 @@ namespace AllReady.Migrations
                     b.ToTable("CampaignGoal");
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignManager", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("CampaignId");
+
+                    b.HasKey("UserId", "CampaignId");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CampaignManager");
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.Property<int>("Id")
@@ -268,6 +283,21 @@ namespace AllReady.Migrations
                     b.HasIndex("OrganizerId");
 
                     b.ToTable("Event");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventManager", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("EventId");
+
+                    b.HasKey("UserId", "EventId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EventManager");
                 });
 
             modelBuilder.Entity("AllReady.Models.EventSkill", b =>
@@ -592,6 +622,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("AdditionalInfo");
 
+                    b.Property<bool>("IsTeamLead");
+
                     b.Property<int?>("ItineraryId");
 
                     b.Property<int>("Status");
@@ -785,6 +817,19 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignManager", b =>
+                {
+                    b.HasOne("AllReady.Models.Campaign", "Campaign")
+                        .WithMany("CampaignManagers")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany("ManagedCampaigns")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.HasOne("AllReady.Models.Campaign", "Campaign")
@@ -810,6 +855,19 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.ApplicationUser", "Organizer")
                         .WithMany()
                         .HasForeignKey("OrganizerId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventManager", b =>
+                {
+                    b.HasOne("AllReady.Models.Event", "Event")
+                        .WithMany("EventManagers")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany("ManagedEvents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AllReady.Models.EventSkill", b =>
