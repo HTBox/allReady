@@ -431,5 +431,192 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new ResourceController(null);
         }
+
+        [Fact]
+        public async Task EditGetReturnsUnauthorized_WhenCampaignIsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<ResourceDetailQuery>())).ReturnsAsync(new ResourceDetailViewModel());
+
+            var sut = new ResourceController(mockMediator.Object);
+
+            var result = await sut.Edit(It.IsAny<int>()) as UnauthorizedResult;
+
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<UnauthorizedResult>();
+            result.StatusCode.ShouldBe((int)HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task EditGetReturnsUnauthorized_WhenUserIsNotOrganizationAdmin()
+        {
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 4, OrganizationId = 1, Name = "TestCampaign" };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<ResourceDetailQuery>())).ReturnsAsync(new ResourceDetailViewModel());
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.Edit(It.IsAny<int>()) as UnauthorizedResult;
+
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<UnauthorizedResult>();
+            result.StatusCode.ShouldBe((int)HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task EditGetReturnsTheCorrectViewModel()
+        {
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 4, OrganizationId = 1, Name = "TestCampaign" };
+            var resourceDetailViewModel = new ResourceDetailViewModel { Id = 5 };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<ResourceDetailQuery>())).ReturnsAsync(resourceDetailViewModel);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
+
+            result.ShouldNotBeNull();
+            result.Model.ShouldBeOfType<ResourceEditViewModel>();
+            result.Model.ShouldBeOfType<ResourceEditViewModel>().CampaignId.ShouldBe(campaignSummaryViewModel.Id);
+            result.Model.ShouldBeOfType<ResourceEditViewModel>().Id.ShouldBe(resourceDetailViewModel.Id);
+        }
+
+        [Fact]
+        public async Task EditGetReturnsTheCorrectView()
+        {
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 4, OrganizationId = 1, Name = "TestCampaign" };
+            var resourceDetailViewModel = new ResourceDetailViewModel { Id = 5 };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<ResourceDetailQuery>())).ReturnsAsync(resourceDetailViewModel);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+
+            var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
+
+            result.ShouldNotBeNull();
+            result.ViewName.ShouldBe(nameof(ResourceController.Edit));
+        }
+
+
+        [Fact]
+        public void EditGetHasRouteAttributeWithCorrectRoute()
+        {
+            var sut = ResourceControllerWithNoInjectedDependencies();
+            var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "Admin/Resource/Edit/{id}");
+        }
+
+        [Fact]
+        public async Task EditPostReturns_WhenModelStateIsNotValid()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var sut = new ResourceController(mockMediator.Object);
+            sut.ModelState.AddModelError("Name", "Name is required.");
+
+            var result = await sut.Edit(new ResourceEditViewModel()) as ViewResult;
+
+            result.ShouldNotBeNull();
+            result.Model.ShouldBeOfType<ResourceEditViewModel>();
+            result.ViewName.ShouldBeNull();
+
+        }
+
+        [Fact]
+        public async Task EditPostReturnsUnauthorized_WhenCampaignIsNull()
+        {
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new ResourceController(mockMediator.Object);
+
+            var result = await sut.Edit(new ResourceEditViewModel()) as UnauthorizedResult;
+
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<UnauthorizedResult>();
+            result.StatusCode.ShouldBe((int)HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task EditPostReturnsUnauthorized_WhenUserIsNotOrganizationAdmin()
+        {
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 4, OrganizationId = 1, Name = "TestCampaign" };
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.Edit(new ResourceEditViewModel()) as UnauthorizedResult;
+
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<UnauthorizedResult>();
+            result.StatusCode.ShouldBe((int)HttpStatusCode.Unauthorized);
+        }
+
+        [Fact]
+        public async Task EditPostSendsEditResourceCommandWithCorrectResource()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 2, OrganizationId = 5, Name = "OrgName" };
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<EditResourceCommand>())).ReturnsAsync(It.IsAny<int>());
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+            var resourceEditViewModel = new ResourceEditViewModel();
+
+            var result = await sut.Edit(resourceEditViewModel) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+            mockMediator.Verify(m => m.SendAsync(It.Is<EditResourceCommand>(e => e.Resource == resourceEditViewModel)), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditPostSendsCampaignSummaryQueryWithCorrectCampaignId()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 2, OrganizationId = 5, Name = "OrgName" };
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<EditResourceCommand>())).ReturnsAsync(2);
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+            var resourceEditViewModel = new ResourceEditViewModel { Id = 1, CampaignId = 2 };
+
+            var result = await sut.Edit(resourceEditViewModel) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+            mockMediator.Verify(m => m.SendAsync(It.Is<CampaignSummaryQuery>(e => e.CampaignId == resourceEditViewModel.CampaignId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task EditPostRedirectToAction_WithCorrect_Contoller_ActionAndResourceId()
+        {
+            const int resourceId = 2;
+
+            var mockMediator = new Mock<IMediator>();
+            var campaignSummaryViewModel = new CampaignSummaryViewModel { Id = 2, OrganizationId = 5, Name = "OrgName" };
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(campaignSummaryViewModel);
+            mockMediator.Setup(m => m.SendAsync(It.IsAny<EditResourceCommand>())).ReturnsAsync(resourceId);
+            var sut = new ResourceController(mockMediator.Object);
+            sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
+            var resourceEditViewModel = new ResourceEditViewModel { Id = 1, CampaignId = 2 };
+
+            var result = await sut.Edit(resourceEditViewModel) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+            result.ActionName.ShouldBe(nameof(ResourceController.Details));
+            result.ControllerName.ShouldBe(nameof(Resource));
+            result.RouteValues["resourceId"].ShouldBe(resourceId);
+        }
     }
 }
