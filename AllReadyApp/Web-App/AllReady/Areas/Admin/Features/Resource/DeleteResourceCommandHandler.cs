@@ -21,8 +21,8 @@ namespace AllReady.Areas.Admin.Features.Resource
 
         protected override async Task HandleCore(DeleteResourceCommand message)
         {
-            var resourcei = new AllReady.Models.Resource {Id = message.ResourceId};
-            _context.Entry(resourcei).State = EntityState.Deleted;
+            var resource = _context.Resources.Single(r => r.Id == message.ResourceId);
+            _context.Resources.Remove(resource);
             await _context.SaveChangesAsync();
         }
     }
