@@ -35,6 +35,8 @@ namespace AllReady.Models
         public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
         public DbSet<CampaignManager> CampaignManagers { get; set; }
         public DbSet<EventManager> EventManagers { get; set; }
+        public DbSet<EventManagerInvite> EventManagerInvites { get; set; }
+        public DbSet<CampaignManagerInvite> CampaignManagerInvites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +71,8 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ItineraryRequest>());
             Map(modelBuilder.Entity<CampaignManager>());
             Map(modelBuilder.Entity<EventManager>());
+            Map(modelBuilder.Entity<EventManagerInvite>());
+            Map(modelBuilder.Entity<CampaignManagerInvite>());
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
@@ -243,6 +247,54 @@ namespace AllReady.Models
             builder.HasOne(x => x.Event)
                 .WithMany(u => u.EventManagers)
                 .HasForeignKey(x => x.EventId);
+        }
+
+        private void Map(EntityTypeBuilder<EventManagerInvite> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(a => a.InviteeEmailAddress).IsRequired();
+
+            builder.Property(a => a.SenderUserId).IsRequired();
+
+            builder.HasOne(x => x.SenderUser)
+                .WithMany(u => u.SentEventManagerInvites)
+                .HasForeignKey(x => x.SenderUserId)
+                .IsRequired();
+
+            builder.HasOne(x => x.Event)
+                .WithMany(u => u.ManagementInvites)
+                .HasForeignKey(x => x.EventId)
+                .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
+        }
+
+        private void Map(EntityTypeBuilder<CampaignManagerInvite> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(a => a.InviteeEmailAddress).IsRequired();
+
+            builder.Property(a => a.SenderUserId).IsRequired();
+
+            builder.HasOne(x => x.SenderUser)
+                .WithMany(u => u.SentCampaignManagerInvites)
+                .HasForeignKey(x => x.SenderUserId)
+                .IsRequired();
+
+            builder.HasOne(x => x.Campaign)
+                .WithMany(u => u.ManagementInvites)
+                .HasForeignKey(x => x.CampaignId)
+                .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
         }
     }
 }
