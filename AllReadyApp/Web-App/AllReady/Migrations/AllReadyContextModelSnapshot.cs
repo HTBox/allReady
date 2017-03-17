@@ -189,6 +189,38 @@ namespace AllReady.Migrations
                     b.ToTable("CampaignManager");
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignManagerInvite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("AcceptedDateTimeUtc");
+
+                    b.Property<int>("CampaignId");
+
+                    b.Property<string>("CustomMessage");
+
+                    b.Property<string>("InviteeEmailAddress")
+                        .IsRequired();
+
+                    b.Property<DateTime?>("RejectedDateTimeUtc");
+
+                    b.Property<DateTime?>("RevokedDateTimeUtc");
+
+                    b.Property<string>("SenderUserId")
+                        .IsRequired();
+
+                    b.Property<DateTime>("SentDateTimeUtc");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.ToTable("CampaignManagerInvite");
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.Property<int>("Id")
@@ -298,6 +330,38 @@ namespace AllReady.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("EventManager");
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventManagerInvite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime?>("AcceptedDateTimeUtc");
+
+                    b.Property<string>("CustomMessage");
+
+                    b.Property<int>("EventId");
+
+                    b.Property<string>("InviteeEmailAddress")
+                        .IsRequired();
+
+                    b.Property<DateTime?>("RejectedDateTimeUtc");
+
+                    b.Property<DateTime?>("RevokedDateTimeUtc");
+
+                    b.Property<string>("SenderUserId")
+                        .IsRequired();
+
+                    b.Property<DateTime>("SentDateTimeUtc");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.ToTable("EventManagerInvite");
                 });
 
             modelBuilder.Entity("AllReady.Models.EventSkill", b =>
@@ -830,6 +894,19 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("AllReady.Models.CampaignManagerInvite", b =>
+                {
+                    b.HasOne("AllReady.Models.Campaign", "Campaign")
+                        .WithMany("ManagementInvites")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "SenderUser")
+                        .WithMany("SentCampaignManagerInvites")
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("AllReady.Models.CampaignSponsors", b =>
                 {
                     b.HasOne("AllReady.Models.Campaign", "Campaign")
@@ -867,6 +944,19 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.ApplicationUser", "User")
                         .WithMany("ManagedEvents")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AllReady.Models.EventManagerInvite", b =>
+                {
+                    b.HasOne("AllReady.Models.Event", "Event")
+                        .WithMany("ManagementInvites")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "SenderUser")
+                        .WithMany("SentEventManagerInvites")
+                        .HasForeignKey("SenderUserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
