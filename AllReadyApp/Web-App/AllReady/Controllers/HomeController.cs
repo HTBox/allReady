@@ -53,7 +53,7 @@ namespace AllReady.Controllers
         {
             return View("~/Views/Shared/AccessDenied.cshtml");
         }
-
+        [Route("Home/PrivacyPolicy")]
         public IActionResult PrivacyPolicy()
         {
             return View(nameof(PrivacyPolicy));
