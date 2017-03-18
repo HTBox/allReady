@@ -8,7 +8,7 @@ namespace AllReady.Security
     public interface IAuthorizable
     {
         /// <summary>
-        /// Indicates whether the current user has access to the <see cref="IAuthorizable"/> domain object
+        /// Indicates whether the current <see cref="ClaimsPrinciple"/> has access to the <see cref="IAuthorizable"/> domain object
         /// </summary>
         /// <returns></returns>
         Task<bool> IsUserAuthorized();
