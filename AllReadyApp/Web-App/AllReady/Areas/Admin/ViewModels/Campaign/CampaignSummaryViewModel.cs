@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
-using AllReady.Models;
 using AllReady.ModelBinding;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
@@ -52,8 +50,6 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:d}")]
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset EndDate { get; set; }
-
-        public List<CampaignGoal> CampaignGoals { get; set; } = new List<CampaignGoal>();
 
         [UIHint("Location")]
         public LocationEditViewModel Location { get; set; }

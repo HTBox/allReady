@@ -244,27 +244,6 @@
                         <span asp-validation-for="PrimaryContactEmail" class="text-danger"></span>
                     </div>
                 </div>
-
-                @if (isEdit)
-                {
-                    <h3>Campaign Goals</h3>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="alert alert-warning">
-                                <p>
-                                    <strong>Define your campaign's goals in a way that will inspire people to help you reach those goals.</strong>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    foreach (var campaignGoal in Model.CampaignGoals)
-                    {
-                        <div class="col-md-4">
-                            @Html.Partial("_CampaignGoal", campaignGoal)
-                        </div>
-                    }
-                }
             </div>
             <div class="row">
                 <div class="col-md-12">
