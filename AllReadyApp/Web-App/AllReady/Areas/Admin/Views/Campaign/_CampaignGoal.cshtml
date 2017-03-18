@@ -12,22 +12,15 @@
     <div class="panel-body">
         @if (Model.GoalType == GoalType.Numeric)
             {
-            <div class="progress">
-                <div class="progress-bar" role="progressbar"
-                     aria-valuenow="@Model.PercentComplete"
-                     aria-valuemin="@Model.CurrentGoalLevel"
-                     aria-valuemax="@Model.NumericGoal"
-                     style="width: @Model.PercentComplete%;">
-                    @if (Model.PercentComplete > 30)
-                    {
-                        <text>@Model.CurrentGoalLevel / @Model.NumericGoal</text>
-                    }
-                    else
-                    {
-                        <text>@Model.PercentComplete</text>
-                    }
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                         aria-valuenow="@Model.PercentComplete"
+                         aria-valuemin="@Model.CurrentGoalLevel"
+                         aria-valuemax="@Model.NumericGoal"
+                         style="width: @Model.PercentComplete%;">
+                    </div>
                 </div>
-            </div>
-        }
+                <text>@Model.CurrentGoalLevel / @Model.NumericGoal</text>
+            }
     </div>
 </div>
