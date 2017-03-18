@@ -149,36 +149,5 @@
             <td><label asp-for="PrimaryContactEmail" class="col-md-4 control-label"></label></td>
             <td>@Model.PrimaryContactEmail</td>
         </tr>
-        @if (isEdit)
-        {
-            <tr>
-                <td><label class="col-md-4 control-label">Display Goal</label></td>
-                <td>@(Model.CampaignGoal.Display == true ? "Yes" : "No")</td>
-            </tr>
-
-            <tr>
-                <td><label class="col-md-4 control-label">Campaign Goal</label></td>
-                <td>@Model.CampaignGoal.TextualGoal</td>
-            </tr>
-
-            <tr>
-                <td><label class="col-md-4 control-label">Goal Type</label></td>
-                <td>@Model.CampaignGoal.GoalType</td>
-            </tr>
-                    @if (Model.CampaignGoal.GoalType == GoalType.Numeric)
-                    {
-                        <tr>
-                            <td><label class="col-md-4 control-label">Current Goal Level</label></td>
-                            <td>@Model.CampaignGoal.CurrentGoalLevel</td>
-                        </tr>
-
-                        <tr>
-                            <td><label class="col-md-4 control-label">Numeric Goal Goal</label></td>
-                            <td>@Model.CampaignGoal.NumericGoal</td>
-                        </tr>
-                    }
-        }
-
     </tbody>
-
 </table>
