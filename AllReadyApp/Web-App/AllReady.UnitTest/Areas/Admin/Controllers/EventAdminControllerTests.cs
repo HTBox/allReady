@@ -28,7 +28,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class EventAdminControllerTests
     {
-        //delete this line when all unit tests using it have been completed
         private static readonly Task TaskCompletedTask = Task.CompletedTask;
 
         [Fact]
@@ -47,7 +46,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
+
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
@@ -58,7 +57,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
+
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
