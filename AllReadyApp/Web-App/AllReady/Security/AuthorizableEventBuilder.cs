@@ -17,6 +17,16 @@ namespace AllReady.Security
         Task<bool> UserIsAuthorized();
     }
 
+    public enum EventAccessType
+    {
+        Unknown = 0,
+        Unauthorized = 1,
+        SiteAdmin = 2,
+        OrganizationAdmin = 3,
+        CampaignAdmin = 4,
+        EventAdmin = 5
+    }
+
     public class AuthorizableEventBuilder : IAuthorizableEventBuilder
     {
         private readonly AllReadyContext _context;
@@ -102,7 +112,12 @@ namespace AllReady.Security
             public int CampaignId => 0;
             public int EventId => 0;
             public int OrganizationId => 0;
-            
+
+            public Task<EventAccessType> UserAccessType()
+            {
+                return Task.FromResult(EventAccessType.Unauthorized);
+            }
+
             public Task<bool> UserIsAuthorized()
             {
                 return Task.FromResult(false);
@@ -126,34 +141,49 @@ namespace AllReady.Security
             public int CampaignId { get; }
 
             public int OrganizationId { get; }
-            
-            public async Task<bool> UserIsAuthorized()
+
+            public async Task<EventAccessType> UserAccessType()
             {
                 if (!_userAuthorizationService.HasAssociatedUser)
                 {
-                    return false;
+                    return EventAccessType.Unauthorized;
                 }
 
-                if (_userAuthorizationService .IsSiteAdmin || _userAuthorizationService.IsOrgAdmin(OrganizationId))
+                if (_userAuthorizationService.IsSiteAdmin)
                 {
-                    return true;
+                    return EventAccessType.SiteAdmin;
+                }
+
+                if (_userAuthorizationService.IsOrgAdmin(OrganizationId))
+                {
+                    return EventAccessType.OrganizationAdmin;
                 }
 
                 var managedEventIds = await _userAuthorizationService.GetManagedEventIds();
 
                 if (managedEventIds.Contains(EventId))
                 {
-                    return true;
+                    return EventAccessType.EventAdmin;
                 }
 
                 var managedCampaignIds = await _userAuthorizationService.GetManagedCampaignIds();
 
                 if (managedCampaignIds.Contains(CampaignId))
                 {
-                    return true;
+                    return EventAccessType.CampaignAdmin;
                 }
 
-                return false;
+                return EventAccessType.Unknown;
+            }
+
+            public async Task<bool> UserIsAuthorized()
+            {
+                var userAccessType =  await UserAccessType();
+
+                return userAccessType == EventAccessType.SiteAdmin 
+                    || userAccessType == EventAccessType.OrganizationAdmin 
+                    || userAccessType == EventAccessType.CampaignAdmin 
+                    || userAccessType == EventAccessType.EventAdmin;
             }
         }
     }
