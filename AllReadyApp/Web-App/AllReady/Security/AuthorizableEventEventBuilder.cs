@@ -7,27 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace AllReady.Security
 {
-    public interface IAuthorizableEventBuilder
-    {
-        Task<IAuthorizableEvent> Build(int eventId, int? campaignId = null, int? orgId = null);
-    }
-
-    public interface IAuthorizable
-    {
-        Task<bool> UserIsAuthorized();
-    }
-
-    public enum EventAccessType
-    {
-        Unknown = 0,
-        Unauthorized = 1,
-        SiteAdmin = 2,
-        OrganizationAdmin = 3,
-        CampaignAdmin = 4,
-        EventAdmin = 5
-    }
-
-    public class AuthorizableEventBuilder : IAuthorizableEventBuilder
+    public class AuthorizableEventEventBuilder : IAuthorizableEventBuilder
     {
         private readonly AllReadyContext _context;
         private readonly IMemoryCache _cache;
@@ -35,13 +15,14 @@ namespace AllReady.Security
 
         private const string CachePrefix = "AuthorizableEvent_";
 
-        public AuthorizableEventBuilder(AllReadyContext context, IMemoryCache cache, IUserAuthorizationService userAuthorizationService)
+        public AuthorizableEventEventBuilder(AllReadyContext context, IMemoryCache cache, IUserAuthorizationService userAuthorizationService)
         {
             _context = context;
             _cache = cache;
             _userAuthorizationService = userAuthorizationService;
         }
 
+        /// <inheritdoc />
         public async Task<IAuthorizableEvent> Build(int eventId, int? campaignId = null, int? orgId = null)
         {
             IAuthorizableEvent authorizableEvent;
@@ -94,12 +75,7 @@ namespace AllReady.Security
                 return false;
             }
 
-            if (campaignId.Value == 0 || orgId.Value == 0)
-            {
-                return false;
-            }
-
-            return true;
+            return campaignId.Value != 0 && orgId.Value != 0;
         }
 
         private static string GetCacheKey(int eventId)
@@ -118,7 +94,7 @@ namespace AllReady.Security
                 return Task.FromResult(EventAccessType.Unauthorized);
             }
 
-            public Task<bool> UserIsAuthorized()
+            public Task<bool> IsUserAuthorized()
             {
                 return Task.FromResult(false);
             }
@@ -136,12 +112,16 @@ namespace AllReady.Security
                 OrganizationId = orgId;
             }
 
+            /// <inheritdoc />
             public int EventId { get; }
 
+            /// <inheritdoc />
             public int CampaignId { get; }
 
+            /// <inheritdoc />
             public int OrganizationId { get; }
 
+            /// <inheritdoc />
             public async Task<EventAccessType> UserAccessType()
             {
                 if (!_userAuthorizationService.HasAssociatedUser)
@@ -176,7 +156,8 @@ namespace AllReady.Security
                 return EventAccessType.Unknown;
             }
 
-            public async Task<bool> UserIsAuthorized()
+            /// <inheritdoc />
+            public async Task<bool> IsUserAuthorized()
             {
                 var userAccessType =  await UserAccessType();
 
@@ -186,5 +167,18 @@ namespace AllReady.Security
                     || userAccessType == EventAccessType.EventAdmin;
             }
         }
+    }
+
+    /// <summary>
+    /// Defines the possible access types that can potentially manage an <see cref="IAuthorizableEvent"/>
+    /// </summary>
+    public enum EventAccessType
+    {
+        Unknown = 0,
+        Unauthorized = 1,
+        SiteAdmin = 2,
+        OrganizationAdmin = 3,
+        CampaignAdmin = 4,
+        EventAdmin = 5
     }
 }

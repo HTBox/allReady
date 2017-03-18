@@ -127,7 +127,7 @@ namespace AllReady
             services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
 
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
-            services.AddTransient<IAuthorizableEventBuilder, AuthorizableEventBuilder>();
+            services.AddScoped<IAuthorizableEventBuilder, AuthorizableEventEventBuilder>();
 
             // configure IoC support
             var container = AllReady.Configuration.Services.CreateIoCContainer(services, Configuration);
