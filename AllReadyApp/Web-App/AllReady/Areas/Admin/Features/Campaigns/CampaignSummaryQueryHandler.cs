@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Extensions;
 using AllReady.Areas.Admin.ViewModels.Campaign;
@@ -50,7 +49,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     StartDate = campaign.StartDateTime,
                     EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
-                    CampaignGoals = campaign.CampaignGoals ?? new List<CampaignGoal>(),
                     Headline = campaign.Headline
                 };
 
