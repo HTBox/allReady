@@ -2,6 +2,7 @@
 @model AllReady.ViewModels.Campaign.CampaignViewModel
 @{
     ViewData["Title"] = Model.Name;
+    @addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
 }
 <div class="row">
     <div class="col-12">
@@ -71,7 +72,8 @@
 <div class="row">
     <div class="col-md-8">
         <div class="campaign-sponsor">
-            <strong><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.ManagingOrganizationId">@Model.ManagingOrganizationName</a></strong>
+            <strong><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.ManagingOrganizationId" style="font-size:20px">@Model.ManagingOrganizationName</a></strong>
+            <div><img src=@Model.ManagingOrganizationLogo alt="" img width="260" /></div>
         </div>
     </div>
 </div>
