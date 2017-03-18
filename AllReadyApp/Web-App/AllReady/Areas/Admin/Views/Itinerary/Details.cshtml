@@ -101,7 +101,7 @@
             <div class="form-inline">
                 <label>Select a @(@Model.HasTeamLead ? "new " : "")team lead:</label>
                 <form asp-action="SetTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
-                    <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control"></select>
+                    <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control" required></select>
                     <button type="submit" class="btn btn-default submit-form">Set Team Lead</button>
                 </form>
             </div>
