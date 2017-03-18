@@ -126,6 +126,7 @@ namespace AllReady
             //Hangfire
             services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
 
+            services.AddScoped<IAllReadyUserManager, AllReadyUserManager>();
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
             services.AddScoped<IAuthorizableEventBuilder, AuthorizableEventEventBuilder>();
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using AllReady.Models;
 
@@ -25,7 +26,7 @@ namespace AllReady.Security
         /// <summary>
         /// Indicates whether the user is an organization admin for the supplied organization id
         /// </summary>
-        bool IsOrgAdmin(int organizationId);
+        bool IsOrganizationAdmin(int organizationId);
 
         /// <summary>
         /// Indicates whether the user has the SiteAdmin claim

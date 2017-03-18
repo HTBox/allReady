@@ -134,7 +134,7 @@ namespace AllReady.Security
                     return EventAccessType.SiteAdmin;
                 }
 
-                if (_userAuthorizationService.IsOrgAdmin(OrganizationId))
+                if (_userAuthorizationService.IsOrganizationAdmin(OrganizationId))
                 {
                     return EventAccessType.OrganizationAdmin;
                 }

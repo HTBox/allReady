@@ -48,7 +48,7 @@ namespace AllReady.Security
         public bool HasAssociatedUser => _user != null;
 
         /// <inheritdoc />
-        public string AssociatedUserId => _user.Id;
+        public string AssociatedUserId => _user?.Id;
 
         private List<int> _managedEventIds;
 
@@ -56,6 +56,11 @@ namespace AllReady.Security
         /// <remarks>This will be lazy loaded from the database upon on first access</remarks>
         public async Task<List<int>> GetManagedEventIds()
         {
+            if (!HasAssociatedUser)
+            {
+                return new List<int>();
+            }
+
             if (_managedEventIds != null)
             {
                 return _managedEventIds;
@@ -75,6 +80,11 @@ namespace AllReady.Security
         /// <remarks>This will be lazy loaded from the database upon on first access</remarks>
         public async Task<List<int>> GetManagedCampaignIds()
         {
+            if (!HasAssociatedUser)
+            {
+                return new List<int>();
+            }
+
             if (_managedCampaignIds != null)
             {
                 return _managedCampaignIds;
@@ -102,7 +112,7 @@ namespace AllReady.Security
         }
 
         /// <inheritdoc />
-        public bool IsOrgAdmin(int organizationId)
+        public bool IsOrganizationAdmin(int organizationId)
         {
             return _claimsPrincipal.IsUserType(UserType.OrgAdmin) && GetOrganizationId.HasValue && GetOrganizationId.Value == organizationId;
         }
