@@ -203,7 +203,6 @@ namespace AllReady
             {
                 routes.MapRoute(name: "areaRoute", template: "{area:exists}/{controller}/{action=Index}/{id?}");
                 routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
-                routes.MapRoute("Error", "{*catchall}", new {controller = "Home", action = "Error"});
             });
 
             // Add sample data and test admin accounts if specified in Config.Json.
