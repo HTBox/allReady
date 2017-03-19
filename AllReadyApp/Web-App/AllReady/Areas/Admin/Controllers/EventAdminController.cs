@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (!userIsAuthorized)
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             return View(viewModel);

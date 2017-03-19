@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Security
         public async Task Build_WithAllThreeIds_ReturnsFromTheCacheWhenAvailable()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
-            cache.Set("AuthorizableEvent_1", new FakedAuthorizableEvent(), TimeSpan.FromMinutes(5));
+            cache.Set("AuthorizableEvent_1", new FakeAuthorizableEventIdContainer(), TimeSpan.FromMinutes(5));
 
             var sut = new AuthorizableEventEventBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
 
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Security
 
             var result = await sut.Build(10);
 
-            IAuthorizableEvent authorizableEvent;
+            IAuthorizableEventIdContainer authorizableEvent;
             var foundInCache = cache.TryGetValue("AuthorizableEvent_10", out authorizableEvent);
 
             foundInCache.ShouldBeTrue();
@@ -68,23 +68,13 @@ namespace AllReady.UnitTest.Security
             authorizableEvent.OrganizationId.ShouldBe(30);
         }
 
-        private class FakedAuthorizableEvent : IAuthorizableEvent
+        private class FakeAuthorizableEventIdContainer : IAuthorizableEventIdContainer
         {
             public int CampaignId => 200;
 
             public int EventId => 1;
 
             public int OrganizationId => 300;
-
-            public Task<bool> IsUserAuthorized()
-            {
-                throw new NotImplementedException();
-            }
-
-            public Task<EventAccessType> UserAccessType()
-            {
-                throw new NotImplementedException();
-            }
         }
 
         protected override void LoadTestData()

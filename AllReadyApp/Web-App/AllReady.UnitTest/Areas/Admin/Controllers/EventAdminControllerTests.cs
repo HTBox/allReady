@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        public async Task DetailsReturnsForbidResult_WhenEventIsNotNull_AndUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new EventController(null, mediator.Object, null);
 
-            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
+            Assert.IsType<ForbidResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact]

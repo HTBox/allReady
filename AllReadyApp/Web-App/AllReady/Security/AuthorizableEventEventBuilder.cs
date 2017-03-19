@@ -25,15 +25,17 @@ namespace AllReady.Security
         /// <inheritdoc />
         public async Task<IAuthorizableEvent> Build(int eventId, int? campaignId = null, int? orgId = null)
         {
-            IAuthorizableEvent authorizableEvent;
+            IAuthorizableEventIdContainer cacheAuthorizableEventIdContainer;
 
             if (eventId == 0)
             {
                 return new NotFoundAuthorizableEvent();
             }
 
-            if (_cache.TryGetValue(GetCacheKey(eventId), out authorizableEvent))
-                return authorizableEvent;
+            if (_cache.TryGetValue(GetCacheKey(eventId), out cacheAuthorizableEventIdContainer))
+            {
+                return new AuthorizableEvent(cacheAuthorizableEventIdContainer, _userAuthorizationService);
+            }
 
             int finalCampaignId;
             int finalOrgId;
@@ -61,11 +63,25 @@ namespace AllReady.Security
                 finalOrgId = orgId.Value;
             }
 
-            authorizableEvent = new AuthorizableEvent(eventId, finalCampaignId, finalOrgId, _userAuthorizationService);
+            var authorizedEventIdContainer = new AuthorizableEventIdContainer(eventId, finalCampaignId, finalOrgId);
 
-            _cache.Set(GetCacheKey(eventId), authorizableEvent, TimeSpan.FromHours(1)); // cached for 1 hour
+            _cache.Set(GetCacheKey(eventId), authorizedEventIdContainer, TimeSpan.FromHours(1)); // cached for 1 hour
 
-            return authorizableEvent;
+            return new AuthorizableEvent(authorizedEventIdContainer, _userAuthorizationService);
+        }
+
+        private class AuthorizableEventIdContainer : IAuthorizableEventIdContainer
+        {
+            public AuthorizableEventIdContainer(int eventId, int campaignId, int orgId)
+            {
+                EventId = eventId;
+                CampaignId = campaignId;
+                OrganizationId = orgId;
+            }
+
+            public int EventId { get; }
+            public int OrganizationId { get; }
+            public int CampaignId { get; }
         }
 
         private static bool HasValidIds(int? campaignId, int? orgId)
@@ -104,12 +120,12 @@ namespace AllReady.Security
         {
             private readonly IUserAuthorizationService _userAuthorizationService;
 
-            public AuthorizableEvent(int eventId, int campaignId, int orgId, IUserAuthorizationService userAuthorizationService)
+            public AuthorizableEvent(IAuthorizableEventIdContainer authorizableEventIds, IUserAuthorizationService userAuthorizationService)
             {
                 _userAuthorizationService = userAuthorizationService;
-                EventId = eventId;
-                CampaignId = campaignId;
-                OrganizationId = orgId;
+                EventId = authorizableEventIds.EventId;
+                CampaignId = authorizableEventIds.CampaignId;
+                OrganizationId = authorizableEventIds.OrganizationId;
             }
 
             /// <inheritdoc />
