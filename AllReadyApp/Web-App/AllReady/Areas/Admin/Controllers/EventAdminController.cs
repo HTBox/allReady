@@ -53,9 +53,6 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
-            viewModel.ItinerariesDetailsUrl = string.Concat(url, "{id}");
-
             return View(viewModel);
         }
 
