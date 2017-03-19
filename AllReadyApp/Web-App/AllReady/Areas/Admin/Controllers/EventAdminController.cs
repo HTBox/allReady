@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var userIsAuthorized = await _mediator.SendAsync(new AuthorizableEventIsUserAuthorizedQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
+            var userIsAuthorized = await _mediator.SendAsync(new UserIsAuthorizedToManageEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
 
             if (!userIsAuthorized)
             {

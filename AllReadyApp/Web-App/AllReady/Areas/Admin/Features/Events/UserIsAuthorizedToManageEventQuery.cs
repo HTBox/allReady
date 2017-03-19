@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 namespace AllReady.Areas.Admin.Features.Events
 {
     /// <summary>
-    /// Gets an <see cref="IAuthorizableEvent"/> and uses it to return whether the current user has access to manage it
+    /// Builds an <see cref="IAuthorizableEvent"/> and uses it to determine whether the current user has authorization to manage it
     /// </summary>
-    public class AuthorizableEventIsUserAuthorizedQuery : IAsyncRequest<bool>
+    public class UserIsAuthorizedToManageEventQuery : IAsyncRequest<bool>
     {
         /// <summary>
-        /// Initializes a new instance of an <see cref="AuthorizableEventIsUserAuthorizedQuery"/>.
+        /// Initializes a new instance of an <see cref="UserIsAuthorizedToManageEventQuery"/>.
         /// Gets an <see cref="IAuthorizableEvent"/> and uses it to return whether the current user has access to manage it
         /// </summary>
-        public AuthorizableEventIsUserAuthorizedQuery(int eventId, int? campaignId = null, int? orgId = null)
+        public UserIsAuthorizedToManageEventQuery(int eventId, int? campaignId = null, int? orgId = null)
         {
             EventId = eventId;
             CampaignId = campaignId;
@@ -37,21 +37,21 @@ namespace AllReady.Areas.Admin.Features.Events
     }
 
     /// <summary>
-    /// Handles an <see cref="AuthorizableEventIsUserAuthorizedQuery"/>
+    /// Handles an <see cref="UserIsAuthorizedToManageEventQuery"/>
     /// </summary>
-    public class AuthorizableEventIsUserAuthorizedQueryHandler : IAsyncRequestHandler<AuthorizableEventIsUserAuthorizedQuery, bool>
+    public class UserIsAuthorizedToManageEventQueryHandler : IAsyncRequestHandler<UserIsAuthorizedToManageEventQuery, bool>
     {
         private readonly IAuthorizableEventBuilder _authorizableEventBuilder;
 
-        public AuthorizableEventIsUserAuthorizedQueryHandler(IAuthorizableEventBuilder authorizableEventBuilder)
+        public UserIsAuthorizedToManageEventQueryHandler(IAuthorizableEventBuilder authorizableEventBuilder)
         {
             _authorizableEventBuilder = authorizableEventBuilder;
         }
 
         /// <summary>
-        /// Handles an <see cref="AuthorizableEventIsUserAuthorizedQuery"/>
+        /// Handles an <see cref="UserIsAuthorizedToManageEventQuery"/>
         /// </summary>
-        public async Task<bool> Handle(AuthorizableEventIsUserAuthorizedQuery message)
+        public async Task<bool> Handle(UserIsAuthorizedToManageEventQuery message)
         {
             var authorizableEvent = await _authorizableEventBuilder.Build(message.EventId, message.CampaignId, message.OrganizationId);
 
