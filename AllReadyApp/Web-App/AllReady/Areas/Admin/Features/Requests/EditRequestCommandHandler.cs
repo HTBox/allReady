@@ -45,7 +45,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             request.Phone = message.RequestModel.Phone;
             request.Latitude = message.RequestModel.Latitude;
             request.Longitude = message.RequestModel.Longitude;
-
+            request.Notes = message.RequestModel.Notes;
             //If lat/long not provided and we detect the address changed, then use geocoding API to get the lat/long
             if (request.Latitude == 0 && request.Longitude == 0 && addressChanged)
             {
