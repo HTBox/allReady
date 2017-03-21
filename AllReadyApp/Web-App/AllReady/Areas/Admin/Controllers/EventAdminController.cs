@@ -46,9 +46,9 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var userIsAuthorized = await _mediator.SendAsync(new UserIsAuthorizedToManageEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
 
-            if (!userIsAuthorized)
+            if (!await authorizableEvent.UserCanView())
             {
                 return new ForbidResult();
             }
@@ -136,9 +136,11 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id, campaignEvent.CampaignId, campaignEvent.OrganizationId));
+
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             return View(campaignEvent);
@@ -153,11 +155,12 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return BadRequest();
             }
+            
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(eventEditViewModel.Id));
 
-            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = eventEditViewModel.Id });
-            if (!User.IsOrganizationAdmin(organizationId))
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = eventEditViewModel.CampaignId });
@@ -355,7 +358,7 @@ namespace AllReady.Areas.Admin.Controllers
             var currentPage = "All";
 
             if (!string.IsNullOrEmpty(status))
-            { 
+            {
                 RequestStatus requestStatus;
                 if (Enum.TryParse(status, out requestStatus))
                 {
@@ -365,7 +368,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(nameof(Requests), new {id});
+                    return RedirectToAction(nameof(Requests), new { id });
                 }
             }
 
@@ -374,7 +377,7 @@ namespace AllReady.Areas.Admin.Controllers
             viewModel.CurrentPage = currentPage;
 
             viewModel.Requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
- 
+
             return View(viewModel);
         }
 

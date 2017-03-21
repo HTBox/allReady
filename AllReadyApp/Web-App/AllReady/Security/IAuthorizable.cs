@@ -8,9 +8,18 @@ namespace AllReady.Security
     public interface IAuthorizable
     {
         /// <summary>
-        /// Indicates whether the current <see cref="ClaimsPrinciple"/> has access to the <see cref="IAuthorizable"/> domain object
+        /// Indicates that the user is authorized to view the <see cref="IAuthorizable"/> object
         /// </summary>
-        /// <returns></returns>
-        Task<bool> IsUserAuthorized();
+        Task<bool> UserCanView();
+
+        /// <summary>
+        /// Indicates that the user is authorized to edit the <see cref="IAuthorizable"/> object
+        /// </summary>
+        Task<bool> UserCanEdit();
+
+        /// <summary>
+        /// Indicates that the user is authorized to delete the <see cref="IAuthorizable"/> object
+        /// </summary>
+        Task<bool> UserCanDelete();
     }
 }

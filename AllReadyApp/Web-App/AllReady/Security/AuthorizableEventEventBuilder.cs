@@ -105,17 +105,38 @@ namespace AllReady.Security
             public int EventId => 0;
             public int OrganizationId => 0;
 
-            public Task<EventAccessType> UserAccessType()
+            public Task<bool> UserCanCreateRequests()
             {
-                return Task.FromResult(EventAccessType.Unauthorized);
+                return Task.FromResult(false);
             }
 
-            public Task<bool> IsUserAuthorized()
+            public Task<bool> UserCanCreateItineraries()
+            {
+                return Task.FromResult(false);
+            }
+
+            public Task<bool> UserCanCreateTasks()
+            {
+                return Task.FromResult(false);
+            }
+
+            public Task<bool> UserCanView()
+            {
+                return Task.FromResult(false);
+            }
+
+            public Task<bool> UserCanEdit()
+            {
+                return Task.FromResult(false);
+            }
+
+            public Task<bool> UserCanDelete()
             {
                 return Task.FromResult(false);
             }
         }
 
+        /// <inheritdoc />
         private class AuthorizableEvent : IAuthorizableEvent
         {
             private readonly IUserAuthorizationService _userAuthorizationService;
@@ -137,8 +158,7 @@ namespace AllReady.Security
             /// <inheritdoc />
             public int OrganizationId { get; }
 
-            /// <inheritdoc />
-            public async Task<EventAccessType> UserAccessType()
+            private async Task<EventAccessType> UserAccessType()
             {
                 if (!_userAuthorizationService.HasAssociatedUser)
                 {
@@ -173,14 +193,63 @@ namespace AllReady.Security
             }
 
             /// <inheritdoc />
-            public async Task<bool> IsUserAuthorized()
+            public async Task<bool> UserCanDelete()
             {
-                var userAccessType =  await UserAccessType();
+                var userAccessType = await UserAccessType();
 
-                return userAccessType == EventAccessType.SiteAdmin 
-                    || userAccessType == EventAccessType.OrganizationAdmin 
-                    || userAccessType == EventAccessType.CampaignAdmin 
-                    || userAccessType == EventAccessType.EventAdmin;
+                return userAccessType == EventAccessType.SiteAdmin
+                       || userAccessType == EventAccessType.OrganizationAdmin
+                       || userAccessType == EventAccessType.CampaignAdmin;
+            }
+
+            /// <inheritdoc />
+            public async Task<bool> UserCanView()
+            {
+                return await UserCanManageEvent();
+            }
+
+            /// <inheritdoc />
+            public async Task<bool> UserCanEdit()
+            {
+                return await UserCanManageEvent();
+            }
+
+            private async Task<bool> UserCanManageEvent()
+            {
+                var userAccessType = await UserAccessType();
+
+                return userAccessType == EventAccessType.SiteAdmin
+                       || userAccessType == EventAccessType.OrganizationAdmin
+                       || userAccessType == EventAccessType.CampaignAdmin
+                       || userAccessType == EventAccessType.EventAdmin;
+            }
+
+            /// <inheritdoc />
+            public async Task<bool> UserCanCreateRequests()
+            {
+                return await UserCanManageChildObjects();
+            }
+
+            /// <inheritdoc />
+            public async Task<bool> UserCanCreateItineraries()
+            {
+                return await UserCanManageChildObjects();
+            }
+
+            /// <inheritdoc />
+            public async Task<bool> UserCanCreateTasks()
+            {
+                return await UserCanManageChildObjects();
+            }
+
+            private async Task<bool> UserCanManageChildObjects()
+            {
+                var userAccessType = await UserAccessType();
+
+                return userAccessType == EventAccessType.SiteAdmin
+                       || userAccessType == EventAccessType.OrganizationAdmin
+                       || userAccessType == EventAccessType.CampaignAdmin
+                       || userAccessType == EventAccessType.EventAdmin;
             }
         }
     }

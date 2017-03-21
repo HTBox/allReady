@@ -18,6 +18,7 @@ using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Shouldly;

@@ -2,6 +2,9 @@
 
 namespace AllReady.Security
 {
+    /// <summary>
+    /// Provides access to authorization of the actions which the current user can perform on an event
+    /// </summary>
     public interface IAuthorizableEvent : IAuthorizable
     {
         /// <summary>
@@ -20,9 +23,18 @@ namespace AllReady.Security
         int OrganizationId { get; }
 
         /// <summary>
-        /// Returns the <see cref="EventAccessType"/> for the event of the current user
+        /// Indicates the user can create requests for the event
         /// </summary>
-        /// <returns></returns>
-        Task<EventAccessType> UserAccessType();
+        Task<bool> UserCanCreateRequests();
+
+        /// <summary>
+        /// Indicates the user can create itineraries for the event
+        /// </summary>
+        Task<bool> UserCanCreateItineraries();
+        
+        /// <summary>
+        /// Indicates the user can create tasks for the event
+        /// </summary>
+        Task<bool> UserCanCreateTasks();
     }
 }
