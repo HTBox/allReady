@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using DeleteViewModel = AllReady.Areas.Admin.Features.Events.DeleteViewModel;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -61,14 +62,33 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
-		public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
+        [Fact]
+        public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
         {
-			// delete this line when starting work on this unit test
-			await TaskCompletedTask;
-		}
+            const int orgId = 1;
+            const int eventID = 1;
+            var viewModel = new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId };
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<EventDetailQuery>(q => q.EventId == eventID))).ReturnsAsync(viewModel);
 
-		[Fact]
+            var mockUrlHelper = new Mock<IUrlHelper>();
+            mockUrlHelper
+                .Setup(url => url.Action(It.IsAny<UrlActionContext>()))
+                .Returns("baseUrl/");
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+            sut.Url = mockUrlHelper.Object;
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model;
+            Assert.IsType<EventDetailViewModel>(resultViewModel);
+            Assert.Equal(resultViewModel, viewModel);
+        }
+
+        [Fact]
         public void DetailsHasHttpGetAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
