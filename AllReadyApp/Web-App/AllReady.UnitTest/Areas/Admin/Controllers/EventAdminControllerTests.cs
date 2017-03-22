@@ -162,6 +162,30 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task CreateGetReturnsCorrectView_AndCorrectCampaignID()
+        {
+            const int orgId = 1;
+            const int campaignId = 99;
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<CampaignSummaryQuery>(q => q.CampaignId == campaignId)))
+                .ReturnsAsync(new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Create(campaignId) as ViewResult;
+
+            Assert.Equal(result.ViewName, "Edit");
+            var resultViewModel = result.ViewData.Model;
+            Assert.IsType<EventEditViewModel>(resultViewModel);
+
+            //
+            Assert.Equal((resultViewModel as EventEditViewModel).CampaignId, campaignId);
+        }
+
+        [Fact]
         public void CreateGetHasRouteAttributeWithCorrectRoute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
