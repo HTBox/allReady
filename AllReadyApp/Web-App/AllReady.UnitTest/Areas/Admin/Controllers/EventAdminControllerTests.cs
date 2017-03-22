@@ -105,11 +105,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Event/Details/{id}");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CreateGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int campaignId = 99;
+            var mediator = new Mock<IMediator>();
+
+            var sut = new EventController(null, mediator.Object, null);
+            await sut.Create(campaignId);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<CampaignSummaryQuery>(q => q.CampaignId == campaignId)));
         }
 
         [Fact]
