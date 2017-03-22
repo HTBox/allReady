@@ -23,18 +23,12 @@ namespace AllReady.Security
         int OrganizationId { get; }
 
         /// <summary>
-        /// Indicates the user can create requests for the event
+        /// Indicates the user can child objects (tasks/events/requests) for the event
         /// </summary>
-        Task<bool> UserCanCreateRequests();
-
-        /// <summary>
-        /// Indicates the user can create itineraries for the event
-        /// </summary>
-        Task<bool> UserCanCreateItineraries();
-        
-        /// <summary>
-        /// Indicates the user can create tasks for the event
-        /// </summary>
-        Task<bool> UserCanCreateTasks();
+        /// <remarks>
+        /// This can be broken out into sub methods if we require discrete control over managing different type of child object (tasks/requests etc).
+        /// We could also limit to action types such as delete/edit etc if our rules differ in each case. For now, this single method is enough based on our rules.
+        /// </remarks>
+        Task<bool> UserCanManageChildObjects();
     }
 }

@@ -40,22 +40,45 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<NotFoundResult>(result);
         }
 
+        private class FakeAuthorizableEvent : IAuthorizableEvent
+        {
+            private readonly bool _isAuthorized;
+            public int EventId { get; }
+            public int CampaignId { get; }
+            public int OrganizationId { get; }
+
+            public FakeAuthorizableEvent(bool isAuthorized)
+            {
+                _isAuthorized = isAuthorized;
+            }
+
+            public Task<bool> UserCanView()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+
+            public Task<bool> UserCanEdit()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+
+            public Task<bool> UserCanDelete()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+
+            public Task<bool> UserCanManageChildObjects()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+        }
+
         [Fact]
         public async Task DetailsReturnsForbidResult_WhenEventIsNotNull_AndUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
-
-            var sut = new EventController(null, mediator.Object, null);
-
-            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
-        }
-
-        [Fact]
-        public async Task DetailsReturnsHttpUnauthorizedResult_WhenEventIsNotNull_AndUserIsNotAnOrgAdmin()
-        {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false));
 
             var sut = new EventController(null, mediator.Object, null);
 
@@ -63,29 +86,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
+        public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserAuthorized()
         {
-            const int orgId = 1;
-            const int eventID = 1;
-            var viewModel = new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId };
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.Is<EventDetailQuery>(q => q.EventId == eventID))).ReturnsAsync(viewModel);
-
-            var mockUrlHelper = new Mock<IUrlHelper>();
-            mockUrlHelper
-                .Setup(url => url.Action(It.IsAny<UrlActionContext>()))
-                .Returns("baseUrl/");
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(orgId.ToString());
-            sut.Url = mockUrlHelper.Object;
 
-            var result = await sut.Details(eventID) as ViewResult;
-            Assert.Equal(result.ViewName, null);
-
-            var resultViewModel = result.ViewData.Model;
-            Assert.IsType<EventDetailViewModel>(resultViewModel);
-            Assert.Equal(resultViewModel, viewModel);
+            Assert.IsType<ViewResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact]
@@ -315,14 +324,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void EditGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        public async void EditGetReturnsForbidResult_WhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(new EventEditViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false));
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
-            Assert.IsType<UnauthorizedResult>(await sut.Edit(It.IsAny<int>()));
+            Assert.IsType<ForbidResult>(await sut.Edit(It.IsAny<int>()));
         }
 
         [Fact]

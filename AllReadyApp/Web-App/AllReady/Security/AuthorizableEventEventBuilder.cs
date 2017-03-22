@@ -105,17 +105,7 @@ namespace AllReady.Security
             public int EventId => 0;
             public int OrganizationId => 0;
 
-            public Task<bool> UserCanCreateRequests()
-            {
-                return Task.FromResult(false);
-            }
-
-            public Task<bool> UserCanCreateItineraries()
-            {
-                return Task.FromResult(false);
-            }
-
-            public Task<bool> UserCanCreateTasks()
+            public Task<bool> UserCanManageChildObjects()
             {
                 return Task.FromResult(false);
             }
@@ -225,24 +215,7 @@ namespace AllReady.Security
             }
 
             /// <inheritdoc />
-            public async Task<bool> UserCanCreateRequests()
-            {
-                return await UserCanManageChildObjects();
-            }
-
-            /// <inheritdoc />
-            public async Task<bool> UserCanCreateItineraries()
-            {
-                return await UserCanManageChildObjects();
-            }
-
-            /// <inheritdoc />
-            public async Task<bool> UserCanCreateTasks()
-            {
-                return await UserCanManageChildObjects();
-            }
-
-            private async Task<bool> UserCanManageChildObjects()
+            public async Task<bool> UserCanManageChildObjects()
             {
                 var userAccessType = await UserAccessType();
 
