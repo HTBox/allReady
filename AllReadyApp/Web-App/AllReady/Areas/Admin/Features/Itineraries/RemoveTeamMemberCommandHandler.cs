@@ -29,6 +29,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
             var itineraryId = volunteerTaskSignup.ItineraryId;
             volunteerTaskSignup.ItineraryId = null;
+            volunteerTaskSignup.IsTeamLead = false;
             await _context.SaveChangesAsync();
 
             await _mediator
