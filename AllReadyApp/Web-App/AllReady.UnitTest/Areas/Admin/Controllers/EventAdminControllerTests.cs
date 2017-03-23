@@ -728,47 +728,97 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ShouldBe("NothingToDelete");
         }
 
-
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var sut = new EventController(null, null, null);
+            sut.AddModelStateError();
+            var result = await sut.MessageAllVolunteers(It.IsAny<MessageEventVolunteersViewModel>());
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersSendsEventDetailQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int orgId = 1;
+            MessageEventVolunteersViewModel viewModel = new MessageEventVolunteersViewModel { EventId = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(orgId);
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.MessageAllVolunteers(viewModel);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsHttpNotFoundResult_WhenEventIsNull()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(It.IsAny<int>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel { EventId = 100 });
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandWithCorrectData()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int orgId = 1;
+            MessageEventVolunteersViewModel viewModel = new MessageEventVolunteersViewModel { EventId = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<MessageEventVolunteersCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.MessageAllVolunteers(viewModel);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<MessageEventVolunteersCommand>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<MessageEventVolunteersCommand>(c => c.ViewModel == viewModel)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersReturnsHttpOkResult()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int orgId = 1;
+            MessageEventVolunteersViewModel viewModel = new MessageEventVolunteersViewModel { EventId = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<MessageEventVolunteersCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.MessageAllVolunteers(viewModel);
+
+            Assert.IsType<OkResult>(result);
         }
 
         [Fact]
