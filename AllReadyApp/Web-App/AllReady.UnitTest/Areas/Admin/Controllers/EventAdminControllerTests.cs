@@ -283,11 +283,25 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Event/Create/{campaignId}");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async void EditGetSendsEventDetailQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 1;
+            const int eventId = 100;
+            EventEditViewModel viewModel = new EventEditViewModel { Id = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<EventEditQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(viewModel);
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(eventId);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<EventEditQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<EventEditQuery>(q => q.EventId == eventId)));
         }
 
         [Fact]
@@ -311,11 +325,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.Edit(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async void EditGetReturnsCorrectViewModel()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 1;
+            const int eventId = 100;
+            EventEditViewModel viewModel = new EventEditViewModel { Id = eventId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<EventEditQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(viewModel);
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(eventId) as ViewResult;
+            Assert.IsType<EventEditViewModel>(result.ViewData.Model);
         }
 
         [Fact]
