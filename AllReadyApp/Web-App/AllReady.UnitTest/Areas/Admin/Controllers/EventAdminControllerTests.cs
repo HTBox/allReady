@@ -787,25 +787,90 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task PostEventFileSendsEventByEventIdQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 99;
+            const int orgId = 10;
+            IFormFile formFile = null;
+            string imageUrl = "url";
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                 .ReturnsAsync(orgId);
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == eventId), It.Is<IFormFile>(f => f == formFile)))
+                .ReturnsAsync(imageUrl);
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, null);
+
+            await sut.PostEventFile(eventId, formFile);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task PostEventFileSendsUpdateEventAsyncWithCorrectData()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 99;
+            const int orgId = 10;
+            IFormFile formFile = null;
+            string imageUrl = "url";
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                 .ReturnsAsync(orgId);
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<UpdateEventImageUrl>(u => u.EventId == eventId && u.ImageUrl == imageUrl)))
+                 .ReturnsAsync(It.IsAny<Unit>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == eventId), It.Is<IFormFile>(f => f == formFile)))
+                .ReturnsAsync(imageUrl);
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, null);
+
+            await sut.PostEventFile(eventId, formFile);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<UpdateEventImageUrl>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<UpdateEventImageUrl>(u => u.EventId == eventId && u.ImageUrl == imageUrl)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task PostEventFileRedirectsToCorrectRoute()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 99;
+            const int orgId = 10;
+            IFormFile formFile = null;
+            string imageUrl = "url";
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                 .ReturnsAsync(orgId);
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<UpdateEventImageUrl>(u => u.EventId == eventId && u.ImageUrl == imageUrl)))
+                 .ReturnsAsync(It.IsAny<Unit>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == eventId), It.Is<IFormFile>(f => f == formFile)))
+                .ReturnsAsync(imageUrl);
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, null);
+
+            var result = await sut.PostEventFile(eventId, formFile) as RedirectToRouteResult;
+
+            Assert.Equal(result.RouteValues["controller"], "Event");
+            Assert.Equal(result.RouteValues["Area"], "Admin");
+            Assert.Equal(result.RouteValues["action"], nameof(EventController.Edit));
+            Assert.Equal(result.RouteValues["id"], eventId);
         }
 
         [Fact]
