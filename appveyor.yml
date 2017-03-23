@@ -16,6 +16,7 @@ cache:
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
  - choco install firefox
+ - rd /s /q "C:\Program Files\dotnet\sdk\1.0.1"
  
 before_build:
  - cmd: dotnet restore AllReadyApp\AllReadyApp.sln
