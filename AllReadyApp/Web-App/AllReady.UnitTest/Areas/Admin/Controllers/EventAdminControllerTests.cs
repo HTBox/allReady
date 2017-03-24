@@ -540,13 +540,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(attribute.Name, "Delete");
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsEventDetailQueryWithCorrectEventId()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
         [Fact]
         public async Task DeleteConfirmedReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
@@ -554,18 +547,45 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteConfirmedSendsDeleteEventCommandWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            DeleteViewModel viewModel = new DeleteViewModel { Id = eventId, UserIsOrgAdmin = true };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<DeleteEventCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            await sut.DeleteConfirmed(viewModel);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<DeleteEventCommand>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<DeleteEventCommand>(c => c.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteConfirmedRedirectToCorrectAction_AndControllerWithCorrectRouteValues()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int campaignId = 88;
+            DeleteViewModel viewModel = new DeleteViewModel { Id = eventId, UserIsOrgAdmin = true, CampaignId = campaignId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<DeleteEventCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.DeleteConfirmed(viewModel) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(CampaignController.Details));
+            Assert.Equal(result.ControllerName, "Campaign");
+            Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
         [Fact]
