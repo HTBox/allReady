@@ -22,6 +22,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = await _context.Campaigns
                 .AsNoTracking()
                 .Include(c => c.Events)
+                .Include(c => c.Resources)
                 .Include(m => m.ManagingOrganization)
                 .Include(ci => ci.CampaignGoals)
                 .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
@@ -58,6 +59,13 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         Description = a.Description,
                         StartDateTime = a.StartDateTime,
                         EndDateTime = a.EndDateTime
+                    }),
+                    Resources = campaign.Resources.Select(r => new CampaignDetailViewModel.ResourceList
+                    {
+                        Id = r.Id,
+                        Description = r.Description,
+                        Title = r.Name,
+                        Url = r.ResourceUrl
                     })
                 };
 

@@ -172,17 +172,25 @@ namespace AllReady.Models
                    .WithMany(c => c.ParticipatingOrganizations);
             builder.HasOne(s => s.Organization);
         }
-
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingOrganization);
             builder.HasMany(c => c.CampaignGoals);
             builder.HasMany(c => c.Events);
+            builder.HasMany(c => c.Resources).WithOne(c => c.Campaign).HasForeignKey(c => c.CampaignId);
             builder.HasOne(t => t.Location);
             builder.HasMany(t => t.CampaignContacts);
             builder.Property(a => a.Name).IsRequired();
         }
 
+        private void Map(EntityTypeBuilder<Resource> builder)
+        {
+            builder.HasKey(r => r.Id);
+            builder.HasOne(r => r.Campaign);
+            builder.Property(r => r.Description).IsRequired();
+            builder.Property(r => r.Name).IsRequired();
+            builder.Property(r => r.ResourceUrl).IsRequired();
+        }
         private void Map(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder.HasMany(u => u.AssociatedSkills).WithOne(us => us.User);

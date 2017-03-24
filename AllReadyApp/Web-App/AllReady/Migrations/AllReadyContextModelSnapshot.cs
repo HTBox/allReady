@@ -589,6 +589,8 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("CampaignId");
+
                     b.Property<string>("CategoryTag");
 
                     b.Property<string>("Description");
@@ -604,6 +606,8 @@ namespace AllReady.Migrations
                     b.Property<string>("ResourceUrl");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
 
                     b.ToTable("Resource");
                 });
@@ -1036,6 +1040,14 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Organization", "Organization")
                         .WithMany("Requests")
                         .HasForeignKey("OrganizationId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.Resource", b =>
+                {
+                    b.HasOne("AllReady.Models.Campaign", "Campaign")
+                        .WithMany("Resources")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AllReady.Models.Skill", b =>
