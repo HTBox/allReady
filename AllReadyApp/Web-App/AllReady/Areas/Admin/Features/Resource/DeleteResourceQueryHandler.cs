@@ -13,7 +13,7 @@ namespace AllReady.Areas.Admin.Features.Resource
 
         public DeleteResourceQueryHandler(AllReadyContext context)
         {
-            _context = context;
+            _context = context; 
         }
 
         public async Task<ResourceDeleteViewModel> Handle(DeleteResourceQuery message)

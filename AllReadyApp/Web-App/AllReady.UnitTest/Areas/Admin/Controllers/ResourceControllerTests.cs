@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ResourceController(mockMediator.Object);
             sut.MakeUserNotAnOrgAdmin();
 
-            var result = await sut.Create(It.IsAny<int>()) as UnauthorizedResult;
+            var result = await sut.Create(It.IsAny<int>()) as UnauthorizedResult; 
 
             result.ShouldNotBeNull();
             result.ShouldBeOfType<UnauthorizedResult>();

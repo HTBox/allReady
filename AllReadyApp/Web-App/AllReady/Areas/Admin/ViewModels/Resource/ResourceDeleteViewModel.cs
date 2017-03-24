@@ -7,7 +7,7 @@ namespace AllReady.Areas.Admin.ViewModels.Resource
     {
         public ResourceDeleteViewModel()
         {
-            
+             
         }
         public ResourceDeleteViewModel(AllReady.Models.Resource resource)
         {

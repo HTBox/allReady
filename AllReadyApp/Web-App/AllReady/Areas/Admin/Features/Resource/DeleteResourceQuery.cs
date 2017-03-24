@@ -9,6 +9,6 @@ namespace AllReady.Areas.Admin.Features.Resource
 {
     public class DeleteResourceQuery : IAsyncRequest<ResourceDeleteViewModel>
     {
-        public int ResourceId { get; set; }
+        public int ResourceId { get; set; } 
     }
 }

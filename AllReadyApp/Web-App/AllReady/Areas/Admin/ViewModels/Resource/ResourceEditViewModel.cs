@@ -5,7 +5,7 @@ namespace AllReady.Areas.Admin.ViewModels.Resource
 {
     public class ResourceEditViewModel
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
         public int CampaignId { get; set; }
         public string CampaignName { get; set; }
 

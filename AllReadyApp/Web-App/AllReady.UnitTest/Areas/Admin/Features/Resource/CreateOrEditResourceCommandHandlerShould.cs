@@ -19,7 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Resource
 
             Context.Resources.Add(resource);
 
-            Context.SaveChanges();
+            Context.SaveChanges(); 
         }
 
         [Fact]

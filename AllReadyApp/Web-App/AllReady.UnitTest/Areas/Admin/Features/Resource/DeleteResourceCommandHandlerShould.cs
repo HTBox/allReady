@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Resource
             Context.SaveChanges();
         }
 
-        [Fact]
+        [Fact] 
         public async Task DeleteTheCorrectResource()
         {
             var sut = new DeleteResourceCommandHandler(Context);

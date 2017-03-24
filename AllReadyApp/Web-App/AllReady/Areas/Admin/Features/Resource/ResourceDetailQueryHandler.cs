@@ -13,7 +13,7 @@ namespace AllReady.Areas.Admin.Features.Resource
 
         public ResourceDetailQueryHandler(AllReadyContext context)
         {
-            _context = context;
+            _context = context; 
         }
 
         public async Task<ResourceDetailViewModel> Handle(ResourceDetailQuery message)

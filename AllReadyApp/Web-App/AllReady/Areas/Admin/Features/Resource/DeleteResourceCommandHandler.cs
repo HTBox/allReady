@@ -16,7 +16,7 @@ namespace AllReady.Areas.Admin.Features.Resource
 
         public DeleteResourceCommandHandler(AllReadyContext context)
         {
-            _context = context;
+            _context = context; 
         }
 
         protected override async Task HandleCore(DeleteResourceCommand message)

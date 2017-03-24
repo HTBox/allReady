@@ -12,7 +12,7 @@ namespace AllReady.Areas.Admin.Features.Resource
 {
     public class CreateOrEditResourceCommandHandler : IAsyncRequestHandler<CreateOrEditResourceCommand, int>
     {
-        private AllReadyContext _context;
+        private AllReadyContext _context; 
 
         public CreateOrEditResourceCommandHandler(AllReadyContext context)
         {

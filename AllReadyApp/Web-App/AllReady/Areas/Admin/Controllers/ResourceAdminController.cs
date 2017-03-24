@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Resource;
-using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Resource;
-using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Security;
-using AllReady.ViewModels.Resource;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using DeleteViewModel = AllReady.Areas.Admin.ViewModels.Campaign.DeleteViewModel;
 
 // For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 

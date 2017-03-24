@@ -7,7 +7,7 @@ namespace AllReady.Areas.Admin.ViewModels.Resource
 
         public ResourceDetailViewModel()
         {
-            
+             
         }
         public ResourceDetailViewModel(AllReady.Models.Resource resource)
         {
