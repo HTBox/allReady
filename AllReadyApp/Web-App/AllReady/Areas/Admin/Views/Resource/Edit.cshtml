@@ -1,7 +1,7 @@
 @using System.Threading.Tasks
 @model AllReady.Areas.Admin.ViewModels.Resource.ResourceEditViewModel
 @inject AllReady.Services.ISelectListService SelectListService
- 
+
 @{
     //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
     var isEdit = Model.Id != 0;
@@ -55,7 +55,7 @@
                     <span asp-validation-for="Description" class="text-danger"></span>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-12">
                     <button type="submit" value="@actionTitle" class="btn btn-default submit-form">@actionTitle</button>

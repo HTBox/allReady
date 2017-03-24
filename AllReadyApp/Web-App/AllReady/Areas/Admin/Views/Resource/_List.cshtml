@@ -5,7 +5,7 @@
         <a asp-controller="Resource" asp-action="Create" asp-area="Admin" asp-route-campaignId="@Model.Id" class="btn btn-default">Create New</a>
     </div>
 </div>
- 
+
 <div class="row">
     <div class="col-md-12">
         <table class="table">
@@ -18,10 +18,10 @@
                 </th>
             </tr>
             @foreach (var item in Model.Resources)
-                {
+            {
                 <tr>
                     <td>
-                        <a asp-controller="Resource" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Title</a> 
+                        <a asp-controller="Resource" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Title</a>
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
                             <br />
@@ -36,4 +36,3 @@
         </table>
     </div>
 </div>
-

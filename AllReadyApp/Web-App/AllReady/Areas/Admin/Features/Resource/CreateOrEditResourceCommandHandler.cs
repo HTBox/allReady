@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Events;
+﻿using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;

@@ -2,7 +2,6 @@
 using AllReady.Areas.Admin.ViewModels.Resource;
 using AllReady.Models;
 using MediatR;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Resource

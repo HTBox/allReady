@@ -5,7 +5,7 @@
 @{
     ViewBag.Title = Model.Name;
 }
- 
+
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
@@ -46,7 +46,7 @@
                 @Html.DisplayNameFor(model => model.ResourceUrl)
             </dt>
             <dd>
-                <a  href="@Model.ResourceUrl">@Model.Name</a>
+                <a href="@Model.ResourceUrl">@Model.Name</a>
             </dd>
             <dt>
                 @Html.DisplayNameFor(model => model.Description)
@@ -57,8 +57,3 @@
         </dl>
     </div>
 </div>
-
-@section scripts {
-    
-}
-
