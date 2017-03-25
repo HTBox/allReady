@@ -788,11 +788,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteGetSendsDeleteQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
+                .ReturnsAsync(new DeleteViewModel { Id = eventId });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            await sut.Delete(eventId);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<DeleteQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<DeleteQuery>(q => q.EventId == eventId)));
         }
 
         [Fact]
