@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
 using DeleteViewModel = AllReady.Areas.Admin.Features.Events.DeleteViewModel;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -61,14 +62,33 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
-		public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
+        [Fact]
+        public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
         {
-			// delete this line when starting work on this unit test
-			await TaskCompletedTask;
-		}
+            const int orgId = 1;
+            const int eventID = 1;
+            var viewModel = new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId };
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.Is<EventDetailQuery>(q => q.EventId == eventID))).ReturnsAsync(viewModel);
 
-		[Fact]
+            var mockUrlHelper = new Mock<IUrlHelper>();
+            mockUrlHelper
+                .Setup(url => url.Action(It.IsAny<UrlActionContext>()))
+                .Returns("baseUrl/");
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+            sut.Url = mockUrlHelper.Object;
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model;
+            Assert.IsType<EventDetailViewModel>(resultViewModel);
+            Assert.Equal(resultViewModel, viewModel);
+        }
+
+        [Fact]
         public void DetailsHasHttpGetAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
@@ -85,11 +105,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Event/Details/{id}");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CreateGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int campaignId = 99;
+            var mediator = new Mock<IMediator>();
+
+            var sut = new EventController(null, mediator.Object, null);
+            await sut.Create(campaignId);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<CampaignSummaryQuery>(q => q.CampaignId == campaignId)));
         }
 
         [Fact]
@@ -133,6 +159,30 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(view.ViewName, "Edit");
             Assert.Equal(viewModel.StartDateTime, dateTimeTodayDate);
             Assert.Equal(viewModel.EndDateTime, dateTimeTodayDate);
+        }
+
+        [Fact]
+        public async Task CreateGetReturnsCorrectView_AndCorrectCampaignID()
+        {
+            const int orgId = 1;
+            const int campaignId = 99;
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<CampaignSummaryQuery>(q => q.CampaignId == campaignId)))
+                .ReturnsAsync(new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Create(campaignId) as ViewResult;
+
+            Assert.Equal(result.ViewName, "Edit");
+            var resultViewModel = result.ViewData.Model;
+            Assert.IsType<EventEditViewModel>(resultViewModel);
+
+            //
+            Assert.Equal((resultViewModel as EventEditViewModel).CampaignId, campaignId);
         }
 
         [Fact]
@@ -233,11 +283,25 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(routeAttribute.Template, "Admin/Event/Create/{campaignId}");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async void EditGetSendsEventDetailQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 1;
+            const int eventId = 100;
+            EventEditViewModel viewModel = new EventEditViewModel { Id = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<EventEditQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(viewModel);
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(eventId);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<EventEditQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<EventEditQuery>(q => q.EventId == eventId)));
         }
 
         [Fact]
@@ -261,11 +325,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.Edit(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async void EditGetReturnsCorrectViewModel()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 1;
+            const int eventId = 100;
+            EventEditViewModel viewModel = new EventEditViewModel { Id = eventId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<EventEditQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(viewModel);
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(eventId) as ViewResult;
+            Assert.IsType<EventEditViewModel>(result.ViewData.Model);
         }
 
         [Fact]
@@ -275,95 +351,425 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<BadRequestResult>(await sut.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostSendsManagingOrganizationIdByEventIdQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            EventEditViewModel viewModel = new EventEditViewModel { Id = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(It.IsAny<int>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            await sut.Edit(viewModel, null);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<ManagingOrganizationIdByEventIdQuery>(q => q.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdminUser()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(It.IsAny<int>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.Edit(new EventEditViewModel { }, null);
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostSendsCampaignSummaryQueryWithTheCorrectCampaignId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(It.IsAny<CampaignSummaryViewModel>());
+
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(viewModel, null);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<CampaignSummaryQuery>(q => q.CampaignId == campaignId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task EditPostAddsValidationErrorsToModelStateErrors_WhenEventDetailsModelValidatorHasErrors()
+        [Fact]
+        public async Task EditPostAddsValidationErrorsToModelStateErrors_WhenEventEditViewModelValidatorHasErrors()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            EventEditViewModel viewModel = new EventEditViewModel { };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(It.IsAny<CampaignSummaryViewModel>());
+
+            var errors = new List<KeyValuePair<string, string>>();
+            errors.Add(new KeyValuePair<string, string>("property", "error"));
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(errors);
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(viewModel, null) as ViewResult;
+
+            Assert.False(result.ViewData.ModelState.IsValid);
+            Assert.True(result.ViewData.ModelState.Count > 0);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task EditPostReturnsCorrectView_WhenEventDetailsModelValidatorHasErrors()
+        [Fact]
+        public async Task EditPostReturnsCorrectView_WhenEventEditViewModelValidatorHasErrors()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            EventEditViewModel viewModel = new EventEditViewModel { };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(It.IsAny<CampaignSummaryViewModel>());
+
+            var errors = new List<KeyValuePair<string, string>>();
+            errors.Add(new KeyValuePair<string, string>("property", "error"));
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(errors);
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(viewModel, null) as ViewResult;
+
+            Assert.Equal(result.ViewData.Model, viewModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostInvokesUploadEventImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId };
+            CampaignSummaryViewModel summaryViewModel = new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(summaryViewModel);
+
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(It.IsAny<string>());
+
+            var formFile = new Mock<IFormFile>();
+            formFile
+                .Setup(x => x.ContentType)
+                .Returns("image/png");
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(viewModel, formFile.Object);
+
+            mockImageService.Verify(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == campaignId), It.Is<IFormFile>(f => f == formFile.Object)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostInvokesDeleteImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType_AndThereIsAnExistingImage()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            const string existingImageUrl = "existingImage";
+            const string newImageUrl = "newImage";
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId, ImageUrl = existingImageUrl };
+            CampaignSummaryViewModel summaryViewModel = new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(summaryViewModel);
+
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(newImageUrl);
+            mockImageService
+                .Setup(x => x.DeleteImageAsync(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            var formFile = new Mock<IFormFile>();
+            formFile
+                .Setup(x => x.ContentType)
+                .Returns("image/png");
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(viewModel, formFile.Object);
+
+            mockImageService.Verify(x => x.DeleteImageAsync(It.Is<string>(s => s == existingImageUrl)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task EditPostDoesNotInvokeDeleteImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType_AndThereIsAnExistingImage()
+        [Fact]
+        public async Task EditPostDoesNotInvokeDeleteImageAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsAnAcceptableImageContentType_AndAnExistingImageDoesNotExist()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            const string existingImageUrl = null;
+            const string newImageUrl = "newImage";
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId, ImageUrl = existingImageUrl };
+            CampaignSummaryViewModel summaryViewModel = new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(summaryViewModel);
+
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<IFormFile>()))
+                .ReturnsAsync(newImageUrl);
+            mockImageService
+                .Setup(x => x.DeleteImageAsync(It.IsAny<string>()))
+                .Returns(Task.CompletedTask);
+
+            var formFile = new Mock<IFormFile>();
+            formFile
+                .Setup(x => x.ContentType)
+                .Returns("image/png");
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(viewModel, formFile.Object);
+
+            mockImageService.Verify(x => x.DeleteImageAsync(It.Is<string>(s => s == existingImageUrl)), Times.Never);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task EditPostAddsCorrectKey_AndValueToModelStateErrors_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsNotAnAcceptableImageContentType()
+        [Fact]
+        public async Task EditPostAddsCorrectKeyAndValueToModelStateErrors_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsNotAnAcceptableImageContentType()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId };
+            CampaignSummaryViewModel summaryViewModel = new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(summaryViewModel);
+
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var formFile = new Mock<IFormFile>();
+            formFile
+                .Setup(x => x.ContentType)
+                .Returns("");   // IsAcceptableImageContentType will return false
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(viewModel, formFile.Object) as ViewResult;
+
+            var resultViewModelState = result.ViewData.ModelState;
+
+            var errors = result.ViewData.ModelState.Select(x => new { x.Key, x.Value.Errors }).ToArray();
+            Assert.Equal(errors.Count(), 1);
+            Assert.Equal(errors[0].Key, "ImageUrl");
+            Assert.Equal(errors[0].Errors.Count, 1);
+            Assert.Equal((errors[0].Errors.ToArray())[0].ErrorMessage, "You must upload a valid image file for the logo (.jpg, .png, .gif)");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostReturnsCorrectViewModel_WhenModelStateIsValid_AndFileUploadIsNotNull_AndFileUploadIsNotAnAcceptableImageContentType()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId };
+            CampaignSummaryViewModel summaryViewModel = new CampaignSummaryViewModel { Id = campaignId, OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(summaryViewModel);
+
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(new List<KeyValuePair<string, string>>());
+
+            var formFile = new Mock<IFormFile>();
+            formFile
+                .Setup(x => x.ContentType)
+                .Returns("");   // IsAcceptableImageContentType will return false
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(viewModel, formFile.Object) as ViewResult;
+
+            Assert.IsType<EventEditViewModel>(result.ViewData.Model);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostSendsEditEventCommandWithCorrectEvent_WhenModelStateIsValid()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            EventEditViewModel viewModel = new EventEditViewModel { };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(It.IsAny<CampaignSummaryViewModel>());
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<EditEventCommand>()))
+                .ReturnsAsync(It.IsAny<int>());
+
+            var errors = new List<KeyValuePair<string, string>>();
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(errors);
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.Edit(viewModel, null);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<EditEventCommand>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<EditEventCommand>(c => c.Event == viewModel)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostRedirectsToCorrectAction_AndControllerWithCorrectRouteValues_WhenModelStateIsValid()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(It.IsAny<CampaignSummaryViewModel>());
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<EditEventCommand>()))
+                .ReturnsAsync(campaignId);
+
+            var errors = new List<KeyValuePair<string, string>>();
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(errors);
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(viewModel, null) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(EventController.Details));
+            Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EditPostReturnsCorrectViewModel_WhenModelStateIsNotValid()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int orgId = 8;
+            const int campaignId = 12;
+            EventEditViewModel viewModel = new EventEditViewModel { CampaignId = campaignId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<ManagingOrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
+                .ReturnsAsync(It.IsAny<CampaignSummaryViewModel>());
+
+            var errors = new List<KeyValuePair<string, string>>();
+            errors.Add(new KeyValuePair<string, string>("property", "error"));
+            var validator = new Mock<IValidateEventEditViewModels>();
+            validator
+                .Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
+                .Returns(errors);
+
+            var sut = new EventController(null, mediator.Object, validator.Object);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.Edit(viewModel, null) as ViewResult;
+
+            Assert.IsType<EventEditViewModel>(result.ViewData.Model);
         }
 
         [Fact]
@@ -382,11 +788,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteGetSendsDeleteQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
+                .ReturnsAsync(new DeleteViewModel { Id = eventId });
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            await sut.Delete(eventId);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<DeleteQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<DeleteQuery>(q => q.EventId == eventId)));
         }
 
         [Fact]
@@ -464,13 +882,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(attribute.Name, "Delete");
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsEventDetailQueryWithCorrectEventId()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
         [Fact]
         public async Task DeleteConfirmedReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
@@ -478,18 +889,45 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteConfirmedSendsDeleteEventCommandWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            DeleteViewModel viewModel = new DeleteViewModel { Id = eventId, UserIsOrgAdmin = true };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<DeleteEventCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            await sut.DeleteConfirmed(viewModel);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<DeleteEventCommand>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<DeleteEventCommand>(c => c.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DeleteConfirmedRedirectToCorrectAction_AndControllerWithCorrectRouteValues()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int campaignId = 88;
+            DeleteViewModel viewModel = new DeleteViewModel { Id = eventId, UserIsOrgAdmin = true, CampaignId = campaignId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<DeleteEventCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.DeleteConfirmed(viewModel) as RedirectToActionResult;
+
+            Assert.Equal(result.ActionName, nameof(CampaignController.Details));
+            Assert.Equal(result.ControllerName, "Campaign");
+            Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
         [Fact]
@@ -678,47 +1116,97 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ShouldBe("NothingToDelete");
         }
 
-
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var sut = new EventController(null, null, null);
+            sut.AddModelStateError();
+            var result = await sut.MessageAllVolunteers(It.IsAny<MessageEventVolunteersViewModel>());
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersSendsEventDetailQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int orgId = 1;
+            MessageEventVolunteersViewModel viewModel = new MessageEventVolunteersViewModel { EventId = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(orgId);
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.MessageAllVolunteers(viewModel);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsHttpNotFoundResult_WhenEventIsNull()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>()))
+                .ReturnsAsync(It.IsAny<int>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserNotAnOrgAdmin();
+
+            var result = await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel { EventId = 100 });
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandWithCorrectData()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int orgId = 1;
+            MessageEventVolunteersViewModel viewModel = new MessageEventVolunteersViewModel { EventId = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<MessageEventVolunteersCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.MessageAllVolunteers(viewModel);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<MessageEventVolunteersCommand>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<MessageEventVolunteersCommand>(c => c.ViewModel == viewModel)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task MessageAllVolunteersReturnsHttpOkResult()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 100;
+            const int orgId = 1;
+            MessageEventVolunteersViewModel viewModel = new MessageEventVolunteersViewModel { EventId = eventId };
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                .ReturnsAsync(orgId);
+            mediator
+                .Setup(x => x.SendAsync(It.IsAny<MessageEventVolunteersCommand>()))
+                .ReturnsAsync(It.IsAny<Unit>());
+
+            var sut = new EventController(null, mediator.Object, null);
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.MessageAllVolunteers(viewModel);
+
+            Assert.IsType<OkResult>(result);
         }
 
         [Fact]
@@ -737,25 +1225,90 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task PostEventFileSendsEventByEventIdQueryWithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 99;
+            const int orgId = 10;
+            IFormFile formFile = null;
+            string imageUrl = "url";
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                 .ReturnsAsync(orgId);
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == eventId), It.Is<IFormFile>(f => f == formFile)))
+                .ReturnsAsync(imageUrl);
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, null);
+
+            await sut.PostEventFile(eventId, formFile);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task PostEventFileSendsUpdateEventAsyncWithCorrectData()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 99;
+            const int orgId = 10;
+            IFormFile formFile = null;
+            string imageUrl = "url";
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                 .ReturnsAsync(orgId);
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<UpdateEventImageUrl>(u => u.EventId == eventId && u.ImageUrl == imageUrl)))
+                 .ReturnsAsync(It.IsAny<Unit>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == eventId), It.Is<IFormFile>(f => f == formFile)))
+                .ReturnsAsync(imageUrl);
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, null);
+
+            await sut.PostEventFile(eventId, formFile);
+
+            mediator.Verify(m => m.SendAsync(It.IsAny<UpdateEventImageUrl>()), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<UpdateEventImageUrl>(u => u.EventId == eventId && u.ImageUrl == imageUrl)));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task PostEventFileRedirectsToCorrectRoute()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 99;
+            const int orgId = 10;
+            IFormFile formFile = null;
+            string imageUrl = "url";
+
+            var mediator = new Mock<IMediator>();
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<OrganizationIdByEventIdQuery>(q => q.EventId == eventId)))
+                 .ReturnsAsync(orgId);
+            mediator
+                 .Setup(x => x.SendAsync(It.Is<UpdateEventImageUrl>(u => u.EventId == eventId && u.ImageUrl == imageUrl)))
+                 .ReturnsAsync(It.IsAny<Unit>());
+
+            var mockImageService = new Mock<IImageService>();
+            mockImageService
+                .Setup(x => x.UploadEventImageAsync(It.Is<int>(i => i == orgId), It.Is<int>(i => i == eventId), It.Is<IFormFile>(f => f == formFile)))
+                .ReturnsAsync(imageUrl);
+
+            var sut = new EventController(mockImageService.Object, mediator.Object, null);
+
+            var result = await sut.PostEventFile(eventId, formFile) as RedirectToRouteResult;
+
+            Assert.Equal(result.RouteValues["controller"], "Event");
+            Assert.Equal(result.RouteValues["Area"], "Admin");
+            Assert.Equal(result.RouteValues["action"], nameof(EventController.Edit));
+            Assert.Equal(result.RouteValues["id"], eventId);
         }
 
         [Fact]
