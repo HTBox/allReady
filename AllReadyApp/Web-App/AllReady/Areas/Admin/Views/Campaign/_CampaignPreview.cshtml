@@ -149,36 +149,5 @@
             <td><label asp-for="PrimaryContactEmail" class="col-md-4 control-label"></label></td>
             <td>@Model.PrimaryContactEmail</td>
         </tr>
-        @if (isEdit)
-        {
-            <tr>
-                <td><label class="col-md-4 control-label">Display Impact Goal</label></td>
-                <td>@(Model.CampaignImpact.Display == true ? "Yes" : "No")</td>
-            </tr>
-
-            <tr>
-                <td><label class="col-md-4 control-label">Campaign Impact Goal</label></td>
-                <td>@Model.CampaignImpact.TextualImpactGoal</td>
-            </tr>
-
-            <tr>
-                <td><label class="col-md-4 control-label">Impact Type</label></td>
-                <td>@Model.CampaignImpact.ImpactType</td>
-            </tr>
-                    @if (Model.CampaignImpact.ImpactType == ImpactType.Numeric)
-                    {
-                        <tr>
-                            <td><label class="col-md-4 control-label">Current Impact Level</label></td>
-                            <td>@Model.CampaignImpact.CurrentImpactLevel</td>
-                        </tr>
-
-                        <tr>
-                            <td><label class="col-md-4 control-label">Numeric Impact Goal</label></td>
-                            <td>@Model.CampaignImpact.NumericImpactGoal</td>
-                        </tr>
-                    }
-        }
-
     </tbody>
-
 </table>

@@ -18,7 +18,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(new Event { Campaign = new Campaign() });
 
-            var sut = new TaskEditViewModelValidator(mediator.Object);
+            var sut = new VolunteerTaskEditViewModelValidator(mediator.Object);
             await sut.Validate(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<EventByEventIdQuery>(y => y.EventId == model.EventId)), Times.Once);
@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
 
-            var validator = new TaskEditViewModelValidator(mockMediator.Object);
+            var validator = new VolunteerTaskEditViewModelValidator(mockMediator.Object);
             var errors = await validator.Validate(new EditViewModel
             {
                 StartDateTime = now,
@@ -57,7 +57,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
             
-            var validator = new TaskEditViewModelValidator(mockMediator.Object);
+            var validator = new VolunteerTaskEditViewModelValidator(mockMediator.Object);
             var errors = await validator.Validate(new EditViewModel());
 
             Assert.True(errors.Exists(x => x.Key.Equals("StartDateTime")));
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
 
-            var validator = new TaskEditViewModelValidator(mediator.Object);
+            var validator = new VolunteerTaskEditViewModelValidator(mediator.Object);
             var errors = await validator.Validate(new EditViewModel
             {
                 EndDateTime = now.AddDays(-1).AddMinutes(15)
@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
 
-            var validator = new TaskEditViewModelValidator(mediator.Object);
+            var validator = new VolunteerTaskEditViewModelValidator(mediator.Object);
             var errors = await validator.Validate(new EditViewModel
             {
                 StartDateTime = now.AddDays(-1),
@@ -118,7 +118,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
 
             
-            var validator = new TaskEditViewModelValidator(mockMediator.Object);
+            var validator = new VolunteerTaskEditViewModelValidator(mockMediator.Object);
             var errors = await validator.Validate(new EditViewModel
             {
                 StartDateTime = now.AddMinutes(30),
@@ -138,7 +138,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
 
-            var validator = new TaskEditViewModelValidator(mockMediator.Object);
+            var validator = new VolunteerTaskEditViewModelValidator(mockMediator.Object);
             var errors = await validator.Validate(new EditViewModel
             {
                 StartDateTime = now.AddMinutes(15),

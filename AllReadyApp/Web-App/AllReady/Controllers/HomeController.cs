@@ -22,14 +22,8 @@ namespace AllReady.Controllers
             var model = new IndexViewModel
             {
                 FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQuery()),
-                ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQuery())
+                ActiveOrUpcomingEvents = await mediator.SendAsync(new ActiveOrUpcomingEventsQuery())
             };
-
-            if (model.HasFeaturedCampaign)
-            {
-                var indexOfFeaturedCampaign = model.ActiveOrUpcomingCampaigns.FindIndex(s => s.Id == model.FeaturedCampaign.Id);
-                model.ActiveOrUpcomingCampaigns.RemoveAt(indexOfFeaturedCampaign);
-            }
 
             return View(model);
         }
@@ -53,7 +47,7 @@ namespace AllReady.Controllers
         {
             return View("~/Views/Shared/AccessDenied.cshtml");
         }
-
+        [Route("Home/PrivacyPolicy")]
         public IActionResult PrivacyPolicy()
         {
             return View(nameof(PrivacyPolicy));

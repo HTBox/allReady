@@ -26,18 +26,18 @@ namespace AllReady.UnitTest.Features.Event
                 await context.SaveChangesAsync();
             }
 
-            var message = new UpdateMyTasksCommand { UserId =userId, TaskSignups = new List<TaskSignupViewModel>() };
+            var message = new UpdateMyVolunteerTasksCommand { UserId =userId, VolunteerTaskSignups = new List<VolunteerTaskSignupViewModel>() };
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new UpdateMyTasksCommandHandler(context);
+                var sut = new UpdateMyVolunteerTasksCommandHandler(context);
                 await sut.Handle(message);
             }
 
             using (var context = new AllReadyContext(options))
             {
-                var taskSignups = context.TaskSignups.Count();
-                Assert.Equal(taskSignups, 0);
+                var volunteerTaskSignups = context.VolunteerTaskSignups.Count();
+                Assert.Equal(volunteerTaskSignups, 0);
             }
         }
 
@@ -51,31 +51,31 @@ namespace AllReady.UnitTest.Features.Event
             const int secondId = 2;
 
             var user = new ApplicationUser {Id = userId};
-            var taskSignupViewModels = new List<TaskSignupViewModel>
+            var volunteerTaskSignupViewModels = new List<VolunteerTaskSignupViewModel>
             {
-                new TaskSignupViewModel { Id = firstId, Status = "Accepted" },
-                new TaskSignupViewModel { Id = secondId, Status = "Accepted" }
+                new VolunteerTaskSignupViewModel { Id = firstId, Status = "Accepted" },
+                new VolunteerTaskSignupViewModel { Id = secondId, Status = "Accepted" }
             };
 
             using (var context = new AllReadyContext(options))
             {
                 context.Users.Add(user);
-                context.TaskSignups.Add(new TaskSignup { Id = firstId });
-                context.TaskSignups.Add(new TaskSignup { Id = secondId });
+                context.VolunteerTaskSignups.Add(new VolunteerTaskSignup { Id = firstId });
+                context.VolunteerTaskSignups.Add(new VolunteerTaskSignup { Id = secondId });
                 await context.SaveChangesAsync();
             }
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new UpdateMyTasksCommandHandler(context) { DateTimeUtcNow = () => DateTime.UtcNow };
-                await sut.Handle(new UpdateMyTasksCommand { TaskSignups = taskSignupViewModels });
+                var sut = new UpdateMyVolunteerTasksCommandHandler(context) { DateTimeUtcNow = () => DateTime.UtcNow };
+                await sut.Handle(new UpdateMyVolunteerTasksCommand { VolunteerTaskSignups = volunteerTaskSignupViewModels });
             }
 
             using (var context = new AllReadyContext(options))
             {
-                var signup1 = context.TaskSignups.FirstOrDefault(x => x.Id == firstId);
+                var signup1 = context.VolunteerTaskSignups.FirstOrDefault(x => x.Id == firstId);
                 Assert.Equal(signup1 != null, true);
-                var signup2 = context.TaskSignups.FirstOrDefault(x => x.Id == secondId);
+                var signup2 = context.VolunteerTaskSignups.FirstOrDefault(x => x.Id == secondId);
                 Assert.Equal(signup2 != null, true);
             }
         }
@@ -86,33 +86,33 @@ namespace AllReady.UnitTest.Features.Event
             var options = CreateNewContextOptions();
 
             const string userId = "1";
-            const int taskSignupId = 1;
+            const int volunteerTaskSignupId = 1;
             var user = new ApplicationUser {Id = userId};
             var dateTimeUtcNow = DateTime.UtcNow;
-            var taskSignupViewModels = new List<TaskSignupViewModel>
+            var taskSignupViewModels = new List<VolunteerTaskSignupViewModel>
             {
-                new TaskSignupViewModel { Id = taskSignupId, StatusDescription = "statusDescription1", Status = "Accepted", TaskId = 1 }
+                new VolunteerTaskSignupViewModel { Id = volunteerTaskSignupId, StatusDescription = "statusDescription1", Status = "Accepted", VolunteerTaskId = 1 }
             };
 
-            var message = new UpdateMyTasksCommand { TaskSignups = taskSignupViewModels, UserId = userId};
+            var message = new UpdateMyVolunteerTasksCommand { VolunteerTaskSignups = taskSignupViewModels, UserId = userId};
 
             using (var context = new AllReadyContext(options))
             {
                 context.Users.Add(user);
-                context.TaskSignups.Add(new TaskSignup { Id = taskSignupId });
-                context.Tasks.Add(new AllReadyTask { Id = 1 });
+                context.VolunteerTaskSignups.Add(new VolunteerTaskSignup { Id = volunteerTaskSignupId });
+                context.VolunteerTasks.Add(new VolunteerTask { Id = 1 });
                 await context.SaveChangesAsync();
             }
 
             using (var context = new AllReadyContext(options))
             {
-                var sut = new UpdateMyTasksCommandHandler(context) { DateTimeUtcNow = () => dateTimeUtcNow };
+                var sut = new UpdateMyVolunteerTasksCommandHandler(context) { DateTimeUtcNow = () => dateTimeUtcNow };
                 await sut.Handle(message);
             }
 
             using (var context = new AllReadyContext(options))
             {
-                var signup = context.TaskSignups.FirstOrDefault(x => x.Id == taskSignupId);
+                var signup = context.VolunteerTaskSignups.FirstOrDefault(x => x.Id == volunteerTaskSignupId);
                 Assert.Equal(signup != null, true);
             }
         }

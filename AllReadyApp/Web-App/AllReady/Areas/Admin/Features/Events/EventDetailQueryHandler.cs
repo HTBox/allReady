@@ -7,7 +7,6 @@ using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Task;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.Areas.Admin.Features.Events
 {
@@ -45,7 +44,7 @@ namespace AllReady.Areas.Admin.Features.Events
                     IsAllowWaitList = campaignEvent.IsAllowWaitList,
                     Location = campaignEvent.Location.ToEditModel(),                    
                     ImageUrl = campaignEvent.ImageUrl,
-                    Tasks = campaignEvent.Tasks.Select(t => new TaskSummaryViewModel
+                    VolunteerTasks = campaignEvent.VolunteerTasks.Select(t => new TaskSummaryViewModel
                     {
                         Id = t.Id,
                         Name = t.Name,
@@ -129,15 +128,15 @@ namespace AllReady.Areas.Admin.Features.Events
                     result.CompletedRequests + 
                     result.CanceledRequests;
 
-                result.VolunteersRequired = await _context.Tasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
+                result.VolunteersRequired = await _context.VolunteerTasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
 
-                var acceptedVolunteers = await _context.Tasks
+                var acceptedVolunteers = await _context.VolunteerTasks
                     .AsNoTracking()
                     .Include(rec => rec.AssignedVolunteers)
                     .Where(rec => rec.EventId == result.Id)
                     .ToListAsync();
 
-                result.AcceptedVolunteers = acceptedVolunteers.Sum(x => x.AssignedVolunteers.Count(v => v.Status == TaskStatus.Accepted));
+                result.AcceptedVolunteers = acceptedVolunteers.Sum(x => x.AssignedVolunteers.Count(v => v.Status == VolunteerTaskStatus.Accepted));
             }
 
             return result;
@@ -148,7 +147,7 @@ namespace AllReady.Areas.Admin.Features.Events
             return await _context.Events
                 .AsNoTracking()
                 .Include(a => a.Campaign).ThenInclude(c => c.ManagingOrganization)
-                .Include(a => a.Tasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
+                .Include(a => a.VolunteerTasks).ThenInclude(t => t.AssignedVolunteers).ThenInclude(av => av.User)
                 .Include(a => a.RequiredSkills).ThenInclude(s => s.Skill).ThenInclude(s => s.ParentSkill)
                 .Include(a => a.Location)
                 .Include(a => a.Itineraries).ThenInclude(a => a.TeamMembers)

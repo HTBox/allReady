@@ -106,16 +106,22 @@ namespace AllReady
 
             services.AddMemoryCache();
 
-            services.AddApplicationInsightsTelemetry(Configuration);
-
             // Add MVC services to the services container.
             // config add to get passed Angular failing on Options request when logging in.
             services.AddMvc(config =>
             {
                 config.ModelBinderProviders.Insert(0, new AdjustToTimezoneModelBinderProvider());
             })
-                .AddJsonOptions(options =>
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            .AddJsonOptions(options =>
+            options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+            });
 
             //Hangfire
             services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
@@ -124,7 +130,6 @@ namespace AllReady
             var container = AllReady.Configuration.Services.CreateIoCContainer(services, Configuration);
             return container.Resolve<IServiceProvider>();
         }
-
 
         // Configure is called after ConfigureServices is called.
         public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
@@ -154,6 +159,8 @@ namespace AllReady
                     return true;
                 });
             }
+
+            app.UseSession();
 
             // Add the following to the request pipeline only in development environment.
             if (env.IsDevelopment())

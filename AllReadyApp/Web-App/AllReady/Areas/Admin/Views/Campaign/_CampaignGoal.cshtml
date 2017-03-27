@@ -1,0 +1,26 @@
+﻿@using System.Threading.Tasks
+@model AllReady.Models.CampaignGoal
+
+<div class="panel panel-success campaign-goal @if (!Model.Display){ <text>not-displayed</text> } ">
+    <div class="panel-heading">
+        <div class="actions">
+            <a asp-controller="Goal" asp-action="Edit" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Goal" asp-action="Delete" asp-area="Admin" asp-route-id="@Model.Id"  class="btn btn-default inline-form"><i class="glyphicon glyphicon-trash"></i></a>
+        </div>
+        @Html.Raw(Model.TextualGoal)
+    </div>
+    <div class="panel-body">
+        @if (Model.GoalType == GoalType.Numeric)
+            {
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar"
+                         aria-valuenow="@Model.PercentComplete"
+                         aria-valuemin="@Model.CurrentGoalLevel"
+                         aria-valuemax="@Model.NumericGoal"
+                         style="width: @Model.PercentComplete%;">
+                    </div>
+                </div>
+                <text>@Model.CurrentGoalLevel / @Model.NumericGoal</text>
+            }
+    </div>
+</div>

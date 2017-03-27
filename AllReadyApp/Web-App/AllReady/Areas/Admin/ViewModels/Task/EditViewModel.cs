@@ -46,7 +46,7 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public int NumberOfVolunteersRequired { get; set; }
 
         [Display(Name = "Required Skills")]
-        public List<TaskSkill> RequiredSkills { get; set; } = new List<TaskSkill>();
+        public List<VolunteerTaskSkill> RequiredSkills { get; set; } = new List<VolunteerTaskSkill>();
 
         //only used for update scenarios
         public List<VolunteerViewModel> AssignedVolunteers { get; set; } = new List<VolunteerViewModel>();

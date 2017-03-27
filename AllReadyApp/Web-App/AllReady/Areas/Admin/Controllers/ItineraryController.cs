@@ -37,7 +37,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpGet]
         [Route("Admin/Itinerary/Details/{id}")]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int id, bool? teamLeadSuccess = null)
         {
             var itinerary = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
             if (itinerary == null)
@@ -53,6 +53,8 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return Unauthorized();
             }
+
+            itinerary.TeamLeadChangedSuccess = teamLeadSuccess;
 
             return View("Details", itinerary);
         }
@@ -184,40 +186,19 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [Route("Admin/Itinerary/AddTeamMember")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddTeamMember(int id, int selectedTeamMember)
+        public async Task<IActionResult> AddTeamMember(int itineraryId, int selectedTeamMember)
         {
-            var orgId = await GetOrganizationIdBy(id);
+            var orgId = await GetOrganizationIdBy(itineraryId);
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
             }
 
-            if (id == 0 || selectedTeamMember == 0)
-            {
-                return Json(new
-                {
-                    isSuccess = false,
-                    errors = new[] { "Invalid selection." }
-                });
-            }
+            var result = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = itineraryId, VolunteerTaskSignupId = selectedTeamMember });
 
-            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, TaskSignupId = selectedTeamMember });
-            if (!isSuccess)
-            {
-                return Json(new
-                {
-                    isSuccess = false,
-                    errors = new[] { "Invalid itinerary." }
-                });
-            }
+            // TODO - see comment in RemoveTeamLead method regarding passing message between requests
 
-            var detail = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
-            return Json(new
-            {
-                isSuccess = true,
-                teamMembers = detail.TeamMembers,
-                potentialTeamMembers = detail.PotentialTeamMembers
-            });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpGet]
@@ -266,8 +247,8 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
-        public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int taskSignupId)
+        [Route("Admin/Itinerary/{itineraryId}/[Action]/{volunteerTaskSignupId}")]
+        public async Task<IActionResult> ConfirmRemoveTeamMember(int itineraryId, int volunteerTaskSignupId)
         {
             var orgId = await GetOrganizationIdBy(itineraryId);
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
@@ -275,7 +256,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return Unauthorized();
             }
 
-            var viewModel = await _mediator.SendAsync(new TaskSignupSummaryQuery { TaskSignupId = taskSignupId });
+            var viewModel = await _mediator.SendAsync(new VolunteerTaskSignupSummaryQuery { VolunteerTaskSignupId = volunteerTaskSignupId });
             if (viewModel == null)
             {
                 return NotFound();
@@ -291,14 +272,14 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}")]
-        public async Task<IActionResult> RemoveTeamMember(TaskSignupSummaryViewModel viewModel)
+        public async Task<IActionResult> RemoveTeamMember(VolunteerTaskSignupSummaryViewModel viewModel)
         {
             if (!viewModel.UserIsOrgAdmin)
             {
                 return Unauthorized();
             }
 
-            await _mediator.SendAsync(new RemoveTeamMemberCommand { TaskSignupId = viewModel.TaskSignupId });
+            await _mediator.SendAsync(new RemoveTeamMemberCommand { VolunteerTaskSignupId = viewModel.VolunteerTaskSignupId });
 
             return RedirectToAction(nameof(Details), new { id = viewModel.ItineraryId });
         }
@@ -453,6 +434,48 @@ namespace AllReady.Areas.Admin.Controllers
             return RedirectToAction("Details", new { id = itineraryId });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]")]
+        public async Task<IActionResult> SetTeamLead(int itineraryId, [FromForm] int volunteerTaskSignupId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new SetTeamLeadCommand(itineraryId, volunteerTaskSignupId));
+
+            // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
+
+            var isSuccess = result == SetTeamLeadResult.Success;
+
+            return RedirectToAction("Details", new { id = itineraryId, teamLeadSuccess = isSuccess });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Admin/Itinerary/{itineraryId}/[Action]")]
+        public async Task<IActionResult> RemoveTeamLead(int itineraryId)
+        {
+            var orgId = await GetOrganizationIdBy(itineraryId);
+
+            if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
+            {
+                return Unauthorized();
+            }
+
+            var result = await _mediator.SendAsync(new RemoveTeamLeadCommand(itineraryId));
+
+            // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
+
+            //var isSuccess = result == SetTeamLeadResult.Success;
+
+            return RedirectToAction("Details", new { id = itineraryId });
+        }
+
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)
         {
             var model = new SelectItineraryRequestsViewModel();
@@ -480,7 +503,7 @@ namespace AllReady.Areas.Admin.Controllers
                     Address = request.Address,
                     Latitude = request.Latitude,
                     Longitude = request.Longitude,
-                    Postcode = request.Postcode
+                    PostalCode = request.PostalCode
                 };
 
                 model.Requests.Add(selectItem);

@@ -52,13 +52,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
-            var taskSignUp = new TaskSignup { Id = 1, ItineraryId = 2, TaskId = 1 };
+            var volunteerTaskSignUp = new VolunteerTaskSignup { Id = 1, ItineraryId = 2, VolunteerTaskId = 1 };
 
             Context.Organizations.Add(htb);
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
-            Context.TaskSignups.Add(taskSignUp);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignUp);
 
             Context.SaveChanges();
         }
@@ -69,7 +69,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 0,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var handler = new AddTeamMemberCommandHandler(Context, null);
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 1,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var handler = new AddTeamMemberCommandHandler(Context, Mock.Of<IMediator>());
@@ -99,7 +99,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 1,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var mockMediator = new Mock<IMediator>();
@@ -116,7 +116,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 1,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var potentialTaskSignups = new List<SelectListItem>
@@ -124,20 +124,20 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 new SelectListItem
                 {
                     Text = "user@domain.tld : Test TaskName",
-                    Value = query.TaskSignupId.ToString()
+                    Value = query.VolunteerTaskSignupId.ToString()
                 }
             };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<PotentialItineraryTeamMembersQuery>())).ReturnsAsync(potentialTaskSignups);
 
-            var taskSignUp = Context.TaskSignups.Single(t => t.Id == 1);
-            Context.Entry(taskSignUp).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            var volunteerTaskSignUp = Context.VolunteerTaskSignups.Single(t => t.Id == 1);
+            Context.Entry(volunteerTaskSignUp).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
             var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);
             await handler.Handle(query);
 
-            mockMediator.Verify(x => x.PublishAsync(It.Is<ItineraryVolunteerListUpdated>(y => y.TaskSignupId == query.TaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
+            mockMediator.Verify(x => x.PublishAsync(It.Is<ItineraryVolunteerListUpdated>(y => y.VolunteerTaskSignupId == query.VolunteerTaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
         }
     }
 }

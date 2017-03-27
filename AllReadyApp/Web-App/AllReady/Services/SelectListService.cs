@@ -62,11 +62,11 @@ namespace AllReady.Services
                 .OrderBy(s => s.Name);
         }
 
-        public IEnumerable<SelectListItem> GetCampaignImpactTypes()
+        public IEnumerable<SelectListItem> GetCampaignGoalTypes()
         {
             return new List<SelectListItem> {
-                new SelectListItem { Value = ((int)ImpactType.Text).ToString(), Text = ImpactType.Text.GetDisplayName() },
-                new SelectListItem { Value = ((int)ImpactType.Numeric).ToString(), Text = ImpactType.Numeric.GetDisplayName() }
+                new SelectListItem { Value = ((int)GoalType.Text).ToString(), Text = GoalType.Text.GetDisplayName() },
+                new SelectListItem { Value = ((int)GoalType.Numeric).ToString(), Text = GoalType.Numeric.GetDisplayName() }
             };
         }
 

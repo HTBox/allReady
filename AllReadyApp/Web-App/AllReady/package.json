@@ -1,17 +1,19 @@
 {
-  "name": "AllReady",
+  "name": "allready",
   "version": "1.0.0",
   "description": "AllReady",
   "license": "MIT",
   "repository": "HTBox/allReady",
   "devDependencies": {
+    "@types/jquery": "2.0.40",
+    "bingmaps": "1.0.13",
+    "bower": "1.6.5",
     "gulp": "3.8.11",
     "gulp-concat": "2.5.2",
     "gulp-cssmin": "0.1.7",
-    "gulp-uglify": "1.2.0",
-    "bower": "1.6.5",
+    "gulp-sourcemaps": "1.6.0",
+    "gulp-typescript": "3.1.5",
     "rimraf": "2.2.8",
-    "gulp-typescript": "2.9.2",
-    "gulp-sourcemaps": "1.6.0"
+    "typescript": "2.2.1"
   }
 }

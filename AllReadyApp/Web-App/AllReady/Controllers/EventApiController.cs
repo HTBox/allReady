@@ -57,11 +57,11 @@ namespace AllReady.Controllers
         }
 
         [Route("search")]
-        public IEnumerable<EventViewModel> GetEventsByPostalCode(string zip, int miles)
+        public IEnumerable<EventViewModel> GetEventsByPostalCode(string postalCode, int miles)
         {
             var model = new List<EventViewModel>();
 
-            var campaignEvents = _mediator.Send(new EventsByPostalCodeQuery { PostalCode = zip, Distance = miles });
+            var campaignEvents = _mediator.Send(new EventsByPostalCodeQuery { PostalCode = postalCode, Distance = miles });
             campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
             return model;

@@ -58,7 +58,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DetailsGet_HasHttpGetAttribute()
         {
             var sut = new ItineraryController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>(), null)).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -66,7 +66,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DetailsGet_HasRouteAttribute_WithCorrectRoute()
         {
             var sut = new ItineraryController(null, null, null);
-            var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>(), null)).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Details/{id}");
         }
@@ -135,7 +135,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel { OrganizationId = 1 });
             mediator.Setup(x => x.Send(It.IsAny<OptimizeRouteResultStatusQuery>()))
                 .Returns(new OptimizeRouteResultStatus { IsSuccess = true })
-                .Callback<OptimizeRouteResultStatusQuery>(x => query = x)                
+                .Callback<OptimizeRouteResultStatusQuery>(x => query = x)
                 .Verifiable();
 
             var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
@@ -885,74 +885,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task AddTeamMemberSendsAddTeamMemberCommandWithCorrectParameters()
-        {
-            const int itineraryId = 1;
-            const int selectedTeamMember = 1;
-            string volunteerEmail = "test@example.com";
-
-            var mockMediator = new Mock<IMediator>();
-            var itineraryDetailsViewModel = new ItineraryDetailsViewModel
-            {
-                PotentialTeamMembers = new List<SelectListItem>(),
-                TeamMembers = new List<TeamListViewModel>
-                {
-                    new TeamListViewModel {VolunteerEmail = volunteerEmail}
-                }
-            };
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(itineraryDetailsViewModel);
-
-            var sut = new ItineraryController(mockMediator.Object, null, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
-            });
-
-            await sut.AddTeamMember(1, 1);
-
-            mockMediator.Verify(x => x.SendAsync(It.Is<AddTeamMemberCommand>(y => y.ItineraryId == itineraryId && y.TaskSignupId == selectedTeamMember)), Times.Once);
-            mockMediator.Verify(x => x.SendAsync(It.Is<ItineraryDetailQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddTeamMemberDoesNotCallAddTeamMemberCommand_WhenIdIsZero()
-        {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-
-            var sut = new ItineraryController(mockMediator.Object, null, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
-            });
-
-            await sut.AddTeamMember(0, 1);
-
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddTeamMemberDoesNotCallAddTeamMemberCommand_WhenSelectedTeamMemberIsZero()
-        {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-
-            var sut = new ItineraryController(mockMediator.Object, null, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
-            });
-
-            await sut.AddTeamMember(1, 0);
-
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>()), Times.Never);
-        }
-
-        [Fact]
         public async Task AddTeamMemberSendsOrganizationIdQueryWithCorrectItineraryId()
         {
             const int itineraryId = 1;
@@ -973,62 +905,64 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task AddTeamMemberReturnsCorrectJsonWhenIdIsZeroOrSelectedTeamMemberIsZero()
+        public async Task AddTeamMember_ReturnsHttpUnauthorized_WhenUserIsNotOrgAdmin()
         {
-            const int itineraryId = 0;
-            const int orgId = 1;
-
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
 
-            var sut = new ItineraryController(mockMediator.Object, null, null);
-            sut.MakeUserAnOrgAdmin(orgId.ToString());
-            var jsonResult = await sut.AddTeamMember(itineraryId, 0) as JsonResult;
+            var itineraryController = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            itineraryController.MakeUserNotAnOrgAdmin();
 
-            var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
-            var errors = jsonResult.GetValueForProperty<string[]>("errors");
-
-            Assert.False(successStatus);
-            Assert.NotNull(errors);
-            Assert.Equal(1, errors.Length);
-            Assert.Equal("Invalid selection.", errors[0]);
+            Assert.IsType<UnauthorizedResult>(await itineraryController.AddTeamMember(It.IsAny<int>(), It.IsAny<int>()));
         }
 
         [Fact]
-        public async Task AddTeamMemberReturnsCorrectJsonWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin_AndIdOrSelectedTeamMemberIsNotZero()
+        public async Task AddTeamMember_SendsAddTeamMemberCommand_Once_WhenUserIsOrgAdmin()
         {
-            const int itineraryId = 1;
             const int orgId = 1;
-            const int teamMemberId = 1;
-            string volunteerEmail = "test@example.com";
 
             var mockMediator = new Mock<IMediator>();
-            var itineraryDetailsViewModel = new ItineraryDetailsViewModel
-            {
-                PotentialTeamMembers = new List<SelectListItem>(),
-                TeamMembers = new List<TeamListViewModel>
-                {
-                    new TeamListViewModel {VolunteerEmail = volunteerEmail}
-                }
-            };
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(itineraryDetailsViewModel);
 
-            var sut = new ItineraryController(mockMediator.Object, null, null);
+            var sut = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(orgId.ToString());
-            var jsonResult = await sut.AddTeamMember(itineraryId, teamMemberId) as JsonResult;
 
-            var successStatus = jsonResult.GetValueForProperty<bool>("isSuccess");
-            var teamMembers = jsonResult.GetValueForProperty<IEnumerable<TeamListViewModel>>("teamMembers").ToList();
-            var potentialMembers = jsonResult.GetValueForProperty<IEnumerable<SelectListItem>>("potentialTeamMembers").ToList();
+            await sut.AddTeamMember(1, 2);
+            mockMediator.Verify(x => x.SendAsync(It.Is<AddTeamMemberCommand>(y => y.ItineraryId == 1 && y.VolunteerTaskSignupId == 2)), Times.Once);
+        }
 
-            Assert.True(successStatus);
-            Assert.NotNull(teamMembers);
-            Assert.NotNull(potentialMembers);
-            Assert.Equal(1, teamMembers.Count);
-            Assert.Equal(volunteerEmail, teamMembers[0].VolunteerEmail);
+        [Fact]
+        public async Task AddTeamMember_SetsSuccessViewResult_WhenAddTeamMemberIsSuccess()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(true);
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.AddTeamMember(1, 2) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task AddTeamMember_SetsFailureViewResult_WhenAddTeamMemberIsFailure()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AddTeamMemberCommand>())).ReturnsAsync(false);
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.AddTeamMember(1, 2) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
         }
 
         // todo: sgordon: There should be some tests to validate that org admins for a different org than returned by the OrganizationIdQuery are
@@ -1467,14 +1401,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task ConfirmRemoveTeamMemberReturnsHttpUnauthorized_WhenOrganizationIdIsZero()
         {
             var itineraryId = It.IsAny<int>();
-            var taskSignupId = It.IsAny<int>();
+            var volunteerTaskSignupId = It.IsAny<int>();
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
 
             var sut = new ItineraryController(mockMediator.Object, null, null);
 
-            Assert.IsType<UnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, taskSignupId));
+            Assert.IsType<UnauthorizedResult>(await sut.ConfirmRemoveTeamMember(itineraryId, volunteerTaskSignupId));
         }
 
         [Fact]
@@ -1493,7 +1427,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task ConfirmRemoveTeamMemberSendsTaskSignupSummaryQueryWithCorrectTaskSignupIdWhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
             const int orgId = 1;
-            const int taskSignupId = 1;
+            const int volunteerTaskSignupId = 1;
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
@@ -1501,9 +1435,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
 
-            await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), taskSignupId);
+            await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), volunteerTaskSignupId);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<TaskSignupSummaryQuery>(y => y.TaskSignupId == taskSignupId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<VolunteerTaskSignupSummaryQuery>(y => y.VolunteerTaskSignupId == volunteerTaskSignupId)), Times.Once);
         }
 
         [Fact]
@@ -1513,7 +1447,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskSignupSummaryQuery>())).ReturnsAsync(null);
 
             var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -1528,7 +1462,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<TaskSignupSummaryQuery>())).ReturnsAsync(new TaskSignupSummaryViewModel { TaskSignupId = It.IsAny<int>(), VolunteerEmail = "user@domain.tld", VolunteerName = "Test McTesterson" });
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskSignupSummaryQuery>())).ReturnsAsync(new VolunteerTaskSignupSummaryViewModel { VolunteerTaskSignupId = It.IsAny<int>(), VolunteerEmail = "user@domain.tld", VolunteerName = "Test McTesterson" });
 
             var sut = new ItineraryController(mockMediator.Object, null, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
@@ -1538,7 +1472,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal(result.ViewName, "ConfirmRemoveTeamMember");
 
             var resultViewModel = result.ViewData.Model;
-            Assert.IsType<TaskSignupSummaryViewModel>(resultViewModel);
+            Assert.IsType<VolunteerTaskSignupSummaryViewModel>(resultViewModel);
         }
 
         [Fact]
@@ -1555,13 +1489,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
+            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{volunteerTaskSignupId}");
         }
 
         [Fact]
         public async Task RemoveTeamMemberReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
         {
-            var viewModel = new TaskSignupSummaryViewModel { UserIsOrgAdmin = false };
+            var viewModel = new VolunteerTaskSignupSummaryViewModel { UserIsOrgAdmin = false };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
@@ -1574,9 +1508,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task RemoveTeamMemberSendsRemoveTeamMemberCommandWithCorrectTaskSignupId_WhenOrganizationIsNotZero_AndUserIsOrgAdmin()
         {
-            const int taskSignupId = 1;
+            const int volunteerTaskSignupId = 1;
 
-            var viewModel = new TaskSignupSummaryViewModel { TaskSignupId = taskSignupId, UserIsOrgAdmin = true };
+            var viewModel = new VolunteerTaskSignupSummaryViewModel { VolunteerTaskSignupId = volunteerTaskSignupId, UserIsOrgAdmin = true };
 
             var mockMediator = new Mock<IMediator>();
 
@@ -1584,14 +1518,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             await sut.RemoveTeamMember(viewModel);
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamMemberCommand>(y => y.TaskSignupId == taskSignupId)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamMemberCommand>(y => y.VolunteerTaskSignupId == volunteerTaskSignupId)), Times.Once);
         }
 
         [Fact]
         public async Task RemoveTeamMemberRedirectsToCorrectActionWithCorrectRouteValues_WhenOrganizationIdIsNotZero_AndUserIsOrgAdmin()
         {
             const int itineraryId = 1;
-            var viewModel = new TaskSignupSummaryViewModel { ItineraryId = itineraryId, UserIsOrgAdmin = true };
+            var viewModel = new VolunteerTaskSignupSummaryViewModel { ItineraryId = itineraryId, UserIsOrgAdmin = true };
             var routeValueDictionary = new RouteValueDictionary { ["id"] = viewModel.ItineraryId };
 
             var mediator = new Mock<IMediator>();
@@ -1607,7 +1541,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void RemoveTeamMemberHasHttpPostAttribute()
         {
             var sut = new ItineraryController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<VolunteerTaskSignupSummaryViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -1615,7 +1549,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void RemoveTeamMemberHasValidateAntiForgeryTokenAttribute()
         {
             var sut = new ItineraryController(null, null, null);
-            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<VolunteerTaskSignupSummaryViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -1623,7 +1557,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void RemoveTeamMemberHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ItineraryController(null, null, null);
-            var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<TaskSignupSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<VolunteerTaskSignupSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
         }
@@ -2005,6 +1939,113 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             id.ShouldBe(itineraryId);
         }
 
+        [Fact]
+        public async Task SetTeamLead_ReturnsHttpUnauthorized_WhenUserIsNotOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var itineraryController = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            itineraryController.MakeUserNotAnOrgAdmin();
+
+            Assert.IsType<UnauthorizedResult>(await itineraryController.SetTeamLead(It.IsAny<int>(), It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task SetTeamLead_SendsSetTeamLeadCommand_Once_WhenUserIsOrgAdmin()
+        {
+            const int orgId = 1;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+
+            var sut = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.SetTeamLead(1, 2);
+            mockMediator.Verify(x => x.SendAsync(It.Is<SetTeamLeadCommand>(y => y.ItineraryId == 1 && y.VolunteerTaskId == 2)), Times.Once);
+        }
+
+        [Fact]
+        public async Task SetTeamLead_SetsSuccessViewResult_WhenSetTeamLeadIsSuccess()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<SetTeamLeadCommand>())).ReturnsAsync(SetTeamLeadResult.Success);
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.SetTeamLead(1, 2) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+            result.RouteValues["teamLeadSuccess"].ShouldBe(true);
+        }
+
+        [Fact]
+        public async Task SetTeamLead_SetsFailureViewResult_WhenSetTeamLeadIsFailure()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<SetTeamLeadCommand>())).ReturnsAsync(SetTeamLeadResult.SaveChangesFailed);
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.SetTeamLead(1, 2) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+            result.RouteValues["teamLeadSuccess"].ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task RemoveTeamLead_ReturnsHttpUnauthorized_WhenUserIsNotOrgAdmin()
+        {
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+
+            var itineraryController = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            itineraryController.MakeUserNotAnOrgAdmin();
+
+            Assert.IsType<UnauthorizedResult>(await itineraryController.RemoveTeamLead(It.IsAny<int>()));
+        }
+
+        [Fact]
+        public async Task RemoveTeamLead_ReturnsViewResult()
+        {
+            const int orgId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            mediator.Setup(x => x.SendAsync(It.IsAny<RemoveTeamLeadCommand>())).ReturnsAsync(true);
+
+            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            var result = await sut.RemoveTeamLead(1) as RedirectToActionResult;
+
+            result.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task RemoveTeamLead_SendsRemoveTeamLeadCommand_Once_WhenUserIsOrgAdmin()
+        {
+            const int orgId = 1;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+
+            var sut = new ItineraryController(mockMediator.Object, null, new FakeUserManager());
+            sut.MakeUserAnOrgAdmin(orgId.ToString());
+
+            await sut.RemoveTeamLead(1);
+            mockMediator.Verify(x => x.SendAsync(It.Is<RemoveTeamLeadCommand>(y => y.ItineraryId == 1)), Times.Once);
+        }
+
         private class FakeUserManager : UserManager<ApplicationUser>
         {
             public FakeUserManager()
@@ -2069,7 +2110,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Assert.Equal(request.Address, requestModel.Address);
                 Assert.Equal(request.Latitude, requestModel.Latitude);
                 Assert.Equal(request.Longitude, requestModel.Longitude);
-                Assert.Equal(request.Postcode, requestModel.Postcode);
+                Assert.Equal(request.PostalCode, requestModel.PostalCode);
             }
         }
 
@@ -2086,7 +2127,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     Address = "123 Main St",
                     Latitude = 123.123123,
                     Longitude = -125.234,
-                    Postcode = "53741"
+                    PostalCode = "53741"
                 },
                 new RequestListViewModel
                 {
@@ -2097,7 +2138,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     Address = "123 Main St",
                     Latitude = 38.123,
                     Longitude = -38.124,
-                    Postcode = "12345"
+                    PostalCode = "12345"
                 },
             };
         }

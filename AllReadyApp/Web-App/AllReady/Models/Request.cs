@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace AllReady.Models
 {
     // this is the class that represents incoming requests that 
-    // ulitmately need to be mapped to tasks via a concept called
+    // ulitmately need to be mapped to volunteerTasks via a concept called
     // an itinerary. these could come from the AllReady app itself
     // or via a third party web request.
 
@@ -17,7 +17,7 @@ namespace AllReady.Models
         public string Address { get; set; }
         public string City { get; set; }
         public string State { get; set; }
-        public string Zip { get; set; }
+        public string PostalCode { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
         public RequestStatus Status { get; set; } = RequestStatus.Unassigned;

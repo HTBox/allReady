@@ -39,7 +39,7 @@ namespace AllReady.Configuration
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<IDetermineIfATaskIsEditable, DetermineIfATaskIsEditable>();
             services.AddTransient<IValidateEventEditViewModels, EventEditViewModelValidator>();
-            services.AddTransient<ITaskEditViewModelValidator, TaskEditViewModelValidator>();
+            services.AddTransient<IValidateVolunteerTaskEditViewModelValidator, VolunteerTaskEditViewModelValidator>();
             services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();

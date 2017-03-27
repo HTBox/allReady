@@ -2,6 +2,11 @@
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
+
+@section styles{
+    <link href="~/css/Admin/Campaign/Details.css" rel="stylesheet" />
+}
+
 @{ ViewBag.Title = Model.Name; }
 <div class="row">
     <div class="col-12">
@@ -23,7 +28,7 @@
                 @Model.Name
             </h2>
             <a asp-controller="Campaign" asp-action="Edit" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Campaign" asp-action="Delete" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form"><i class="glyphicon glyphicon-trash"></i></a>
+            <a asp-controller="Campaign" asp-action="Delete" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Delete"><i class="glyphicon glyphicon-trash"></i></a>
             @if (!Model.Published)
             {
                 <div class="btn-group btn-group-sm row-btn-margin">
@@ -113,7 +118,7 @@
         }
         <hr />
         @if (!string.IsNullOrEmpty(Model.ImageUrl))
-            {
+        {
             <div class="row">
                 <img src="@Model.ImageUrl" class="img-responsive" />
             </div>
@@ -121,13 +126,24 @@
         }
         @Html.Raw(Model.FullDescription)
     </div>
-    <div class="col-md-4">
-        @if (Model.CampaignImpact != null && Model.CampaignImpact.Display)
-        {
-            @Html.Partial("_CampaignImpact")
-        }
-    </div>
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Goals</h3>
+    </div>
+    <div class="col-md-12">
+        <a asp-controller="Goal" asp-action="Create" asp-area="Admin" asp-route-campaignId="@Model.Id"
+           class="btn btn-default">Create New</a>
+    </div>
+    @foreach (var campaignGoal in Model.CampaignGoals)
+    {
+        <div class="col-md-4">
+            @Html.Partial("_CampaignGoal", campaignGoal)
+        </div>
+    }
+</div>
+
 
 <div class="row">
     <div class="col-md-12">
@@ -143,3 +159,11 @@
     </div>
 </div>
 @Html.Partial("~/Areas/Admin/Views/Event/_List.cshtml", Model)
+
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Resources</h3>
+    </div>
+</div>
+@Html.Partial("~/Areas/Admin/Views/Resource/_List.cshtml", Model)

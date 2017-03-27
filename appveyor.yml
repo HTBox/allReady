@@ -1,3 +1,4 @@
+#remove the noted line below when upgrading to vs2017
 version: 1.0.0.{build}.{branch}
 
 nuget:
@@ -16,6 +17,8 @@ cache:
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
  - choco install firefox
+ - rd /s /q "C:\Program Files\dotnet\sdk\1.0.1"
+ # remove the above line on upgrade to vs2017
  
 before_build:
  - cmd: dotnet restore AllReadyApp

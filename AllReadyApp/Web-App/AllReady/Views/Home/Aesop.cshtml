@@ -1,14 +1,27 @@
-﻿@{
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@{
     ViewData["Title"] = "Story";
 }
+
 <div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li><a asp-controller="Home" asp-action="About">About</a></li>
+            <li>Aesop</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+
     <div class="col-md-3"></div>
     <div class="col-md-6">
-       <h1>A Story by Aesop</h1>
-        <div class="logo-background">
-            <img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" />
+        <h1>A Story by Aesop</h1>
+        <div style="background-color: #d58033;">
+            <img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block"/>
         </div>
-       <h2>The Ant and the Grasshopper</h2>
+        <h2>The Ant and the Grasshopper</h2>
         In a field one summer's day a Grasshopper was hopping about, chirping and singing to its heart's content. An Ant passed by, bearing along with great toil an ear of corn he was taking to the nest.
 
         "Why not come and chat with me," said the Grasshopper, "instead of toiling and moiling in that way?"

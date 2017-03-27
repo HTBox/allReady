@@ -1,15 +1,19 @@
 {
-    "compilerOptions": {
-        "noImplicitAny": false,
-        "noEmitOnError": true,
-        "removeComments": false,
-        "sourceMap": true,
-        "module": "system",
-        "target": "es5"
-    },
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "system",
+    "noEmitOnError": true,
+    "noImplicitAny": false,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5"
+  },
+  "include": [
+    "wwwroot/js/**/*.ts",
+    "wwwroot/ts/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
-    "wwwroot",
     "bin/output"
   ]
 }

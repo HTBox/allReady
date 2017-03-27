@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Request.RequestSummaryViewModel
+﻿@using AllReady.Areas.Admin.ViewModels.Itinerary
+@model AllReady.Areas.Admin.ViewModels.Request.RequestSummaryViewModel
 
 <div class="row">
     <div class="col-md-12">
@@ -14,7 +15,7 @@
             @Html.DisplayFor(model => model.Address) <br />
             @Html.DisplayNameFor(model => model.City) <br />
             @Html.DisplayFor(model => model.State) <br />
-            @Html.DisplayFor(model => model.Zip) <br />
+            @Html.DisplayFor(model => ((RequestListViewModel) model).PostalCode) <br />
 
             Status: @Html.DisplayFor(model => model.Status)
         </p>

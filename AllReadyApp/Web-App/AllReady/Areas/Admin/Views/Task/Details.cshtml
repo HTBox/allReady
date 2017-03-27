@@ -116,7 +116,7 @@
             </div>
             <form asp-area="Admin" asp-controller="Task" asp-action="MessageAllVolunteers" method="post">
                 <div class="modal-body">
-                    <input type="hidden" value="@Model.Id" name="taskId" id="message-taskId">
+                    <input type="hidden" value="@Model.Id" name="volunteerTaskId" id="message-volunteerTaskId">
                     <div class="form-group">
                         <label for="subject" class="control-label">Subject</label>
                         <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">

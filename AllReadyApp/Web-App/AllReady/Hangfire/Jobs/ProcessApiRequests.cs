@@ -51,13 +51,13 @@ namespace AllReady.Hangfire.Jobs
                     Name = viewModel.Name,
                     Phone = viewModel.Phone,
                     State = viewModel.State,
-                    Zip = viewModel.Zip,
+                    PostalCode = viewModel.PostalCode,
                     Status = RequestStatus.Unassigned,
                     Source = RequestSource.Api
                 };
 
                 //this is a web service call
-                var coordinates = geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.Zip, string.Empty).Result;
+                var coordinates = geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.PostalCode, string.Empty).Result;
 
                 request.Latitude = coordinates?.Latitude ?? 0;
                 request.Longitude = coordinates?.Longitude ?? 0;

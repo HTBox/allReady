@@ -73,14 +73,14 @@
                 </div>
             </div>
         }
-        @if (Model.Tasks.Count() > 0)
+        @if (Model.VolunteerTasks.Count() > 0)
         {
             <div class="form-group">
-                <label asp-for="Tasks" class="control-label col-md-2"></label>
+                <label asp-for="VolunteerTasks" class="control-label col-md-2"></label>
                 <div class="col-md-10">
-                    @foreach (var task in Model.Tasks)
+                    @foreach (var volunteerTask in Model.VolunteerTasks)
                     {
-                        <p class="form-control-static">@task</p>
+                        <p class="form-control-static">@volunteerTask</p>
                     }
                 </div>
             </div>

@@ -50,7 +50,7 @@ namespace AllReady.Areas.Admin.Controllers
             var user = await _mediator.SendAsync(new UserQuery { UserId = userId });
             var campaigns = await _mediator.SendAsync(new CampaignByApplicationUserIdQuery() { ApplicationUserId = userId });
             var events = await _mediator.SendAsync(new EventsByApplicationUserIdQuery() { ApplicationUserId = userId });
-            var tasks = await _mediator.SendAsync(new TasksByApplicationUserIdQuery() { ApplicationUserId = userId });
+            var volunteerTasks = await _mediator.SendAsync(new VolunteerTasksByApplicationUserIdQuery() { ApplicationUserId = userId });
             
             var viewModel = new DeleteUserViewModel
             {
@@ -61,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
                 IsOrganizationAdmin = user.IsOrganizationAdmin,
                 Campaigns = campaigns?.Select(x => x.Name),
                 Events = events?.Select(x => x.Name),
-                Tasks = tasks?.Select(x => x.Name)
+                VolunteerTasks = volunteerTasks?.Select(x => x.Name)
             };
 
             return View(viewModel);
@@ -128,7 +128,7 @@ namespace AllReady.Areas.Admin.Controllers
                 if (result.Succeeded)
                 {
                     //mgmccarthy: there is no Login action method on the AdminController. The only login method I could find is on the AccountController. Not too sure what to do here
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = "Login", Controller = "Admin", Values = new { Email = user.Email }, Protocol = HttpContext.Request.Scheme });
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = "Login", Controller = "Account", Values = new { Email = user.Email }, Protocol = HttpContext.Request.Scheme });
                     await _mediator.SendAsync(new SendAccountApprovalEmailCommand { Email = user.Email, CallbackUrl = callbackUrl });
                 }
                 else
@@ -164,7 +164,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                 //TODO: mgmccarthy: there is no ResetPassword action methd on the AdminController. Not too sure what to do here. Waiting for feeback via Issue #659
-                var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Admin", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
+                var callbackUrl = Url.Action(new UrlActionContext { Action = "ResetPassword", Controller = "Account", Values = new { userId = user.Id, code = code }, Protocol = HttpContext.Request.Scheme });
                 await _mediator.SendAsync(new Features.Site.SendResetPasswordEmailCommand { Email = user.Email, CallbackUrl = callbackUrl });
 
                 ViewBag.SuccessMessage = $"Sent password reset email for {user.UserName}.";

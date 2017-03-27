@@ -1,0 +1,15 @@
+﻿@using AllReady.ViewModels
+@using AllReady.ViewModels.Campaign
+@model AllReady.Models.CampaignGoal
+
+<div class="panel panel-success campaign-goal">
+    <div class="panel-heading">@Html.Raw(Model.TextualGoal) </div>
+    <div class="panel-body" style="height: 350px">
+        @if (Model.GoalType == GoalType.Numeric)
+            {
+            <div data-control="thermometer" data-max-value="@Model.NumericGoal" data-current-value="@Model.CurrentGoalLevel">
+
+            </div>
+        }
+    </div>
+</div>

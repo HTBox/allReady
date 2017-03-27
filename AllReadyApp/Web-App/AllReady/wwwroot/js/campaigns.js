@@ -16,7 +16,7 @@
 
     function CampaignsViewModel(campaigns) {
         this.searchTerm = ko.observable();
-        this.campaignsNearZip = ko.observableArray();
+        this.campaignsNearPostalCode = ko.observableArray();
         this.loadingDone = ko.observable(false);
         this.handleEnter = function (data, event) {
             if (event.keyCode === 13) {
@@ -28,10 +28,10 @@
             var self = this;
             var term = this.searchTerm();
             if (term) {
-                $.get('/api/campaign/search/?zip=' + term + '&miles=10')
+                $.get('/api/campaign/search/?postalCode=' + term + '&miles=10')
                 .done(function (data) {
                     if (data) {
-                        self.campaignsNearZip(data);
+                        self.campaignsNearPostalCode(data);
                     }
                     self.loadingDone(true);
                 });

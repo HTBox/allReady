@@ -14,7 +14,7 @@
 
 <div class="row">
     <div class="container">
-        <h2 class="margin-3">Active/Upcoming Campaigns</h2>
+        <h2 class="margin-3">Active/Upcoming Events</h2>
     </div>
 </div>
 
@@ -59,7 +59,7 @@
 }
 <div class="row">
     <div class="container">
-        @if (Model.ActiveOrUpcomingCampaigns.Count == 0)
+        @if (Model.ActiveOrUpcomingEvents.Count == 0)
         {
             <div class="text-center">
                 <div class="alert alert-warning" role="alert">
@@ -69,30 +69,32 @@
         }
         else
         {
-            @foreach (var campaign in Model.ActiveOrUpcomingCampaigns)
+            @foreach (var ev in Model.ActiveOrUpcomingEvents)
             {
                 <div class="panel panel-lister">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="@(string.IsNullOrEmpty(campaign.ImageUrl) ? "col-md-9" : "col-md-12")">
+                            <div class="@(string.IsNullOrEmpty(ev.ImageUrl) ? "col-md-9" : "col-md-12")">
                                 <h4>
-                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@campaign.Id">
-                                        @campaign.Name 
+                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@ev.Id">
+                                        @ev.Name
                                     </a>
                                 </h4>
+                                <p><b>Campaign :</b> @ev.CampaignName</p>
+                                <p><b>Organiser :</b> @ev.CampaignManagedOrganizerName</p>
                                 <p>
-                                    <time value=@campaign.StartDate format="dddd, MMMM d yyyy"></time> - <time value=@campaign.EndDate format="dddd, MMMM d yyyy"></time>
+                                    <time value=@ev.StartDate format="dddd, MMMM d yyyy"></time> - <time value=@ev.EndDate format="dddd, MMMM d yyyy"></time>
                                 </p>
-                                <p>@campaign.Description</p>
-                                <a asp-controller="Campaign" asp-action="Details" asp-route-id="@campaign.Id" class="btn btn-primary">
+                                <p>@ev.Description</p>
+                                <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id" class="btn btn-primary">
                                     View
                                 </a>
                             </div>
-                            @if (string.IsNullOrEmpty(campaign.ImageUrl))
+                            @if (string.IsNullOrEmpty(ev.ImageUrl))
                             {
                                 <div class="col-md-3 hidden-xs hidden-sm text-center">
-                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@campaign.Id">
-                                        <img src="@campaign.ImageUrl" class="panel-lister-thumb" />
+                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@ev.Id">
+                                        <img src="@ev.ImageUrl" class="panel-lister-thumb" />
                                     </a>
                                 </div>
                             }

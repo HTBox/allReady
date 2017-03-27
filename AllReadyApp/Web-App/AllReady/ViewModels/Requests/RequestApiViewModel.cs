@@ -21,7 +21,7 @@ namespace AllReady.ViewModels.Requests
         public string State { get; set; }
 
         [Required]
-        public string Zip { get; set; }
+        public string PostalCode { get; set; }
 
         [Required]
         [Phone(ErrorMessage = "Invalid Mobile phone Number")]

@@ -17,10 +17,10 @@ namespace AllReady.Extensions
         /// Retrieves the Display attribute of an enum.
         /// </summary>
         /// <example>
-        /// [Display(Name="Numeric Impact")]
+        /// [Display(Name="Numeric Goal")]
         /// Numeric = 0
         /// ...
-        /// MyEnum.GetDisplayName() // returns "Numeric Impact"
+        /// MyEnum.GetDisplayName() // returns "Numeric Goal"
         /// </example>
         /// <param name="enumValue"></param>
         /// <returns></returns>

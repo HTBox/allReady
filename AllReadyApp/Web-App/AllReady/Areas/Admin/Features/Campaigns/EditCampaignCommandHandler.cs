@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Extensions;
 using AllReady.Models;
-using AllReady.Providers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             var campaign = await _context.Campaigns
                 .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
-                .Include(i => i.CampaignImpact)
+                .Include(i => i.CampaignGoals)
                 .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id) ?? new Campaign();
 
             campaign.Name = message.Campaign.Name;
@@ -42,7 +40,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             CreateUpdateOrDeleteCampaignPrimaryContact(campaign, message.Campaign);
-            campaign.CampaignImpact = campaign.CampaignImpact.UpdateModel(message.Campaign.CampaignImpact);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;

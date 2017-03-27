@@ -17,6 +17,26 @@
     </div>
 </div>
 
+@if (Model.HasTeamLeadResult)
+{
+    <div class="row">
+        <div class="col-md-12">
+            @if (!Model.TeamLeadChangedSuccess.Value)
+            {
+                <div class="alert alert-danger">
+                    <strong>Failure to set team lead!</strong>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <strong>Successfully set team lead</strong>
+                </div>
+            }
+        </div>
+    </div>
+}
+
 @if (Model.OptimizeRouteStatus != null)
 {
     <div class="row">
@@ -47,70 +67,80 @@
     </div>
 </div>
 
-<div id="TeamView">
-    <div class="row">
-        <div class="col-md-12">
-            <h3>
-                Team
-            </h3>
-        </div>
+<div class="row">
+    <div class="col-md-12">
+        <h3>
+            Team
+        </h3>
     </div>
-    <div class="row" data-bind="visible: hasValidationErrors">
-        <div class="col-md-12">
-            <ul class="list-unstyled form-control-static" data-bind="foreach: validationErrors">
-                <li class="text-danger" data-bind="text: $data"></li>
-            </ul>
-        </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.HasPotentialTeamMembers)
+        {
+            <div class="form-inline">
+                <label>Add team member:</label>
+                <form asp-action="AddTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                    <select asp-items="Model.PotentialTeamMembers" id="selectedTeamMember" name="selectedTeamMember" class="form-control" required></select>
+                    <button type="submit" class="btn btn-default submit-form">Add</button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
+        }
     </div>
-    <div class="row" style="display: none;" data-bind="visible: hasPotentialTeamMembers">
-        <div class="col-md-12">
-            <form data-bind="submit: submitForm">
-                <input type="hidden" asp-for="Id" />
-                Add team member:
-                <select required data-bind="value: selectedTeamMember, options: potentialTeamMembers, optionsText: 'Text', optionsValue: 'Value'"></select>
-                <button type="submit" class="btn btn-default submit-form" disabled="disabled" data-bind="enable: isValid() && !isSubmitting(), click: submitForm">Add</button>
-                <i class="fa fa-spinner fa-spin" style="display: none;" data-bind="visible: isSubmitting"></i>
-            </form>
-        </div>
-    </div>
-    <p style="display: none;" data-bind="visible: !hasPotentialTeamMembers()">There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
-    <div class="row">
-        <div class="col-md-8">
-            <h4>Assigned Team Members</h4>
-            <table class="table" style="display: none;" data-bind="visible: hasTeamMembers">
-                <thead>
-                    <tr>
-                        <th>
-                            Name
-                        </th>
-                        <th>
-                            Email
-                        </th>
-                        <th>
-                            Assigned Task
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: teamMembers">
-                    <tr>
-                        <td>
-                            <p data-bind="text: DisplayName"></p>
-                        </td>
-                        <td>
-                            <p data-bind="text: VolunteerEmail"></p>
-                        </td>
-                        <td>
-                            <p data-bind="text: TaskName"></p>
-                        </td>
-                        <td>
-                            <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" data-bind="attr: { href: '/Admin/Itinerary/' + $parent.itineraryId + '/ConfirmRemoveTeamMember/' + TaskSignupId }"><span class="fa fa-remove"></span></a>
-                        </td>
-                    </tr>
-                </tbody>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <h4>Assigned Team Members</h4>
+        @if (Model.HasPotentialTeamLeads)
+        {
+            <div class="form-inline">
+                <label>Select a @(@Model.HasTeamLead ? "new " : "")team lead:</label>
+                <form asp-action="SetTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                    <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control" required></select>
+                    <button type="submit" class="btn btn-default submit-form">Set Team Lead</button>
+                </form>
+            </div>
+        }
+        @if (Model.HasTeamLead)
+        {
+            <div>
+                <form asp-action="RemoveTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                    <button type="submit" class="btn btn-default submit-form">Remove Team Lead</button>
+                </form>
+            </div>
+        }
+        @if (Model.TeamMembers.Count > 0)
+        {
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Assigned Task</th>
+                    <th></th>
+                </tr>
+                @foreach (var tm in Model.TeamMembers)
+                {
+                    string style = tm.IsTeamLead ? "font-weight:bold" : null;
+                <tr>
+                    <td style=@style>@tm.DisplayName</td>
+                    <td>@tm.VolunteerEmail</td>
+                    <td>@tm.VolunteerTaskName</td>
+                    <td>
+                        <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" href=@("/Admin/Itinerary/" + @Model.Id + "/ConfirmRemoveTeamMember/" + @tm.VolunteerTaskSignupId)><span class="fa fa-remove"></span></a>
+                    </td>
+                </tr>
+                }
             </table>
-            <p style="display: none;" data-bind="visible: !hasTeamMembers()">There are currently no assigned team members for this itinerary.</p>
-        </div>
+        }
+        else
+        {
+            <p>There are currently no assigned team members for this itinerary.</p>
+        }
     </div>
 </div>
 
@@ -127,7 +157,7 @@
     </div>
 </div>
 @if (Model.CanOptimizeAndDisplayRoute)
-            {
+{
     <div class="row">
         <div class="col-md-12">
             <p>
@@ -147,21 +177,25 @@
         </div>
     </div>
 }
-<form method="post" action="@Url.Action("Details", "Itinerary", new {area = "Admin"})#requests" class="form-horizontal">
-    @Html.AntiForgeryToken()
-    <div class="row">
-        <label class="col-md-1 control-label">Filter:</label>
-        <div class="col-md-2">
-            <input type="text" asp-for="RequestKeywords" class="form-control" />
+@if (Model.Requests.Any())
+{
+    <form method="post" action="@Url.Action("Details", "Itinerary", new { area = "Admin" })#requests" class="form-horizontal">
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <label class="col-md-1 control-label">Filter:</label>
+            <div class="col-md-2">
+                <input type="text" asp-for="RequestKeywords" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <select asp-for="RequestStatus" asp-items="@SelectListService.GetRequestTypes().AddNullOptionToFront("<All>")" class="form-control"></select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-default submit-form">Filter</button>
+            </div>
         </div>
-        <div class="col-md-2">
-            <select asp-for="RequestStatus" asp-items="@SelectListService.GetRequestTypes().AddNullOptionToFront("<All>")" class="form-control"></select>
-        </div>
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-default submit-form">Filter</button>
-        </div>
-    </div>
-</form>
+    </form>
+}
+
 <div class="row">
     <div class="col-md-12">
         @if (Model.Requests.Any())
@@ -288,15 +322,15 @@
                 if (request.Status == RequestStatus.Completed)
                 {
                     @:reqData.color = 'green';
-                                                                                                }
+                                                                                                                                                                                    }
 
                 if (request.Status == RequestStatus.Canceled)
                 {
                     @:reqData.color = 'red';
-                                                                                                }
+                                                                                                                                                                                    }
 
                 @:requestData.push(reqData);
-                                                                                            }
+                                                                                                                                                                                }
             return requestData;
         }
 

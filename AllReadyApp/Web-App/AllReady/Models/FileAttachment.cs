@@ -22,6 +22,6 @@
         public int TaskId { get; set; }
 
         /// <summary>Reference to the task where this file is attached to</summary>
-        public AllReadyTask Task { get; set; }
+        public VolunteerTask Task { get; set; }
     }
 }

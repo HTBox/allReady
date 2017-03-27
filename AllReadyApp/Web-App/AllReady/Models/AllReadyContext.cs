@@ -14,14 +14,14 @@ namespace AllReady.Models
 
         public virtual DbSet<Organization> Organizations { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
-        public DbSet<CampaignImpact> CampaignImpacts { get; set; }
+        public DbSet<CampaignGoal> CampaignGoals { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<EventSkill> EventSkills { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<PostalCodeGeo> PostalCodes { get; set; }
-        public DbSet<AllReadyTask> Tasks { get; set; }
-        public DbSet<TaskSkill> TaskSkills { get; set; }
-        public DbSet<TaskSignup> TaskSignups { get; set; }
+        public DbSet<VolunteerTask> VolunteerTasks { get; set; }
+        public DbSet<VolunteerTaskSkill> VolunteerTaskSkills { get; set; }
+        public DbSet<VolunteerTaskSignup> VolunteerTaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
         public virtual DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
@@ -33,6 +33,10 @@ namespace AllReady.Models
         public DbSet<Request> Requests { get; set; }
         public DbSet<Itinerary> Itineraries { get; set; }
         public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
+        public DbSet<CampaignManager> CampaignManagers { get; set; }
+        public DbSet<EventManager> EventManagers { get; set; }
+        public DbSet<EventManagerInvite> EventManagerInvites { get; set; }
+        public DbSet<CampaignManagerInvite> CampaignManagerInvites { get; set; }
         public DbSet<FileAttachment> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -49,9 +53,9 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<CampaignSponsors>());
             Map(modelBuilder.Entity<Event>());
             Map(modelBuilder.Entity<EventSkill>());
-            Map(modelBuilder.Entity<AllReadyTask>());
-            Map(modelBuilder.Entity<TaskSkill>());
-            Map(modelBuilder.Entity<TaskSignup>());
+            Map(modelBuilder.Entity<VolunteerTask>());
+            Map(modelBuilder.Entity<VolunteerTaskSkill>());
+            Map(modelBuilder.Entity<VolunteerTaskSignup>());
             Map(modelBuilder.Entity<PostalCodeGeo>());
             Map(modelBuilder.Entity<Skill>());
             Map(modelBuilder.Entity<UserSkill>());
@@ -60,12 +64,16 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<OrganizationContact>());
             Map(modelBuilder.Entity<CampaignContact>());
             Map(modelBuilder.Entity<Contact>());
-            Map(modelBuilder.Entity<CampaignImpact>());
+            Map(modelBuilder.Entity<CampaignGoal>());
             Map(modelBuilder.Entity<ClosestLocation>());
             Map(modelBuilder.Entity<PostalCodeGeoCoordinate>());
             Map(modelBuilder.Entity<Request>());
             Map(modelBuilder.Entity<Itinerary>());
             Map(modelBuilder.Entity<ItineraryRequest>());
+            Map(modelBuilder.Entity<CampaignManager>());
+            Map(modelBuilder.Entity<EventManager>());
+            Map(modelBuilder.Entity<EventManagerInvite>());
+            Map(modelBuilder.Entity<CampaignManagerInvite>());
             Map(modelBuilder.Entity<FileAttachment>());
         }
 
@@ -76,8 +84,9 @@ namespace AllReady.Models
             builder.HasOne(r => r.Itinerary);
         }
 
-        private void Map(EntityTypeBuilder<CampaignImpact> builder)
+        private void Map(EntityTypeBuilder<CampaignGoal> builder)
         {
+            builder.HasOne(c => c.Campaign);
             builder.Ignore(c => c.PercentComplete);
         }
 
@@ -113,33 +122,33 @@ namespace AllReady.Models
             builder.HasKey(k => k.PostalCode);
         }
 
-        private void Map(EntityTypeBuilder<TaskSignup> builder)
+        private void Map(EntityTypeBuilder<VolunteerTaskSignup> builder)
         {
-            builder.HasOne(u => u.Task).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.TaskId);
+            builder.HasOne(u => u.VolunteerTask).WithMany(x => x.AssignedVolunteers).HasForeignKey(x => x.VolunteerTaskId);
         }
 
-        private void Map(EntityTypeBuilder<AllReadyTask> builder)
+        private void Map(EntityTypeBuilder<VolunteerTask> builder)
         {
-            builder.HasOne(t => t.Event).WithMany(e => e.Tasks).HasForeignKey(t => t.EventId);
+            builder.HasOne(t => t.Event).WithMany(e => e.VolunteerTasks).HasForeignKey(t => t.EventId);
             builder.HasOne(t => t.Organization);
             builder.HasMany(t => t.AssignedVolunteers)
-                .WithOne(ts => ts.Task)
+                .WithOne(ts => ts.VolunteerTask)
                 .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.Task);
-            builder.HasMany(t => t.Attachments);
+            builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.VolunteerTask);
             builder.Property(p => p.Name).IsRequired();
+            builder.HasMany(t => t.Attachments);
         }
 
-        private void Map(EntityTypeBuilder<TaskSkill> builder)
+        private void Map(EntityTypeBuilder<VolunteerTaskSkill> builder)
         {
-            builder.HasKey(acsk => new { acsk.TaskId, acsk.SkillId });
+            builder.HasKey(acsk => new { TaskId = acsk.VolunteerTaskId, acsk.SkillId });
         }
 
         private void Map(EntityTypeBuilder<Event> builder)
         {
             builder.HasOne(a => a.Campaign);
             builder.HasOne(a => a.Location);
-            builder.HasMany(a => a.Tasks)
+            builder.HasMany(a => a.VolunteerTasks)
                 .WithOne(t => t.Event)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(a => a.RequiredSkills).WithOne(acsk => acsk.Event);
@@ -166,17 +175,25 @@ namespace AllReady.Models
                    .WithMany(c => c.ParticipatingOrganizations);
             builder.HasOne(s => s.Organization);
         }
-
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingOrganization);
-            builder.HasOne(c => c.CampaignImpact);
+            builder.HasMany(c => c.CampaignGoals);
             builder.HasMany(c => c.Events);
+            builder.HasMany(c => c.Resources).WithOne(c => c.Campaign).HasForeignKey(c => c.CampaignId);
             builder.HasOne(t => t.Location);
             builder.HasMany(t => t.CampaignContacts);
             builder.Property(a => a.Name).IsRequired();
         }
 
+        private void Map(EntityTypeBuilder<Resource> builder)
+        {
+            builder.HasKey(r => r.Id);
+            builder.HasOne(r => r.Campaign);
+            builder.Property(r => r.Description).IsRequired();
+            builder.Property(r => r.Name).IsRequired();
+            builder.Property(r => r.ResourceUrl).IsRequired();
+        }
         private void Map(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder.HasMany(u => u.AssociatedSkills).WithOne(us => us.User);
@@ -217,6 +234,80 @@ namespace AllReady.Models
             builder.HasIndex(x => x.RequestId).IsUnique();
         }
 
+        private void Map(EntityTypeBuilder<CampaignManager> builder)
+        {
+            builder.HasKey(x => new { x.UserId, x.CampaignId });
+
+            builder.HasOne(x => x.User)
+                .WithMany(u => u.ManagedCampaigns)
+                .HasForeignKey(x => x.UserId);
+
+            builder.HasOne(x => x.Campaign)
+                .WithMany(u => u.CampaignManagers)
+                .HasForeignKey(x => x.CampaignId);
+        }
+
+        private void Map(EntityTypeBuilder<EventManager> builder)
+        {
+            builder.HasKey(x => new { x.UserId, x.EventId });
+
+            builder.HasOne(x => x.User)
+                .WithMany(u => u.ManagedEvents)
+                .HasForeignKey(x => x.UserId);
+
+            builder.HasOne(x => x.Event)
+                .WithMany(u => u.EventManagers)
+                .HasForeignKey(x => x.EventId);
+        }
+
+        private void Map(EntityTypeBuilder<EventManagerInvite> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(a => a.InviteeEmailAddress).IsRequired();
+
+            builder.Property(a => a.SenderUserId).IsRequired();
+
+            builder.HasOne(x => x.SenderUser)
+                .WithMany(u => u.SentEventManagerInvites)
+                .HasForeignKey(x => x.SenderUserId)
+                .IsRequired();
+
+            builder.HasOne(x => x.Event)
+                .WithMany(u => u.ManagementInvites)
+                .HasForeignKey(x => x.EventId)
+                .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
+        }
+
+        private void Map(EntityTypeBuilder<CampaignManagerInvite> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(a => a.InviteeEmailAddress).IsRequired();
+
+            builder.Property(a => a.SenderUserId).IsRequired();
+
+            builder.HasOne(x => x.SenderUser)
+                .WithMany(u => u.SentCampaignManagerInvites)
+                .HasForeignKey(x => x.SenderUserId)
+                .IsRequired();
+
+            builder.HasOne(x => x.Campaign)
+                .WithMany(u => u.ManagementInvites)
+                .HasForeignKey(x => x.CampaignId)
+                .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
+        }
+        
         public void Map(EntityTypeBuilder<FileAttachment> builder)
         {
             builder.HasKey(a => a.Id);

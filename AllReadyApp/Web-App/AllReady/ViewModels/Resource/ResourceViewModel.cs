@@ -22,6 +22,7 @@ namespace AllReady.ViewModels.Resource
         }
 
         public int Id { get; set; }
+        public int CampaignId { get; set; }
 
         [Display(Name = "Resource name")]
         [Required]        

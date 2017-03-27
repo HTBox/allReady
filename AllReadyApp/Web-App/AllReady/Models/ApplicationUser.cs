@@ -25,6 +25,26 @@ namespace AllReady.Models
 
         public string PendingNewEmail { get; set; }
 
+        /// <summary>
+        /// Navigation to campaigns the user has access to manage
+        /// </summary>
+        public List<CampaignManager> ManagedCampaigns { get; set; }
+
+        /// <summary>
+        /// Navigation to events the user has access to manage
+        /// </summary>
+        public List<EventManager> ManagedEvents { get; set; }
+
+        /// <summary>
+        /// Navigation to event invites the user has sent
+        /// </summary>
+        public List<EventManagerInvite> SentEventManagerInvites { get; set; }
+
+        /// <summary>
+        /// Navigation to campaign invites the user has sent
+        /// </summary>
+        public List<CampaignManagerInvite> SentCampaignManagerInvites { get; set; }
+        
         public IEnumerable<ValidationResult> ValidateProfileCompleteness()
         {
             List<ValidationResult> validationResults = new List<ValidationResult>();

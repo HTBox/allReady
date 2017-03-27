@@ -11,19 +11,19 @@ namespace AllReady.UnitTest.Features.Notifications
     public class NotifyAssignedVolunteersForTheTaskHandlerShould : InMemoryContextTest
     {
         private readonly Mock<IMediator> mediator;
-        private readonly NotifyAssignedVolunteersForTheTaskHandler sut;
+        private readonly NotifyAssignedVolunteersForTheVolunteerTaskHandler sut;
 
         public NotifyAssignedVolunteersForTheTaskHandlerShould()
         {
             mediator = new Mock<IMediator>();
-            sut = new NotifyAssignedVolunteersForTheTaskHandler(Context, mediator.Object);
+            sut = new NotifyAssignedVolunteersForTheVolunteerTaskHandler(Context, mediator.Object);
         }
 
         [Fact]
         public async Task SendNotificationToVolunteersWithCorrectMessage()
         {
             const string expectedMessage = "You've been assigned a task from AllReady.";
-            var @task = new AllReadyTask { Id = 1 };
+            var volunteerTask = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",
@@ -34,10 +34,10 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             Context.Add(volunteer);
-            Context.Add(@task);
+            Context.Add(volunteerTask);
             Context.SaveChanges();
 
-            var message = new TaskAssignedToVolunteersNotification { TaskId = @task.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
+            var message = new VolunteerTaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task DoesNotSendNotificationToUsersWhoHasntVerifiedPhoneNumber()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var volunteerTask = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",
@@ -62,10 +62,10 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             Context.Add(volunteer);
-            Context.Add(@task);
+            Context.Add(volunteerTask);
             Context.SaveChanges();
 
-            var message = new TaskAssignedToVolunteersNotification { TaskId = @task.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
+            var message = new VolunteerTaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Features.Notifications
         [Fact]
         public async Task DoesNotSendNotificationToUsersWhoHasntVerifiedEmail()
         {
-            var @task = new AllReadyTask { Id = 1 };
+            var volunteerTask = new VolunteerTask { Id = 1 };
             var volunteer = new ApplicationUser
             {
                 Id = "user1",
@@ -86,10 +86,10 @@ namespace AllReady.UnitTest.Features.Notifications
             };
 
             Context.Add(volunteer);
-            Context.Add(@task);
+            Context.Add(volunteerTask);
             Context.SaveChanges();
 
-            var message = new TaskAssignedToVolunteersNotification { TaskId = @task.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
+            var message = new VolunteerTaskAssignedToVolunteersNotification { VolunteerTaskId = volunteerTask.Id, NewlyAssignedVolunteers = new List<string> { volunteer.Id } };
             await sut.Handle(message);
 
             mediator.Verify(b => b.SendAsync(It.Is<NotifyVolunteersCommand>(notifyCommand =>

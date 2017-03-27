@@ -334,7 +334,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)
         {
             var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
-            var imageUrl = await _imageService.UploadEventImageAsync(id, organizationId, file);
+            var imageUrl = await _imageService.UploadEventImageAsync(organizationId, id, file);
 
             await _mediator.SendAsync(new UpdateEventImageUrl { EventId = id, ImageUrl = imageUrl });
 

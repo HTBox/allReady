@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using TaskStatus = AllReady.Models.TaskStatus;
 
 namespace AllReady.UnitTest.Tasks
 {
@@ -51,7 +50,7 @@ namespace AllReady.UnitTest.Tasks
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var newTask = new AllReadyTask
+            var newTask = new VolunteerTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",
@@ -61,13 +60,13 @@ namespace AllReady.UnitTest.Tasks
                 Organization = htb
             };
 
-            newTask.AssignedVolunteers.Add(new TaskSignup
+            newTask.AssignedVolunteers.Add(new VolunteerTaskSignup
             {
-                Task = newTask,
+                VolunteerTask = newTask,
                 User = user1
             });
 
-            Context.Tasks.Add(newTask);
+            Context.VolunteerTasks.Add(newTask);
 
             Context.SaveChanges();
         }
@@ -77,19 +76,19 @@ namespace AllReady.UnitTest.Tasks
         {
             var mediator = new Mock<IMediator>();
 
-            var @task = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
-            var command = new ChangeTaskStatusCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
-                TaskId = @task.Id,
+                VolunteerTaskId = volunteerTask.Id,
                 UserId = user.Id,
-                TaskStatus = TaskStatus.Accepted
+                VolunteerTaskStatus = VolunteerTaskStatus.Accepted
             };
-            var handler = new ChangeTaskStatusCommandHandler(Context, mediator.Object);
+            var handler = new ChangeVolunteerTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
-            var taskSignup = Context.TaskSignups.First();
-            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
+            mediator.Verify(b => b.PublishAsync(It.Is<VolunteerTaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
         }
     }
 }

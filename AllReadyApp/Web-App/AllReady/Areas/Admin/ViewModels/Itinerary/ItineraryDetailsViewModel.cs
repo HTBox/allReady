@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AllReady.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using AllReady.Services.Mapping.Routing;
+using System.Linq;
 
 namespace AllReady.Areas.Admin.ViewModels.Itinerary
 {
@@ -32,6 +33,22 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public bool HasPotentialTeamMembers { get; set; }
 
         public List<TeamListViewModel> TeamMembers { get; set; } = new List<TeamListViewModel>();
+
+        /// <summary>
+        /// Holds a list of the values for the team lead select list
+        /// </summary>
+        public IEnumerable<SelectListItem> PotentialTeamLeads { get; set; } = new List<SelectListItem>();
+
+        /// <summary>
+        /// Indicates that this itinerary has alternative team leads available
+        /// </summary>
+        public bool HasPotentialTeamLeads => PotentialTeamLeads.Any();
+
+        /// <summary>
+        /// Indicates that this itinerary has a team lead assigned
+        /// </summary>
+        public bool HasTeamLead => TeamMembers.Any(t => t.IsTeamLead);
+
         public List<RequestListViewModel> Requests { get; set; } = new List<RequestListViewModel>();
 
         public string DisplayDate => Date.ToString("D");
@@ -69,5 +86,9 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         /// Only set if an optimize route result is found in the cache for the current user
         /// </summary>
         public OptimizeRouteResultStatus OptimizeRouteStatus { get; set; }
+
+        public bool? TeamLeadChangedSuccess { get; set; }
+
+        public bool HasTeamLeadResult => TeamLeadChangedSuccess.HasValue;
     }
 }

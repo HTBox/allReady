@@ -1,4 +1,4 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.TaskSignupSummaryViewModel
+﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.VolunteerTaskSignupSummaryViewModel
 
 <div class="row">
     <div class="col-md-12">
@@ -18,8 +18,8 @@
             </dd>
         </dl>
 
-        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
-            <input type="hidden" asp-for="@Model.TaskSignupId" />
+        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.VolunteerTaskSignupId">
+            <input type="hidden" asp-for="@Model.VolunteerTaskSignupId" />
             <input type="hidden" asp-for="@Model.ItineraryId" />
             <input type="hidden" asp-for="@Model.UserIsOrgAdmin" />
             <div class="form-actions no-color">
