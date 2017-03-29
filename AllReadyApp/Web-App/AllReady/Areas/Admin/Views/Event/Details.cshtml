@@ -141,7 +141,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
                         </div>
-                        <input type="hidden" id="itineraryDetailUrl" value="@Model.ItinerariesDetailsUrl" />
+                        <input type="hidden" id="itineraryDetailUrl" value="@string.Concat(Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0'), "{id}")" />
 
                         <form asp-area="Admin" asp-controller="Itinerary" asp-action="Create" method="post">
                             <div class="modal-body">
