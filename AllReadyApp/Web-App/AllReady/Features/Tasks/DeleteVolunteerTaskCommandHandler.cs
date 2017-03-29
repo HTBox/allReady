@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Tasks
 {
@@ -16,10 +17,13 @@ namespace AllReady.Features.Tasks
 
         protected override async Task HandleCore(DeleteVolunteerTaskCommand message)
         {
-            var toDelete = dataContext.VolunteerTasks.SingleOrDefault(t => t.Id == message.VolunteerTaskId);
+            var toDelete = dataContext.VolunteerTasks
+                .Include(t => t.Attachments)
+                .SingleOrDefault(t => t.Id == message.VolunteerTaskId);
 
             if (toDelete != null)
             {
+                dataContext.Attachments.RemoveRange(toDelete.Attachments);
                 dataContext.VolunteerTasks.Remove(toDelete);
                 await dataContext.SaveChangesAsync();
             }

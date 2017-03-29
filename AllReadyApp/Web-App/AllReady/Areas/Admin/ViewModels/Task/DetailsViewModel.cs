@@ -42,5 +42,8 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         public List<VolunteerViewModel> AssignedVolunteers { get; set; } = new List<VolunteerViewModel>();
 
         public List<VolunteerTaskSkill> RequiredSkills { get; set; } = new List<VolunteerTaskSkill>();
+
+        /// <summary>List of file attachments</summary>
+        public List<FileAttachment> Attachments { get; set; } = new List<FileAttachment>();
     }
 }

@@ -21,6 +21,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             return await _context.VolunteerTasks
                 .AsNoTracking()
                 .Include(t => t.Event.Campaign)
+                .Include(t => t.Attachments)
                 .Select(task => new DeleteViewModel
                 {
                     Id = task.Id,
@@ -32,6 +33,13 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = task.Name,
                     StartDateTime = task.StartDateTime,
                     EndDateTime = task.EndDateTime,
+                    Attachments = task.Attachments.Select(a => new FileAttachment
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Description = a.Description,
+                        Url = a.Url,
+                    }).ToList(),
                 })
                 .SingleAsync(t => t.Id == message.VolunteerTaskId);
         }

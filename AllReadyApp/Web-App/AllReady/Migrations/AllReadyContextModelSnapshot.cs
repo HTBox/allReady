@@ -379,6 +379,27 @@ namespace AllReady.Migrations
                     b.ToTable("EventSkill");
                 });
 
+            modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("TaskId");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("FileAttachment");
+                });
+
             modelBuilder.Entity("AllReady.Models.Itinerary", b =>
                 {
                     b.Property<int>("Id")
@@ -976,6 +997,14 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.Skill", "Skill")
                         .WithMany()
                         .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
+                {
+                    b.HasOne("AllReady.Models.VolunteerTask", "Task")
+                        .WithMany("Attachments")
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
