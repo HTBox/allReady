@@ -39,5 +39,7 @@ namespace AllReady.Models
 
         public int? ItineraryId { get; set; }
         public ItineraryRequest Itinerary { get; set; }
+
+        public string Notes { get; set; }
     }
 }

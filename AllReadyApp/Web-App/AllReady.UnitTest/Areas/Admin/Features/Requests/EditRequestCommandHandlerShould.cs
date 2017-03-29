@@ -53,7 +53,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                 State = "WA",
                 PostalCode = "55555",
                 Latitude = 10,
-                Longitude = 10
+                Longitude = 10,
+                Notes = "Some notes"
             };
 
             Context.Requests.Add(_existingRequest);
@@ -114,6 +115,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
                     City = _existingRequest.City,
                     State = _existingRequest.State,
                     PostalCode = _existingRequest.PostalCode,
+                    Notes = _existingRequest.Notes,
                     Latitude = 47.6,
                     Longitude = -122.3
                 }

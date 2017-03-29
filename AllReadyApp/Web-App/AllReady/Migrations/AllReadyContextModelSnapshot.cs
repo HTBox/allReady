@@ -559,6 +559,8 @@ namespace AllReady.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<string>("Notes");
+
                     b.Property<int?>("OrganizationId");
 
                     b.Property<string>("Phone");
