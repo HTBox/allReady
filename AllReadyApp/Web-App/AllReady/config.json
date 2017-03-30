@@ -8,6 +8,8 @@
     "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
     "DefaultUsername": "User@example.com",
     "DefaultOrganizationUsername": "organization@example.com",
+    "DefaultEventManagerUsername": "eventmanager@example.com",
+    "DefaultCampaignManagerUsername": "campaignmanager@example.com",
     "DefaultFromEmailAddress": "Administrator@example.com",
     "DefaultFromDisplayName": "allReady.com Administrator",
     "InsertSampleData": "true",
