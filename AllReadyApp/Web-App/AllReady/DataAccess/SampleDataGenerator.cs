@@ -59,6 +59,7 @@ namespace AllReady.DataAccess
             var contacts = GetContacts();
             var skills = new List<Skill>();
             var eventManagers = new List<EventManager>();
+            var campaignManagers = new List<CampaignManager>();
 
             #region Skills
             var medical = new Skill { Name = "Medical", Description = "specific enough, right?" };
@@ -492,6 +493,32 @@ namespace AllReady.DataAccess
             eventManagers.Add(eventManager);
 
             _context.EventManagers.AddRange(eventManagers);
+
+            #endregion
+
+            #region Campaign Managers
+
+            var campaignManagerUser = new ApplicationUser
+            {
+                FirstName = "Campaign",
+                LastName = "Manager",
+                UserName = _settings.DefaultCampaignManagerUsername,
+                Email = _settings.DefaultCampaignManagerUsername,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "333-333-3333"
+            };
+            _userManager.CreateAsync(campaignManagerUser, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            users.Add(campaignManagerUser);
+
+            var campaignManager = new CampaignManager
+            {
+                Campaign = firePreventionCampaign,
+                User = campaignManagerUser
+            };
+            campaignManagers.Add(campaignManager);
+
+            _context.CampaignManagers.AddRange(campaignManagers);
 
             #endregion
 

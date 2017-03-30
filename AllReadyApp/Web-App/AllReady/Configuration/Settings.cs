@@ -36,6 +36,7 @@ namespace AllReady.Configuration
         public string DefaultAdminPassword { get; set; }
         public string DefaultUsername { get; set; }
         public string DefaultEventManagerUsername { get; set; }
+        public string DefaultCampaignManagerUsername { get; set; }
         public string DefaultOrganizationUsername { get; set; }
         public string DefaultFromEmailAddress { get; set; }
         public string DefaultFromDisplayName { get; set; }
