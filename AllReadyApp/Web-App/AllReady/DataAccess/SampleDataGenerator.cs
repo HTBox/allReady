@@ -58,6 +58,7 @@ namespace AllReady.DataAccess
             var resources = new List<Resource>();
             var contacts = GetContacts();
             var skills = new List<Skill>();
+            var eventManagers = new List<EventManager>();
 
             #region Skills
             var medical = new Skill { Name = "Medical", Description = "specific enough, right?" };
@@ -466,6 +467,32 @@ namespace AllReady.DataAccess
             };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
+            #endregion
+
+            #region Event Managers
+
+            var eventManagerUser = new ApplicationUser
+            {
+                FirstName = "Event",
+                LastName = "Manager",
+                UserName = _settings.DefaultEventManagerUsername,
+                Email = _settings.DefaultEventManagerUsername,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "333-333-3333"
+            };
+            _userManager.CreateAsync(eventManagerUser, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            users.Add(eventManagerUser);
+
+            var eventManager = new EventManager
+            {
+                Event = queenAnne,
+                User = eventManagerUser
+            };
+            eventManagers.Add(eventManager);
+
+            _context.EventManagers.AddRange(eventManagers);
+
             #endregion
 
             #region TaskSignups
