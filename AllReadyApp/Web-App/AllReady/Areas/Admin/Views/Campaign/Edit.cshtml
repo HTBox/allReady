@@ -61,18 +61,6 @@
 
         <form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" id="campaign-form" method="post" enctype="multipart/form-data">
 
-            @if (User.IsUserType(UserType.OrgAdmin))
-            {
-                <button type="button"
-                        id="btnGetContactInfo"
-                        class="btn btn-info"
-                        data-toggle="modal"
-                        data-target="#confirmContactModal"
-                        title="Copy Contact Information from Organization">
-                    Copy Contact Info
-                </button>
-            }
-
             <div class="form-horizontal">
 
                 <div asp-validation-summary="All" class="text-danger"></div>
@@ -213,6 +201,15 @@
                         </div>
                     </div>
                 </div>
+                <hr />
+                <button type="button"
+                        id="btnGetContactInfo"
+                        class="btn btn-info"
+                        data-toggle="modal"
+                        data-target="#confirmContactModal"
+                        title="Information copied from selected organisation.">
+                    Copy Location and Primary Contact
+                </button>
                 <h3>Location</h3>
                 @Html.EditorFor(m => m.Location)
                 <h3>Primary Contact</h3>
