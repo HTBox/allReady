@@ -53,10 +53,22 @@ namespace AllReady.Areas.Admin.Controllers
                 return new ForbidResult();
             }
 
+            // todo - check if the user can duplicate (e.g. create events) against the campaign as well - depends on having an authorizable campaign class first
+            
+            if (await authorizableEvent.UserCanDelete())
+            {
+                viewModel.ShowDeleteButton = true;
+            }
+
+            if (await authorizableEvent.UserCanManageChildObjects())
+            {
+                viewModel.ShowCreateChildObjectButtons = true;
+            }
+
             return View(viewModel);
         }
 
-        // GET: Event/Create
+        [HttpGet]
         [Route("Admin/Event/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId)
         {
@@ -80,7 +92,6 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", viewModel);
         }
 
-        // POST: Event/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Event/Create/{campaignId}")]
@@ -127,7 +138,7 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", eventEditViewModel);
         }
 
-        // GET: Event/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var campaignEvent = await _mediator.SendAsync(new EventEditQuery { EventId = id });
@@ -146,7 +157,6 @@ namespace AllReady.Areas.Admin.Controllers
             return View(campaignEvent);
         }
 
-        // POST: Event/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EventEditViewModel eventEditViewModel, IFormFile fileUpload)
@@ -251,37 +261,43 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        // GET: Event/Delete/5
-        [ActionName("Delete")]
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var viewModel = await _mediator.SendAsync(new DeleteQuery { EventId = id });
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+
+            if (viewModel == null)
             {
-                return Unauthorized();
+                return NotFound();
             }
 
-            viewModel.UserIsOrgAdmin = true;
-            viewModel.Title = $"Delete event {viewModel.Name}";
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
+
+            if (!await authorizableEvent.UserCanDelete())
+            {
+                return new ForbidResult();
+            }
+
+            ViewData["Title"] = $"Delete event {viewModel.Name}";
 
             return View(viewModel);
         }
 
-        // POST: Event/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!viewModel.UserIsOrgAdmin)
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id));
+
+            if (!await authorizableEvent.UserCanDelete())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
-            await _mediator.SendAsync(new DeleteEventCommand { EventId = viewModel.Id });
+            await _mediator.SendAsync(new DeleteEventCommand { EventId = id });
 
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = authorizableEvent.CampaignId });
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
