@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AllReady.Models;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Task
@@ -22,14 +24,18 @@ namespace AllReady.Areas.Admin.ViewModels.Task
         [Required]
         public string Name { get; set; }
 
-        [Display(Name = "Start date")]
+        [Display(Name = "Start Date")]
         public DateTimeOffset StartDateTime { get; set; }
 
-        [Display(Name = "End date")]
+        [Display(Name = "End Date")]
         public DateTimeOffset EndDateTime { get; set; }
 
         public bool UserIsOrgAdmin { get; set; }
 
         public string Title { get; set; }
+
+        /// <summary>List of file attachments</summary>
+        [Display(Name = "Attachments")]
+        public List<FileAttachment> Attachments { get; set; } = new List<FileAttachment>();
     }
 }

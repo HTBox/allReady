@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                             VolunteerTaskSignupId = tm.Id,
                             VolunteerEmail = tm.User.Email,
                             VolunteerTaskName = tm.VolunteerTask.Name,
-                            FullName = !string.IsNullOrWhiteSpace(tm.User.Name) ? tm.User.Name : "* Name Missing *",
+                            FullName = !string.IsNullOrWhiteSpace(tm.User.Name) ? $"{tm.User.LastName}, {tm.User.FirstName}" : "* Name Missing *",
                             IsTeamLead = tm.IsTeamLead
                         }).ToList(),
                     Requests = i.Requests.OrderBy(r => r.OrderIndex).Select(r => new RequestListViewModel

@@ -35,6 +35,9 @@ namespace AllReady.Models
         public DbSet<ItineraryRequest> ItineraryRequests { get; set; }
         public DbSet<CampaignManager> CampaignManagers { get; set; }
         public DbSet<EventManager> EventManagers { get; set; }
+        public DbSet<EventManagerInvite> EventManagerInvites { get; set; }
+        public DbSet<CampaignManagerInvite> CampaignManagerInvites { get; set; }
+        public DbSet<FileAttachment> Attachments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +72,9 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<ItineraryRequest>());
             Map(modelBuilder.Entity<CampaignManager>());
             Map(modelBuilder.Entity<EventManager>());
+            Map(modelBuilder.Entity<EventManagerInvite>());
+            Map(modelBuilder.Entity<CampaignManagerInvite>());
+            Map(modelBuilder.Entity<FileAttachment>());
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
@@ -130,6 +136,7 @@ namespace AllReady.Models
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.VolunteerTask);
             builder.Property(p => p.Name).IsRequired();
+            builder.HasMany(t => t.Attachments);
         }
 
         private void Map(EntityTypeBuilder<VolunteerTaskSkill> builder)
@@ -168,17 +175,25 @@ namespace AllReady.Models
                    .WithMany(c => c.ParticipatingOrganizations);
             builder.HasOne(s => s.Organization);
         }
-
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingOrganization);
             builder.HasMany(c => c.CampaignGoals);
             builder.HasMany(c => c.Events);
+            builder.HasMany(c => c.Resources).WithOne(c => c.Campaign).HasForeignKey(c => c.CampaignId);
             builder.HasOne(t => t.Location);
             builder.HasMany(t => t.CampaignContacts);
             builder.Property(a => a.Name).IsRequired();
         }
 
+        private void Map(EntityTypeBuilder<Resource> builder)
+        {
+            builder.HasKey(r => r.Id);
+            builder.HasOne(r => r.Campaign);
+            builder.Property(r => r.Description).IsRequired();
+            builder.Property(r => r.Name).IsRequired();
+            builder.Property(r => r.ResourceUrl).IsRequired();
+        }
         private void Map(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder.HasMany(u => u.AssociatedSkills).WithOne(us => us.User);
@@ -243,6 +258,61 @@ namespace AllReady.Models
             builder.HasOne(x => x.Event)
                 .WithMany(u => u.EventManagers)
                 .HasForeignKey(x => x.EventId);
+        }
+
+        private void Map(EntityTypeBuilder<EventManagerInvite> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(a => a.InviteeEmailAddress).IsRequired();
+
+            builder.Property(a => a.SenderUserId).IsRequired();
+
+            builder.HasOne(x => x.SenderUser)
+                .WithMany(u => u.SentEventManagerInvites)
+                .HasForeignKey(x => x.SenderUserId)
+                .IsRequired();
+
+            builder.HasOne(x => x.Event)
+                .WithMany(u => u.ManagementInvites)
+                .HasForeignKey(x => x.EventId)
+                .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
+        }
+
+        private void Map(EntityTypeBuilder<CampaignManagerInvite> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(a => a.InviteeEmailAddress).IsRequired();
+
+            builder.Property(a => a.SenderUserId).IsRequired();
+
+            builder.HasOne(x => x.SenderUser)
+                .WithMany(u => u.SentCampaignManagerInvites)
+                .HasForeignKey(x => x.SenderUserId)
+                .IsRequired();
+
+            builder.HasOne(x => x.Campaign)
+                .WithMany(u => u.ManagementInvites)
+                .HasForeignKey(x => x.CampaignId)
+                .IsRequired();
+
+            builder.Ignore(x => x.IsAccepted);
+            builder.Ignore(x => x.IsRejected);
+            builder.Ignore(x => x.IsRevoked);
+            builder.Ignore(x => x.IsPending);
+        }
+        
+        public void Map(EntityTypeBuilder<FileAttachment> builder)
+        {
+            builder.HasKey(a => a.Id);
+            builder.HasOne(a => a.Task);
+            builder.Property(a => a.Name).IsRequired();
         }
     }
 }

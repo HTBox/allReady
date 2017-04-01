@@ -1,0 +1,59 @@
+@using System.Threading.Tasks
+@using AllReady.Security
+@model AllReady.Areas.Admin.ViewModels.Resource.ResourceDetailViewModel
+
+@{
+    ViewBag.Title = Model.Name;
+}
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li>@Model.Name</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+        <h2>
+            <span>@Model.Name</span>
+            <a asp-area="Admin" asp-controller="Resource" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-area="Admin" asp-controller="Resource" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+        </h2>
+        <p>@Model.Description</p>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.CampaignName)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.CampaignName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ResourceUrl)
+            </dt>
+            <dd>
+                <a href="@Model.ResourceUrl">@Model.Name</a>
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.Description)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Description)
+            </dd>
+        </dl>
+    </div>
+</div>

@@ -66,6 +66,11 @@ namespace AllReady.Models
         /// Navigation to users who can manage this event
         /// </summary>
         public List<EventManager> EventManagers { get; set; }
+
+        /// <summary>
+        /// Navigation property to an invited event managers
+        /// </summary>
+        public List<EventManagerInvite> ManagementInvites { get; set; }
     }
 
     public static class EventExtensions

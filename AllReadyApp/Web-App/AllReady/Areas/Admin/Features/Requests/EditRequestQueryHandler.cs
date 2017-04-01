@@ -43,7 +43,8 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Phone = request.Phone,
                 Status = request.Status,
                 State = request.State,
-                PostalCode = request.PostalCode
+                PostalCode = request.PostalCode,
+                Notes = request.Notes
             };
         }
     }

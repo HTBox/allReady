@@ -43,6 +43,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public DateTimeOffset EndDate { get; set; }
 
         public IEnumerable<EventList> Events { get; set; }
+        public IEnumerable<ResourceList> Resources { get; set; }
 
         public List<CampaignGoal> CampaignGoals { get; set; }
 
@@ -82,6 +83,14 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
             [Display(Name = "End Date")]
             public DateTimeOffset EndDateTime { get; set; }
+        }
+
+        public class ResourceList
+        {
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Url { get; set; }
         }
     }
 }

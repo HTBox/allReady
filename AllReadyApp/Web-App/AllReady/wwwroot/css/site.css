@@ -20,13 +20,14 @@ body {
 
 .logo-background {
     background-color: #d58033;
-    position: relative;
     width: 100vw;
     left: -25px;
     color: #fff;
     padding-bottom: 20px;
     margin-top: -20px;
     margin-bottom: 20px;
+    margin-right: -50px;
+    margin-left: -50px;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */

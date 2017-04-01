@@ -5,9 +5,9 @@ using System.Net.Mail;
 using System.Threading.Tasks;
 using AllReady.Core.Notifications;
 using Microsoft.Azure.WebJobs;
-using Newtonsoft.Json;
 using SendGrid;
 using Twilio;
+using Newtonsoft.Json;
 
 namespace AllReady.NotificationsWebJob
 {

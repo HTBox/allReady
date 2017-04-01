@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Areas.Admin.Models;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Extensions;
 using AllReady.Models;
@@ -41,7 +40,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.ImageUrl = message.Campaign.ImageUrl;
 
             CreateUpdateOrDeleteCampaignPrimaryContact(campaign, message.Campaign);
-            CreateUpdateOrDeleteCampaignGoals(campaign, message.Campaign.CampaignGoals);
             campaign.Location = campaign.Location.UpdateModel(message.Campaign.Location);
 
             campaign.Featured = message.Campaign.Featured;
@@ -53,24 +51,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             await _context.SaveChangesAsync();
 
             return campaign.Id;
-        }
-
-        private void CreateUpdateOrDeleteCampaignGoals(Campaign campaign, IList<CampaignGoal> editModelCampaignGoals)
-        {
-            var originalCampaignGoals = campaign.CampaignGoals ?? (campaign.CampaignGoals = new List<CampaignGoal>());
-            originalCampaignGoals.RemoveAll(original => !editModelCampaignGoals.Select(c => c.Id).Contains(original.Id));
-
-            foreach (var editModel in editModelCampaignGoals)
-            {
-                var originalGoal = (editModel.Id == 0 ? null : originalCampaignGoals.FirstOrDefault(i => i.Id == editModel.Id)) ?? new CampaignGoal();
-                if (originalGoal.Id == 0)
-                {
-                    originalCampaignGoals.Add(originalGoal);
-                    originalGoal.Campaign = campaign;
-                    originalGoal.CampaignId = campaign.Id;
-                }
-                originalGoal.UpdateModel(editModel);
-            }
         }
 
         private void CreateUpdateOrDeleteCampaignPrimaryContact(Campaign campaign, IPrimaryContactViewModel contactModel)

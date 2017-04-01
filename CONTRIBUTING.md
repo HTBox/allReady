@@ -10,7 +10,7 @@ This repo contains the code for **allReady**, an open-source solution focused on
 + [How you can help](#how-you-can-help)
 + [Solution architecture](#solution-architecture)	
 
-##Project overview
+## Project overview
 allReady is focused on increasing awareness, efficiency and impact of preparedness campaigns delivered by humanitarian and disaster response organizations in local communities.  As community preparedness and resliency increases, the potential for impactful disasters (both large and small) is greatly decreased.  Though not as visible or emotionally salient as saving children from a burning building, preparedness activities like ensuring working smoke detectors in a community, follows the industry rule of thumb where an hour or dollar spent before a disaster is worth 15-30 afterwards.  The goal of allReady hinges on growing awareness of, and engaging communities and their volunteers in preparedness campaigns, and more aspirationally, to "put disaster response out of business" by preparing communities to be reslient to inevitable disasters. 
 
 To learn more about the need for allReady, the technologies involved and how the app came together, view the [project information](http://www.htbox.org/projects/allready) and [blog post](http://www.htbox.org/blog/allready-project-launched-at-visual-studio-2015-release-event) on the Humanitarian Toolbox website and watch the *[In the Code](https://channel9.msdn.com/Events/Visual-Studio/Visual-Studio-2015-Final-Release-Event/In-the-Code-App-Overview-and-Planning)* video series:
@@ -21,7 +21,7 @@ The allReady project was jumpstarted by volunteers at Microsoft and has been tur
 
 The initial launch of development for allReady started on 7/20/2015 during the [Visual Studio 2015 release event](http://aka.ms/vs2015event).
 
-##How you can help
+## How you can help
 To help make improvements to this project, you can just clone this repository and start coding, testing, and/or designing. 
 
 Before jumping in, please review the solution architecture and instructions below to [get started](#solution-architecture).
@@ -30,6 +30,6 @@ As of this writing (week of 7/20/2015), we are focused on expanding and filling 
 
 Thank you for considering supporting this open source project for humanitarian support.
 
-##Solution architecture
+## Solution architecture
 
 See the [Solution Architecture Guide](https://github.com/HTBox/allReady/wiki/Solution-architecture) for all of the details on how allReady is built.

@@ -21,6 +21,7 @@ namespace AllReady.Models
         public List<VolunteerTaskSkill> RequiredSkills { get; set; } = new List<VolunteerTaskSkill>();
         public bool IsLimitVolunteers { get; set; } = true;
         public bool IsAllowWaitList { get; set; }
+        public List<FileAttachment> Attachments { get; set; }
 
         [NotMapped]
         public int NumberOfUsersSignedUp => AssignedVolunteers.Count;

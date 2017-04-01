@@ -19,7 +19,7 @@ using AllReady.Areas.Admin.ViewModels.Request;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize]
     public class EventController : Controller
     {
         public Func<DateTime> DateTimeTodayDate = () => DateTime.Today.Date;
@@ -35,24 +35,23 @@ namespace AllReady.Areas.Admin.Controllers
             _eventEditViewModelValidator = eventEditViewModelValidator;
         }
 
-        // GET: Event/Details/5
         [HttpGet]
         [Route("Admin/Event/Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
             var viewModel = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
+
             if (viewModel == null)
             {
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
-            {
-                return Unauthorized();
-            }
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
 
-            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
-            viewModel.ItinerariesDetailsUrl = string.Concat(url, "{id}");
+            if (!await authorizableEvent.UserCanView())
+            {
+                return new ForbidResult();
+            }
 
             return View(viewModel);
         }
@@ -137,9 +136,11 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id, campaignEvent.CampaignId, campaignEvent.OrganizationId));
+
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             return View(campaignEvent);
@@ -154,11 +155,12 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return BadRequest();
             }
+            
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(eventEditViewModel.Id));
 
-            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = eventEditViewModel.Id });
-            if (!User.IsOrganizationAdmin(organizationId))
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = eventEditViewModel.CampaignId });
@@ -334,7 +336,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)
         {
             var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
-            var imageUrl = await _imageService.UploadEventImageAsync(id, organizationId, file);
+            var imageUrl = await _imageService.UploadEventImageAsync(organizationId, id, file);
 
             await _mediator.SendAsync(new UpdateEventImageUrl { EventId = id, ImageUrl = imageUrl });
 
@@ -356,7 +358,7 @@ namespace AllReady.Areas.Admin.Controllers
             var currentPage = "All";
 
             if (!string.IsNullOrEmpty(status))
-            { 
+            {
                 RequestStatus requestStatus;
                 if (Enum.TryParse(status, out requestStatus))
                 {
@@ -366,7 +368,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(nameof(Requests), new {id});
+                    return RedirectToAction(nameof(Requests), new { id });
                 }
             }
 
@@ -375,7 +377,7 @@ namespace AllReady.Areas.Admin.Controllers
             viewModel.CurrentPage = currentPage;
 
             viewModel.Requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
- 
+
             return View(viewModel);
         }
 

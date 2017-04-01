@@ -6,6 +6,8 @@ using AllReady.Areas.Admin.ViewModels.Task;
 using AllReady.Models;
 using Xunit;
 using System.Linq;
+using Moq;
+using AllReady.Services;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
@@ -36,7 +38,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             Context.Organizations.Add(organization);
             Context.SaveChanges();
 
-            var sut = new EditVolunteerTaskCommandHandler(Context);
+            var mockAttachmentService = new Mock<ITaskAttachmentService>();
+            var sut = new EditVolunteerTaskCommandHandler(Context, mockAttachmentService.Object);
             var volunteerTaskId = await sut.Handle(message);
             var result = Context.VolunteerTasks.Single(x => x.Id == volunteerTaskId);
 
@@ -90,7 +93,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            var sut = new EditVolunteerTaskCommandHandler(Context);
+            var mockAttachmentService = new Mock<ITaskAttachmentService>();
+            var sut = new EditVolunteerTaskCommandHandler(Context, mockAttachmentService.Object);
             var volunteerTaskId = await sut.Handle(message);
             var result = Context.VolunteerTasks.Single(x => x.Id == volunteerTaskId);
 

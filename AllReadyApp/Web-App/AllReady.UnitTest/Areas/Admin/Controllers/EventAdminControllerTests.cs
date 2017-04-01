@@ -18,6 +18,7 @@ using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Shouldly;
@@ -27,7 +28,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class EventAdminControllerTests
     {
-        //delete this line when all unit tests using it have been completed
         private static readonly Task TaskCompletedTask = Task.CompletedTask;
 
         [Fact]
@@ -39,36 +39,73 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<NotFoundResult>(result);
         }
 
-        [Fact]
-        public async Task DetailsReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        private class FakeAuthorizableEvent : IAuthorizableEvent
         {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            private readonly bool _isAuthorized;
+            public int EventId { get; }
+            public int CampaignId { get; }
+            public int OrganizationId { get; }
 
-            var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
-            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
+            public FakeAuthorizableEvent(bool isAuthorized)
+            {
+                _isAuthorized = isAuthorized;
+            }
+
+            public Task<bool> UserCanView()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+
+            public Task<bool> UserCanEdit()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+
+            public Task<bool> UserCanDelete()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
+
+            public Task<bool> UserCanManageChildObjects()
+            {
+                return Task.FromResult(_isAuthorized);
+            }
         }
 
         [Fact]
-        public async Task DetailsReturnsHttpUnauthorizedResult_WhenEventIsNotNull_AndUserIsNotAnOrgAdmin()
+        public async Task DetailsReturnsForbidResult_WhenEventIsNotNull_AndUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
-            Assert.IsType<UnauthorizedResult>(await sut.Details(It.IsAny<int>()));
+
+            Assert.IsType<ForbidResult>(await sut.Details(It.IsAny<int>()));
         }
 
-        [Fact(Skip = "NotImplemented")]
-		public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserIsOrgAdmin()
+        [Fact]
+        public async Task DetailsReturnsCorrectViewModel_WhenEventIsNotNull_AndUserAuthorized()
         {
-			// delete this line when starting work on this unit test
-			await TaskCompletedTask;
-		}
+            const int orgId = 1;
+            const int eventID = 1;
+            var viewModel = new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId };
 
-		[Fact]
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(viewModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model;
+            Assert.IsType<EventDetailViewModel>(resultViewModel);
+            Assert.Equal(resultViewModel, viewModel);
+        }
+
+        [Fact]
         public void DetailsHasHttpGetAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
@@ -106,7 +143,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>()))
-				.ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+                .ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
@@ -115,7 +152,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-		public async Task CreateGetReturnsCorrectView_AndCorrectStartAndEndDateOnViewModel()
+        public async Task CreateGetReturnsCorrectView_AndCorrectStartAndEndDateOnViewModel()
         {
             const int organizationId = 1;
             var dateTimeTodayDate = DateTime.Today.Date;
@@ -170,7 +207,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-		public async Task CreatePostReturnsEditView_When_EventDetailsModelValidatorHasErrors()
+        public async Task CreatePostReturnsEditView_When_EventDetailsModelValidatorHasErrors()
         {
             var imageService = new Mock<IImageService>();
 
@@ -251,14 +288,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void EditGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        public async void EditGetReturnsForbidResult_WhenUserIsNotOrgAdmin()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(new EventEditViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false));
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
-            Assert.IsType<UnauthorizedResult>(await sut.Edit(It.IsAny<int>()));
+            Assert.IsType<ForbidResult>(await sut.Edit(It.IsAny<int>()));
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -449,7 +487,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
-            var result = (ViewResult) await sut.Delete(It.IsAny<int>());
+            var result = (ViewResult)await sut.Delete(It.IsAny<int>());
             var resultModel = result.ViewData.Model;
 
             Assert.IsType<DeleteViewModel>(resultModel);
@@ -524,7 +562,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(null);
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
-            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object,  eventEditViewModelValidatorMock.Object);
+            var sut = new EventController(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object);
 
             var result = await sut.DeleteEventImage(It.IsAny<int>());
 
@@ -784,12 +822,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void ControllerHasAreaAuthorizeAttributeWithCorrectPolicy()
+        public void ControllerHasAreaAuthorizeAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Policy, "OrgAdmin");
         }
 
         [Fact]
@@ -863,7 +900,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new EventController(null, mockMediator.Object, null);
             sut.MakeUserAnOrgAdmin(orgId.ToString());
-            
+
             await sut.Requests(eventId, null);
 
             mockMediator.Verify(x => x.SendAsync(It.Is<EventRequestsQuery>(y => y.EventId == eventId)), Times.Once);

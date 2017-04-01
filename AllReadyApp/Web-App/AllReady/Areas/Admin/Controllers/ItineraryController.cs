@@ -186,40 +186,19 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [Route("Admin/Itinerary/AddTeamMember")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddTeamMember(int id, int selectedTeamMember)
+        public async Task<IActionResult> AddTeamMember(int itineraryId, int selectedTeamMember)
         {
-            var orgId = await GetOrganizationIdBy(id);
+            var orgId = await GetOrganizationIdBy(itineraryId);
             if (orgId == 0 || !User.IsOrganizationAdmin(orgId))
             {
                 return Unauthorized();
             }
 
-            if (id == 0 || selectedTeamMember == 0)
-            {
-                return Json(new
-                {
-                    isSuccess = false,
-                    errors = new[] { "Invalid selection." }
-                });
-            }
+            var result = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = itineraryId, VolunteerTaskSignupId = selectedTeamMember });
 
-            var isSuccess = await _mediator.SendAsync(new AddTeamMemberCommand { ItineraryId = id, VolunteerTaskSignupId = selectedTeamMember });
-            if (!isSuccess)
-            {
-                return Json(new
-                {
-                    isSuccess = false,
-                    errors = new[] { "Invalid itinerary." }
-                });
-            }
+            // TODO - see comment in RemoveTeamLead method regarding passing message between requests
 
-            var detail = await _mediator.SendAsync(new ItineraryDetailQuery { ItineraryId = id });
-            return Json(new
-            {
-                isSuccess = true,
-                teamMembers = detail.TeamMembers,
-                potentialTeamMembers = detail.PotentialTeamMembers
-            });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpGet]

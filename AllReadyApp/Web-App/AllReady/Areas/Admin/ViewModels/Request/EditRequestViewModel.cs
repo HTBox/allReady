@@ -51,5 +51,7 @@ namespace AllReady.Areas.Admin.ViewModels.Request
         public double Longitude { get; set; }
 
         public DateTime DateAdded { get; set; }
+
+        public string Notes { get; set; }
     }
 }

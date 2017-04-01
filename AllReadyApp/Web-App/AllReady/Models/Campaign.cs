@@ -17,7 +17,7 @@ namespace AllReady.Models
         [Display(Name = "Full Description")]
         public string FullDescription { get; set; }
 
-        [Display(Name="External Link")]
+        [Display(Name = "External Link")]
         [Url]
         public string ExternalUrl { get; set; }
 
@@ -71,6 +71,8 @@ namespace AllReady.Models
 
         public List<CampaignContact> CampaignContacts { get; set; } = new List<CampaignContact>();
 
+        public List<Resource> Resources { get; set; } = new List<Resource>();
+
         public bool Locked { get; set; }
 
         public bool Featured { get; set; }
@@ -80,5 +82,10 @@ namespace AllReady.Models
         /// Navigation to users who can manage this campaign
         /// </summary>
         public List<CampaignManager> CampaignManagers { get; set; }
+
+        /// <summary>
+        /// Navigation property to an invited campaign managers
+        /// </summary>
+        public List<CampaignManagerInvite> ManagementInvites { get; set; }
     }
 }
