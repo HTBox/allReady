@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using AllReady.DataAccess;
 using AllReady.Hangfire;
@@ -38,7 +38,7 @@ namespace AllReady
             {
                 // This reads the configuration keys from the secret store.
                 // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets();
+                builder.AddUserSecrets("aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0");
 
                 builder.AddApplicationInsightsSettings(developerMode: true);
             }
