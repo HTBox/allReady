@@ -20,6 +20,7 @@ before_build:
  - cmd: dotnet restore AllReadyApp\AllReady.Core\AllReady.Core.csproj
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady\AllReady.csproj
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
+ - cmd: dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
  - cmd: npm install gulp bower -g
 
