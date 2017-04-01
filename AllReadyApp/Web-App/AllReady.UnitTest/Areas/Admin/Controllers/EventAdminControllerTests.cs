@@ -41,35 +41,55 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         private class FakeAuthorizableEvent : IAuthorizableEvent
         {
-            private readonly bool _isAuthorized;
+            private readonly bool _canView;
+            private readonly bool _canEdit;
+            private readonly bool _canDelete;
+            private readonly bool _canManageChildren;
+
             public int EventId { get; }
             public int CampaignId { get; }
             public int OrganizationId { get; }
 
-            public FakeAuthorizableEvent(bool isAuthorized)
+            public FakeAuthorizableEvent(bool canView, bool canEdit, bool canDelete, bool canManageChildren, int campaignId = 0)
             {
-                _isAuthorized = isAuthorized;
+                _canView = canView;
+                _canEdit = canEdit;
+                _canDelete = canDelete;
+                _canManageChildren = canManageChildren;
+
+                CampaignId = campaignId;
             }
 
             public Task<bool> UserCanView()
             {
-                return Task.FromResult(_isAuthorized);
+                return Task.FromResult(_canView);
             }
 
             public Task<bool> UserCanEdit()
             {
-                return Task.FromResult(_isAuthorized);
+                return Task.FromResult(_canEdit);
             }
 
             public Task<bool> UserCanDelete()
             {
-                return Task.FromResult(_isAuthorized);
+                return Task.FromResult(_canDelete);
             }
 
             public Task<bool> UserCanManageChildObjects()
             {
-                return Task.FromResult(_isAuthorized);
+                return Task.FromResult(_canManageChildren);
             }
+        }
+
+        [Fact]
+        public async Task DetailsReturnsNotFoundResult_WhenEventIsNull()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(null);
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            Assert.IsType<NotFoundResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact]
@@ -77,7 +97,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
-            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false));
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
             var sut = new EventController(null, mediator.Object, null);
 
@@ -93,7 +113,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(viewModel);
-            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true));
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, false, false));
 
             var sut = new EventController(null, mediator.Object, null);
 
@@ -103,6 +123,87 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var resultViewModel = result.ViewData.Model;
             Assert.IsType<EventDetailViewModel>(resultViewModel);
             Assert.Equal(resultViewModel, viewModel);
+        }
+
+        [Fact]
+        public async Task DetailsReturnsViewModelWithShowDeleteButton_WhenEventIsNotNull_AndUserAuthorizedToDelete()
+        {
+            const int orgId = 1;
+            const int eventID = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, true, true, true));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model as EventDetailViewModel;
+
+            resultViewModel.ShowDeleteButton.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task DetailsReturnsViewModelWithoutShowDeleteButton_WhenEventIsNotNull_AndUserNotAuthorizedToDeleteEvent()
+        {
+            const int orgId = 1;
+            const int eventID = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, true, false, false));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model as EventDetailViewModel;
+
+            resultViewModel.ShowCreateChildObjectButtons.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task DetailsReturnsViewModelWithShowCreateChildObjects_WhenEventIsNotNull_AndUserAuthorizedToManageChildObjects()
+        {
+            const int orgId = 1;
+            const int eventID = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, true, true, true));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model as EventDetailViewModel;
+
+            resultViewModel.ShowCreateChildObjectButtons.ShouldBeTrue();
+        }
+
+
+        [Fact]
+        public async Task DetailsReturnsViewModelWithoutShowCreateChildObjects_WhenEventIsNotNull_AndUserNotAuthorizedToManageChildObjects()
+        {
+            const int orgId = 1;
+            const int eventID = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, true, true, false));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.Details(eventID) as ViewResult;
+            Assert.Equal(result.ViewName, null);
+
+            var resultViewModel = result.ViewData.Model as EventDetailViewModel;
+
+            resultViewModel.ShowCreateChildObjectButtons.ShouldBeFalse();
         }
 
         [Fact]
@@ -292,7 +393,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync(new EventEditViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
-            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false));
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
             var sut = new EventController(null, mediator.Object, null);
             sut.MakeUserNotAnOrgAdmin();
@@ -420,138 +521,131 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(routeAttribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteGetSendsDeleteQueryWithCorrectEventId()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
         [Fact]
-        public async Task DeleteGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        public async Task DeleteGetReturnsNotFoundResult_WhenEventNotFound()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
-                .ReturnsAsync(new DeleteViewModel());
+                .ReturnsAsync(null);
+                        mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.Delete(It.IsAny<int>()));
+
+            Assert.IsType<NotFoundResult>(await sut.Delete(It.IsAny<int>()));
         }
 
         [Fact]
-        public async Task DeleteGetSetsUserIsOrgAdminToTrueOnTheViewModel_WhenUserIsOrgAdmin()
+        public async Task DeleteGetReturnsForbidResult_WhenUserIsNotAuthorizedToDelete()
         {
-            const int organizationId = 1;
-
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, false, false));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
-            var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
-            var resultModel = result.ViewData.Model as DeleteViewModel;
-
-            Assert.True(resultModel.UserIsOrgAdmin);
+            Assert.IsType<ForbidResult>(await sut.Delete(It.IsAny<int>()));
         }
-
+        
         [Fact]
-        public async Task DeleteGetSetsTheCorrectTitleOnTheViewModel()
+        public async Task DeleteGetSendsDeleteQuery_WithCorrectEventId_WhenUserIsAuthorizedToDelete()
         {
-            const string eventName = "EventName";
-            const int organizationId = 1;
-
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel { Name = eventName, OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
+                .ReturnsAsync(new DeleteViewModel()).Verifiable();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
-            var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
-            var resultModel = result.ViewData.Model as DeleteViewModel;
+            await sut.Delete(1);
 
-            Assert.Equal(resultModel.Title, $"Delete event {eventName}");
+            mediator.Verify(x => x.SendAsync(It.Is<DeleteQuery>(e => e.EventId == 1)), Times.Once);
         }
 
         [Fact]
-        public async Task DeleteGetReturnsCorrectViewModel()
+        public async Task DeleteGetReturnsCorrectViewModel_WhenUserAuthorizedToDelete()
         {
             const int organizationId = 1;
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
                 .ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = (ViewResult)await sut.Delete(It.IsAny<int>());
             var resultModel = result.ViewData.Model;
 
             Assert.IsType<DeleteViewModel>(resultModel);
+        }    
+
+        [Fact]
+        public async Task DeleteConfirmedReturnsForbidResult_WhenUserIsNotAuthorizedToDelete()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, false, false));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(1));
         }
 
         [Fact]
-        public void DeleteGetHasActionNameAttributeWithCorrectName()
+        public async Task DeleteConfirmed_SendsDeleteEventCommand_WithCorrectEventId_WhenUserIsAuthorized()
+        {
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            await sut.DeleteConfirmed(1);
+
+            mediator.Verify(x => x.SendAsync(It.Is<DeleteEventCommand>(e => e.EventId == 1)), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteConfirmed_RedirectsToCorrectAction_AndControllerWithCorrectRouteValues_AfterSendingDeleteCommand()
+        {
+            const int cmapaignId = 20;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false, cmapaignId));
+
+            var sut = new EventController(null, mediator.Object, null);
+
+            var result = await sut.DeleteConfirmed(1);
+
+            var redirectResult = Assert.IsType<RedirectToActionResult>(result);
+            redirectResult.ControllerName.ShouldBe("Campaign");
+            redirectResult.ActionName.ShouldBe("Details");
+
+            redirectResult.RouteValues["area"].ShouldBe("Admin");
+            redirectResult.RouteValues["id"].ShouldBe(cmapaignId);
+        }
+
+        [Fact]
+        public void DeleteConfirmed_HasHttpPostAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.Delete(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+        }
+
+        [Fact]
+        public void DeleteConfirmed_HasActionNameAttribute_WithCorrectName()
+        {
+            var sut = EventControllerWithNoInjectedDependencies();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Name, "Delete");
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsEventDetailQueryWithCorrectEventId()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
         [Fact]
-        public async Task DeleteConfirmedReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
-        {
-            var sut = new EventController(null, null, null);
-            Assert.IsType<UnauthorizedResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedSendsDeleteEventCommandWithCorrectEventId()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task DeleteConfirmedRedirectToCorrectAction_AndControllerWithCorrectRouteValues()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
-
-        [Fact]
-        public void DeleteConfirmedHasHttpPostAttribute()
+        public void DeleteConfirmed_HasValidateAntiForgeryTokenAttribute()
         {
             var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-        }
-
-        [Fact]
-        public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
-        {
-            var sut = EventControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-            Assert.Equal(attribute.Name, "Delete");
-        }
-
-        [Fact]
-        public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
-        {
-            var sut = EventControllerWithNoInjectedDependencies();
-            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
