@@ -4,6 +4,8 @@
 
 @if (User.Identity.IsAuthenticated)
 {
+    var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
+    var controllerName = descriptor.ControllerName;
     <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post">
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
@@ -11,20 +13,27 @@
                     Dashboard
                 </a>
             </li>
-            <li>
-                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">
+            <li class="dropdown">
+                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     Hello @User.GetDisplayName(userManager)
                     @if (User.IsUserProfileIncomplete())
                     {
                         <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
                     }
+                    <span class="caret"></span>
                 </a>
-            </li>
-            <li>
-                <button type="submit" class="btn btn-link navbar-btn log-out">
-                    <i class="fa fa-sign-out"></i>
-                    Log off
-                </button>
+                <ul class="dropdown-menu">
+                    <li @(controllerName == "Manage" ? " class=active" : "")>
+                        <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">
+                            My Account
+                        </a>
+                    </li>
+                    <li>
+                        <button type="submit" class="btn btn-link log-out dropdown-menu-item-button">
+                            Log off
+                        </button>
+                    </li>
+                </ul>
             </li>
         </ul>
     </form>
