@@ -25,6 +25,11 @@ namespace AllReady.Controllers
                 ActiveOrUpcomingEvents = await mediator.SendAsync(new ActiveOrUpcomingEventsQuery())
             };
 
+            if ((bool?) TempData["NewAccount"] ?? false)
+            {
+                model.IsNewAccount = true;
+            }
+
             return View(model);
         }
 

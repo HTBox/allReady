@@ -20,6 +20,7 @@ using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Providers.ExternalUserInformationProviders.Providers;
 using AllReady.ViewModels.Account;
 using Microsoft.AspNetCore.Http.Authentication;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 
 namespace AllReady.UnitTest.Controllers
@@ -30,7 +31,7 @@ namespace AllReady.UnitTest.Controllers
         public void LoginGetPopulatesViewDataWithTheCorrectTestUrl()
         {
             var sut = AccountController();
-           
+
             var result = (ViewResult)sut.Login().Result;
             Assert.Null(result.ViewData["ReturnUrl"]);
 
@@ -119,7 +120,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Login(new LoginViewModel()) as ViewResult;
 
             Assert.Equal(result.ViewData["Message"], "You must have a confirmed email to log on.");
-            Assert.Equal(result.ViewName, "Error");            
+            Assert.Equal(result.ViewName, "Error");
         }
 
         [Fact]
@@ -335,6 +336,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = Mock.Of<IUrlHelper>();
+            sut.TempData = Mock.Of<ITempDataDictionary>();
 
             await sut.Register(model);
 
@@ -363,6 +365,7 @@ namespace AllReady.UnitTest.Controllers
             sut.SetFakeHttpRequestSchemeTo(requestScheme);
             var urlHelper = new Mock<IUrlHelper>();
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
 
             await sut.Register(new RegisterViewModel());
 
@@ -397,6 +400,8 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
+
             await sut.Register(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<SendConfirmAccountEmail>(y => y.Email == model.Email && y.CallbackUrl == callbackUrl)), Times.Once);
@@ -431,6 +436,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
 
             await sut.Register(viewModel);
 
@@ -478,6 +484,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
 
             await sut.Register(viewModel);
 
@@ -511,6 +518,8 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
+
             await sut.Register(model);
 
             userManager.Verify(x => x.AddClaimAsync(It.Is<ApplicationUser>(au =>
@@ -544,6 +553,8 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
+
             await sut.Register(model);
 
             signInManager.Verify(x => x.SignInAsync(It.Is<ApplicationUser>(au =>
@@ -574,12 +585,46 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
             sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
             sut.Url = urlHelper.Object;
+            sut.TempData = Mock.Of<ITempDataDictionary>();
 
             var result = await sut.Register(new RegisterViewModel()) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(HomeController.Index));
             Assert.Equal(result.ControllerName, "Home");
         }
+
+
+        [Fact]
+        public async Task RegisterPostSetsNewAccountFlag_WhenModelStateIsValid_AndUserCreationIsSuccessful()
+        {
+            var generalSettings = new Mock<IOptions<GeneralSettings>>();
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings());
+
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+            userManager.Setup(x => x.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(It.IsAny<string>());
+            userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(It.IsAny<string>());
+
+            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var tempData = new Mock<ITempDataDictionary>();
+            tempData.SetupSet(x => x["NewAccount"] = true);
+
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
+
+            var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
+            sut.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            sut.Url = urlHelper.Object;
+            sut.TempData = tempData.Object;
+
+            var result = await sut.Register(new RegisterViewModel()) as RedirectToActionResult;
+
+            tempData.VerifySet(x => x["NewAccount"] = true, Times.AtLeastOnce());
+        }
+
 
         [Fact]
         public async Task RegisterPostAddsIdentityResultErrorsToModelStateError_WhenUserCreationFails()

@@ -12,6 +12,16 @@
     </div>
 </div>
 
+@if (Model.IsNewAccount)
+{
+    <div class="alert alert-info alert-dismissable" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4>Your account has been created!</h4>
+        Thank you for creating your allReady account.  To continue using allReady we need to confirm your e-mail address and phone number.
+        Please check your e-mail and text messages for further instructions or visit your account to request a new confirmation.<br />
+        <a asp-controller="Manage" asp-action="Index" class="btn btn-success">Go to Your Account</a>
+    </div>
+}
 <div class="row">
     <div class="container">
         <h2 class="margin-3">Active/Upcoming Events</h2>
@@ -31,10 +41,10 @@
                     <div class="@(string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl) ? "col-md-9" : "col-md-12")">
                         <h3>
                             <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
-                                @Model.FeaturedCampaign.Title  
+                                @Model.FeaturedCampaign.Title
                             </a>
                         </h3>
-                        @if(!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
+                        @if (!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
                         {
                             <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
                         }
@@ -98,11 +108,11 @@
                                     </a>
                                 </div>
                             }
-                        </div>   
+                        </div>
                     </div>
                 </div>
             }
-        }   
+        }
     </div>
 </div>
 

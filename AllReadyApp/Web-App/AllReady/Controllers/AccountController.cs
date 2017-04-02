@@ -158,6 +158,8 @@ namespace AllReady.Controllers
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
+                    TempData["NewAccount"] = true;
+
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
 
@@ -323,7 +325,7 @@ namespace AllReady.Controllers
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = externalUserInformation.Email });
                 return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
             }
-            
+
             // If the user does not have an account, then ask the user to create an account.
             return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel
             {
