@@ -23,11 +23,16 @@ body {
     width: 100vw;
     left: -25px;
     color: #fff;
-    padding-bottom: 20px;
+    padding-bottom: 5px;
     margin-top: -20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     margin-right: -50px;
     margin-left: -50px;
+}
+
+.logo-background h3 {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 /* Set widths on the form inputs since otherwise they're 100% wide */
@@ -129,7 +134,7 @@ footer {
 }
 
 .navbar {
-    
+
     background-color:#d58033;
     border-radius: 0;
     margin-bottom:0;
@@ -365,7 +370,7 @@ Navigation
 
 /*Jumbotron*/
 .jumbotron {
-    
+
 }
 .jumbotron > *:first-child {
     margin-top: 0;
