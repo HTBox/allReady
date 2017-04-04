@@ -31,7 +31,7 @@
                     <div class="@(string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl) ? "col-md-9" : "col-md-12")">
                         <h3>
                             <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
-                                @Model.FeaturedCampaign.Title  
+                                @Model.FeaturedCampaign.Title
                             </a>
                         </h3>
                         @if(!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
@@ -74,9 +74,9 @@
                 <div class="panel panel-lister">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="@(string.IsNullOrEmpty(ev.ImageUrl) ? "col-md-9" : "col-md-12")">
+                            <div class="@(string.IsNullOrEmpty(ev.ImageUrl) ? "col-md-12" : "col-md-9")">
                                 <h4>
-                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@ev.Id">
+                                    <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id">
                                         @ev.Name
                                     </a>
                                 </h4>
@@ -90,19 +90,19 @@
                                     View
                                 </a>
                             </div>
-                            @if (string.IsNullOrEmpty(ev.ImageUrl))
+                            @if (!string.IsNullOrEmpty(ev.ImageUrl))
                             {
                                 <div class="col-md-3 hidden-xs hidden-sm text-center">
-                                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@ev.Id">
+                                    <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id">
                                         <img src="@ev.ImageUrl" class="panel-lister-thumb" />
                                     </a>
                                 </div>
                             }
-                        </div>   
+                        </div>
                     </div>
                 </div>
             }
-        }   
+        }
     </div>
 </div>
 
