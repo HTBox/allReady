@@ -24,26 +24,27 @@ namespace AllReady.Services
 
         public Task<string> UploadEventImageAsync(int organizationId, int eventId, IFormFile image)
         {
-            return UploadFile($"EI{organizationId:D6}_{eventId:D6}", image);
+            return UploadFile(image);
         }
 
         public Task<string> UploadCampaignImageAsync(int organizationId, int campaignId, IFormFile image)
         {
-            return UploadFile($"CI{organizationId:D6}_{campaignId:D6}", image);
+            return UploadFile(image);
         }
 
         public Task<string> UploadImageAsync(IFormFile image)
         {
-            return UploadFile(Guid.NewGuid().ToString().ToLower(), image);
+            return UploadFile(image);
         }
 
         public Task<string> UploadOrganizationImageAsync(int organizationId, IFormFile image)
         {
-            return UploadFile($"OI{organizationId:D6}", image);
+            return UploadFile(image);
         }
 
-        private async Task<string> UploadFile(string filename, IFormFile image)
+        private async Task<string> UploadFile(IFormFile image)
         {
+            string filename = Guid.NewGuid().ToString().ToLower();
             string filenameWithExt = filename + Path.GetExtension(image.FileName);
             string fullPath = Path.Combine(_uploadPath, filenameWithExt);
             using (FileStream fs = File.OpenWrite(fullPath))
@@ -58,7 +59,11 @@ namespace AllReady.Services
         {
             string filename = Path.GetFileName(imageUrl);
             string fileFullPath = Path.Combine(_uploadPath, filename);
-            File.Delete(fileFullPath);
+            if(File.Exists(fileFullPath))
+            {
+                File.Delete(fileFullPath);
+            }
+
             return Task.CompletedTask;
         }
     }
