@@ -77,13 +77,11 @@
                                 @foreach (var provider in loginProviders)
                                 {
                                     <div class="row">
-                                        <div class="col-md-2"></div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-6 col-md-offset-2">
                                             <button type="submit" class="btn btn-default btn-block" name="provider" value="@provider.AuthenticationScheme" title="Log in using your @provider.DisplayName account">
                                                 <span class="fa fa-2x fa-@((provider.AuthenticationScheme.ToLower() == "microsoft") ? "windows" : provider.AuthenticationScheme.ToLower())"></span><span class="btn-authenticator-txt">@provider.AuthenticationScheme</span>
                                             </button><br /><br />
                                         </div>
-                                        <div class="col-md-2"></div>
                                     </div>
                                 }
                             </p>
