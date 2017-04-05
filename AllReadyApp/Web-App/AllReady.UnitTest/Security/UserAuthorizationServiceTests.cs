@@ -32,15 +32,37 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task AssociateUser_ShouldThrowError_IfUserAlreadyAssociated()
+        public async Task AssociateUser_ShouldDoNothing_IfUserAlreadyAssociatedWithSameEmail()
+        {
+            var userManager = new FakeUserManager();
+            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
+
+            var claimsIdentity1 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+            claimsIdentity1.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email"));
+
+            var claimsIdentity2 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+            claimsIdentity2.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email"));
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity1));
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity2));
+
+            Assert.Equal(1, userManager.FindByEmailAsyncCallCount);
+        }
+
+        [Fact]
+        public async Task AssociateUser_ShouldThrowError_IfUserAlreadyAssociatedWithDifferentEmail()
         {
             var sut = new UserAuthorizationService(new FakeUserManager(), Mock.Of<AllReadyContext>());
 
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+            var claimsIdentity1 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+            claimsIdentity1.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email1"));
 
-            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+            var claimsIdentity2 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+            claimsIdentity2.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email2"));
 
-            Exception ex = await Assert.ThrowsAsync<InvalidOperationException>(() => sut.AssociateUser(new ClaimsPrincipal()));
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity1));
+
+            Exception ex = await Assert.ThrowsAsync<InvalidOperationException>(() => sut.AssociateUser(new ClaimsPrincipal(claimsIdentity2)));
 
             ex.ShouldNotBeNull();
         }
@@ -82,7 +104,7 @@ namespace AllReady.UnitTest.Security
 
             sut.AssociatedUserId.ShouldBe("123");
         }
-        
+
         [Fact]
         public void ShouldReturnNull_WhenNoUserAssociated()
         {
@@ -140,7 +162,7 @@ namespace AllReady.UnitTest.Security
             var userManager = new FakeUserManager();
 
             var sut = new UserAuthorizationService(userManager, Context);
-         
+
             var managedEventIds = await sut.GetManagedEventIds();
 
             managedEventIds.ShouldBeEmpty();
@@ -212,7 +234,7 @@ namespace AllReady.UnitTest.Security
 
             sut.IsSiteAdmin.ShouldBeTrue();
         }
-        
+
         [Fact]
         public async Task IsSiteAdmin_ShouldReturnFalse_WhenClaimsPrincipleDoesNotHaveSiteAdminClaim()
         {
@@ -305,7 +327,7 @@ namespace AllReady.UnitTest.Security
             public override Task<ApplicationUser> FindByEmailAsync(string email)
             {
                 FindByEmailAsyncCallCount += 1;
-                return Task.FromResult(new ApplicationUser { Id = "123" });
+                return Task.FromResult(new ApplicationUser { Id = "123", Email = email });
             }
         }
     }

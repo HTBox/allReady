@@ -138,7 +138,7 @@ namespace AllReady
         // Configure is called after ConfigureServices is called.
         public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
         {
-            // Put first to avoid issues with OPTIONS when calling from Angular/Browser.  
+            // Put first to avoid issues with OPTIONS when calling from Angular/Browser.
             app.UseCors("allReady");
 
             // todo: in RC update we can read from a logging.json config file
@@ -182,8 +182,10 @@ namespace AllReady
             {
                 // Add Error handling middleware which catches all application specific errors and
                 // sends the request to the following path or controller action.
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error/500");
             }
+
+            app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
             // Add static files to the request pipeline.
             app.UseStaticFiles();
@@ -191,6 +193,7 @@ namespace AllReady
             app.UseRequestLocalization();
 
             Authentication.ConfigureAuthentication(app, Configuration);
+
 
             //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
             if (!env.IsProduction())
