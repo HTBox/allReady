@@ -1,10 +1,10 @@
-System.register([], function (exports_1, context_1) {
+System.register([], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var HTBox;
     return {
-        setters: [],
-        execute: function () {
+        setters:[],
+        execute: function() {
             (function (HTBox) {
                 var maps;
                 (function (maps) {
@@ -75,9 +75,9 @@ System.register([], function (exports_1, context_1) {
                     }());
                     maps.MapRender = MapRender;
                 })(maps = HTBox.maps || (HTBox.maps = {}));
-            })(HTBox || (HTBox = {}));
+            })(HTBox = HTBox || (HTBox = {}));
             exports_1("HTBox", HTBox);
         }
-    };
+    }
 });
 //# sourceMappingURL=mappingTools.js.map

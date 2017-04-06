@@ -1,14 +1,14 @@
-System.register(["./shapes"], function (exports_1, context_1) {
+System.register(["./shapes"], function(exports_1, context_1) {
     "use strict";
     var __moduleName = context_1 && context_1.id;
-    var sss, ShapeUser, rect;
+    var sss;
+    var ShapeUser, rect;
     return {
-        setters: [
+        setters:[
             function (sss_1) {
                 sss = sss_1;
-            }
-        ],
-        execute: function () {
+            }],
+        execute: function() {
             // This works!
             (function (ShapeUser) {
                 var User = (function () {
@@ -22,10 +22,10 @@ System.register(["./shapes"], function (exports_1, context_1) {
                     return User;
                 }());
                 ShapeUser.User = User;
-            })(ShapeUser || (ShapeUser = {}));
+            })(ShapeUser = ShapeUser || (ShapeUser = {}));
             exports_1("ShapeUser", ShapeUser);
             rect = new sss.Shapes.Rectangle(10, 4);
         }
-    };
+    }
 });
 //# sourceMappingURL=shapelist.js.map
