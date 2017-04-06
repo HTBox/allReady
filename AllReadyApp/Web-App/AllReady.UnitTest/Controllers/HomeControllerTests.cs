@@ -8,6 +8,7 @@ using Moq;
 using Shouldly;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Xunit;
 
 namespace AllReady.UnitTest.Controllers
@@ -20,6 +21,7 @@ namespace AllReady.UnitTest.Controllers
             var mockMediator = new Mock<IMediator>();
 
             var sut = new HomeController(mockMediator.Object);
+            sut.TempData = Mock.Of<ITempDataDictionary>();
             await sut.Index();
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<ActiveOrUpcomingEventsQuery>()), Times.Once());
@@ -31,6 +33,7 @@ namespace AllReady.UnitTest.Controllers
             var mockMediator = new Mock<IMediator>();
 
             var sut = new HomeController(mockMediator.Object);
+            sut.TempData = Mock.Of<ITempDataDictionary>();
             await sut.Index();
 
             mockMediator.Verify(x => x.SendAsync(It.IsAny<FeaturedCampaignQuery>()), Times.Once());
@@ -42,9 +45,40 @@ namespace AllReady.UnitTest.Controllers
             var mockMediator = new Mock<IMediator>();
 
             var sut = new HomeController(mockMediator.Object);
+            sut.TempData = Mock.Of<ITempDataDictionary>();
             var result = (ViewResult)await sut.Index();
 
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task IndexSetsNewAccountFlag_WhenTempDataFlagIsTrue()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var tempData = new Mock<ITempDataDictionary>();
+            tempData.SetupGet(x => x["NewAccount"]).Returns(true);
+
+            var sut = new HomeController(mockMediator.Object);
+            sut.TempData = tempData.Object;
+            var result = (ViewResult) await sut.Index();
+            var model = (IndexViewModel) result.Model;
+
+            Assert.True(model.IsNewAccount);
+        }
+
+        [Fact]
+        public async Task IndexDoesNotSetNewAccountFlag_WhenTempDataFlagIsNotPresent()
+        {
+            var mockMediator = new Mock<IMediator>();
+            var tempData = new Mock<ITempDataDictionary>();
+            tempData.SetupGet(x => x["NewAccount"]).Returns(null);
+
+            var sut = new HomeController(mockMediator.Object);
+            sut.TempData = tempData.Object;
+            var result = (ViewResult) await sut.Index();
+            var model = (IndexViewModel)result.Model;
+
+            Assert.False(model.IsNewAccount);
         }
 
         //[Fact]
