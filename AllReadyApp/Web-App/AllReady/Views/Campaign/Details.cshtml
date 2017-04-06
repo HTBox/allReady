@@ -1,9 +1,4 @@
-﻿@using System
-@using AllReady.Areas.Admin.ViewModels.Site
-@using AllReady.ViewModels.Campaign
-@using AllReady.ViewModels.Organization
-@model AllReady.ViewModels.Campaign.CampaignViewModel
-@using Newtonsoft.Json
+﻿@model AllReady.ViewModels.Campaign.CampaignViewModel
 
 @{
     ViewData["Title"] = Model.Name;
@@ -55,7 +50,7 @@
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
         <p>@Model.LocationSummary</p>
-        @Html.DisplayFor(model => model.Keywords)
+        @Html.DisplayFor(model => model.Tags)
     </div>
 </div>
 
