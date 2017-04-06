@@ -72,7 +72,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         public bool Published { get; set; }
 
-        public KeywordCollection Keywords { get; set; }
+        public TagCollection Tags { get; set; }
 
         public class EventList
         {

@@ -55,7 +55,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Locked = campaign.Locked,
                     Featured = campaign.Featured,
                     Published = campaign.Published,
-                    Keywords = new KeywordCollection(campaign.Tags),
+                    Tags = new TagCollection(campaign.Tags),
                     Events = campaign.Events.Select(a => new CampaignDetailViewModel.EventList
                     {
                         Id = a.Id,

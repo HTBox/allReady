@@ -40,7 +40,7 @@ namespace AllReady.ViewModels.Campaign
             Featured = campaign.Featured;
             Headline = campaign.Headline;
             Published = campaign.Published;
-            Keywords = new KeywordCollection(campaign.Tags);
+            Tags = new TagCollection(campaign.Tags);
 
         }
 
@@ -105,7 +105,7 @@ namespace AllReady.ViewModels.Campaign
         public bool IsCampaignManager { get; set; }
         public KeywordCollection Keywords { get; set; }
 
-        public string[] Tags { get; set; }
+        public TagCollection Tags { get; set; }
     }
 
     public static class CampaignViewModelExtensions

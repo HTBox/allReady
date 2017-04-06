@@ -4,17 +4,17 @@ using System.Collections.Generic;
 
 namespace AllReady.ViewModels.Shared
 {
-    public class KeywordCollection : IEnumerable<string>
+    public class TagCollection : IEnumerable<string>
     {
         private const string DELIMITER = "|";
         private static readonly Func<string, string[]> Parse = (input) => input.Split(DELIMITER[0]);
         private readonly List<string> _collection;
 
-        public KeywordCollection() : this(new string[] { }) { }
+        public TagCollection() : this(new string[] { }) { }
 
-        public KeywordCollection(string delimited) : this(Parse(delimited)) { }
+        public TagCollection(string delimited) : this(Parse(delimited)) { }
 
-        public KeywordCollection(string[] source)
+        public TagCollection(string[] source)
         {
             _collection = new List<string>(source);
         }
