@@ -30,6 +30,11 @@ body {
     margin-left: -50px;
 }
 
+.logo-background img {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
 .logo-background .sub-title {
     margin-top: 5px;
     margin-bottom: 5px;
