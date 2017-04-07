@@ -209,5 +209,15 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         public int VolunteerTaskCount => VolunteerTasks.Count;
 
         public string ItinerariesDetailsUrl { get; set; }
+
+        /// <summary>
+        /// Used by the UI to determine if the user should be shown the delete button
+        /// </summary>
+        public bool ShowDeleteButton { get; set; }
+
+        /// <summary>
+        /// Used by the UI to determine if the user should be shown the create task, create itinerary and create request buttons
+        /// </summary>
+        public bool ShowCreateChildObjectButtons { get; set; }
     }
 }

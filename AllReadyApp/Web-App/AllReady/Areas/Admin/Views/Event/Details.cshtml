@@ -29,7 +29,10 @@
             <span data-event-title>@Model.Name</span>
             <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
             <a asp-area="Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
-            <a asp-area="Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+            @if (Model.ShowDeleteButton)
+            {
+                <a asp-area="Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+            }
         </h2>
         <p>@Model.Description</p>
         <p>
@@ -75,11 +78,14 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <a asp-area="Admin" asp-controller="Task" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+@if (Model.ShowCreateChildObjectButtons)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <a asp-area="Admin" asp-controller="Task" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+        </div>
     </div>
-</div>
+}
 
 <!-- Modal -->
 <div class="modal fade" id="messageVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="messageVolunteersLabel">
@@ -125,58 +131,64 @@
         </div>
     </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#createItineraryModal">Create Itinerary</button>
-                </div>
+    @if (Model.ShowCreateChildObjectButtons)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#createItineraryModal">Create Itinerary</button>
             </div>
+        </div>
+    }
 
-            @Html.Partial("~/Areas/Admin/Views/Itinerary/_List.cshtml", Model.Itineraries)
+    @Html.Partial("~/Areas/Admin/Views/Itinerary/_List.cshtml", Model.Itineraries)
 
     <!-- Create Itinerary Modal -->
-            <div class="modal fade" id="createItineraryModal" tabindex="-1" role="dialog" aria-labelledby="createItineraryLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
+    <div class="modal fade" id="createItineraryModal" tabindex="-1" role="dialog" aria-labelledby="createItineraryLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
+                </div>
+                <input type="hidden" id="itineraryDetailUrl" value="@string.Concat(Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0'), "{id}")" />
+
+                <form asp-area="Admin" asp-controller="Itinerary" asp-action="Create" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" asp-for="NewItinerary.EventId" name="@nameof(Model.NewItinerary.EventId)">
+                        <div class="form-group">
+                            <label for="@nameof(Model.NewItinerary.Name)" class="control-label">Name</label>
+                            <input type="text" class="form-control wide" id="createItineraryModal-name" name="@nameof(Model.NewItinerary.Name)" asp-for="NewItinerary.Name">
                         </div>
-                        <input type="hidden" id="itineraryDetailUrl" value="@string.Concat(Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0'), "{id}")" />
-
-                        <form asp-area="Admin" asp-controller="Itinerary" asp-action="Create" method="post">
-                            <div class="modal-body">
-                                <input type="hidden" asp-for="NewItinerary.EventId" name="@nameof(Model.NewItinerary.EventId)">
-                                <div class="form-group">
-                                    <label for="@nameof(Model.NewItinerary.Name)" class="control-label">Name</label>
-                                    <input type="text" class="form-control wide" id="createItineraryModal-name" name="@nameof(Model.NewItinerary.Name)" asp-for="NewItinerary.Name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="@nameof(Model.NewItinerary.Date)" class="control-label">Scheduled Date</label>
-                                    <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@DateTime.Now.ToString("yyyy-MM-dd")">
-                                </div>
-                                <div class="alert alert-danger" role="alert"></div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="submit" id="createItinerary" class="btn btn-primary">Save</button>
-                            </div>
-                        </form>
+                        <div class="form-group">
+                            <label for="@nameof(Model.NewItinerary.Date)" class="control-label">Scheduled Date</label>
+                            <input class="form-control" id="createItineraryModal-date" asp-for="NewItinerary.Date" name="@nameof(Model.NewItinerary.Date)" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                        </div>
+                        <div class="alert alert-danger" role="alert"></div>
                     </div>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" id="createItinerary" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
             </div>
+        </div>
+    </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Requests</h3>
-                </div>
-            </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Requests</h3>
+        </div>
+    </div>
 
-            <div class="row">
-                <div class="col-md-12">
-                    <a asp-action="Create" asp-controller="Request" asp-area="Admin" asp-route-eventId="@Model.Id" class="btn btn-default">Create Request</a>
-                </div>
-                &nbsp;
+    @if (Model.ShowCreateChildObjectButtons)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <a asp-action="Create" asp-controller="Request" asp-area="Admin" asp-route-eventId="@Model.Id" class="btn btn-default">Create Request</a>
             </div>
+            &nbsp;
+        </div>
+    }
 
     <div class="row">
         <div class="col-md-7ths col-sm-4 col-xs-12">
