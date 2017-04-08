@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using AllReady.Extensions;
+using Shouldly;
 using Xunit;
 
 namespace AllReady.UnitTest.Extensions
@@ -7,36 +10,44 @@ namespace AllReady.UnitTest.Extensions
     public class EnumerableExtensionsShould
     {
         [Fact]
-        public void TestOrderByAscending()
+        public void GroupIntoShouldReturnEmptyEnumerable_WhenInputIsEmpty()
         {
-            var customers = new List<Customer>
-            {
-                new Customer { Id = 3 },
-                new Customer { Id = 2 },
-                new Customer { Id = 1 }
-            };
+            var input = Enumerable.Empty<string>();
 
-            customers = customers.OrderBy(x => x.Id).ToList();
+            var result = input.GroupInto(2);
 
-            Assert.True(customers.IsOrderedByAscending(x => x.Id));
+            result.ShouldBeEmpty();
         }
 
         [Fact]
-        public void IsOrderByDescending()
+        public void GroupIntoShouldReturnSingleEnumerable_WhenInputHasOneElement()
         {
-            var customers = new List<Customer>
-            {
-                new Customer { Id = 3 },
-                new Customer { Id = 2 },
-                new Customer { Id = 1 }
-            };
+            var input = Enumerable.Range(1, 1);
 
-            Assert.False(customers.IsOrderedByAscending(x => x.Id));
+            var result = input.GroupInto(2).ToList();
+
+            result.ShouldHaveSingleItem();
+            result[0].ShouldHaveSingleItem();
         }
 
-        private class Customer
+        [Fact]
+        public void GroupIntoShouldReturnGroupsOfTwo_WhenCountIsTwo()
         {
-            public int Id { get; set; }
+            var input = Enumerable.Range(1, 10);
+
+            var result = input.GroupInto(2).ToList();
+
+            result.Count.ShouldBe(5);
+            result.ShouldAllBe(x => x.Count() == 2);
+        }
+
+        [Fact]
+        public void GroupIntoShouldThrowArgumentNullException_WhenInputIsNull()
+        {
+            IEnumerable<int> input = null;
+
+            var exception = Should.Throw<ArgumentNullException>(() => input.GroupInto(2).ToList());
+            exception.ParamName.ShouldNotBeNullOrEmpty();
         }
     }
 }
