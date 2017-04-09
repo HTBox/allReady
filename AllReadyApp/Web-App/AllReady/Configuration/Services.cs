@@ -43,11 +43,9 @@ namespace AllReady.Configuration
             services.AddTransient<IItineraryEditModelValidator, ItineraryEditModelValidator>();
             services.AddTransient<IOrganizationEditModelValidator, OrganizationEditModelValidator>();
             services.AddTransient<IRedirectAccountControllerRequests, RedirectAccountControllerRequests>();
-            services.AddSingleton<IImageService, ImageService>();
             services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
-           
 
             if (configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {
@@ -58,9 +56,18 @@ namespace AllReady.Configuration
                 services.AddSingleton<IGeocodeService, FakeGeocodeService>();
             }
 
+            if (configuration["Data:Storage:EnableAzureBlobImageService"] == "true")
+            {
+                services.AddSingleton<IImageService, ImageService>();
+            }
+            else
+            {
+                services.AddSingleton<IImageService, FileImageService>();
+            }
+
             if (configuration["Data:Storage:EnableAzureQueueService"] == "true")
             {
-                // This setting is false by default. To enable queue processing you will 
+                // This setting is false by default. To enable queue processing you will
                 // need to override the setting in your user secrets or env vars.
                 services.AddTransient<IQueueStorageService, QueueStorageService>();
             }

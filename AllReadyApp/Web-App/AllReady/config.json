@@ -39,7 +39,8 @@
     },
     "Storage": {
       "AzureStorage": "[storagekey]",
-      "EnableAzureQueueService": "false"
+        "EnableAzureQueueService": "false",
+        "EnableAzureBlobImageService":  "false"
     }
   },
   "Email": {
@@ -73,7 +74,7 @@
       "Token": "[twiliotoken]",
       "PhoneNo": "[twilionumber]"
     }
-  },  
+  },
     "ApprovedRegions": {
       "Enabled": true,
       "Regions": ["IDMT",
@@ -86,5 +87,5 @@
         "WISC",
         "CHNI",
         "CSIL"]
-  } 
+  }
 }

@@ -6,6 +6,7 @@ namespace AllReady.Configuration
     {
         public string AzureStorage { get; set; }
         public bool EnableAzureQueueService { get; set; }
+        public bool EnableAzureBlobImageService { get; set; }
     }
 
     public class GeneralSettings
