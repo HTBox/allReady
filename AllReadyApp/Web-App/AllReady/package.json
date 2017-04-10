@@ -7,8 +7,8 @@
   "devDependencies": {
     "@types/jquery": "2.0.40",
     "bingmaps": "1.0.13",
-    "bower": "1.6.5",
-    "gulp": "3.8.11",
+    "bower": "1.8.0",
+    "gulp": "3.9.1",
     "gulp-concat": "2.5.2",
     "gulp-cssmin": "0.1.7",
     "gulp-sourcemaps": "1.6.0",

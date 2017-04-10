@@ -1,5 +1,6 @@
-#remove the noted line below when upgrading to vs2017
 version: 1.0.0.{build}.{branch}
+
+image: Visual Studio 2017
 
 nuget:
   account_feed: false
@@ -7,9 +8,6 @@ nuget:
 init:
  - git config --global core.autocrlf true
  
-services:
-  - mssql2014
-
 cache:
   - AllReadyApp\Web-App\AllReady\node_modules   #node modules for the app
   - '%APPDATA%\npm-cache'             # npm cache
@@ -17,24 +15,23 @@ cache:
 install:
  - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
  - choco install firefox
- - rd /s /q "C:\Program Files\dotnet\sdk\1.0.1"
- # remove the above line on upgrade to vs2017
  
 before_build:
- - cmd: dotnet restore AllReadyApp
+ - cmd: dotnet restore AllReadyApp\AllReady.Core\AllReady.Core.csproj
+ - cmd: dotnet restore AllReadyApp\Web-App\AllReady\AllReady.csproj
+ - cmd: dotnet restore AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
+ - cmd: dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
  - cmd: npm install gulp bower -g
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
- - cmd: dotnet build AllReadyApp\AllReady.Core\project.json
- - cmd: dotnet publish AllReadyApp\Web-App\AllReady\project.json --output c:\Published
- - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\project.json
- - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\project.json
+ - cmd: dotnet build AllReadyApp\AllReady.Core\AllReady.Core.csproj
+ - cmd: dotnet publish AllReadyApp\Web-App\AllReady\AllReady.csproj --output c:\Published
+ - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
+ - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - cmd: msbuild AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
 
 test_script:
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
  - cmd: dotnet test 
-
-
