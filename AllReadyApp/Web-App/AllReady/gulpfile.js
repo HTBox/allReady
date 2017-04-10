@@ -1,17 +1,16 @@
-/// <binding Clean='clean' ProjectOpened='watch' />
+﻿/// <binding Clean='clean' ProjectOpened='watch' />
 var gulp = require("gulp"),
     rimraf = require("rimraf"),
     concat = require("gulp-concat"),
     cssmin = require("gulp-cssmin"),
-    ts = require('gulp-typescript'),
-    project = require("./project.json");
+    ts = require('gulp-typescript');
 
 // https://www.npmjs.com/package/gulp-typescript
 // http://weblogs.asp.net/dwahlin/creating-a-typescript-workflow-with-gulp
 var tsProject = ts.createProject('tsconfig.json');
 
 var paths = {
-    webroot: "./" + project.webroot + "/"
+    webroot: "./wwwroot/"
 };
 
 paths.ts = paths.webroot + "{ts,js}/**/*.ts";
