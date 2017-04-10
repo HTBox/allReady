@@ -69,7 +69,11 @@ echo Handling ASP.NET Core Web Application deployment.
 :: 1. Restore nuget packages
 echo Restoring nuget packages for all projects individually
 call :ExecuteCmd dotnet restore AllReadyApp\AllReady.Core\AllReady.Core.csproj
+IF !ERRORLEVEL! NEQ 0 goto error
+
 call :ExecuteCmd dotnet restore AllReadyApp\Web-App\AllReady\AllReady.csproj
+IF !ERRORLEVEL! NEQ 0 goto error
+
 call :ExecuteCmd dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
 IF !ERRORLEVEL! NEQ 0 goto error
 
@@ -94,6 +98,9 @@ IF !ERRORLEVEL! NEQ 0 goto error
 :: 2b. Publish AllReady
 echo Publishing Allready Project (project.json) which includes building it
 call :ExecuteCmd dotnet publish Web-App\AllReady\AllReady.csproj --output "%DEPLOYMENT_TEMP%"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 2c. Publish version.json change
 copy "%DEPLOYMENT_SOURCE%\AllReadyApp\Web-App\AllReady\version.json" "%DEPLOYMENT_TEMP%\version.json" /y
 IF !ERRORLEVEL! NEQ 0 goto error
 
