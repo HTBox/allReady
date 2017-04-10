@@ -110,7 +110,10 @@ popd
 :: 2c. Publish WebJobs (AllReady.NotificationsWebJob)
 echo Publishing AllReady.NotificationsWebJob WebJob
 call :ExecuteCmd mkdir "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
-call :ExecuteCmd xcopy /S "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.NotificationsWebJob\bin\debug\net46\win7-x86" "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+call :ExecuteCmd xcopy /S "%DEPLOYMENT_SOURCE%\AllReadyApp\AllReady.NotificationsWebJob\bin\debug\net46\win7-x86\" "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\notificationsprocessor\"
+IF !ERRORLEVEL! NEQ 0 goto error
 
 
 :: 3. KuduSync
