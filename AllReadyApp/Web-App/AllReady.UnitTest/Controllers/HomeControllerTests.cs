@@ -110,14 +110,6 @@ namespace AllReady.UnitTest.Controllers
         //}
 
         [Fact]
-        public void ErrorReturnsTheCorrectView()
-        {
-            var controller = new HomeController(null);
-            var result = (ViewResult)controller.Error();
-            Assert.Equal("~/Views/Shared/Error.cshtml", result.ViewName);
-        }
-
-        [Fact]
         public void AccessDeniedReturnsTheCorrectView()
         {
             var controller = new HomeController(null);

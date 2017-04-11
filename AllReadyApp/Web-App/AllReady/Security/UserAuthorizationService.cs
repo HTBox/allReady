@@ -31,6 +31,13 @@ namespace AllReady.Security
         {
             if (HasAssociatedUser)
             {
+                if (_user.Email == claimsPrincipal.Identity.Name)
+                {
+                    // This is probably a "re-executed" request that has already been
+                    // through the pipeline once.
+                    return;
+                }
+
                 throw new InvalidOperationException("AssociateUser cannot be called when a user has been previously associated");
             }
 
@@ -131,7 +138,7 @@ namespace AllReady.Security
 
                 int organizationId;
                 if (int.TryParse(organizationIdClaim.Value, out organizationId))
-                { 
+                {
                     result = organizationId;
                 }
 
