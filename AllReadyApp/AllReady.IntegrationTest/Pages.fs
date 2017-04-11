@@ -3,7 +3,7 @@ open canopy
 
 module TopMenu =
     let private Campaigns = "Campaigns"
-    let private Admin = "li.dropdown-admin"
+    let private Admin = "li.dropdown-admin a"
     let private AdminCampaigns = "a[href='/Admin/Campaign']"
     let private AdminOrganizations = "a[href='/Admin/Organization']"
 
@@ -44,6 +44,7 @@ module AdminCampaignCreate =
         Description:string
         FullDescription:string
         OrganizationName:string
+        Address1:string
         City:string
         State:string
         PostalCode:int
@@ -55,6 +56,7 @@ module AdminCampaignCreate =
         Description = ""
         FullDescription = ""
         OrganizationName = ""
+        Address1="1 Microsoft Way"
         City="Redmond"
         State="WA"
         PostalCode=98052
@@ -72,15 +74,17 @@ module AdminCampaignCreate =
         let insertFullDescriptionScript = sprintf "tinyMCE.activeEditor.setContent('%s')" details.FullDescription
         js(insertFullDescriptionScript) |> ignore
         "#OrganizationId" << details.OrganizationName
+        "#Location_Address1" << details.Address1
         "#Location_City" << details.City
         "#Location_State" << details.State
         "#Location_PostalCode" << details.PostalCode.ToString()
         "#Location_Country" << details.Country
+        check "#Published"
 
 module AdminCampaignDetails =
     let RelativeUrl = "Admin/Campaign/Details"
 
-    let private createNew = "Create New"
+    let private createNew = "a[href^='/Admin/Event/Create/']"
 
     let CreateNewEvent _ =
         click createNew
@@ -90,6 +94,7 @@ module AdminOrganizationCreate =
         Name:string
         WebUrl:string
         LogoUrl:string
+        Address1:string
         City:string
         State:string
         PostalCode:int
@@ -100,6 +105,7 @@ module AdminOrganizationCreate =
         Name = ""
         WebUrl=""
         LogoUrl=""
+        Address1="1 Microsoft Way"
         City="Redmond"
         State="WA"
         PostalCode=98052
@@ -111,6 +117,7 @@ module AdminOrganizationCreate =
         "#LogoUrl" << details.LogoUrl
         "#Name" << details.Name 
         "#WebUrl" << details.WebUrl
+        "#Location_Address1" << details.Address1
         "#Location_City" << details.City
         "#Location_State" << details.State
         "#Location_PostalCode" << details.PostalCode.ToString()
