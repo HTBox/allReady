@@ -1,5 +1,5 @@
 ﻿using System;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Features.Events;
 using AllReady.Models;

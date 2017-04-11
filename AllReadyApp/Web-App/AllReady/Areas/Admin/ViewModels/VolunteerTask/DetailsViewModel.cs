@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Models;
 
-namespace AllReady.Areas.Admin.ViewModels.Task
+namespace AllReady.Areas.Admin.ViewModels.VolunteerTask
 {
     public class DetailsViewModel
     {

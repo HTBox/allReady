@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 
 namespace AllReady.Areas.Admin.Features.Events
 {

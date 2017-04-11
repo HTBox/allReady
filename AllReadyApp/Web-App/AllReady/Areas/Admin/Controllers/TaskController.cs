@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Areas.Admin.ViewModels.Validators.Task;
 using AllReady.Security;
 using MediatR;
