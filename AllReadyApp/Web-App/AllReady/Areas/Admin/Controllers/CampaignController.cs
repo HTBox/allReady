@@ -14,7 +14,7 @@ using AllReady.Areas.Admin.ViewModels.Campaign;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    //[Authorize("OrgAdmin")]
     public class CampaignController : Controller
     {
         public Func<DateTime> DateTimeNow = () => DateTime.Now;
