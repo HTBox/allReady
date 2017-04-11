@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Shared;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

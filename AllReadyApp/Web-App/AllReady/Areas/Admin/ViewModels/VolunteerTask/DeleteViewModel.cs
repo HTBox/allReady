@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.ViewModels.Task
+namespace AllReady.Areas.Admin.ViewModels.VolunteerTask
 {
     public class DeleteViewModel
     {

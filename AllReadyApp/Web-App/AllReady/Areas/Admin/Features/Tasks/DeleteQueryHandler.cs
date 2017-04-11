@@ -3,7 +3,7 @@ using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {

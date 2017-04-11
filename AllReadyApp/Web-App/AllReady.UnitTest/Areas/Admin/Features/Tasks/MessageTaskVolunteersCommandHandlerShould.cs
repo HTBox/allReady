@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
