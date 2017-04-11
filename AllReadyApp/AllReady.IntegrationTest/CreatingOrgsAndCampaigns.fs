@@ -58,19 +58,7 @@ let All baseUrl =
         TopMenu.SelectCampaigns()
         "td a" *= testCampaignName
 
-    "Admin can create a campaign from public campaign page" &&& fun _ ->
-        let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Admin From Public Page"
-        Campaigns.SelectCreateNew()
-        AdminCampaignCreate.PopulateCampaignDetails 
-            {AdminCampaignCreate.DefaultCampaignDetails with 
-                Name = testCampaignName; 
-                Description = "test"; 
-                FullDescription = "Full Description"; 
-                OrganizationName = testOrganizationName }
-        AdminCampaignCreate.Submit()
-
-        on AdminCampaignDetails.RelativeUrl
-        "h2" == testCampaignName
+        navigate(back)
 
     "Admin can create events" &&& fun _ ->
         let eventName = Utils.GetScenarioTestName "First Test Event"
