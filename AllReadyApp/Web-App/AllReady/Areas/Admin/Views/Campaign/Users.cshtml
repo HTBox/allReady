@@ -1,0 +1,82 @@
+﻿@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignUsersDetailsViewModel
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+@{ ViewBag.Title = Model.CampaignName; }
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li>Users</li>
+        </ol>
+    </div>
+</div>
+
+<h2>Authorized Users</h2>
+
+@if (Model.CampaignManagerList.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Campaign Manager</h3>
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+                @foreach (var u in Model.CampaignManagerList)
+                {
+                    <tr>
+                        <td>@u.Name</td>
+                        <td>@u.UserName</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+}
+@if (Model.EventManagerList.Count > 0)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Event Manager</h3>
+            <table class="table">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+                @foreach (var u in Model.EventManagerList)
+                {
+                    <tr>
+                        <td>@u.Name</td>
+                        <td>@u.UserName</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col-md-4">
+        <h3>Volunteers</h3>
+        <table class="table">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+            @foreach (var u in Model.VolunteerList)
+            {
+                <tr>                        
+                    <td>@u.Name</td>
+                    <td>@u.UserName</td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+<div>
+    <hr />
+</div>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Extensions;
@@ -43,6 +43,23 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Details(int id)
         {
             var viewModel = await _mediator.SendAsync(new CampaignDetailQuery { CampaignId = id });
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpGet("Admin/Campaign/{id}/Users")]
+        public async Task<IActionResult> Users(int id)
+        {
+            var viewModel = await _mediator.SendAsync(new CampaignUsersDetailsQuery { CampaignId = id });
             if (viewModel == null)
             {
                 return NotFound();
