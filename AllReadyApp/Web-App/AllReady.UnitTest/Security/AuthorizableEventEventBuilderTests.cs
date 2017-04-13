@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.Security
         [Fact]
         public async Task Build_WithAllThreeIds_ReturnsTheAuthorizableEvent()
         {
-            var sut = new AuthorizableEventEventBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
+            var sut = new AuthorizableEventBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
 
             var result = await sut.Build(1, 2, 3);
 
@@ -29,7 +29,7 @@ namespace AllReady.UnitTest.Security
             var cache = new MemoryCache(new MemoryCacheOptions());
             cache.Set("AuthorizableEvent_1", new FakeAuthorizableEventIdContainer(), TimeSpan.FromMinutes(5));
 
-            var sut = new AuthorizableEventEventBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
+            var sut = new AuthorizableEventBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
 
             var result = await sut.Build(1, 2, 3);
 
@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Security
         [Fact]
         public async Task Build_WithJustEventId_ReturnsTheAuthorizableEventFromTheDatabase()
         {
-            var sut = new AuthorizableEventEventBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
+            var sut = new AuthorizableEventBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
 
             var result = await sut.Build(10);
 
@@ -55,7 +55,7 @@ namespace AllReady.UnitTest.Security
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
 
-            var sut = new AuthorizableEventEventBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
+            var sut = new AuthorizableEventBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
 
             var result = await sut.Build(10);
 

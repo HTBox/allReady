@@ -17,7 +17,7 @@ namespace AllReady.UnitTest.Security
             var userAuthService = new Mock<IUserAuthorizationService>();
             userAuthService.Setup(x => x.HasAssociatedUser).Returns(false);
 
-            var authEventBuilder = new AuthorizableEventEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
+            var authEventBuilder = new AuthorizableEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
 
             return await authEventBuilder.Build(1, 2, 3);
         }
@@ -72,7 +72,7 @@ namespace AllReady.UnitTest.Security
             userAuthService.Setup(x => x.HasAssociatedUser).Returns(true);
             userAuthService.Setup(x => x.IsSiteAdmin).Returns(true);
 
-            var authEventBuilder = new AuthorizableEventEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
+            var authEventBuilder = new AuthorizableEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
 
             return await authEventBuilder.Build(1, 2, 3);
         }
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Security
             userAuthService.Setup(x => x.HasAssociatedUser).Returns(true);
             userAuthService.Setup(x => x.IsOrganizationAdmin(It.IsAny<int>())).Returns(true);
 
-            var authEventBuilder = new AuthorizableEventEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
+            var authEventBuilder = new AuthorizableEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
 
             return await authEventBuilder.Build(1, 2, 3);
         }
@@ -184,7 +184,7 @@ namespace AllReady.UnitTest.Security
             userAuthService.Setup(x => x.IsOrganizationAdmin(It.IsAny<int>())).Returns(false);
             userAuthService.Setup(x => x.GetManagedEventIds()).ReturnsAsync(new List<int> { 1 });
 
-            var authEventBuilder = new AuthorizableEventEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
+            var authEventBuilder = new AuthorizableEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
 
             return await authEventBuilder.Build(1, 2, 3);
         }
@@ -242,7 +242,7 @@ namespace AllReady.UnitTest.Security
             userAuthService.Setup(x => x.GetManagedEventIds()).ReturnsAsync(new List<int>());
             userAuthService.Setup(x => x.GetManagedCampaignIds()).ReturnsAsync(new List<int> { 2 });
 
-            var authEventBuilder = new AuthorizableEventEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
+            var authEventBuilder = new AuthorizableEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
 
             return await authEventBuilder.Build(1, 2, 3);
         }
@@ -300,7 +300,7 @@ namespace AllReady.UnitTest.Security
             userAuthService.Setup(x => x.GetManagedEventIds()).ReturnsAsync(new List<int>());
             userAuthService.Setup(x => x.GetManagedCampaignIds()).ReturnsAsync(new List<int>());
 
-            var authEventBuilder = new AuthorizableEventEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
+            var authEventBuilder = new AuthorizableEventBuilder(null, new MemoryCache(new MemoryCacheOptions()), userAuthService.Object);
 
             return await authEventBuilder.Build(1, 2, 3);
         }
