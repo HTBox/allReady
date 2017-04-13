@@ -12,7 +12,7 @@ namespace AllReady.UnitTest.Security
     public class AuthorizableCampaignBuilderTests : InMemoryContextTest
     {
         [Fact]
-        public async Task Build_WithAllThreeIds_ReturnsTheAuthorizableCampaign()
+        public async Task Build_WithBothIds_ReturnsTheAuthorizableCampaign()
         {
             var sut = new AuthorizableCampaignBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
 
@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task Build_WithAllThreeIds_ReturnsFromTheCacheWhenAvailable()
+        public async Task Build_WithBothIds_ReturnsFromTheCacheWhenAvailable()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
             cache.Set("AuthorizableCampaign_1", new FakeAuthorizableCampaignIdContainer(), TimeSpan.FromMinutes(5));
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task Build_WithJustEventId_ReturnsTheAuthorizableCampaignFromTheDatabase()
+        public async Task Build_WithJustCampaignId_ReturnsTheAuthorizableCampaignFromTheDatabase()
         {
             var sut = new AuthorizableCampaignBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
 
