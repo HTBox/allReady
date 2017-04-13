@@ -218,17 +218,6 @@ namespace AllReady.Security
             /// <inheritdoc />
             public async Task<bool> UserCanView()
             {
-                return await UserCanManageItinerary();
-            }
-
-            /// <inheritdoc />
-            public async Task<bool> UserCanEdit()
-            {
-                return await UserCanManageItinerary();
-            }
-
-            private async Task<bool> UserCanManageItinerary()
-            {
                 var userAccessType = await UserAccessType();
 
                 return userAccessType == ItineraryAccessType.SiteAdmin
@@ -236,6 +225,17 @@ namespace AllReady.Security
                        || userAccessType == ItineraryAccessType.CampaignAdmin
                        || userAccessType == ItineraryAccessType.EventAdmin
                        || userAccessType == ItineraryAccessType.TeamLead;
+            }
+
+            /// <inheritdoc />
+            public async Task<bool> UserCanEdit()
+            {
+                var userAccessType = await UserAccessType();
+
+                return userAccessType == ItineraryAccessType.SiteAdmin
+                       || userAccessType == ItineraryAccessType.OrganizationAdmin
+                       || userAccessType == ItineraryAccessType.CampaignAdmin
+                       || userAccessType == ItineraryAccessType.EventAdmin;
             }
 
             /// <inheritdoc />
