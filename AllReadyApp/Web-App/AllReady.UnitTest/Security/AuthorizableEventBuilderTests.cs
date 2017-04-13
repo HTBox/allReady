@@ -24,14 +24,14 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task Build_WithAllThreeIds_ReturnsFromTheCacheWhenAvailable()
+        public async Task Build_WithJustEventId_ReturnsFromTheCacheWhenAvailable()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
             cache.Set("AuthorizableEvent_1", new FakeAuthorizableEventIdContainer(), TimeSpan.FromMinutes(5));
 
             var sut = new AuthorizableEventBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
 
-            var result = await sut.Build(1, 2, 3);
+            var result = await sut.Build(1);
 
             result.EventId.ShouldBe(1);
             result.CampaignId.ShouldBe(200);

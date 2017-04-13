@@ -23,14 +23,14 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task Build_WithBothIds_ReturnsFromTheCacheWhenAvailable()
+        public async Task Build_WithJustCampaignId_ReturnsFromTheCacheWhenAvailable()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
             cache.Set("AuthorizableCampaign_1", new FakeAuthorizableCampaignIdContainer(), TimeSpan.FromMinutes(5));
 
             var sut = new AuthorizableCampaignBuilder(Context, cache, Mock.Of<IUserAuthorizationService>());
 
-            var result = await sut.Build(1, 2);
+            var result = await sut.Build(1);
 
             result.CampaignId.ShouldBe(1);
             result.OrganizationId.ShouldBe(100);
