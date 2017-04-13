@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanDelete_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsSiteAdmin()
+        public async Task UserCanDelete_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsSiteAdmin()
         {
             var sut = await AuthorizableEventWhenSiteAdminUser();
 
@@ -98,7 +98,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanEdit_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsSiteAdmin()
+        public async Task UserCanEdit_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsSiteAdmin()
         {
             var sut = await AuthorizableEventWhenSiteAdminUser();
 
@@ -108,7 +108,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanManageChildObjects_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsSiteAdmin()
+        public async Task UserCanManageChildObjects_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsSiteAdmin()
         {
             var sut = await AuthorizableEventWhenSiteAdminUser();
 
@@ -143,7 +143,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanDelete_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsOrgAdmin()
+        public async Task UserCanDelete_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsOrgAdmin()
         {
             var sut = await AuthorizableEventWhenOrgAdminUser();
 
@@ -153,7 +153,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanEdit_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsOrgAdmin()
+        public async Task UserCanEdit_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsOrgAdmin()
         {
             var sut = await AuthorizableEventWhenOrgAdminUser();
 
@@ -163,7 +163,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanManageChildObjects_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsOrgAdmin()
+        public async Task UserCanManageChildObjects_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsOrgAdmin()
         {
             var sut = await AuthorizableEventWhenOrgAdminUser();
 
@@ -210,7 +210,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanEdit_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsEventManager()
+        public async Task UserCanEdit_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsEventManager()
         {
             var sut = await AuthorizableEventWhenEventManagerUser();
 
@@ -220,7 +220,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanManageChildObjects_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsEventManager()
+        public async Task UserCanManageChildObjects_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsEventManager()
         {
             var sut = await AuthorizableEventWhenEventManagerUser();
 
@@ -258,7 +258,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanDelete_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsCampaignManager()
+        public async Task UserCanDelete_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsCampaignManager()
         {
             var sut = await AuthorizableEventWhenCampaignManagerUser();
 
@@ -268,7 +268,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanEdit_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsCampaignManager()
+        public async Task UserCanEdit_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsCampaignManager()
         {
             var sut = await AuthorizableEventWhenCampaignManagerUser();
 
@@ -278,7 +278,7 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
-        public async Task UserCanManageChildObjects_ReturnsFalse_WhenUserAuthorizationService_HasAssociatedUser_AndIsCampaignManager()
+        public async Task UserCanManageChildObjects_ReturnsTrue_WhenUserAuthorizationService_HasAssociatedUser_AndIsCampaignManager()
         {
             var sut = await AuthorizableEventWhenCampaignManagerUser();
 
