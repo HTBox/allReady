@@ -39,7 +39,7 @@ namespace AllReady.Security
 
             int finalOrgId;
 
-            if (!HasValidIds(campaignId, orgId))
+            if (!HasValidIds(orgId))
             {
                 var loadedIds = await
                     _context.Campaigns.AsNoTracking()
@@ -78,14 +78,14 @@ namespace AllReady.Security
             public int CampaignId { get; }
         }
 
-        private static bool HasValidIds(int? campaignId, int? orgId)
+        private static bool HasValidIds(int? orgId)
         {
-            if (!campaignId.HasValue || !orgId.HasValue)
+            if (!orgId.HasValue)
             {
                 return false;
             }
 
-            return campaignId.Value != 0 && orgId.Value != 0;
+            return orgId.Value != 0;
         }
 
         private static string GetCacheKey(int campaignId)
