@@ -124,6 +124,30 @@ namespace AllReady.Security
             return _claimsPrincipal.IsUserType(UserType.OrgAdmin) && GetOrganizationId.HasValue && GetOrganizationId.Value == organizationId;
         }
 
+        private List<int> _ledItineraryIds;
+
+        /// <inheritdoc />
+        public async Task<List<int>> GetLedItineraryIds()
+        {
+            if(!HasAssociatedUser)
+            {
+                return new List<int>();
+            }
+
+            if (_ledItineraryIds != null)
+            {
+                return _ledItineraryIds;
+            }
+
+            _ledItineraryIds = await _context.VolunteerTaskSignups.AsNoTracking()
+                    .Include(x => x.User)
+                    .Where(x => x.User.Id == _user.Id && x.IsTeamLead && x.ItineraryId.HasValue)
+                    .Select(x => x.ItineraryId.Value)
+                    .ToListAsync();
+
+            return _ledItineraryIds;
+        }
+
         private int? GetOrganizationId
         {
             get
