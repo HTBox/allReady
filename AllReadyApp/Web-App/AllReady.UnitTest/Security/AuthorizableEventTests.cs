@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Security
 
         #endregion
 
-        #region OrgAdminUser
+        #region EventManagerUser
 
         private static async Task<IAuthorizableEvent> AuthorizableEventWhenEventManagerUser()
         {
