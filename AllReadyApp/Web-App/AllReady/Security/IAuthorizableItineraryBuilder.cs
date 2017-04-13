@@ -10,6 +10,6 @@ namespace AllReady.Security
         /// <summary>
         /// Builds an instance of an <see cref="IAuthorizableItinerary"/>
         /// </summary>
-        Task<IAuthorizableItinerary> Build(int itineraryId, int? eventId, int? campaignId, int? orgId = null);
+        Task<IAuthorizableItinerary> Build(int itineraryId, int? eventId = null, int? campaignId = null, int? orgId = null);
     }
 }

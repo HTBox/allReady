@@ -20,7 +20,7 @@ namespace AllReady.Security
         int CampaignId { get; }
 
         /// <summary>
-        /// The ID of the organization that the event belongs to
+        /// The ID of the organization that the itinerary belongs to
         /// </summary>
         int OrganizationId { get; }
 

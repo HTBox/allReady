@@ -99,9 +99,9 @@ namespace AllReady.Security
             return eventId.Value != 0 && campaignId.Value != 0 && orgId.Value != 0;
         }
 
-        private static string GetCacheKey(int eventId)
+        private static string GetCacheKey(int itineraryId)
         {
-            return string.Concat(CachePrefix, eventId.ToString());
+            return string.Concat(CachePrefix, itineraryId.ToString());
         }
 
         private class NotFoundAuthorizableItinerary : IAuthorizableItinerary
