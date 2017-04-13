@@ -9,7 +9,7 @@ using System;
 
 namespace AllReady.UnitTest.Security
 {
-    public class AuthorizableEventEventBuilderTests : InMemoryContextTest
+    public class AuthorizableEventBuilderTests : InMemoryContextTest
     {
         [Fact]
         public async Task Build_WithAllThreeIds_ReturnsTheAuthorizableEvent()
