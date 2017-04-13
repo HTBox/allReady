@@ -25,14 +25,12 @@ namespace AllReady.Security
         /// <inheritdoc />
         public async Task<IAuthorizableRequest> Build(Guid requestId, int? itineraryId = null, int? eventId = null, int? campaignId = null, int? orgId = null)
         {
-            IAuthorizableRequestIdContainer cacheAuthorizableRequestIdContainer;
-
             if (requestId == Guid.Empty)
             {
                 return new NotFoundAuthorizableRequest();
             }
 
-            if (_cache.TryGetValue(GetCacheKey(requestId), out cacheAuthorizableRequestIdContainer))
+            if (_cache.TryGetValue(GetCacheKey(requestId), out IAuthorizableRequestIdContainer cacheAuthorizableRequestIdContainer))
             {
                 return new AuthorizableRequest(cacheAuthorizableRequestIdContainer, _userAuthorizationService);
             }
@@ -51,7 +49,7 @@ namespace AllReady.Security
                         .ThenInclude(x => x.Event)
                         .ThenInclude(x => x.Campaign)
                         .Where(x => x.RequestId == requestId)
-                        .Select(x => new { x.ItineraryId, x.EventId, x.Event.CampaignId, x.OrganizationId })
+                        .Select(x => new { x.ItineraryId, x.EventId, @Event = x.Event, x.OrganizationId })
                         .FirstOrDefaultAsync();
 
                 if (loadedIds == null)
@@ -62,7 +60,7 @@ namespace AllReady.Security
                 // it's possible for a request to be linked to some/none of these so we use -1 to distinguish those
                 finalItineraryId = loadedIds.ItineraryId ?? -1;
                 finalEventId = loadedIds.EventId ?? -1;
-                finalCampaignId = loadedIds.EventId.HasValue ? loadedIds.CampaignId : -1;
+                finalCampaignId = loadedIds.@Event != null ? loadedIds.@Event.CampaignId : -1;
                 finalOrgId = loadedIds.OrganizationId ?? -1;
             }
             else
@@ -84,7 +82,7 @@ namespace AllReady.Security
         {
             public AuthorizableRequestIdContainer(Guid requestId, int itineraryId, int eventId, int campaignId, int orgId)
             {
-                RequestId = RequestId;
+                RequestId = requestId;
                 ItineraryId = itineraryId;
                 EventId = eventId;
                 CampaignId = campaignId;
