@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using AllReady.Models;
 
 namespace AllReady.Security
 {
@@ -42,5 +40,10 @@ namespace AllReady.Security
         /// Retrieves the IDs for any events the user is allowed to manage
         /// </summary>
         Task<List<int>> GetManagedEventIds();
+
+        /// <summary>
+        /// Retrieves the IDs for any itineraries the user is the team lead for
+        /// </summary>
+        Task<List<int>> GetLedItineraryIds();
     }
 }

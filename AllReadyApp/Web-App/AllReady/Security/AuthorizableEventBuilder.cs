@@ -7,7 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace AllReady.Security
 {
-    public class AuthorizableEventEventBuilder : IAuthorizableEventBuilder
+    public class AuthorizableEventBuilder : IAuthorizableEventBuilder
     {
         private readonly AllReadyContext _context;
         private readonly IMemoryCache _cache;
@@ -15,7 +15,7 @@ namespace AllReady.Security
 
         private const string CachePrefix = "AuthorizableEvent_";
 
-        public AuthorizableEventEventBuilder(AllReadyContext context, IMemoryCache cache, IUserAuthorizationService userAuthorizationService)
+        public AuthorizableEventBuilder(AllReadyContext context, IMemoryCache cache, IUserAuthorizationService userAuthorizationService)
         {
             _context = context;
             _cache = cache;

@@ -128,7 +128,7 @@ namespace AllReady
 
             services.AddScoped<IAllReadyUserManager, AllReadyUserManager>();
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
-            services.AddScoped<IAuthorizableEventBuilder, AuthorizableEventEventBuilder>();
+            services.AddScoped<IAuthorizableEventBuilder, AuthorizableEventBuilder>();
 
             // configure IoC support
             var container = AllReady.Configuration.Services.CreateIoCContainer(services, Configuration);
