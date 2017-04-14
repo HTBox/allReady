@@ -38,19 +38,7 @@ let All baseUrl =
         TopMenu.SelectCampaigns()
         "td a" *= testCampaignName
 
-    "The Org Admin can create a campaign from public campaign page" &&& fun _ ->
-        let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Org Admin From Public Page"
-        Campaigns.SelectCreateNew()
-        AdminCampaignCreate.PopulateCampaignDetails 
-            {AdminCampaignCreate.DefaultCampaignDetails with 
-                Name = testCampaignName; 
-                Description = "test"; 
-                FullDescription = "Full Description"; 
-                OrganizationName = "Humanitarian Toolbox" }
-        AdminCampaignCreate.Submit()
-
-        on AdminCampaignDetails.RelativeUrl
-        "h2" == testCampaignName
+        navigate(back)
 
 // Reference for eventNameSelector: http://www.jeremybellows.com/blog/Writing-Quality-Css-Selectors-for-Canopy-UI-Automation
     "The Org Admin can create events" &&& fun _ ->
