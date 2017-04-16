@@ -1,4 +1,4 @@
-@using System.Threading.Tasks
+﻿@using System.Threading.Tasks
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Event.EventDetailViewModel
 
@@ -28,9 +28,9 @@
         <h2>
             <span data-event-title>@Model.Name</span>
             <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-            <a asp-area="Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
             @if (Model.ShowDeleteButton)
             {
+                <a asp-area="Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
                 <a asp-area="Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
             }
         </h2>
