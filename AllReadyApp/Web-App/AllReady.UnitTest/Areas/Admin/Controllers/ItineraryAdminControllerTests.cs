@@ -605,33 +605,31 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditGet_ReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdminForEventOrg()
+        public async Task EditGet_ReturnsForbidResult_WhenUserIsNotAuthorized()
         {
             const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, false, false, false);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(new ItineraryEditViewModel { OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
-            sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.Edit(1));
+            Assert.IsType<ForbidResult>(await sut.Edit(1));
         }
 
         [Fact]
-        public async Task EditGet_ReturnsViewResult_WhenUserIsSiteAdmin()
+        public async Task EditGet_ReturnsViewResult_WhenUserIsAuthorized()
         {
             const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(true, false, false, false);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(new ItineraryEditViewModel { OrganizationId = orgId, Id = 100, Name = "Test" });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "0")
-            });
 
             // Assert
             var viewResult = Assert.IsType<ViewResult>(await sut.Edit(1));
