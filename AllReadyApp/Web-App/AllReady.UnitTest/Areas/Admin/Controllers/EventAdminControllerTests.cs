@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.IsType<NotFoundResult>(result);
         }
 
-        private class FakeAuthorizableEvent : IAuthorizableEvent
+        public class FakeAuthorizableEvent : IAuthorizableEvent
         {
             private readonly bool _canView;
             private readonly bool _canEdit;
