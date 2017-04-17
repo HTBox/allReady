@@ -687,17 +687,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditPost_ReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdminForEventOrg()
+        public async Task EditPost_ReturnsForbidResult_WhenUserIsNotAuthorized()
         {
             const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, false, false, false);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel { OrganizationId = orgId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var sut = new ItineraryController(mediator.Object, MockSuccessValidation().Object, null);
-            sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.Edit(new ItineraryEditViewModel { Id = 50 }));
+            Assert.IsType<ForbidResult>(await sut.Edit(new ItineraryEditViewModel { Id = 50 }));
         }
 
         [Fact]
@@ -710,8 +711,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Date = new DateTime(2016, 06, 01)
             };
 
-            var mediator = new Mock<IMediator>();
-
             var itinerarySummaryModel = new ItinerarySummaryViewModel
             {
                 Id = 1,
@@ -723,18 +722,17 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31))
                 }
             };
+
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
+
+            var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(itinerarySummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(model, itinerarySummaryModel.EventSummary)).Returns(new List<KeyValuePair<string, string>>()).Verifiable();
 
             var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
-
             await sut.Edit(model);
 
             mockValidator.Verify(x => x.Validate(model, itinerarySummaryModel.EventSummary), Times.Once);
@@ -750,8 +748,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Date = new DateTime(2016, 06, 01)
             };
 
-            var mediator = new Mock<IMediator>();
-
             var itinerarySummaryModel = new ItinerarySummaryViewModel
             {
                 Id = 1,
@@ -763,7 +759,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31))
                 }
             };
+
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
+
+            var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(itinerarySummaryModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var validatorError = new List<KeyValuePair<string, string>>
             {
@@ -774,11 +775,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(validatorError);
 
             var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
 
             var result = await sut.Edit(model);
 
@@ -800,8 +796,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Date = new DateTime(2016, 06, 01)
             };
 
-            var mediator = new Mock<IMediator>();
-
             var itinerarySummaryModel = new ItinerarySummaryViewModel
             {
                 Id = 1,
@@ -813,18 +807,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31))
                 }
             };
+
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
+
+            var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(itinerarySummaryModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(0).Verifiable();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new ItineraryController(mediator.Object, mockValidator.Object, null);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
 
             await sut.Edit(model);
 
@@ -842,8 +836,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Date = new DateTime(2016, 06, 01)
             };
 
-            var mediator = new Mock<IMediator>();
-
             var itinerarySummaryModel = new ItinerarySummaryViewModel
             {
                 Id = 1,
@@ -855,8 +847,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     EndDateTime = new DateTimeOffset(new DateTime(2016, 12, 31))
                 }
             };
+
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
+
+            var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(itinerarySummaryModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryCommand>())).ReturnsAsync(0);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var mockValidator = new Mock<IItineraryEditModelValidator>();
             mockValidator.Setup(mock => mock.Validate(It.IsAny<ItineraryEditViewModel>(), It.IsAny<EventSummaryViewModel>())).Returns(new List<KeyValuePair<string, string>>());
