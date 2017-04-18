@@ -988,7 +988,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         // are unauthorized
 
         [Fact]
-        public void SelectRequestsGetHasHttpGetAttribute()
+        public void SelectRequests_GetHasHttpGetAttribute()
         {
             var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
@@ -996,7 +996,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void SelectRequestsGetHasRouteAttributeWithCorrectRoute()
+        public void SelectRequests_GetHasRouteAttributeWithCorrectRoute()
         {
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
@@ -1005,44 +1005,41 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task SelectRequestsGetSendsOrganizationIdQueryWithCorrectItineraryId()
+        public async Task SelectRequests_GetSendsItineraryDetailQueryWithCorrectItineraryId()
         {
             const int itineraryId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(true, false, false, false);
 
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestListItemsQuery>())).ReturnsAsync(new List<RequestListViewModel>());
 
             var sut = new ItineraryController(mediator.Object, null, null);
             await sut.SelectRequests(itineraryId);
 
-            mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)));
+            mediator.Verify(x => x.SendAsync(It.Is<ItineraryDetailQuery>(y => y.ItineraryId == itineraryId)));
         }
 
         [Fact]
-        public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenOrgIdIsZero()
+        public async Task SelectRequests_GetReturnsForbidResult_WhenUserIsNotAuthorized()
         {
-            var sut = new ItineraryController(Mock.Of<IMediator>(), null, null);
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, false, false, false);
 
-            var result = await sut.SelectRequests(It.IsAny<int>());
-
-            Assert.IsType<UnauthorizedResult>(result);
-        }
-
-        [Fact]
-        public async Task SelectRequestsGetReturnsUnauthorizedResult_WhenUserIsNotOrgAdmin()
-        {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
             var sut = new ItineraryController(mediator.Object, null, null);
-            sut.MakeUserNotAnOrgAdmin();
 
             var result = await sut.SelectRequests(It.IsAny<int>());
 
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<ForbidResult>(result);
         }
 
         [Fact]
-        public async Task SelectRequestsPostWithSingleParameterSetsSelectItineraryRequestsModelWithTheCorrectData()
+        public async Task SelectRequests_PostWithSingleParameterSetsSelectItineraryRequestsModelWithTheCorrectData()
         {
             const int organizationId = 4;
 
@@ -1059,11 +1056,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var view = await sut.SelectRequests(itinerary.Id, new SelectItineraryRequestsViewModel());
 
-            RunSelectRequestsHappyPathTests(view, itinerary, returnedRequests);
+            Run_SelectRequests_HappyPathTests(view, itinerary, returnedRequests);
         }
 
         [Fact]
-        public async Task SelectRequestsPostWithTwoParametersSetsSelectItineraryRequestsModelWithTheCorrectData()
+        public async Task SelectRequests_PostWithTwoParametersSetsSelectItineraryRequestsModelWithTheCorrectData()
         {
             var itineraryRequestsModel = new SelectItineraryRequestsViewModel { KeywordsFilter = "These are keywords" };
             var itinerary = GetItineraryForSelectRequestHappyPathTests();
@@ -1081,7 +1078,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var view = await sut.SelectRequests(itinerary.Id, itineraryRequestsModel);
 
-            RunSelectRequestsHappyPathTests(view, itinerary, returnedRequests);
+            Run_SelectRequests_HappyPathTests(view, itinerary, returnedRequests);
         }
 
         [Fact]
@@ -2105,7 +2102,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             };
         }
 
-        private static void RunSelectRequestsHappyPathTests(IActionResult view, ItineraryDetailsViewModel itinerary, IList<RequestListViewModel> returnedRequests)
+        private static void Run_SelectRequests_HappyPathTests(IActionResult view, ItineraryDetailsViewModel itinerary, IList<RequestListViewModel> returnedRequests)
         {
             Assert.IsType<ViewResult>(view);
 
