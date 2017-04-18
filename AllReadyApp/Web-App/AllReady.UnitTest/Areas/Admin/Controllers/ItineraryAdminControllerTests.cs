@@ -1655,7 +1655,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void MarkConfirmedHasHttpPostAttribute()
+        public void MarkConfirmed_HasHttpPostAttribute()
         {
             var itineraryController = new ItineraryController(null, null, null);
             var httpPostAttribute = itineraryController.GetAttributesOn(x => x.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>())).OfType<HttpPostAttribute>().SingleOrDefault();
@@ -1663,7 +1663,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void MarkConfirmedHasRouteAttributeWithCorrectRoute()
+        public void MarkConfirmed_HasRouteAttributeWithCorrectRoute()
         {
             var itineraryController = new ItineraryController(null, null, null);
             var routeAttribute = itineraryController.GetAttributesOn(x => x.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
@@ -1672,95 +1672,92 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task MarkConfirmedSendsOrganizationIdQueryWithCorrectItineraryId()
+        public async Task MarkConfirmed_SendsItinerarySummaryQueryWithCorrectItineraryId()
         {
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
             var itineraryId = It.IsAny<int>();
-            var mockMediator = new Mock<IMediator>();
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
+
+            var itineraryController = new ItineraryController(mediator.Object, null, null);
             await itineraryController.MarkConfirmed(itineraryId, It.IsAny<Guid>());
 
-            mockMediator.Verify(x => x.SendAsync(It.Is<OrganizationIdQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<ItinerarySummaryQuery>(y => y.ItineraryId == itineraryId)), Times.Once);
         }
 
         [Fact]
-        public async Task MarkConfirmedReturnsHttpUnauthorizedWhenOrganizationIdIsZero()
+        public async Task MarkConfirmed_ReturnsForbidResultWhenUserIsNotAuthorized()
         {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(0);
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, false, false, false);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
-            Assert.IsType<UnauthorizedResult>(await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>()));
-        }
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
-        [Fact]
-        public async Task MarkConfirmedReturnsHttpUnauthorizedWhenUserIsNotOrgAdmin()
-        {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(1);
-
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
+            var itineraryController = new ItineraryController(mediator.Object, null, null);
             itineraryController.MakeUserNotAnOrgAdmin();
-            Assert.IsType<UnauthorizedResult>(await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>()));
+            Assert.IsType<ForbidResult>(await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>()));
         }
 
         [Fact]
-        public async Task MarkConfirmedSendsRequestStatusChangeCommandWithCorrectRequestIdWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        public async Task MarkConfirmed_SendsRequestStatusChangeCommandWithCorrectRequestIdWhenUserIsAuthorized()
         {
             var requestId = Guid.NewGuid();
-            const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
 
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
-            itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
+            var itineraryController = new ItineraryController(mediator.Object, null, null);
 
             await itineraryController.MarkConfirmed(It.IsAny<int>(), requestId);
-            mockMediator.Verify(x => x.SendAsync(It.Is<ChangeRequestStatusCommand>(y => y.RequestId == requestId)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<ChangeRequestStatusCommand>(y => y.RequestId == requestId)), Times.Once);
         }
 
         [Fact]
-        public async Task MarkConfirmedSendsRequestStatusChangeCommandWithCorrectStatusWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        public async Task MarkConfirmed_SendsRequestStatusChangeCommandWithCorrectStatusWhenUserIsAuthorized()
         {
             var requestId = Guid.NewGuid();
-            const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
 
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
-            itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
+            var itineraryController = new ItineraryController(mediator.Object, null, null);
 
             await itineraryController.MarkConfirmed(It.IsAny<int>(), requestId);
-            mockMediator.Verify(x => x.SendAsync(It.Is<ChangeRequestStatusCommand>(y => y.NewStatus == RequestStatus.Confirmed)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<ChangeRequestStatusCommand>(y => y.NewStatus == RequestStatus.Confirmed)), Times.Once);
         }
 
         [Fact]
-        public async Task MarkConfirmedReturnsRedirectToActionWhenOrganizationIsNotZero_AndUserIsOrgAdmin()
+        public async Task MarkConfirmed_ReturnsRedirectToActionWhenUserIsAuthorized()
         {
-            const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
 
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
-            itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
+            var itineraryController = new ItineraryController(mediator.Object, null, null);
 
             var result = await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>());
             Assert.IsType<RedirectToActionResult>(result);
         }
 
         [Fact]
-        public async Task MarkConfirmedReturnsRedirectToAction_WithActionName_Details()
+        public async Task MarkConfirmed_ReturnsRedirectToAction_WithActionName_Details()
         {
-            const int orgId = 1;
+            var authorizableEvent = new EventAdminControllerTests.FakeAuthorizableEvent(false, true, false, false);
 
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdQuery>())).ReturnsAsync(orgId);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(new ItinerarySummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(authorizableEvent);
 
-            var itineraryController = new ItineraryController(mockMediator.Object, null, null);
-            itineraryController.MakeUserAnOrgAdmin(orgId.ToString());
+            var itineraryController = new ItineraryController(mediator.Object, null, null);
 
             var result = await itineraryController.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>());
             var actionResult = (RedirectToActionResult)result;
