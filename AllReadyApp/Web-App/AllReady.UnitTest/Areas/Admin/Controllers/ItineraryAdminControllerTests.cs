@@ -1317,11 +1317,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task RemoveRequestReturnsUnathorizedResult_WhenUserIsNotOrgAdmin()
+        public async Task RemoveRequest_ReturnsForbidResult_WhenUserIsNotAuthorized()
         {
             var sut = new ItineraryController(null, null, null);
             var result = await sut.RemoveRequest(new RequestSummaryViewModel { UserIsOrgAdmin = false });
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<ForbidResult>(result);
         }
 
         [Fact]
