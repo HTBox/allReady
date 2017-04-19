@@ -304,13 +304,13 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<JsonResult> DeleteEventImage(int eventId)
         {
             var campaignEvent = await _mediator.SendAsync(new EventEditQuery { EventId = eventId });
-
             if (campaignEvent == null)
             {
                 return Json(new { status = "NotFound" });
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(campaignEvent.Id, campaignEvent.CampaignId, campaignEvent.OrganizationId));
+            if (!await authorizableEvent.UserCanEdit())
             {
                 return Json(new { status = "Unauthorized" });
             }
@@ -326,7 +326,6 @@ namespace AllReady.Areas.Admin.Controllers
             return Json(new { status = "NothingToDelete" });
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersViewModel viewModel)
@@ -336,10 +335,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var eventsOrganizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = viewModel.EventId });
-            if (!User.IsOrganizationAdmin(eventsOrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.EventId));
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             await _mediator.SendAsync(new MessageEventVolunteersCommand { ViewModel = viewModel });
@@ -363,10 +362,10 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Event/[action]/{id}/{status?}")]
         public async Task<IActionResult> Requests(int id, string status)
         {
-            var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
-            if (!User.IsOrganizationAdmin(organizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id));
+            if (!await authorizableEvent.UserCanView())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var criteria = new RequestSearchCriteria { EventId = id };
