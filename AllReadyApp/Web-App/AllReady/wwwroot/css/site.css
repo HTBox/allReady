@@ -93,31 +93,31 @@ footer {
     border-radius: 6px;
 }
 
-    .btn.btn-primary, a.btn.btn-primary {
-        border-radius: 6px;
-        border-width: 0;
-    }
+.btn.btn-primary, a.btn.btn-primary {
+    border-radius: 6px;
+    border-width: 0;
+}
 
-    .btn.btn-default, a.btn.btn-default {
-        background-color: #d58033;
-        color: #fff;
-        border-radius: 6px;
-        border-width: 0;
-    }
+.btn.btn-default, a.btn.btn-default {
+    background-color: #d58033;
+    color: #fff;
+    border-radius: 6px;
+    border-width: 0;
+}
 
-        .btn.btn-default.active, a.btn.btn-default.active {
-            background-color: #ab6627;
-            color: #fff;
-        }
+.btn.btn-default.active, a.btn.btn-default.active {
+    background-color: #ab6627;
+    color: #fff;
+}
 
-            .btn.btn-default.active:hover, .btn.btn-default.active:focus {
-                background-color: #ab6627;
-            }
+.btn.btn-default.active:hover, .btn.btn-default.active:focus {
+    background-color: #ab6627;
+}
 
-        .btn.btn-default:hover, .btn.btn-default:focus {
-            color: #fff;
-            background-color: #ab6627;
-        }
+.btn.btn-default:hover, .btn.btn-default:focus {
+    color: #fff;
+    background-color: #ab6627;
+}
 
 .btn-volunteer {
     width: 100%;
@@ -185,13 +185,13 @@ Navigation
     margin-top: 1px;
 }
 
-    .navbar-nav > li.header {
-        background-color: #78481b;
-        width: 100%;
-        color: #fff;
-        padding: 3px 10px 3px 10px;
-        font-size: 1.5em;
-    }
+.navbar-nav > li.header {
+    background-color: #78481b;
+    width: 100%;
+    color: #fff;
+    padding: 3px 10px 3px 10px;
+    font-size: 1.5em;
+}
 
 .navbar-default .navbar-nav > li > a,
 .navbar-default .navbar-nav > li > a:active,
@@ -230,20 +230,20 @@ Navigation
     border-color: #fff;
 }
 
-    .navbar-default .navbar-toggle .icon-bar,
-    .navbar .navbar-toggle .icon-bar {
-        background-color: #fff;
-    }
+.navbar-default .navbar-toggle .icon-bar,
+.navbar .navbar-toggle .icon-bar {
+    background-color: #fff;
+}
 
-    .navbar-default .navbar-toggle:hover,
-    .navbar-default .navbar-toggle:focus {
-        background-color: #ab6627;
-    }
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background-color: #ab6627;
+}
 
-    .navbar .navbar-toggle:hover,
-    .navbar .navbar-toggle:focus {
-        background-color: #d58033;
-    }
+.navbar .navbar-toggle:hover,
+.navbar .navbar-toggle:focus {
+    background-color: #d58033;
+}
 
 /* Navbar dropdown */
 .navbar-nav > li > .dropdown-menu {
@@ -262,37 +262,48 @@ Navigation
     color: #cc1313;
 }
 
-/* Admin menu-specific styles */
-.dropdown-admin > a, .dropdown-admin > a:active, .dropdown-admin > a:visited, .dropdown-admin > a:focus {
+.navbar-nav > li > a, .navbar-nav > li > a:active, .navbar-nav > li > a:visited, .navbar-nav > li > a:focus {
     color: #fff;
 }
 
-.navbar-default .navbar-nav > .dropdown-admin.open > a,
-.navbar-default .navbar-nav > .dropdown-admin.open > a:hover,
-.navbar-default .navbar-nav > .dropdown-admin.open > a:focus {
+.navbar-default .navbar-nav > .navbar-nav > li.open > a,
+.navbar-default .navbar-nav > .navbar-nav > li.open > a:hover,
+.navbar-default .navbar-nav > .navbar-nav > li.open > a:focus {
     color: #fff;
     background-color: #ab6627;
 }
 
-.dropdown-admin > .dropdown-menu {
+.navbar-nav > li > .dropdown-menu {
     background-color: #ab6627;
 }
 
-    .dropdown-admin > .dropdown-menu > li > a,
-    .dropdown-admin > .dropdown-menu > li > a:hover,
-    .dropdown-admin > .dropdown-menu > li > a:focus {
-        color: #fff;
-        text-decoration: none;
-    }
+.navbar-nav > li > .dropdown-menu > li > a,
+.navbar-nav > li > .dropdown-menu > li > a:hover,
+.navbar-nav > li > .dropdown-menu > li > a:focus,
+.navbar-nav > li > .dropdown-menu > li > button,
+.navbar-nav > li > .dropdown-menu > li > button:hover,
+.navbar-nav > li > .dropdown-menu > li > button:focus {
+    color: #fff;
+    text-decoration: none;
+}
 
-    .dropdown-admin > .dropdown-menu > li.active > a {
-        font-weight: bold;
-    }
+.navbar-nav > li > .dropdown-menu > li.active > a {
+    font-weight: bold;
+}
 
-    .dropdown-admin > .dropdown-menu > li:hover,
-    .dropdown-admin > .dropdown-menu > li:focus {
-        background-color: #d58033;
-    }
+.navbar-nav > li > .dropdown-menu > li:hover,
+.navbar-nav > li > .dropdown-menu > li:focus {
+    background-color: #d58033;
+}
+
+.dropdown-menu > li > button {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    white-space: nowrap;
+}
 /* Login status */
 .navbar .login-status > li > a,
 .navbar .login-status > li > button {
