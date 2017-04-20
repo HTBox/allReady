@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AllReady.Areas.Admin.Controllers;
+﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
-using AllReady.Models;
+using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Areas.Admin.ViewModels.Campaign;
+using AllReady.Areas.Admin.ViewModels.Event;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Services;
 using AllReady.UnitTest.Extensions;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using Xunit;
-using System.Linq;
-using System.Reflection;
-using AllReady.Areas.Admin.Features.Events;
-using AllReady.Areas.Admin.Features.Requests;
-using AllReady.Areas.Admin.ViewModels.Event;
-using AllReady.Areas.Admin.ViewModels.Validators;
-using AllReady.Areas.Admin.ViewModels.Campaign;
-using AllReady.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Shouldly;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Xunit;
 using DeleteViewModel = AllReady.Areas.Admin.Features.Events.DeleteViewModel;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -37,48 +34,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.Details(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
-        }
-
-        private class FakeAuthorizableEvent : IAuthorizableEvent
-        {
-            private readonly bool _canView;
-            private readonly bool _canEdit;
-            private readonly bool _canDelete;
-            private readonly bool _canManageChildren;
-
-            public int EventId { get; }
-            public int CampaignId { get; }
-            public int OrganizationId { get; }
-
-            public FakeAuthorizableEvent(bool canView, bool canEdit, bool canDelete, bool canManageChildren, int campaignId = 0)
-            {
-                _canView = canView;
-                _canEdit = canEdit;
-                _canDelete = canDelete;
-                _canManageChildren = canManageChildren;
-
-                CampaignId = campaignId;
-            }
-
-            public Task<bool> UserCanView()
-            {
-                return Task.FromResult(_canView);
-            }
-
-            public Task<bool> UserCanEdit()
-            {
-                return Task.FromResult(_canEdit);
-            }
-
-            public Task<bool> UserCanDelete()
-            {
-                return Task.FromResult(_canDelete);
-            }
-
-            public Task<bool> UserCanManageChildObjects()
-            {
-                return Task.FromResult(_canManageChildren);
-            }
         }
 
         [Fact]
@@ -231,39 +186,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task CreateGetReturnsHttpUnauthorizedResult_WhenCampaignIsNull()
+        public async Task CreateGetReturnsForbidResult_WhenUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
-            var sut = new EventController(null, mediator.Object, null);
-
-            Assert.IsType<UnauthorizedResult>(await sut.Create(It.IsAny<int>()));
-        }
-
-        [Fact]
-        public async Task CreateGetReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
-        {
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>()))
-                .ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
             var sut = new EventController(null, mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
 
-            Assert.IsType<UnauthorizedResult>(await sut.Create(It.IsAny<int>()));
+            Assert.IsType<ForbidResult>(await sut.Create(It.IsAny<int>()));
         }
 
         [Fact]
         public async Task CreateGetReturnsCorrectView_AndCorrectStartAndEndDateOnViewModel()
         {
-            const int organizationId = 1;
             var dateTimeTodayDate = DateTime.Today.Date;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>()))
-                .ReturnsAsync(new CampaignSummaryViewModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, true));
 
             var sut = new EventController(null, mediator.Object, null) { DateTimeTodayDate = () => dateTimeTodayDate };
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var view = await sut.Create(It.IsAny<int>()) as ViewResult;
             var viewModel = view.ViewData.Model as EventEditViewModel;
@@ -289,17 +232,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, true));
 
             var eventDetailModelValidator = new Mock<IValidateEventEditViewModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
                 .Returns(new List<KeyValuePair<string, string>>());
 
             var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
 
             sut.ModelState.AddModelError("test", "test");
             var result = (ViewResult)await sut.Create(It.IsAny<int>(), It.IsAny<EventEditViewModel>(), null);
@@ -314,17 +253,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, true));
 
             var eventDetailModelValidator = new Mock<IValidateEventEditViewModels>();
             eventDetailModelValidator.Setup(x => x.Validate(It.IsAny<EventEditViewModel>(), It.IsAny<CampaignSummaryViewModel>()))
                 .Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("ErrorKey", "ErrorMessage") });
 
             var sut = new EventController(imageService.Object, mediator.Object, eventDetailModelValidator.Object);
-            sut.SetClaims(new List<Claim>
-            {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()),
-                new Claim(AllReady.Security.ClaimTypes.Organization, "1")
-            });
 
             var result = (ViewResult)await sut.Create(1, It.IsAny<EventEditViewModel>(), null);
             Assert.Equal("Edit", result.ViewName);

@@ -73,9 +73,11 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(int campaignId)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id, campaign.OrganizationId));
+            if (authorizableCampaign == null || !await authorizableCampaign.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var viewModel = new EventEditViewModel
@@ -98,9 +100,11 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(int campaignId, EventEditViewModel eventEditViewModel, IFormFile fileUpload)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id, campaign.OrganizationId));
+            if (authorizableCampaign == null || !await authorizableCampaign.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var errors = _eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
