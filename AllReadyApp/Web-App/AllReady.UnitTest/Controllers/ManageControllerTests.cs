@@ -546,27 +546,67 @@ namespace AllReady.UnitTest.Controllers
 
 
         }
-
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendEmailConfirmationRedirectsToCorrectAction()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            ApplicationUser user = new ApplicationUser { Id = "MyUserID", Email = "me@email.com" };
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("");
+
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
+
+            ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            controller.SetFakeUser(user.Id);
+            var urlMock = new Mock<IUrlHelper>();
+            controller.Url = urlMock.Object;
+            urlMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns("callbackUrl");
+
+
+            //Act
+            var result = (RedirectToActionResult)await controller.ResendEmailConfirmation();
+
+            //Assert
+            Assert.Equal(result.ActionName, nameof(controller.EmailConfirmationSent));
+
+
+
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResendEmailConfirmationHasHttpPostAttribute()
         {
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.ResendEmailConfirmation()).OfType<HttpPostAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResendEmailConfirmationHasHttpValidateAntiForgeryTokenAttribute()
         {
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.ResendEmailConfirmation()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EmailConfirmationSentReturnsAView()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+
+            //Act
+            var result = controller.EmailConfirmationSent();
+
+            //Assert
+            Assert.IsType(typeof(ViewResult), result);
         }
 
         [Fact(Skip = "NotImplemented")]
