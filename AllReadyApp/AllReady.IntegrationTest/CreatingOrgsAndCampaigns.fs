@@ -7,8 +7,8 @@ open Pages
 
 let All baseUrl =
     let testOrganizationName = Utils.GetScenarioTestName "My test project for Admin"
-    
- 
+
+
     context "allReady Admin Activities"
 
     "Login Admin" &&& fun _ ->
@@ -26,8 +26,8 @@ let All baseUrl =
 
     "Admin can create organization" &&& fun _ ->
         click "#CreateNew"
-        AdminOrganizationCreate.PopulateOrganizationDetails 
-            {AdminOrganizationCreate.DefaultOrganizationDetails with 
+        AdminOrganizationCreate.PopulateOrganizationDetails
+            {AdminOrganizationCreate.DefaultOrganizationDetails with
                 Name = testOrganizationName;
                 WebUrl="htbox.org";}
         AdminOrganizationCreate.Save()
@@ -44,20 +44,19 @@ let All baseUrl =
     "Admin can create new campaign" &&& fun _ ->
         let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Admin"
         AdminCampaigns.SelectCreateNew()
-        AdminCampaignCreate.PopulateCampaignDetails 
-            {AdminCampaignCreate.DefaultCampaignDetails with 
-                Name = testCampaignName; 
-                Description = "test"; 
-                FullDescription = "Full Description"; 
+        AdminCampaignCreate.PopulateCampaignDetails
+            {AdminCampaignCreate.DefaultCampaignDetails with
+                Name = testCampaignName;
+                Description = "test";
+                FullDescription = "Full Description";
                 OrganizationName = testOrganizationName;}
         AdminCampaignCreate.Submit()
 
         on AdminCampaignDetails.RelativeUrl
         "h2" == testCampaignName
-        
+
         TopMenu.SelectCampaigns()
         "td a" *= testCampaignName
-
         navigate(back)
 
     "Admin can create events" &&& fun _ ->
@@ -67,20 +66,20 @@ let All baseUrl =
         AdminCampaignDetails.CreateNewEvent()
         AdminEventCreate.PopulateEventdetails
             {AdminEventCreate.DefaultEventDetails with
-                Name = eventName               
+                Name = eventName
             }
         AdminEventCreate.Create()
 
         on AdminEventDetails.RelativeUrl
 
         let eventNameValue = read <| element eventNameSelector
-        eventNameValue |> contains eventName        
+        eventNameValue |> contains eventName
 
     "Admin can create task" &&& fun _ ->
         let taskName = Utils.GetScenarioTestName "First Test Task"
         AdminEventDetails.CreateNewTask()
-        AdminTaskCreate.PopulateTaskDetails 
-            {AdminTaskCreate.DefaultTaskDetails with 
+        AdminTaskCreate.PopulateTaskDetails
+            {AdminTaskCreate.DefaultTaskDetails with
                 Name = taskName
             }
 
@@ -90,5 +89,7 @@ let All baseUrl =
         "td a" *= taskName
 
     "Admin can logout" &&& fun _ ->
+        hover ".dropdown-account"
+        sleep 1
         click ".log-out"
-    
+
