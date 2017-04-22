@@ -1,18 +1,17 @@
-﻿using System;
-using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Events;
+﻿using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
-using AllReady.Security;
+using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Features.Sms;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Areas.Admin.ViewModels.Request;
-using AllReady.Features.Sms;
+using System;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize]
     [Route("Admin/Requests")]
     public class RequestController : Controller
     {
@@ -46,9 +45,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest("Invalid event id");
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(campaignEvent.Id));
+            if (!await authorizableEvent.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var model = new EditRequestViewModel
@@ -80,9 +80,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(model.OrganizationId))
+            var authorizableRequest = await _mediator.SendAsync(new AuthorizableRequestQuery(model.Id));
+            if (!await authorizableRequest.UserCanView())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             ViewData["Title"] = "Edit " + model.Name;
@@ -111,9 +112,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest("Invalid event id");
             }
 
-            if (!User.IsOrganizationAdmin(@event.OrganizationId))
+            var authorizableRequest = await _mediator.SendAsync(new AuthorizableRequestQuery(model.Id));
+            if (!await authorizableRequest.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = model.Phone, ValidateType = true });
