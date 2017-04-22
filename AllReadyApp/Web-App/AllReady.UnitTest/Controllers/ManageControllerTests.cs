@@ -446,18 +446,49 @@ namespace AllReady.UnitTest.Controllers
             signInManagerMock.Verify(s=>s.RefreshSignInAsync(It.Is<ApplicationUser>(u=>u == user)),Times.AtLeastOnce);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ResendEmailConfirmationInvokesFindByIdAsyncWithCorrectUserId()
-        {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
+        //[Fact(Skip = "NotImplemented")]
+        //public async Task ResendEmailConfirmationInvokesGetUserAsyncWithCorrectUserId()
+        //{
+        //    ApplicationUser user = new ApplicationUser { Id = "MyUserID" };
+        //    var userManagerMock = MockHelper.CreateUserManagerMock();
+        //    userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+        //    userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("tcken");
 
-        [Fact(Skip = "NotImplemented")]
+
+        //    var mediator = new Mock<IMediator>();
+        //    mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
+
+        //    ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+        //    controller.SetFakeUser(user.Id);
+
+        //    userManagerMock.Verify(u => u.GetUserAsync(It.Is(u = u.GetUserIdAsync() == fakeUserID)));
+
+
+
+        //}
+        [Fact]
         public async Task ResendEmailConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectUser()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            ApplicationUser user = new ApplicationUser { Id = "MyUserID" };
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("token");
+
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
+
+            //Act
+            ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            controller.SetFakeIUrlHelper();
+            controller.GetMockHttpContext();
+            controller.SetFakeUser(user.Id);
+            await controller.ResendEmailConfirmation();
+
+            //Assert
+            userManagerMock.Verify(u => u.GenerateEmailConfirmationTokenAsync(It.Is<ApplicationUser>(i => i == user)), Times.Once);
+
         }
 
         [Fact(Skip = "NotImplemented")]
