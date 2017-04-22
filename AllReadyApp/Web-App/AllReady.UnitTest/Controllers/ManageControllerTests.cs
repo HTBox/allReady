@@ -14,6 +14,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using AllReady.Features.Manage;
 using AllReady.Features.Login;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -446,26 +447,12 @@ namespace AllReady.UnitTest.Controllers
             signInManagerMock.Verify(s=>s.RefreshSignInAsync(It.Is<ApplicationUser>(u=>u == user)),Times.AtLeastOnce);
         }
 
-        //[Fact(Skip = "NotImplemented")]
-        //public async Task ResendEmailConfirmationInvokesGetUserAsyncWithCorrectUserId()
-        //{
-        //    ApplicationUser user = new ApplicationUser { Id = "MyUserID" };
-        //    var userManagerMock = MockHelper.CreateUserManagerMock();
-        //    userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
-        //    userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("tcken");
-
-
-        //    var mediator = new Mock<IMediator>();
-        //    mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
-
-        //    ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
-        //    controller.SetFakeUser(user.Id);
-
-        //    userManagerMock.Verify(u => u.GetUserAsync(It.Is(u = u.GetUserIdAsync() == fakeUserID)));
-
-
-
-        //}
+        [Fact(Skip = "NotImplemented")]
+        public async Task ResendEmailConfirmationInvokesGetUserAsyncWithCorrectUserId()
+        {
+            //delete this line when starting work on this unit test
+            await TaskCompletedTask;
+        }
         [Fact]
         public async Task ResendEmailConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectUser()
         {
@@ -479,11 +466,11 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
 
-            //Act
             ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
             controller.SetFakeIUrlHelper();
-            controller.GetMockHttpContext();
             controller.SetFakeUser(user.Id);
+
+            //Act
             await controller.ResendEmailConfirmation();
 
             //Assert
@@ -491,11 +478,44 @@ namespace AllReady.UnitTest.Controllers
 
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendEmailConfirmationInvokesUrlActionWithCorrectParameters()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            ApplicationUser user = new ApplicationUser { Id = "MyUserID" };
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            var code = "token";
+            userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(code);
+
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
+
+            ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            controller.SetFakeUser(user.Id);
+            var urlMock = new Mock<IUrlHelper>();
+            controller.Url = urlMock.Object;
+            urlMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns("callbackUrl");
+
+            //controller.SetDefaultHttpContext();
+            controller.SetFakeHttpRequestSchemeTo("scheme");
+
+
+            //Act
+            await controller.ResendEmailConfirmation();
+
+            var urlcontext = new UrlActionContext
+            {
+                Action = nameof(controller.ConfirmNewEmail),
+                Controller = "Account",
+                Values = new { userId = user.Id, code }
+            };
+
+            //Assert
+            urlMock.Verify(a => a.Action(It.Is<UrlActionContext>(i => i.Action == urlcontext.Action && i.Controller == urlcontext.Controller && i.Values.ToString() == $"{{ userId = {user.Id}, code = token }}" && i.Protocol == controller.HttpContext.Request
+            .Scheme)),Times.Once);
+
         }
 
         [Fact(Skip = "NotImplemented")]
