@@ -589,6 +589,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ResendEmailConfirmationHasHttpValidateAntiForgeryTokenAttribute()
         {
+            //Arrange
             var controller = new ManageController(null, null, null);
             //Act
             var attribute = controller.GetAttributesOn(x => x.ResendEmailConfirmation()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
