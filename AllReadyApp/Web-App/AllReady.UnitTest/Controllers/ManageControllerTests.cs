@@ -498,7 +498,6 @@ namespace AllReady.UnitTest.Controllers
             controller.Url = urlMock.Object;
             urlMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns("callbackUrl");
 
-            //controller.SetDefaultHttpContext();
             controller.SetFakeHttpRequestSchemeTo("scheme");
 
 
@@ -518,11 +517,34 @@ namespace AllReady.UnitTest.Controllers
 
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendEmailConfirmationSendsSendConfirmAccountEmailAsyncWithCorrectData()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            ApplicationUser user = new ApplicationUser { Id = "MyUserID",Email="me@email.com" };
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+            userManagerMock.Setup(u => u.GenerateEmailConfirmationTokenAsync(It.IsAny<ApplicationUser>())).ReturnsAsync("");
+
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<SendConfirmAccountEmail>())).ReturnsAsync(new Unit());
+
+            ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            controller.SetFakeUser(user.Id);
+            var urlMock = new Mock<IUrlHelper>();
+            controller.Url = urlMock.Object;
+            urlMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns("callbackUrl");
+
+
+            //Act
+            await controller.ResendEmailConfirmation();
+
+
+            //Assert
+            mediator.Verify(m => m.SendAsync(It.Is<SendConfirmAccountEmail>(e => e.Email == user.Email && e.CallbackUrl == "callbackUrl")));
+
+
         }
 
         [Fact(Skip = "NotImplemented")]
