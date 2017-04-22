@@ -411,11 +411,39 @@ namespace AllReady.UnitTest.Controllers
 
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task UpdateUserProfileCompletenessInvokesRefreshSignInAsyncWithCorrectUserWhenUsersProfileIsComplete()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            //Set properties of user required for ApplicationUser.IsProfileComplete() to return true
+            ApplicationUser user = new ApplicationUser { Id = "Some UserID" };
+            user.Email = "email@company.com";
+            user.FirstName = "Name";
+            user.LastName = "Last Name";
+            user.PhoneNumber = "01234567890";
+            user.PhoneNumberConfirmed = true;
+            user.EmailConfirmed = true;
+            user.TimeZoneId = "TimeZonedID";
+
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(m => m.RefreshSignInAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult(user));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+            mediator.Setup(m => m.SendAsync(It.IsAny<RemoveUserProfileIncompleteClaimCommand>())).Returns(Task.FromResult(new Unit()));
+
+            var manageController = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            manageController.SetFakeUser(user.Id);
+
+            //Only set props required for modelstate to be valid.
+            IndexViewModel viewModel = new IndexViewModel { FirstName = "Name", LastName = "Last Name", TimeZoneId = "TimeZonedID" };
+
+            //Act
+            await manageController.Index(viewModel);
+
+            //Assert
+            signInManagerMock.Verify(s=>s.RefreshSignInAsync(It.Is<ApplicationUser>(u=>u == user)),Times.AtLeastOnce);
         }
 
         [Fact(Skip = "NotImplemented")]
