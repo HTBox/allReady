@@ -899,14 +899,28 @@ namespace AllReady.UnitTest.Controllers
 
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangePasswordGetReturnsAView()
         {
+            var controller = new ManageController(null, null, null);
+
+            //Act
+            var result = controller.ChangePassword();
+
+            //Assert
+            Assert.IsType(typeof(ViewResult), result);
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangePasswordGetHasHttpGetAttribute()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.ChangePassword()).OfType<HttpGetAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
