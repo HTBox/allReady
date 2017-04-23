@@ -930,18 +930,60 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            ChangePasswordViewModel validVm = new ChangePasswordViewModel { OldPassword = "oldPassword", NewPassword = "newPassword" };
+
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("userID");
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(new ApplicationUser { Id = "userID" }));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = "userID" });
+
+
+            ManageController controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+            await controller.ChangePassword(validVm);
+
+            //Assert
+            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == "userID")), Times.Once);
+
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostInvokesChangePasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            ChangePasswordViewModel validVm = new ChangePasswordViewModel { OldPassword = "oldPassword", NewPassword = "newPassword" };
+
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("userID");
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            ApplicationUser user = new ApplicationUser { Id = "userID" };
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(user));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+
+            ManageController controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+            await controller.ChangePassword(validVm);
+
+            //Assert
+            userManagerMock.Verify(u => u.ChangePasswordAsync(It.Is<ApplicationUser>(usr => usr == user), validVm.OldPassword, validVm.NewPassword));
         }
 
         [Fact(Skip = "NotImplemented")]
