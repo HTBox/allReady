@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize]
     public class TaskController : Controller
     {
         private readonly IMediator _mediator;
@@ -35,6 +35,12 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(id));
+            if (!await authorizableTask.UserCanView())
+            {
+                return new ForbidResult();
+            }
+
             return View(viewModel);
         }
 
@@ -43,9 +49,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(int eventId)
         {
             var viewModel = await _mediator.SendAsync(new CreateVolunteerTaskQuery { EventId = eventId });
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new Features.Events.AuthorizableEventQuery(eventId));
+            if (!await authorizableEvent.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = "Admin" } });
@@ -60,9 +67,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var viewModel = await _mediator.SendAsync(new EditVolunteerTaskQuery { VolunteerTaskId = id });
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(id));
+            if (!await authorizableTask.UserCanView())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "Task", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
@@ -80,9 +88,10 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+                var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(viewModel.Id));
+                if (!await authorizableTask.UserCanEdit())
                 {
-                    return Unauthorized();
+                    return new ForbidResult();
                 }
 
                 var volunteerTaskId = await _mediator.SendAsync(new EditVolunteerTaskCommand { VolunteerTask = viewModel });
@@ -105,9 +114,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var viewModel = await _mediator.SendAsync(new DeleteQuery { VolunteerTaskId = id });
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(id));
+            if (!await authorizableTask.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             viewModel.Title = $"Delete task {viewModel.Name}";
@@ -122,7 +132,7 @@ namespace AllReady.Areas.Admin.Controllers
         {
             if (!viewModel.UserIsOrgAdmin)
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             await _mediator.SendAsync(new DeleteVolunteerTaskCommand { VolunteerTaskId = viewModel.Id });
@@ -135,9 +145,10 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(int id, List<string> userIds)
         {
             var volunteerTasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByVolunteerTaskIdQuery { VolunteerTaskId = id });
-            if (!User.IsOrganizationAdmin(volunteerTasksOrganizationId))
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(id));
+            if (!await authorizableTask.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             await _mediator.SendAsync(new AssignVolunteerTaskCommand { VolunteerTaskId = id, UserIds = userIds });
@@ -155,9 +166,10 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var volunteerTasksOrganizationId = await _mediator.SendAsync(new OrganizationIdByVolunteerTaskIdQuery { VolunteerTaskId = viewModel.VolunteerTaskId });
-            if (!User.IsOrganizationAdmin(volunteerTasksOrganizationId))
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(viewModel.VolunteerTaskId));
+            if (!await authorizableTask.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             await _mediator.SendAsync(new MessageTaskVolunteersCommand { Model = viewModel });
