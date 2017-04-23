@@ -734,21 +734,50 @@ namespace AllReady.UnitTest.Controllers
             signInManagerMock.Verify(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(),null), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task EnableTwoFactorAuthenticationRedirectsToCorrectAction()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(U => U.SetTwoFactorEnabledAsync(It.IsAny<ApplicationUser>(), true)).ReturnsAsync(new IdentityResult()); ;
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(new ApplicationUser { Id = "userID" }));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = "userID" });
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+            var result = (RedirectToActionResult)await controller.EnableTwoFactorAuthentication();
+
+
+
+            Assert.Equal(result.ActionName, nameof(controller.Index));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EnbaleTwoFactorAuthenticationHasHttpPostAttribute()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.EnableTwoFactorAuthentication()).OfType<HttpPostAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void EnableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.EnableTwoFactorAuthentication()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
