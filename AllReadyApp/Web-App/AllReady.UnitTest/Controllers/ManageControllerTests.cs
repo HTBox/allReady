@@ -780,42 +780,123 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DisableTwoFactorAuthenticationSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(U => U.SetTwoFactorEnabledAsync(It.IsAny<ApplicationUser>(), true)).ReturnsAsync(new IdentityResult());
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("userID");
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(new ApplicationUser { Id = "userID" }));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = "userID" });
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+
+            await controller.DisableTwoFactorAuthentication();
+
+            //Assert
+            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == "userID")), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DisableTwoFactorAuthenticationInvokesSetTwoFactorEnabledAsyncWithCorrectParametersWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(U => U.SetTwoFactorEnabledAsync(It.IsAny<ApplicationUser>(), false)).ReturnsAsync(new IdentityResult());
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(new ApplicationUser { Id = "userID" }));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = "userID" });
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+
+            await controller.DisableTwoFactorAuthentication();
+
+            //Assert
+            userManagerMock.Verify(u => u.SetTwoFactorEnabledAsync(It.Is<ApplicationUser>(i => i.Id == "userID"), false), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DisableTwoFactorAuthenticationInvokesSignInAsyncWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(U => U.SetTwoFactorEnabledAsync(It.IsAny<ApplicationUser>(), false)).ReturnsAsync(new IdentityResult()); ;
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(new ApplicationUser { Id = "userID" }));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = "userID" });
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+
+            await controller.DisableTwoFactorAuthentication();
+
+            //Assert
+            signInManagerMock.Verify(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task DisableTwoFactorAuthenticationRedirectsToCorrectAction()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            //Arrange
+            var userManagerMock = MockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(U => U.SetTwoFactorEnabledAsync(It.IsAny<ApplicationUser>(), false)).ReturnsAsync(new IdentityResult()); ;
+
+            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            signInManagerMock.Setup(s => s.SignInAsync(It.IsAny<ApplicationUser>(), It.IsAny<bool>(), null)).Returns(Task.FromResult(new ApplicationUser { Id = "userID" }));
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = "userID" });
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+            controller.SetFakeUser("userID");
+
+            //Act
+            var result = (RedirectToActionResult)await controller.DisableTwoFactorAuthentication();
+
+
+            Assert.Equal(result.ActionName, nameof(controller.Index));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DisableTwoFactorAuthenticationHasHttpPostAttribute()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.DisableTwoFactorAuthentication()).OfType<HttpPostAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void DisableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
+            //Arrange
+            var controller = new ManageController(null, null, null);
+            //Act
+            var attribute = controller.GetAttributesOn(x => x.DisableTwoFactorAuthentication()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            //Assert
+            Assert.NotNull(attribute);
+
         }
 
         [Fact(Skip = "NotImplemented")]
