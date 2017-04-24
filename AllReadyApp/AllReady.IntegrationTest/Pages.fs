@@ -3,7 +3,7 @@ open canopy
 
 module TopMenu =
     let private Campaigns = "Campaigns"
-    let private Admin = "li.dropdown-admin a"
+    let private Admin = "li.dropdown a"
     let private AdminCampaigns = "a[href='/Admin/Campaign']"
     let private AdminOrganizations = "a[href='/Admin/Organization']"
 
