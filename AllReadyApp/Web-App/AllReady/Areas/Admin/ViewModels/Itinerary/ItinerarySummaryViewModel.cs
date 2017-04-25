@@ -24,6 +24,16 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public DateTime Date { get; set; }
 
         /// <summary>
+        /// The ID of the Event who owns the itinerary
+        /// </summary>
+        public int EventId { get; set; }
+
+        /// <summary>
+        /// The ID of the Campaign who owns the itinerary
+        /// </summary>
+        public int CampaignId { get; set; }
+
+        /// <summary>
         /// The ID of the Organization who owns the itinerary
         /// </summary>
         public int OrganizationId { get; set; }

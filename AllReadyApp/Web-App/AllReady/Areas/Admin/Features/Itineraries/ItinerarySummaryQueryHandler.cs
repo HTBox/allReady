@@ -30,6 +30,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                     Id = i.Id,
                     Name = i.Name,
                     Date = i.Date,
+                    EventId = i.EventId,
+                    CampaignId = i.Event.CampaignId,
                     OrganizationId = i.Event.Campaign.ManagingOrganizationId,
                     EventSummary = new EventSummaryViewModel
                     {
