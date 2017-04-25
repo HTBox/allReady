@@ -6,7 +6,7 @@
     var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
     var controllerName = descriptor.ControllerName;
     var isAdmin = areaName == "Admin";
-    <li class="dropdown @(isAdmin? "active":"")">
+    <li class="dropdown dropdown-admin @(isAdmin? "active":"")">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Admin <span class="caret"></span>
         </a>
