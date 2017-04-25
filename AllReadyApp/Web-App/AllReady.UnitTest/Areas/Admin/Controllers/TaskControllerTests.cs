@@ -349,6 +349,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostReturnsForbidResultWhenModelStateIsValidAndUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, false, false, false));
 
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();
@@ -363,12 +365,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task EditPostSendsEditTaskCommandWithCorrectModel_WhenModelStateIsValidAndUserIsOrganizationAdmin()
+        public async Task EditPostSendsEditTaskCommandWithCorrectModel_WhenModelStateIsValidAndUserIsAuthorized()
         {
             var model = new EditViewModel { };
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditVolunteerTaskCommand>())).ReturnsAsync(1);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();
@@ -388,6 +392,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EditVolunteerTaskCommand>())).ReturnsAsync(1);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();

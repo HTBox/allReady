@@ -193,6 +193,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableRequestQuery>())).ReturnsAsync(new FakeAuthorizableRequest(false, false, false, false));
 
             var sut = new RequestController(mediator.Object);
@@ -212,6 +213,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = eventId, OrganizationId = orgId });
             mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = model.Phone });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableRequestQuery>())).ReturnsAsync(new FakeAuthorizableRequest(false, true, false, false));
 
             var sut = new RequestController(mediator.Object);
@@ -231,6 +233,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = eventId, OrganizationId = orgId });
             mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = false });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableRequestQuery>())).ReturnsAsync(new FakeAuthorizableRequest(false, true, false, false));
 
             var sut = new RequestController(mediator.Object);
@@ -251,6 +254,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(new EventSummaryViewModel { Id = eventId, OrganizationId = orgId });
             mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = false });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableRequestQuery>())).ReturnsAsync(new FakeAuthorizableRequest(false, true, false, false));
 
             var sut = new RequestController(mediator.Object);
@@ -270,6 +274,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
             mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableRequestQuery>())).ReturnsAsync(new FakeAuthorizableRequest(false, true, false, false));
 
             var sut = new RequestController(mediator.Object);
@@ -291,6 +296,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(viewModel);
             mediator.Setup(mock => mock.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableRequestQuery>())).ReturnsAsync(new FakeAuthorizableRequest(false, true, false, false));
 
             var sut = new RequestController(mediator.Object);

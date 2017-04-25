@@ -112,10 +112,21 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest("Invalid event id");
             }
 
-            var authorizableRequest = await _mediator.SendAsync(new AuthorizableRequestQuery(model.Id));
-            if (!await authorizableRequest.UserCanEdit())
+            if (model.Id == Guid.Empty)
             {
-                return new ForbidResult();
+                var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(model.EventId));
+                if (!await authorizableEvent.UserCanManageChildObjects())
+                {
+                    return new ForbidResult();
+                }
+            }
+            else
+            {
+                var authorizableRequest = await _mediator.SendAsync(new AuthorizableRequestQuery(model.Id));
+                if (!await authorizableRequest.UserCanEdit())
+                {
+                    return new ForbidResult();
+                }
             }
 
             var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = model.Phone, ValidateType = true });

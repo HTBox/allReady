@@ -88,10 +88,21 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(viewModel.Id));
-                if (!await authorizableTask.UserCanEdit())
+                if (viewModel.Id == 0)
                 {
-                    return new ForbidResult();
+                    var authorizableEvent = await _mediator.SendAsync(new Features.Events.AuthorizableEventQuery(viewModel.EventId));
+                    if (!await authorizableEvent.UserCanManageChildObjects())
+                    {
+                        return new ForbidResult();
+                    }
+                }
+                else
+                {
+                    var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(viewModel.Id));
+                    if (!await authorizableTask.UserCanEdit())
+                    {
+                        return new ForbidResult();
+                    }
                 }
 
                 var volunteerTaskId = await _mediator.SendAsync(new EditVolunteerTaskCommand { VolunteerTask = viewModel });
