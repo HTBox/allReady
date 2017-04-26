@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Extensions;
@@ -121,7 +121,7 @@ namespace AllReady.Areas.Admin.Controllers
                         if (!string.IsNullOrEmpty(newImageUrl))
                         {
                             campaign.ImageUrl = newImageUrl;
-                            if (existingImageUrl != null)
+                            if (existingImageUrl != null && existingImageUrl != newImageUrl)
                             {
                                 await _imageService.DeleteImageAsync(existingImageUrl);
                             }
