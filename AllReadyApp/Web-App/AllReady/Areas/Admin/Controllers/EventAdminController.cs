@@ -189,11 +189,11 @@ namespace AllReady.Areas.Admin.Controllers
                     if (fileUpload.IsAcceptableImageContentType())
                     {
                         var existingImageUrl = eventEditViewModel.ImageUrl;
-                        var newImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
+                        var newImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, eventEditViewModel.Id, fileUpload);
                         if (!string.IsNullOrEmpty(newImageUrl))
                         {
                             eventEditViewModel.ImageUrl = newImageUrl;
-                            if (existingImageUrl != null)
+                            if (existingImageUrl != null && existingImageUrl != newImageUrl)
                             {
                                 await _imageService.DeleteImageAsync(existingImageUrl);
                             }
