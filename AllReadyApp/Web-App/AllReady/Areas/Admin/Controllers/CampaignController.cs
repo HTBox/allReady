@@ -56,6 +56,23 @@ namespace AllReady.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        [HttpGet("Admin/Campaign/{id}/Users")]
+        public async Task<IActionResult> Users(int id)
+        {
+            var viewModel = await _mediator.SendAsync(new CampaignUsersDetailsQuery { CampaignId = id });
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            return View(viewModel);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public PartialViewResult CampaignPreview(CampaignSummaryViewModel campaign, IFormFile fileUpload)
