@@ -75,7 +75,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
 
             var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id, campaign.OrganizationId));
-            if (authorizableCampaign == null || !await authorizableCampaign.UserCanManageChildObjects())
+            if (!await authorizableCampaign.UserCanManageChildObjects())
             {
                 return new ForbidResult();
             }
@@ -102,7 +102,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
 
             var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id, campaign.OrganizationId));
-            if (authorizableCampaign == null || !await authorizableCampaign.UserCanManageChildObjects())
+            if (!await authorizableCampaign.UserCanManageChildObjects())
             {
                 return new ForbidResult();
             }
