@@ -158,7 +158,6 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign/Delete/5
-        [Authorize("OrgAdmin")]
         public async Task<IActionResult> Delete(int id)
         {
             var viewModel = await _mediator.SendAsync(new DeleteViewModelQuery { CampaignId = id });
@@ -167,7 +166,8 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            var authorizableOrganization = await _mediator.SendAsync(new Features.Organizations.AuthorizableOrganizationQuery(viewModel.OrganizationId));
+            if (!await authorizableOrganization.UserCanDelete())
             {
                 return new ForbidResult();
             }
@@ -181,10 +181,10 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize("OrgAdmin")]
         public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            if (!viewModel.UserIsOrgAdmin)
+            var authorizableOrganization = await _mediator.SendAsync(new Features.Organizations.AuthorizableOrganizationQuery(viewModel.OrganizationId));
+            if (!await authorizableOrganization.UserCanDelete())
             {
                 return new ForbidResult();
             }

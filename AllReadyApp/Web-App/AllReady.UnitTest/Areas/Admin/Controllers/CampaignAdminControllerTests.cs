@@ -498,9 +498,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mockMediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Delete(campaignId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId)), Times.Once);
@@ -515,13 +515,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DeleteReturnsForbidResultWhenUserIsNotOrgAdmin()
+        public async Task DeleteReturnsForbidResultWhenUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteViewModelQuery>())).ReturnsAsync(new DeleteViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
 
             var sut = new CampaignController(mediator.Object, null);
-            sut.MakeUserNotAnOrgAdmin();
 
             Assert.IsType<ForbidResult>(await sut.Delete(It.IsAny<int>()));
         }
@@ -533,9 +533,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteViewModelQuery>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             Assert.IsType<ViewResult>(await sut.Delete(It.IsAny<int>()));
         }
@@ -548,9 +548,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mockMediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var view = (ViewResult)await sut.Delete(campaignId);
             var viewModel = (DeleteViewModel)view.ViewData.Model;
@@ -753,23 +753,24 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailConfirmedReturnsForbidResultWhenUserIsNotOrgAdmin()
+        public async Task DetailConfirmedReturnsForbidResultWhenUserIsNotAuthorized()
         {
-            var sut = new CampaignController(Mock.Of<IMediator>(), null);
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
+
+            var sut = new CampaignController(mediator.Object, null);
             Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
         }
 
         [Fact]
-        public async Task DetailConfirmedSendsDeleteCampaignCommandWithCorrectCampaignIdWhenUserIsOrgAdmin()
+        public async Task DetailConfirmedSendsDeleteCampaignCommandWithCorrectCampaignIdWhenUserIsAuthorized()
         {
-            const int organizationId = 1;
-
             var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var viewModel = new DeleteViewModel { Id = 100, UserIsOrgAdmin = true };
 
             var sut = new CampaignController(mockMediator.Object, null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             await sut.DeleteConfirmed(viewModel);
 
@@ -777,14 +778,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async Task DetailConfirmedRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsOrgAdmin()
+        public async Task DetailConfirmedRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsAuthorized()
         {
-            const int organizationId = 1;
-
             var viewModel = new DeleteViewModel { Id = 100, UserIsOrgAdmin = true };
 
-            var sut = new CampaignController(Mock.Of<IMediator>(), null);
-            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
+
+            var sut = new CampaignController(mediator.Object, null);
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
