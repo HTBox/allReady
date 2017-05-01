@@ -1,11 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net.Mail;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SendGrid;
-
-namespace AllReady.Services
+﻿namespace AllReady.Services
 {
     //public class SendGridDevelopmentWeb : ITransport
     //{

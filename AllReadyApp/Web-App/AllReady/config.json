@@ -1,4 +1,4 @@
-{
+﻿{
   // Note: You should --=NOT=-- put sensitive information into this file.
   //       This file should only be used as placeholders for keys that
   //       can be resolved via UserSecrets or environment variables.
@@ -40,7 +40,7 @@
     "Storage": {
       "AzureStorage": "[storagekey]",
         "EnableAzureQueueService": "false",
-        "EnableAzureBlobImageService":  "false"
+        "EnableAzureBlobImageService":  "true"
     }
   },
   "Email": {
