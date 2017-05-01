@@ -1,15 +1,18 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace AllReady.Services
 {
-    public class TaskAttachmentService : BlockBlobServiceBase, ITaskAttachmentService
+    public class TaskAttachmentService : ITaskAttachmentService
     {
-        public TaskAttachmentService(IBlockBlob blockBlob) : base(blockBlob)
-        {
-        }
+        private const string ContainerName = "attachments";
+        private readonly IBlockBlob blockBlob;
 
-        protected override string ContainerName => "attachments";
+        public TaskAttachmentService(IBlockBlob blockBlob)
+        {
+            this.blockBlob = blockBlob;
+        }
 
         public async Task<string> UploadAsync(int taskId, IFormFile attachment)
         {
@@ -17,9 +20,16 @@ namespace AllReady.Services
             return await UploadAsync(blobPath, attachment);
         }
 
-        public new async Task DeleteAsync(string attachmentUrl)
+        public async Task DeleteAsync(string attachmentUrl)
         {
-            await base.DeleteAsync(attachmentUrl);
+            await blockBlob.DeleteAsync(ContainerName, attachmentUrl);
+        }
+
+        private async Task<string> UploadAsync(string blobPath, IFormFile attachment)
+        {
+            var fileName = ContentDispositionHeaderValue.Parse(attachment.ContentDisposition).FileName.Trim('"').ToLower();
+            var blobName = blobPath + "/" + fileName;
+            return await blockBlob.UploadFromStreamAsync(ContainerName, blobName, attachment);
         }
 
     }

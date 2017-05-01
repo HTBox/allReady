@@ -1,15 +1,19 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace AllReady.Services
 {
-    public class ImageService : BlockBlobServiceBase, IImageService
+    public class ImageService : IImageService
     {
-        public ImageService(IBlockBlob blockBlob) : base(blockBlob)
-        {
-        }
+        private const string ContainerName = "images";
+        private readonly IBlockBlob blockBlob;
 
-        protected override string ContainerName => "images";
+        public ImageService(IBlockBlob blockBlob)
+        {
+            this.blockBlob = blockBlob;
+        }
 
         public async Task<string> UploadOrganizationImageAsync(int organizationId, IFormFile image)
         {
@@ -31,7 +35,20 @@ namespace AllReady.Services
 
         public async Task DeleteImageAsync(string imageUrl)
         {
-            await DeleteAsync(imageUrl);
+            await blockBlob.DeleteAsync(ContainerName, imageUrl);
+        }
+
+        private async Task<string> UploadAsync(string blobPath, IFormFile image)
+        {
+            var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"').ToLower();
+            if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") || fileName.EndsWith(".gif"))
+            {    
+                var blobName = blobPath + "/" + fileName;
+                return await blockBlob.UploadFromStreamAsync(ContainerName, blobName, image);
+            }
+
+            throw new Exception("Invalid file extension: " + fileName + "You can only upload images with the extension: jpg, jpeg, gif, or png");
+
         }
     }
 }
