@@ -31,10 +31,10 @@ namespace AllReady.Services
             return blockBlob.Uri.ToString();
         }
 
-        public async Task DeleteAsync(string containerName, string imageUrl)
+        public async Task DeleteAsync(string containerName, string blobUrl)
         {
             var blobContainer = CloudStorageAccount.Parse(options.Value.AzureStorage).CreateCloudBlobClient().GetContainerReference(containerName);
-            var blobName = imageUrl.Replace($"{blobContainer.Uri.AbsoluteUri}/", string.Empty);
+            var blobName = blobUrl.Replace($"{blobContainer.Uri.AbsoluteUri}/", string.Empty);
             var blockBlob = blobContainer.GetBlockBlobReference(blobName);
 
             await blockBlob.DeleteAsync();

@@ -6,6 +6,6 @@ namespace AllReady.Services
     public interface IBlockBlob
     {
         Task<string> UploadFromStreamAsync(string containerName, string blobName, IFormFile file);
-        Task DeleteAsync(string containerName, string imageUrl);
+        Task DeleteAsync(string containerName, string blobUrl);
     }
 }
