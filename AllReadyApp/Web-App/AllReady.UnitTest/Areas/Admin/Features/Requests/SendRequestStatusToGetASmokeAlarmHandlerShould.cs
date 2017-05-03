@@ -14,12 +14,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
     public class SendRequestStatusToGetASmokeAlarmHandlerShould : InMemoryContextTest
     {
         private readonly Guid requestId;
+        private readonly string providerRequestId;
 
         public SendRequestStatusToGetASmokeAlarmHandlerShould()
         {
             requestId = Guid.NewGuid();
+            this.providerRequestId = "providerRequestId";
+
             Context.Requests.Add(new Request
             {
+                ProviderRequestId = this.providerRequestId,
                 RequestId = requestId,
                 Source = RequestSource.Api
             });
@@ -86,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         [InlineData(RequestStatus.Canceled, "canceled", true)]
         [InlineData(RequestStatus.Assigned, "in progress", true)]
         [InlineData(RequestStatus.Unassigned, "new", false)]
-        public async Task MapRequestStatusValuesCorrectlyToGasaStatuses(RequestStatus newStatus, string expectedGasaStatus, bool expectedAcceptance)
+        public async Task MapValuesCorrectlyToGasaValues(RequestStatus newStatus, string expectedGasaStatus, bool expectedAcceptance)
         {
             var notification = new RequestStatusChangedNotification
             {
@@ -101,6 +105,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
 
             backgroundJobClient.Verify(x => x.Create(It.Is<Job>(
                     job => job.Method.Name == nameof(SendRequestStatusToGetASmokeAlarm.Send)
+                    && (string)job.Args[0] == providerRequestId
                     && (string)job.Args[1] == expectedGasaStatus
                     && (bool)job.Args[2] == expectedAcceptance), It.IsAny<EnqueuedState>()), Times.Once);
         }
