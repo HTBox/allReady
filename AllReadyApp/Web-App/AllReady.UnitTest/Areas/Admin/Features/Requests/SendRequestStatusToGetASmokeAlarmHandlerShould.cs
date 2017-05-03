@@ -19,11 +19,11 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         public SendRequestStatusToGetASmokeAlarmHandlerShould()
         {
             requestId = Guid.NewGuid();
-            this.providerRequestId = "providerRequestId";
+            providerRequestId = "providerRequestId";
 
             Context.Requests.Add(new Request
             {
-                ProviderRequestId = this.providerRequestId,
+                ProviderRequestId = providerRequestId,
                 RequestId = requestId,
                 Source = RequestSource.Api
             });
