@@ -1,34 +1,29 @@
-﻿using System;
+﻿using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Hangfire.Jobs;
 using AllReady.Models;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
+using Moq;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Requests
 {
-    using System.Linq.Expressions;
-    using System.Threading.Tasks;
-
-    using AllReady.Areas.Admin.Features.Requests;
-    using AllReady.Hangfire.Jobs;
-
-    using global::Hangfire;
-    using global::Hangfire.Common;
-    using global::Hangfire.States;
-
-    using Moq;
-
     public class SendRequestStatusToGetASmokeAlarmHandlerShould : InMemoryContextTest
     {
         private readonly Guid requestId;
 
         public SendRequestStatusToGetASmokeAlarmHandlerShould()
         {
-            this.requestId = Guid.NewGuid();
-            this.Context.Requests.Add(new Request
+            requestId = Guid.NewGuid();
+            Context.Requests.Add(new Request
             {
-                RequestId = this.requestId,
+                RequestId = requestId,
                 Source = RequestSource.Api
             });
-            this.Context.SaveChanges();
+            Context.SaveChanges();
         }
 
         [Fact]
@@ -36,12 +31,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         {
             var notification = new RequestStatusChangedNotification
             {
-                RequestId = this.requestId,
+                RequestId = requestId,
                 NewStatus = RequestStatus.PendingConfirmation
             };
 
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
-            var sut = new SendRequestStatusToGetASmokeAlarmHandler(this.Context, backgroundJobClient.Object);
+            var sut = new SendRequestStatusToGetASmokeAlarmHandler(Context, backgroundJobClient.Object);
 
             await sut.Handle(notification);
 
@@ -58,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
             };
 
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
-            var sut = new SendRequestStatusToGetASmokeAlarmHandler(this.Context, backgroundJobClient.Object);
+            var sut = new SendRequestStatusToGetASmokeAlarmHandler(Context, backgroundJobClient.Object);
 
             await sut.Handle(notification);
 
@@ -74,12 +69,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         {
             var notification = new RequestStatusChangedNotification
             {
-                RequestId = this.requestId,
+                RequestId = requestId,
                 NewStatus = newStatus
             };
 
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
-            var sut = new SendRequestStatusToGetASmokeAlarmHandler(this.Context, backgroundJobClient.Object);
+            var sut = new SendRequestStatusToGetASmokeAlarmHandler(Context, backgroundJobClient.Object);
 
             await sut.Handle(notification);
 
@@ -95,12 +90,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         {
             var notification = new RequestStatusChangedNotification
             {
-                RequestId = this.requestId,
+                RequestId = requestId,
                 NewStatus = newStatus
             };
 
             var backgroundJobClient = new Mock<IBackgroundJobClient>();
-            var sut = new SendRequestStatusToGetASmokeAlarmHandler(this.Context, backgroundJobClient.Object);
+            var sut = new SendRequestStatusToGetASmokeAlarmHandler(Context, backgroundJobClient.Object);
 
             await sut.Handle(notification);
 
