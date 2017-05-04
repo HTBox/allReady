@@ -40,7 +40,7 @@
     "Storage": {
       "AzureStorage": "[storagekey]",
         "EnableAzureQueueService": "false",
-        "EnableAzureBlobImageService":  "true"
+        "EnableAzureBlobImageService":  "false"
     }
   },
   "Email": {
