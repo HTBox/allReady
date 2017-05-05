@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Models;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using AllReady.Areas.Admin.ViewModels.Task;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
