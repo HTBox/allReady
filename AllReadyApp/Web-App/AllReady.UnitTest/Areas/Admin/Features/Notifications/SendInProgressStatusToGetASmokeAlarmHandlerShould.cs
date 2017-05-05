@@ -12,8 +12,6 @@ using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
 {
-
-
     public class SendInProgressStatusToGetASmokeAlarmHandlerShould : InMemoryContextTest
     {
         private const string firstProviderrequestid = "providerRequestId1";
@@ -47,8 +45,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
             var sut = new SendInProgressStatusToGetASmokeAlarmHandler(Context, backgroundJobClient.Object);
             await sut.Handle(notification);
 
-            backgroundJobClient.Verify(s => s.Create(It.Is<Job>(job => (string)job.Args[0] == firstProviderrequestid && (string)job.Args[1] == GasaStatus.InProgress && (bool)job.Args[2] == expectedAcceptance), It.IsAny<EnqueuedState>()), Times.Once);
-            backgroundJobClient.Verify(s => s.Create(It.Is<Job>(job => (string)job.Args[0] == secondProviderrequestid && (string)job.Args[1] == GasaStatus.InProgress && (bool)job.Args[2] == expectedAcceptance), It.IsAny<EnqueuedState>()), Times.Once);
+            backgroundJobClient.Verify(s => s.Create(It.Is<Job>(job => job.Method.Name == nameof(SendRequestStatusToGetASmokeAlarm.Send) && (string)job.Args[0] == firstProviderrequestid && (string)job.Args[1] == GasaStatus.InProgress && (bool)job.Args[2] == expectedAcceptance), It.IsAny<EnqueuedState>()), Times.Once);
+            backgroundJobClient.Verify(s => s.Create(It.Is<Job>(job => job.Method.Name == nameof(SendRequestStatusToGetASmokeAlarm.Send) &&  (string)job.Args[0] == secondProviderrequestid && (string)job.Args[1] == GasaStatus.InProgress && (bool)job.Args[2] == expectedAcceptance), It.IsAny<EnqueuedState>()), Times.Once);
         }
     }
 }
