@@ -15,11 +15,11 @@
             </li>
             <li class="dropdown">
                 <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage" class="dropdown-toggle dropdown-account" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    Hello @User.GetDisplayName(userManager)
                     @if (User.IsUserProfileIncomplete())
                     {
                         <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
                     }
+                    Hello @User.GetDisplayName(userManager)
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
