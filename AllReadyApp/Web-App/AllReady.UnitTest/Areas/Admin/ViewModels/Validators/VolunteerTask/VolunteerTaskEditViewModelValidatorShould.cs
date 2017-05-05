@@ -9,9 +9,9 @@ using MediatR;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
+namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.VolunteerTask
 {
-    public class TaskEditViewModelValidatorShould
+    public class VolunteerTaskEditViewModelValidatorShould
     {
         [Fact]
         public async System.Threading.Tasks.Task SendEventByIdQueryWithCorrectEventId()
