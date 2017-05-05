@@ -86,10 +86,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Requests
         }
 
         [Theory]
-        [InlineData(RequestStatus.Completed, "", true)]
-        [InlineData(RequestStatus.Canceled, "canceled", true)]
-        [InlineData(RequestStatus.Assigned, "in progress", true)]
-        [InlineData(RequestStatus.Unassigned, "new", false)]
+        [InlineData(RequestStatus.Completed, GasaStatus.Installed, true)]
+        [InlineData(RequestStatus.Canceled, GasaStatus.Canceled, true)]
+        [InlineData(RequestStatus.Assigned, GasaStatus.InProgress, true)]
+        [InlineData(RequestStatus.Unassigned, GasaStatus.New, false)]
         public async Task MapValuesCorrectlyToGasaValues(RequestStatus newStatus, string expectedGasaStatus, bool expectedAcceptance)
         {
             var notification = new RequestStatusChangedNotification
