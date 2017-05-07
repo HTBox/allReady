@@ -6,11 +6,12 @@ using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("SiteAdmin")]
+    [Authorize(nameof(UserType.SiteAdmin))]
     public class OrganizationController : Controller
     {
         private readonly IMediator _mediator;

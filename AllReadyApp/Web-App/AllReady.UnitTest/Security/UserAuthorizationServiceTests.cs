@@ -414,7 +414,7 @@ namespace AllReady.UnitTest.Security
 
             var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
 
-            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }, "CustomApiKeyAuth");
+            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) }, "CustomApiKeyAuth");
 
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 
@@ -442,7 +442,7 @@ namespace AllReady.UnitTest.Security
 
             var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
 
-            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"), new Claim(AllReady.Security.ClaimTypes.Organization, "1") }, "CustomApiKeyAuth");
+            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)), new Claim(AllReady.Security.ClaimTypes.Organization, "1") }, "CustomApiKeyAuth");
 
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 
@@ -456,7 +456,7 @@ namespace AllReady.UnitTest.Security
 
             var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
 
-            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"), new Claim(AllReady.Security.ClaimTypes.Organization, "1") }, "CustomApiKeyAuth");
+            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)), new Claim(AllReady.Security.ClaimTypes.Organization, "1") }, "CustomApiKeyAuth");
 
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 

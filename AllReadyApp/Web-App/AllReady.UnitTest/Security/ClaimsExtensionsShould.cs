@@ -26,14 +26,14 @@ namespace AllReady.UnitTest.Security
     [Fact]
     public void SiteAdminUserShouldMatchSiteAdmin()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) }));
       Assert.True(principal.IsUserType(UserType.SiteAdmin));
     }
 
     [Fact]
     public void SiteAdminUserShouldNotMatchOrganizationAdmin()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) }));
 
       Assert.False(principal.IsUserType(UserType.OrgAdmin));
     }
@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Security
     [Fact]
     public void OrganizationAdminUserShouldMatchOrganizationAdmin()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)) }));
 
       Assert.True(principal.IsUserType(UserType.OrgAdmin));
     }
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Security
     [Fact]
     public void OrganizationAdminUserShouldNotMatchSiteAdmin()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)) }));
 
       Assert.False(principal.IsUserType(UserType.SiteAdmin));
     }
@@ -59,9 +59,9 @@ namespace AllReady.UnitTest.Security
     {
       var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
       {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, "BasicUser")
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.BasicUser))
             }));
 
       Assert.True(principal.IsUserType(UserType.SiteAdmin));
@@ -102,14 +102,14 @@ namespace AllReady.UnitTest.Security
     [Fact]
     public void IsOrganizationAdminReturnsTrueWhenUserIsOrganizationAdmin()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)) }));
       Assert.False(principal.IsOrganizationAdmin());
     }
 
     [Fact]
     public void SiteAdminShouldBeAdminOfAnyOrganizationId()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) }));
 
       Assert.True(principal.IsOrganizationAdmin(12));
     }
@@ -117,7 +117,7 @@ namespace AllReady.UnitTest.Security
     [Fact]
     public void WhenOrganizationIdIsNotSetOrganizationAdminShouldNotBeAdminOfOrganization()
     {
-      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin") }));
+      var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)) }));
 
       Assert.False(principal.IsOrganizationAdmin(1));
     }
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Security
     {
       var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
       {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, "2")
             }));
 
@@ -139,7 +139,7 @@ namespace AllReady.UnitTest.Security
     {
       var principal = new ClaimsPrincipal(new ClaimsIdentity(new[]
       {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, "2")
             }));
 

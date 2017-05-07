@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize(nameof(UserType.OrgAdmin))]
     public class GoalController : Controller
     {
         private readonly IMediator _mediator;
