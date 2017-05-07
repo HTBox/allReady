@@ -19,9 +19,9 @@
         public string Url { get; set; }
 
         /// <summary>The ID of the task where this file is attached to</summary>
-        public int TaskId { get; set; }
+        public int VolunteerTaskId { get; set; }
 
         /// <summary>Reference to the task where this file is attached to</summary>
-        public VolunteerTask Task { get; set; }
+        public VolunteerTask VolunteerTask { get; set; }
     }
 }
