@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace AllReady.Services
 {
-    public interface ITaskAttachmentService
+    public interface IVolunteerTaskAttachmentService
     {
         Task<string> UploadAsync(int taskId, IFormFile attachment);
         Task DeleteAsync(string attachmentUrl);

@@ -4,12 +4,12 @@ using Microsoft.Net.Http.Headers;
 
 namespace AllReady.Services
 {
-    public class TaskAttachmentService : ITaskAttachmentService
+    public class VolunteerTaskAttachmentService : IVolunteerTaskAttachmentService
     {
         private const string ContainerName = "attachments";
         private readonly IBlockBlob blockBlob;
 
-        public TaskAttachmentService(IBlockBlob blockBlob)
+        public VolunteerTaskAttachmentService(IBlockBlob blockBlob)
         {
             this.blockBlob = blockBlob;
         }
