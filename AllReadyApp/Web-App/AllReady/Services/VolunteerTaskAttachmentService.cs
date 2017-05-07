@@ -1,22 +1,27 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using AllReady.Configuration;
 
 namespace AllReady.Services
 {
-    public class TaskAttachmentService : ITaskAttachmentService
+    public class VolunteerTaskAttachmentService : IVolunteerTaskAttachmentService
     {
         private const string ContainerName = "attachments";
         private readonly IBlockBlob blockBlob;
 
-        public TaskAttachmentService(IBlockBlob blockBlob)
+        public VolunteerTaskAttachmentService(IBlockBlob blockBlob)
         {
             this.blockBlob = blockBlob;
         }
 
-        public async Task<string> UploadAsync(int taskId, IFormFile attachment)
+        public async Task<string> UploadAsync(int volunteerTaskId, IFormFile attachment)
         {
-            var blobPath = "task/" + taskId;
+            var blobPath = "volunteerTask/" + volunteerTaskId;
             return await UploadAsync(blobPath, attachment);
         }
 
@@ -31,6 +36,5 @@ namespace AllReady.Services
             var blobName = blobPath + "/" + fileName;
             return await blockBlob.UploadFromStreamAsync(ContainerName, blobName, attachment);
         }
-
     }
 }

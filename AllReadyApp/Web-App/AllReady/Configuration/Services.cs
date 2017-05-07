@@ -46,7 +46,7 @@ namespace AllReady.Configuration
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
             services.AddTransient<IBlockBlob, BlockBlob>();
-            services.AddTransient<ITaskAttachmentService, TaskAttachmentService>();
+            services.AddTransient<IVolunteerTaskAttachmentService, VolunteerTaskAttachmentService>();
 
             if (configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {

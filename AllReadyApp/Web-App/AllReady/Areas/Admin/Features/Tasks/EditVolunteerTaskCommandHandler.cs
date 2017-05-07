@@ -12,9 +12,9 @@ namespace AllReady.Areas.Admin.Features.Tasks
     public class EditVolunteerTaskCommandHandler : IAsyncRequestHandler<EditVolunteerTaskCommand, int>
     {
         private readonly AllReadyContext _context;
-        private readonly ITaskAttachmentService _taskAttachmentService;
+        private readonly IVolunteerTaskAttachmentService _taskAttachmentService;
         
-        public EditVolunteerTaskCommandHandler(AllReadyContext context, ITaskAttachmentService taskAttachmentService)
+        public EditVolunteerTaskCommandHandler(AllReadyContext context, IVolunteerTaskAttachmentService taskAttachmentService)
         {
             _context = context;
             _taskAttachmentService = taskAttachmentService;
@@ -52,7 +52,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             // Delete existing attachments
             if (message.VolunteerTask.DeleteAttachments.Count > 0)
             {
-                var attachmentsToDelete = _context.Attachments.Where(a => a.Task.Id == volunteerTask.Id && message.VolunteerTask.DeleteAttachments.Contains(a.Id)).ToList();
+                var attachmentsToDelete = _context.Attachments.Where(a => a.VolunteerTask.Id == volunteerTask.Id && message.VolunteerTask.DeleteAttachments.Contains(a.Id)).ToList();
                 _context.RemoveRange(attachmentsToDelete);
             }
 
@@ -67,7 +67,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = attachmentModel.FileName,
                     Description = message.VolunteerTask.NewAttachmentDescription,
                     Url = attachmentUrl,
-                    Task = volunteerTask,
+                    VolunteerTask = volunteerTask,
                 };
 
                 _context.Add(attachment);
