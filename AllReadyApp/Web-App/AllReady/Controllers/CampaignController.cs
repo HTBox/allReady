@@ -37,7 +37,7 @@ namespace AllReady.Controllers
                 return NotFound();
             }
             
-            ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = "Details", Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
+            ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = nameof(CampaignController.Details), Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
             return View("Details", new CampaignViewModel(campaign));
         }

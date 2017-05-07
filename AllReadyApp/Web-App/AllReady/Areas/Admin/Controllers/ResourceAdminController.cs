@@ -60,7 +60,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var id = await _mediator.SendAsync(new CreateOrEditResourceCommand { Resource = viewModel });
 
-            return RedirectToAction(nameof(CampaignController.Details), nameof(Campaign), new { area = "Admin", id = viewModel.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
         }
 
         [HttpGet]

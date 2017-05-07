@@ -338,7 +338,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Up });
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -354,7 +354,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new ReorderRequestCommand { RequestId = requestId, ItineraryId = itineraryId, ReOrderDirection = ReorderRequestCommand.Direction.Down });
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -370,7 +370,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Completed });
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -386,7 +386,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Assigned });
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -401,7 +401,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Confirmed });
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -416,7 +416,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Unassigned });
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -434,7 +434,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new OptimizeRouteCommand { ItineraryId = itineraryId, UserId = user?.Id });
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         [HttpPost]
@@ -454,7 +454,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var isSuccess = result == SetTeamLeadResult.Success;
 
-            return RedirectToAction("Details", new { id = itineraryId, teamLeadSuccess = isSuccess });
+            return RedirectToAction(nameof(Details), new { id = itineraryId, teamLeadSuccess = isSuccess });
         }
 
         [HttpPost]
@@ -474,7 +474,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             //var isSuccess = result == SetTeamLeadResult.Success;
 
-            return RedirectToAction("Details", new { id = itineraryId });
+            return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
 
         private async Task<SelectItineraryRequestsViewModel> BuildSelectItineraryRequestsModel(int itineraryId, RequestSearchCriteria criteria)

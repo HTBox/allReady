@@ -120,7 +120,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (!fileUpload.IsAcceptableImageContentType())
                     {
-                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        ModelState.AddModelError(nameof(eventEditViewModel.ImageUrl), "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View("Edit", eventEditViewModel);
                     }
                 }
@@ -201,7 +201,7 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        ModelState.AddModelError(nameof(eventEditViewModel.ImageUrl), "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View(eventEditViewModel);
                     }
                 }
