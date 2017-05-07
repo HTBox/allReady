@@ -6,6 +6,7 @@ using AllReady.Models;
 using AllReady.Security;
 using AllReady.ViewModels.Campaign;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Controllers
@@ -15,11 +16,13 @@ namespace AllReady.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IUserAuthorizationService _userAuthorizationService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CampaignController(IMediator mediator, IUserAuthorizationService userAuthorizationService)
+        public CampaignController(IMediator mediator, IUserAuthorizationService userAuthorizationService, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
             _userAuthorizationService = userAuthorizationService;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -69,9 +72,11 @@ namespace AllReady.Controllers
                 return Unauthorized();
             }
 
-            var unlockedCampaigns = await GetUnlockedCampaigns();
+            var user = await _userManager.GetUserAsync(User);
 
-            return View(unlockedCampaigns);
+            var authorizedCampaign = await _mediator.SendAsync(new AuthorizedCampaignsQuery{ UserId = user.Id});
+
+            return View(authorizedCampaign);
         }
 
         // GET: api/values
