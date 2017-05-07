@@ -1,0 +1,102 @@
+﻿@model IList<AllReady.ViewModels.Campaign.CampaignViewModel>
+@using AllReady.Security
+@using AllReady.ViewModels.Campaign
+
+@{
+    ViewData["Title"] = "All Registered Campaigns";
+    @addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
+}
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li>Campaigns</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 text-center">
+        <div class="event-results" data-bind="if: loadingDone">
+            <h3>Campaigns near <span data-bind="text: searchTerm"></span></h3>
+            <div class="event-wrapper" data-bind="foreach: campaignsNearZip">
+                <p><a data-bind="attr: { href: '/Campaign/' + CampaignId }, text: Title"></a></p>
+            </div>
+            <a data-bind="attr: { href: '/Campaign'}">See more campaigns</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+    <div class="col-md-6">
+        <div class="pull-right">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control input-sm" data-bind="textInput: campaigns.searchTerm" placeholder="Search campaigns" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: campaigns.showOld }, click: campaigns.showOld.toggle">
+                        <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
+                        Include Completed Campaigns
+                    </button>
+                    <span data-bind="text: '(' + total + ')' " ></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="hide text-center" data-bind="css: { hide: campaigns.filtered().length }">
+        <div class="alert alert-warning" role="alert">
+            <strong>No matching campaigns.</strong>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div id="campaignGrid" class="table-responsive">
+            <table class="table" data-bind="css: { hide: !campaigns.filtered().length }">
+                <tr>
+                    <th class="col-md-3"><span title="Name of the campaign">Title</span></th>
+                    <th class="col-md-3"><span title="Organizer of the campaign">Organizer</span></th>
+                    <th class="col-md-4"><span title="Description of the campaign">Description</span></th>
+                    <th class="col-md-2"><span title="Date of the campaign">Dates</span></th>
+                </tr>
+                <!-- ko foreach: campaigns.filtered -->
+                <tr>
+                    <td>
+                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                        <i data-bind="visible: Featured" class="fa fa-star star-highlight" title="Featured" aria-hidden="true"></i>
+                    </td>
+                    <td>
+                        <span data-bind="text: ManagingOrganizationName"></span>
+                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br/><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
+                    </td>
+                    <td>
+                        <span data-bind="text: Description"></span>
+                    </td>
+                    <td>
+                        <span data-bind="text: displayDate()"></span>
+                    </td>
+                </tr>
+                <!-- /ko -->
+            </table>
+
+            <div data-bind="css: { hide: !featuredCampaigns }">
+                <i class="fa fa-star star-highlight" aria-hidden="true"></i>
+                Featured campaign(s)
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        var modelCampaigns = @Json.Serialize(Model);
+    </script>
+    <script src="~/js/campaigns.js"></script>
+}

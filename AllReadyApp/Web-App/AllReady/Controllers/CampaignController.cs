@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.ViewModels.Campaign;
 using MediatR;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -13,10 +14,12 @@ namespace AllReady.Controllers
     public class CampaignController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IUserAuthorizationService _userAuthorizationService;
 
-        public CampaignController(IMediator mediator)
+        public CampaignController(IMediator mediator, IUserAuthorizationService userAuthorizationService)
         {
             _mediator = mediator;
+            _userAuthorizationService = userAuthorizationService;
         }
 
         [HttpGet]
@@ -53,6 +56,22 @@ namespace AllReady.Controllers
             }
             
             return View("Map", new CampaignViewModel(campaign));
+        }
+
+        [HttpGet]
+        [Route("~/[controller]/managecampaign")]
+        public async Task<IActionResult> ManageCampaign()
+        {
+            var userIsNotCampaignManager = await _userAuthorizationService.IsCampaignManager() == false;
+
+            if (userIsNotCampaignManager)
+            {
+                return Unauthorized();
+            }
+
+            var unlockedCampaigns = await GetUnlockedCampaigns();
+
+            return View(unlockedCampaigns);
         }
 
         // GET: api/values
