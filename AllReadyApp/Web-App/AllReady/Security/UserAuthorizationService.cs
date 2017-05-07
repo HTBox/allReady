@@ -119,6 +119,30 @@ namespace AllReady.Security
         }
 
         /// <inheritdoc />
+        public async Task<bool> IsCampaignManager()
+        {
+            var campaignsManaged = await GetManagedCampaignIds();
+
+            return campaignsManaged.Any();
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> IsEventManager()
+        {
+            var eventsManaged = await GetManagedEventIds();
+
+            return eventsManaged.Any();
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> IsTeamLead()
+        {
+            var teamsLed = await GetLedItineraryIds();
+
+            return teamsLed.Any();
+        }        
+
+        /// <inheritdoc />
         public bool IsOrganizationAdmin(int organizationId)
         {
             return _claimsPrincipal.IsUserType(UserType.OrgAdmin) && GetOrganizationId.HasValue && GetOrganizationId.Value == organizationId;
