@@ -115,6 +115,95 @@ namespace AllReady.UnitTest.Security
             sut.AssociatedUserId.ShouldBeNull();
         }
 
+
+        [Fact]
+        public async Task IsEventManager_ReturnsTrue_WhenUserHasManagedEventRecord()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var isEventManager = await sut.IsEventManager();
+
+            isEventManager.ShouldBe(true);
+        }
+
+        [Fact]
+        public async Task IsEventManager_ReturnsFalse_WhenUserHasNoManagedEventRecords()
+        {
+            var userManager = new FakeUserManagerForBasicUser();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var isEventManager = await sut.IsEventManager();
+
+            isEventManager.ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task IsEventManager_ReturnsFalse_WhenNoUserAssociated()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var isEventManager = await sut.IsEventManager();
+
+            isEventManager.ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task IsCampaignManager_ReturnsTrue_WhenUserHasManagedCampaignRecord()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var isEventManager = await sut.IsCampaignManager();
+
+            isEventManager.ShouldBe(true);
+        }
+
+        [Fact]
+        public async Task IsCampaignManager_ReturnsFalse_WhenUserHasNoManagedCampaignRecords()
+        {
+            var userManager = new FakeUserManagerForBasicUser();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var isEventManager = await sut.IsCampaignManager();
+
+            isEventManager.ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task IsCampaignManager_ReturnsFalse_WhenNoUserAssociated()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var isEventManager = await sut.IsCampaignManager();
+
+            isEventManager.ShouldBe(false);
+        }
+
         [Fact]
         public async Task GetManagedEventIds_CallsContextOnFirstLoad()
         {
@@ -222,6 +311,103 @@ namespace AllReady.UnitTest.Security
         }
 
         [Fact]
+        public async Task GetLedItineraryIds_CallsContextOnFirstLoad()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var teamLeadIds = await sut.GetLedItineraryIds();
+
+            teamLeadIds.Count.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task GetLedItineraryIds_DoesNotCallContextOnSecondLoad()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var teamLeadIds = await sut.GetLedItineraryIds();
+
+            var manager = Context.VolunteerTaskSignups.First();
+
+            Context.Remove(manager);
+            Context.SaveChanges();
+
+            Context.VolunteerTaskSignups.Count().ShouldBe(0);
+
+            var teamLeadIds2 = await sut.GetLedItineraryIds();
+
+            teamLeadIds2.Count.ShouldBe(1);
+        }
+
+        [Fact]
+        public async Task GetLedItineraryIds_ShouldReturnEmptyListWhenNoAssociatedUser()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var teamLeadIds = await sut.GetLedItineraryIds();
+
+            teamLeadIds.ShouldBeEmpty();
+        }
+
+        [Fact]
+        public async Task IsTeamLead_ReturnsTrue_WhenUserHasTeamLeadTaskSignupRecord()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var isEventManager = await sut.IsTeamLead();
+
+            isEventManager.ShouldBe(true);
+        }
+
+        [Fact]
+        public async Task IsTeamLead_ReturnsFalse_WhenUserHasNoTeamLeadTaskSignupRecords()
+        {
+            var userManager = new FakeUserManagerForBasicUser();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+
+            await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
+
+            var isEventManager = await sut.IsTeamLead();
+
+            isEventManager.ShouldBe(false);
+        }
+
+        [Fact]
+        public async Task IsTeamLead_ReturnsFalse_WhenNoUserAssociated()
+        {
+            var userManager = new FakeUserManager();
+
+            var sut = new UserAuthorizationService(userManager, Context);
+
+            var isEventManager = await sut.IsTeamLead();
+
+            isEventManager.ShouldBe(false);
+        }
+
+        [Fact]
         public async Task IsSiteAdmin_ShouldReturnTrue_WhenClaimsPrincipleHasSiteAdminClaim()
         {
             var userManager = new FakeUserManager();
@@ -297,6 +483,10 @@ namespace AllReady.UnitTest.Security
 
             Context.Users.Add(user);
 
+            var user2 = new ApplicationUser { Id = "1234" };
+
+            Context.Users.Add(user2);
+
             var eventManager = new EventManager { User = user, EventId = 1 };
 
             Context.EventManagers.Add(eventManager);
@@ -304,6 +494,10 @@ namespace AllReady.UnitTest.Security
             var campaignManager = new CampaignManager { User = user, CampaignId = 1 };
 
             Context.CampaignManagers.Add(campaignManager);
+
+            var volunteerTaskSignup = new VolunteerTaskSignup { User = user, IsTeamLead = true, ItineraryId = 1 };
+
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
         }
@@ -328,6 +522,29 @@ namespace AllReady.UnitTest.Security
             {
                 FindByEmailAsyncCallCount += 1;
                 return Task.FromResult(new ApplicationUser { Id = "123", Email = email });
+            }
+        }
+
+        private class FakeUserManagerForBasicUser : UserManager<ApplicationUser>
+        {
+            public FakeUserManagerForBasicUser()
+                : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                      new Mock<IOptions<IdentityOptions>>().Object,
+                      new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                      new IUserValidator<ApplicationUser>[0],
+                      new IPasswordValidator<ApplicationUser>[0],
+                      new Mock<ILookupNormalizer>().Object,
+                      new Mock<IdentityErrorDescriber>().Object,
+                      new Mock<IServiceProvider>().Object,
+                      new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
+            { }
+
+            public int FindByEmailAsyncCallCount { get; private set; }
+
+            public override Task<ApplicationUser> FindByEmailAsync(string email)
+            {
+                FindByEmailAsyncCallCount += 1;
+                return Task.FromResult(new ApplicationUser { Id = "1234", Email = email });
             }
         }
     }
