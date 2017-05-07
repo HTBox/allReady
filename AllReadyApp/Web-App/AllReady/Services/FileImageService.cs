@@ -10,12 +10,12 @@ namespace AllReady.Services
     {
         private const string UploadFolder = "upload";
         private const string WebPath = "/" + UploadFolder + "/";
-        private readonly string _uploadPath;
+        private readonly string uploadPath;
 
         public FileImageService(IHostingEnvironment environment)
         {
-            _uploadPath = Path.Combine(environment.WebRootPath, UploadFolder);
-            var uploadDir = new DirectoryInfo(_uploadPath);
+            uploadPath = Path.Combine(environment.WebRootPath, UploadFolder);
+            var uploadDir = new DirectoryInfo(uploadPath);
             if (!uploadDir.Exists)
             {
                 uploadDir.Create();
@@ -42,29 +42,29 @@ namespace AllReady.Services
             return UploadFile(image);
         }
 
-        private async Task<string> UploadFile(IFormFile image)
-        {
-            string filename = Guid.NewGuid().ToString().ToLower();
-            string filenameWithExt = filename + Path.GetExtension(image.FileName);
-            string fullPath = Path.Combine(_uploadPath, filenameWithExt);
-            using (FileStream fs = File.OpenWrite(fullPath))
-            {
-                await image.CopyToAsync(fs);
-            }
-
-            return WebPath + filenameWithExt;
-        }
-
         public Task DeleteImageAsync(string imageUrl)
         {
-            string filename = Path.GetFileName(imageUrl);
-            string fileFullPath = Path.Combine(_uploadPath, filename);
-            if(File.Exists(fileFullPath))
+            var filename = Path.GetFileName(imageUrl);
+            var fileFullPath = Path.Combine(uploadPath, filename);
+            if (File.Exists(fileFullPath))
             {
                 File.Delete(fileFullPath);
             }
 
             return Task.CompletedTask;
+        }
+
+        private async Task<string> UploadFile(IFormFile image)
+        {
+            var filename = Guid.NewGuid().ToString().ToLower();
+            var filenameWithExt = filename + Path.GetExtension(image.FileName);
+            var fullPath = Path.Combine(uploadPath, filenameWithExt);
+            using (var fs = File.OpenWrite(fullPath))
+            {
+                await image.CopyToAsync(fs);
+            }
+
+            return WebPath + filenameWithExt;
         }
     }
 }
