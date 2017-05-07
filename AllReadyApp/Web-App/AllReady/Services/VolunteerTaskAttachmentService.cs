@@ -14,9 +14,9 @@ namespace AllReady.Services
             this.blockBlob = blockBlob;
         }
 
-        public async Task<string> UploadAsync(int taskId, IFormFile attachment)
+        public async Task<string> UploadAsync(int volunteerTaskId, IFormFile attachment)
         {
-            var blobPath = "task/" + taskId;
+            var blobPath = "task/" + volunteerTaskId;
             return await UploadAsync(blobPath, attachment);
         }
 
