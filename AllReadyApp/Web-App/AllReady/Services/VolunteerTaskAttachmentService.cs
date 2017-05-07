@@ -16,7 +16,7 @@ namespace AllReady.Services
 
         public async Task<string> UploadAsync(int volunteerTaskId, IFormFile attachment)
         {
-            var blobPath = "task/" + volunteerTaskId;
+            var blobPath = "volunteerTask/" + volunteerTaskId;
             return await UploadAsync(blobPath, attachment);
         }
 
