@@ -1,11 +1,6 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using AllReady.Configuration;
+using System.Threading.Tasks;
 
 namespace AllReady.Services
 {
