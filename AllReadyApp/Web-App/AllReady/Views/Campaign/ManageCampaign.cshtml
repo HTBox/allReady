@@ -66,10 +66,11 @@
                     <th class="col-md-4"><span title="Description of the campaign">Description</span></th>
                     <th class="col-md-2"><span title="Date of the campaign">Dates</span></th>
                 </tr>
+                
                 <!-- ko foreach: campaigns.filtered -->
                 <tr>
                     <td>
-                        <a data-bind="attr: { href: '/Campaign/' + Id }, text: Name"></a>
+                        <a data-bind="attr: { href: '/Admin/Campaign/Details/' + Id }, text: Name"></a>
                         <i data-bind="visible: Featured" class="fa fa-star star-highlight" title="Featured" aria-hidden="true"></i>
                     </td>
                     <td>

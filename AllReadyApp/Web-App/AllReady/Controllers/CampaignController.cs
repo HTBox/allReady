@@ -42,7 +42,7 @@ namespace AllReady.Controllers
             {
                 return NotFound();
             }
-            
+
             ViewBag.AbsoluteUrl = UrlEncode(Url.Action(new UrlActionContext { Action = nameof(CampaignController.Details), Controller = "Campaign", Values = null, Protocol = Request.Scheme }));
 
             return View("Details", new CampaignViewModel(campaign));
@@ -57,24 +57,21 @@ namespace AllReady.Controllers
             {
                 return NotFound();
             }
-            
+
             return View("Map", new CampaignViewModel(campaign));
         }
 
         [HttpGet]
-        [Route("~/[controller]/managecampaign")]
+        [Route("~/[controller]/ManageCampaign")]
         public async Task<IActionResult> ManageCampaign()
         {
             var userIsNotCampaignManager = await _userAuthorizationService.IsCampaignManager() == false;
 
-            if (userIsNotCampaignManager)
-            {
-                return Unauthorized();
-            }
+            if (userIsNotCampaignManager) return Unauthorized();
 
             var user = await _userManager.GetUserAsync(User);
 
-            var authorizedCampaign = await _mediator.SendAsync(new AuthorizedCampaignsQuery{ UserId = user.Id});
+            var authorizedCampaign = await _mediator.SendAsync(new AuthorizedCampaignsQuery { UserId = user.Id });
 
             return View(authorizedCampaign);
         }
@@ -95,7 +92,7 @@ namespace AllReady.Controllers
             {
                 return NotFound();
             }
-            
+
             return Json(campaign.ToViewModel());
         }
 
