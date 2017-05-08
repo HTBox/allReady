@@ -31,6 +31,5 @@ namespace AllReady.Services
             var blobName = blobPath + "/" + fileName;
             return await blockBlob.UploadFromStreamAsync(ContainerName, blobName, attachment);
         }
-
     }
 }
