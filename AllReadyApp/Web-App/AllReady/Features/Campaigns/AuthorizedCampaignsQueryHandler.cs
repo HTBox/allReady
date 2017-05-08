@@ -25,7 +25,8 @@ namespace AllReady.Features.Campaigns
                                                   .Include(x => x.Events)
                                                   .Include(x => x.ParticipatingOrganizations)
                                                   .Where(c => !c.Locked && c.Published)
-                                                  .Select(campaign => campaign.ToViewModel()).ToListAsync();
+                                                  .Select(campaign => campaign.ToViewModel())
+                                                  .ToListAsync();
         }
     }
 }

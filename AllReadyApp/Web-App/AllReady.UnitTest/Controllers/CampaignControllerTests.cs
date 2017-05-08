@@ -1,16 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
+using AllReady.Security;
 using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Campaign;
 using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using CampaignController = AllReady.Controllers.CampaignController;
+using Shouldly;
 
 namespace AllReady.UnitTest.Controllers
 {
@@ -330,6 +338,65 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(httpGetAttribute.Template, "{id}");
         }
 
+        [Fact]
+        public void ManageCampaignHasHttpGetAttribute()
+        {
+            var sut = new CampaignController(null);
+            var httpGetAttribute = sut.GetAttributesOn(x=>x.ManageCampaign()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(httpGetAttribute);
+        }
+
+        [Fact]
+        public void ManageCampaignHasTheCorrectRoute()
+        {
+            var sut = new CampaignController(null);
+            var routeAttribute = sut.GetAttributesOn(x => x.ManageCampaign()).OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(routeAttribute);
+            Assert.Equal(routeAttribute.Template, "~/[controller]/ManageCampaign");
+        }
+
+        [Fact]
+        public async Task ManageCampaign_ReturnsUnAuthorized_IfUserIsNotCampaignManager()
+        {
+            var authorizationServiceMock = new Mock<IUserAuthorizationService>();
+            authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(false);
+            var sut = new CampaignController(null, authorizationServiceMock.Object, new FakeUserManager());
+
+            var result = await sut.ManageCampaign();
+
+            result.ShouldBeOfType<UnauthorizedResult>();
+        }
+
+        [Fact]
+        public async Task ManageCampaign_ReturnsTheCorrectViewModel()
+        {
+            var mockedMediator = new Mock<IMediator>();
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<AuthorizedCampaignsQuery>())).ReturnsAsync(new List<CampaignViewModel>());
+            var authorizationServiceMock = new Mock<IUserAuthorizationService>();
+            authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(true);
+            var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, new FakeUserManager());
+
+            var result = await sut.ManageCampaign() as ViewResult;
+
+            result.ShouldNotBeNull();
+            result.ViewData.Model.ShouldBeOfType<List<CampaignViewModel>>();
+        }
+
+        [Fact]
+        public async Task ManageCampaign_ReturnsTheCorrectView()
+        {
+            var mockedMediator = new Mock<IMediator>();
+            mockedMediator.Setup(m => m.SendAsync(It.IsAny<AuthorizedCampaignsQuery>())).ReturnsAsync(new List<CampaignViewModel>());
+            var authorizationServiceMock = new Mock<IUserAuthorizationService>();
+            authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(true);
+            var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, new FakeUserManager());
+
+            var result = await sut.ManageCampaign() as ViewResult;
+
+            result.ShouldNotBeNull();
+            result.ViewName.ShouldBeNull();
+        }
+
         public class CampaignControllerForDetailsActionMethod : CampaignController
         {
             private readonly string urlEncodedValue;
@@ -342,6 +409,26 @@ namespace AllReady.UnitTest.Controllers
             protected override string UrlEncode(string value)
             {
                 return urlEncodedValue;
+            }
+        }
+
+        private class FakeUserManager : UserManager<ApplicationUser>
+        {
+            public FakeUserManager()
+                : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                      new Mock<IOptions<IdentityOptions>>().Object,
+                      new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                      new IUserValidator<ApplicationUser>[0],
+                      new IPasswordValidator<ApplicationUser>[0],
+                      new Mock<ILookupNormalizer>().Object,
+                      new Mock<IdentityErrorDescriber>().Object,
+                      new Mock<IServiceProvider>().Object,
+                      new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
+            { }
+
+            public override Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user)
+            {
+                return Task.FromResult(new ApplicationUser { Id = "123" });
             }
         }
     }
