@@ -63,7 +63,7 @@ namespace AllReady.Configuration
             }
             else
             {
-                services.AddSingleton<IImageService, FileImageService>();
+                services.AddSingleton<IImageService, FakeImageService>();
             }
 
             if (configuration["Data:Storage:EnableAzureQueueService"] == "true")
