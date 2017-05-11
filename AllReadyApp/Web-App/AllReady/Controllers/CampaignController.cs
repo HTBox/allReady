@@ -18,11 +18,6 @@ namespace AllReady.Controllers
         private readonly IUserAuthorizationService _userAuthorizationService;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public CampaignController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
         public CampaignController(IMediator mediator, IUserAuthorizationService userAuthorizationService, UserManager<ApplicationUser> userManager)
         {
             _mediator = mediator;
