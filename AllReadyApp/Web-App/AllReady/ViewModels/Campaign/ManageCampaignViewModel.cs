@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AllReady.Models;
-using AllReady.ViewModels.Event;
 
 namespace AllReady.ViewModels.Campaign
 {
@@ -24,6 +22,9 @@ namespace AllReady.ViewModels.Campaign
             FullDescription = campaign.FullDescription;
             ExternalUrl = campaign.ExternalUrl;
             ExternalUrlText = campaign.ExternalUrlText;
+            ManagingOrganizationId = campaign.ManagingOrganization?.Id ?? 0;
+            ManagingOrganizationLogo = campaign.ManagingOrganization?.LogoUrl ?? string.Empty;
+            ManagingOrganizationName = campaign.ManagingOrganization?.Name ?? string.Empty;
             TimeZoneId = campaign.TimeZoneId;
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;            
@@ -33,6 +34,7 @@ namespace AllReady.ViewModels.Campaign
 
         }
 
+       
 
         public int Id { get; set; }
 
@@ -45,6 +47,12 @@ namespace AllReady.ViewModels.Campaign
         public string ExternalUrlText { get; set; }
 
         public string FullDescription { get; set; }
+
+        public int ManagingOrganizationId { get; set; }
+
+        public string ManagingOrganizationName { get; set; }
+
+        public string ManagingOrganizationLogo { get; set; }
 
         public string ImageUrl { get; set; }
 

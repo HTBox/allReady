@@ -13,6 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\campaigns - Copy.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="wwwroot\**\*">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
