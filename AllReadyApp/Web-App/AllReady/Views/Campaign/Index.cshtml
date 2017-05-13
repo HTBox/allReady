@@ -1,7 +1,4 @@
 ﻿@model IList<AllReady.ViewModels.Campaign.CampaignViewModel>
-@using AllReady.Security
-@using AllReady.ViewModels.Campaign
-@inject IUserAuthorizationService userAuthorizationService
 
 @{
     ViewData["Title"] = "All Registered Campaigns";
@@ -46,7 +43,7 @@
                     </button>
                     <span data-bind="text: '(' + total + ')' "></span>
                 </div>
-                @if (await userAuthorizationService.IsCampaignManager())
+                @if (Model.Any(m => m.IsCampaignManager))
                 {
                     <div class="form-group">
                         <a asp-controller="Campaign" asp-action="ManageCampaign" target="_blank" class="btn btn-default btn-sm">Manage Campaign</a>

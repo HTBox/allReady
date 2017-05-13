@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,11 @@ namespace AllReady.Controllers
         public async Task<IActionResult> Index()
         {
             var unlockedCampaigns = await GetUnlockedCampaigns();
+
+            var isCampaignManager = await _userAuthorizationService.IsCampaignManager();
+
+            if (isCampaignManager && unlockedCampaigns.Any()) unlockedCampaigns.First().IsCampaignManager = true;
+
             return View(unlockedCampaigns);
         }
 

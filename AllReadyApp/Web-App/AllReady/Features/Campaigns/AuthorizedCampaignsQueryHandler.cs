@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Features.Campaigns
 {
-    public class AuthorizedCampaignsQueryHandler : IAsyncRequestHandler<AuthorizedCampaignsQuery, List<CampaignViewModel>>
+    public class AuthorizedCampaignsQueryHandler : IAsyncRequestHandler<AuthorizedCampaignsQuery, List<ManageCampaignViewModel>>
     {
         private readonly AllReadyContext _context;
 
@@ -17,15 +17,12 @@ namespace AllReady.Features.Campaigns
             _context = context;
         }
 
-        public async Task<List<CampaignViewModel>> Handle(AuthorizedCampaignsQuery message)
+        public async Task<List<ManageCampaignViewModel>> Handle(AuthorizedCampaignsQuery message)
         {
             return await _context.CampaignManagers.Where(c => c.UserId == message.UserId)
                                                   .Select(c => c.Campaign)
-                                                  .Include(x => x.ManagingOrganization)
-                                                  .Include(x => x.Events)
-                                                  .Include(x => x.ParticipatingOrganizations)
                                                   .Where(c => !c.Locked && c.Published)
-                                                  .Select(campaign => campaign.ToViewModel())
+                                                  .Select(campaign => campaign.ToManageCampaignViewModel())
                                                   .ToListAsync();
         }
     }

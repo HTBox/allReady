@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var sut = new AuthorizedCampaignsQueryHandler(Context);
             var results = await sut.Handle(new AuthorizedCampaignsQuery{ UserId = "Eroica" });
 
-            Assert.IsType<List<CampaignViewModel>>(results);
+            Assert.IsType<List<ManageCampaignViewModel>>(results);
         }
     }
 }
