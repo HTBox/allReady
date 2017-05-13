@@ -28,7 +28,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task IndexSendsCampaignIndexQuery()
         {
             var mockMediator = new Mock<IMediator>();
-            var sut = new CampaignController(mockMediator.Object, null, null);
+            var authorizationServiceMock = new Mock<IUserAuthorizationService>();
+            authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(false);
+
+            var sut = new CampaignController(mockMediator.Object, authorizationServiceMock.Object, null);
             await sut.Index();
 
             mockMediator.Verify(m => m.SendAsync(It.IsAny<UnlockedCampaignsQuery>()), Times.Once);
@@ -37,7 +40,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task IndexReturnsAView()
         {
-            var sut = new CampaignController(Mock.Of<IMediator>(), null, null);
+            var authorizationServiceMock = new Mock<IUserAuthorizationService>();
+            authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(false);
+
+            var sut = new CampaignController(Mock.Of<IMediator>(), authorizationServiceMock.Object, null);
             var result = await sut.Index();
 
             Assert.IsType<ViewResult>(result);
@@ -376,8 +382,8 @@ namespace AllReady.UnitTest.Controllers
         {
             var authorizationServiceMock = new Mock<IUserAuthorizationService>();
             authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(false);
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var sut = new CampaignController(null, authorizationServiceMock.Object, userManagerMock.Object);
+
+            var sut = new CampaignController(null, authorizationServiceMock.Object, new FakeUserManager());
 
             var result = await sut.ManageCampaign();
 
@@ -391,13 +397,13 @@ namespace AllReady.UnitTest.Controllers
             mockedMediator.Setup(m => m.SendAsync(It.IsAny<AuthorizedCampaignsQuery>())).ReturnsAsync(new List<ManageCampaignViewModel>());
             var authorizationServiceMock = new Mock<IUserAuthorizationService>();
             authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(true);
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, userManagerMock.Object);
+           
+            var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, new FakeUserManager());
 
             var result = await sut.ManageCampaign() as ViewResult;
 
             result.ShouldNotBeNull();
-            result.ViewData.Model.ShouldBeOfType<List<CampaignViewModel>>();
+            result.ViewData.Model.ShouldBeOfType<List<ManageCampaignViewModel>>();
         }
 
         [Fact]
@@ -407,8 +413,8 @@ namespace AllReady.UnitTest.Controllers
             mockedMediator.Setup(m => m.SendAsync(It.IsAny<AuthorizedCampaignsQuery>())).ReturnsAsync(new List<ManageCampaignViewModel>());
             var authorizationServiceMock = new Mock<IUserAuthorizationService>();
             authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(true);
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, userManagerMock.Object);
+        
+            var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, new FakeUserManager());
 
             var result = await sut.ManageCampaign() as ViewResult;
 
