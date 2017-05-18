@@ -25,7 +25,7 @@ using AllReady.Features.Tasks;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("SiteAdmin")]
+    [Authorize(nameof(UserType.SiteAdmin))]
     public class SiteController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -120,7 +120,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new UpdateUser { User = user });
 
-            var organizationAdminClaim = new Claim(Security.ClaimTypes.UserType, "OrgAdmin");
+            var organizationAdminClaim = new Claim(Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin));
             if (viewModel.IsOrganizationAdmin)
             {
                 //add organization admin claim
@@ -186,7 +186,7 @@ namespace AllReady.Areas.Admin.Controllers
             try
             {
                 var user = await GetUser(userId);
-                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -203,7 +203,7 @@ namespace AllReady.Areas.Admin.Controllers
             try
             {
                 var user = await GetUser(userId);
-                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.ApiAccess.ToName()));
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.ApiAccess)));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -286,7 +286,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var organizations = await _mediator.SendAsync(new AllOrganizationsQuery());
                 if (organizations.Any(t => t.Id == model.OrganizationId))
                 {
-                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.OrgAdmin.ToName()));
+                    await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)));
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.Organization, model.OrganizationId.ToString()));
                     return RedirectToAction(nameof(Index));
                 }
@@ -303,7 +303,7 @@ namespace AllReady.Areas.Admin.Controllers
             try
             {
                 var user = await GetUser(userId);
-                await _userManager.RemoveClaimAsync(user, new Claim(Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
+                await _userManager.RemoveClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

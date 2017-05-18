@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Services
         [Fact]
         public void GetOrganizationsForAdminUserReturnsAllOrganizations()
         {
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }));
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) }));
 
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations( principal ).ToList();
@@ -30,7 +30,7 @@ namespace AllReady.UnitTest.Services
         public void GetOrganizationsForOrgAdminUserReturnsOnlyAuthorizedOrganization()
         {
             var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, _organizationId1.ToString())
             }));
 
@@ -46,7 +46,7 @@ namespace AllReady.UnitTest.Services
         public void GetOrganizationsForOrgAdminUserWithNoAssociatedOrgReturnsNoOrganizations()
         {
             var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin))
             }));
 
             var service = new SelectListService(Context);

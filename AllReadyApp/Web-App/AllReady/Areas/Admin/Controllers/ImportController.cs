@@ -15,11 +15,12 @@ using AllReady.Features.Requests;
 using AllReady.Security;
 using System.Threading.Tasks;
 using AllReady.Features.Sms;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize(nameof(UserType.OrgAdmin))]
     public class ImportController : Controller
     {
         private readonly ILogger<ImportController> logger;

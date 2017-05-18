@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Controllers
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.SiteAdmin))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))
             }));
 
             var sut = new DetermineIfATaskIsEditable();
@@ -32,7 +32,7 @@ namespace AllReady.UnitTest.Controllers
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.OrgAdmin))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin))
             }));
 
             var sut = new DetermineIfATaskIsEditable();
@@ -50,7 +50,7 @@ namespace AllReady.UnitTest.Controllers
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.BasicUser))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.BasicUser))
             }));
 
             var volunteerTask = new VolunteerTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Controllers
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.BasicUser))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.BasicUser))
             }));
 
             var volunteerTask = new VolunteerTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
