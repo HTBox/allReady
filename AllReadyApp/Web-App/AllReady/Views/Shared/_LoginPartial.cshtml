@@ -4,22 +4,27 @@
 
 @if (User.Identity.IsAuthenticated)
 {
+    var isAdmin = User.Claims.Where(c => c.Value == "SiteAdmin").Count() > 0;
     var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
     var controllerName = descriptor.ControllerName;
     <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post">
         <ul class="nav navbar-nav navbar-right login-status">
-            <li>
-                <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
-                    Dashboard
-                </a>
-            </li>
+            @if (!isAdmin)
+            {
+                <li class="visible-lg-block @(controllerName == "Home" && descriptor.ActionName == "About" ? " active" : "")"><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                <li @(controllerName == "Volunteer" && descriptor.ActionName == "Dashboard" ? " class=active" : "")>
+                    <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
+                        Dashboard
+                    </a>
+                </li>
+            }
             <li class="dropdown">
                 <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage" class="dropdown-toggle dropdown-account" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     @if (User.IsUserProfileIncomplete())
                     {
                         <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
                     }
-                    Hello @User.GetDisplayName(userManager)
+                    @User.GetDisplayName(userManager)
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">

@@ -11,17 +11,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using EventController = AllReady.Controllers.EventController;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class EventControllerTests
     {
-        [Fact]
-        public void IndexReturnsTheCorrectView()
-        {
-            var sut = EventControllerBuilder.Instance().Build();
 
-            var result = sut.Index();
+        [Fact]
+        public async Task IndexReturnsAView()
+        {
+            var sut = new EventController(Mock.Of<IMediator>(), null);
+            var result = await sut.Index();
 
             Assert.IsType<ViewResult>(result);
         }
