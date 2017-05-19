@@ -479,7 +479,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskUnenrollCommand>())).ReturnsAsync(new VolunteerTaskUnenrollResult());
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
 
             var sut = new TaskApiController(mediator.Object, null, userManager.Object);
@@ -498,7 +498,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskUnenrollCommand>())).ReturnsAsync(new VolunteerTaskUnenrollResult { Status = status });
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
 
             var sut = new TaskApiController(mediator.Object, null, userManager.Object);
@@ -518,7 +518,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskUnenrollCommand>())).ReturnsAsync(new VolunteerTaskUnenrollResult());
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
 
             var sut = new TaskApiController(mediator.Object, null, userManager.Object);
@@ -537,7 +537,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskUnenrollCommand>())).ReturnsAsync(new VolunteerTaskUnenrollResult { VolunteerTask = new VolunteerTask() });
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(It.IsAny<string>());
 
             var sut = new TaskApiController(mediator.Object, null, userManager.Object);
