@@ -18,64 +18,76 @@ namespace AllReady.UnitTest.Security
     public class UserAuthorizationServiceTests : InMemoryContextTest
     {
         [Fact]
-        public async Task AssociateUser_ShouldCallUserManager_IfClaimsPrincipleIdentityIsAuthenticated()
+        public async Task AssociateUser_ShouldInvokeFindByEmailAsyncWithTheCorrectEmail_WhenClaimsPrincipleIdentityIsAuthenticated()
         {
-            var userManager = new FakeUserManager();
+            const string email = "email";
 
-            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
+            var userManager = MockHelper.CreateUserManagerMock();
 
-            var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
+            var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim(System.Security.Claims.ClaimTypes.Name, email) }, "CustomApiKeyAuth");
+
+            var sut = new UserAuthorizationService(userManager.Object, Mock.Of<AllReadyContext>());
 
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 
-            userManager.FindByEmailAsyncCallCount.ShouldBe(1);
+            userManager.Verify(x => x.FindByEmailAsync(email), Times.Once);
         }
 
         [Fact]
-        public async Task AssociateUser_ShouldDoNothing_IfUserAlreadyAssociatedWithSameEmail()
+        public async Task AssociateUser_ShouldInvokeFindByEmailAsyncOnce_WhenAssociateUserIsInvokedMoreThanOnceWithSameClaimsPrincipal()
         {
-            var userManager = new FakeUserManager();
-            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
+            const string email = "Email";
+            const string authentciationType = "CustomApiKeyAuth";
+            
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(email)).ReturnsAsync(new ApplicationUser { Email = email });
 
-            var claimsIdentity1 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
-            claimsIdentity1.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email"));
+            var sut = new UserAuthorizationService(userManager.Object, Mock.Of<AllReadyContext>());
 
-            var claimsIdentity2 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
-            claimsIdentity2.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email"));
+            var claimsIdentity1 = new ClaimsIdentity(new List<Claim>(), authentciationType);
+            claimsIdentity1.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, email));
+
+            var claimsIdentity2 = new ClaimsIdentity(new List<Claim>(), authentciationType);
+            claimsIdentity2.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, email));
 
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity1));
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity2));
 
-            Assert.Equal(1, userManager.FindByEmailAsyncCallCount);
+            userManager.Verify(x => x.FindByEmailAsync(email), Times.Exactly(1));
         }
 
         [Fact]
         public async Task AssociateUser_ShouldThrowError_IfUserAlreadyAssociatedWithDifferentEmail()
         {
-            var sut = new UserAuthorizationService(new FakeUserManager(), Mock.Of<AllReadyContext>());
+            const string email = "Email";
+            const string authentciationType = "CustomApiKeyAuth";
 
-            var claimsIdentity1 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
-            claimsIdentity1.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email1"));
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(email)).ReturnsAsync(new ApplicationUser());
 
-            var claimsIdentity2 = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
-            claimsIdentity2.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, "Email2"));
+            var sut = new UserAuthorizationService(userManager.Object, Mock.Of<AllReadyContext>());
+
+            var claimsIdentity1 = new ClaimsIdentity(new List<Claim>(), authentciationType);
+            claimsIdentity1.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, email));
+
+            var claimsIdentity2 = new ClaimsIdentity(new List<Claim>(), authentciationType);
+            claimsIdentity2.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, email));
 
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity1));
 
-            Exception ex = await Assert.ThrowsAsync<InvalidOperationException>(() => sut.AssociateUser(new ClaimsPrincipal(claimsIdentity2)));
-
-            ex.ShouldNotBeNull();
+            await Assert.ThrowsAsync<InvalidOperationException>(() => sut.AssociateUser(new ClaimsPrincipal(claimsIdentity2)));
         }
 
         [Fact]
         public async Task HasAssociatedUserShouldReturnTrue_WhenUserAssociated()
         {
-            var userManager = new FakeUserManager();
-
-            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
-
             var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
 
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new UserAuthorizationService(userManager.Object, Mock.Of<AllReadyContext>());
+            
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 
             sut.HasAssociatedUser.ShouldBeTrue();
@@ -84,60 +96,52 @@ namespace AllReady.UnitTest.Security
         [Fact]
         public void HasAssociatedUserShouldReturnFalse_WhenNoUserAssociated()
         {
-            var userManager = new FakeUserManager();
-
-            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
-
+            var sut = new UserAuthorizationService(MockHelper.CreateUserManagerMock().Object, Mock.Of<AllReadyContext>());
             sut.HasAssociatedUser.ShouldBeFalse();
         }
 
         [Fact]
         public async Task ShouldReturnIdOfTheAssociatedUser()
         {
-            var userManager = new FakeUserManager();
-
-            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
+            const string userId = "123";
 
             var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
 
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser { Id = userId });
+
+            var sut = new UserAuthorizationService(userManager.Object, Mock.Of<AllReadyContext>());
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 
-            sut.AssociatedUserId.ShouldBe("123");
+            sut.AssociatedUserId.ShouldBe(userId);
         }
 
         [Fact]
         public void ShouldReturnNull_WhenNoUserAssociated()
         {
-            var userManager = new FakeUserManager();
-
-            var sut = new UserAuthorizationService(userManager, Mock.Of<AllReadyContext>());
-
+            var sut = new UserAuthorizationService(MockHelper.CreateUserManagerMock().Object, Mock.Of<AllReadyContext>());
             sut.AssociatedUserId.ShouldBeNull();
         }
-
 
         [Fact]
         public async Task IsEventManager_ReturnsTrue_WhenUserHasManagedEventRecord()
         {
-            var userManager = new FakeUserManager();
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser { Id = "123" });
 
-            var sut = new UserAuthorizationService(userManager, Context);
+            var sut = new UserAuthorizationService(userManager.Object, Context);
 
             var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
-
             await sut.AssociateUser(new ClaimsPrincipal(claimsIdentity));
 
             var isEventManager = await sut.IsEventManager();
-
             isEventManager.ShouldBe(true);
         }
 
         [Fact]
         public async Task IsEventManager_ReturnsFalse_WhenUserHasNoManagedEventRecords()
         {
-            var userManager = new FakeUserManagerForBasicUser();
-
-            var sut = new UserAuthorizationService(userManager, Context);
+            var sut = new UserAuthorizationService(MockHelper.CreateUserManagerMock().Object, Context);
 
             var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
 
@@ -151,10 +155,8 @@ namespace AllReady.UnitTest.Security
         [Fact]
         public async Task IsEventManager_ReturnsFalse_WhenNoUserAssociated()
         {
-            var userManager = new FakeUserManager();
-
-            var sut = new UserAuthorizationService(userManager, Context);
-
+            var sut = new UserAuthorizationService(MockHelper.CreateUserManagerMock().Object, Context);
+            
             var isEventManager = await sut.IsEventManager();
 
             isEventManager.ShouldBe(false);
@@ -163,9 +165,10 @@ namespace AllReady.UnitTest.Security
         [Fact]
         public async Task IsCampaignManager_ReturnsTrue_WhenUserHasManagedCampaignRecord()
         {
-            var userManager = new FakeUserManager();
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser { Id = "123" });
 
-            var sut = new UserAuthorizationService(userManager, Context);
+            var sut = new UserAuthorizationService(userManager.Object, Context);
 
             var claimsIdentity = new ClaimsIdentity(new List<Claim>(), "CustomApiKeyAuth");
 
@@ -195,14 +198,41 @@ namespace AllReady.UnitTest.Security
         [Fact]
         public async Task IsCampaignManager_ReturnsFalse_WhenNoUserAssociated()
         {
-            var userManager = new FakeUserManager();
+            var userManager = MockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+            //var userManager = new FakeUserManager();
 
-            var sut = new UserAuthorizationService(userManager, Context);
+            var sut = new UserAuthorizationService(userManager.Object, Context);
 
             var isEventManager = await sut.IsCampaignManager();
 
             isEventManager.ShouldBe(false);
         }
+
+        private class FakeUserManager : UserManager<ApplicationUser>
+        {
+            public FakeUserManager()
+                : base(new Mock<IUserStore<ApplicationUser>>().Object,
+                    new Mock<IOptions<IdentityOptions>>().Object,
+                    new Mock<IPasswordHasher<ApplicationUser>>().Object,
+                    new IUserValidator<ApplicationUser>[0],
+                    new IPasswordValidator<ApplicationUser>[0],
+                    new Mock<ILookupNormalizer>().Object,
+                    new Mock<IdentityErrorDescriber>().Object,
+                    new Mock<IServiceProvider>().Object,
+                    new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
+            { }
+
+            public int FindByEmailAsyncCallCount { get; private set; }
+
+            public override Task<ApplicationUser> FindByEmailAsync(string email)
+            {
+                FindByEmailAsyncCallCount += 1;
+                return Task.FromResult(new ApplicationUser { Id = "123", Email = email });
+            }
+        }
+
+
 
         [Fact]
         public async Task GetManagedEventIds_CallsContextOnFirstLoad()
@@ -480,49 +510,21 @@ namespace AllReady.UnitTest.Security
         protected override void LoadTestData()
         {
             var user = new ApplicationUser { Id = "123" };
-
             Context.Users.Add(user);
 
             var user2 = new ApplicationUser { Id = "1234" };
-
             Context.Users.Add(user2);
 
             var eventManager = new EventManager { User = user, EventId = 1 };
-
             Context.EventManagers.Add(eventManager);
 
             var campaignManager = new CampaignManager { User = user, CampaignId = 1 };
-
             Context.CampaignManagers.Add(campaignManager);
 
             var volunteerTaskSignup = new VolunteerTaskSignup { User = user, IsTeamLead = true, ItineraryId = 1 };
-
             Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
-        }
-
-        private class FakeUserManager : UserManager<ApplicationUser>
-        {
-            public FakeUserManager()
-                : base(new Mock<IUserStore<ApplicationUser>>().Object,
-                      new Mock<IOptions<IdentityOptions>>().Object,
-                      new Mock<IPasswordHasher<ApplicationUser>>().Object,
-                      new IUserValidator<ApplicationUser>[0],
-                      new IPasswordValidator<ApplicationUser>[0],
-                      new Mock<ILookupNormalizer>().Object,
-                      new Mock<IdentityErrorDescriber>().Object,
-                      new Mock<IServiceProvider>().Object,
-                      new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
-            { }
-
-            public int FindByEmailAsyncCallCount { get; private set; }
-
-            public override Task<ApplicationUser> FindByEmailAsync(string email)
-            {
-                FindByEmailAsyncCallCount += 1;
-                return Task.FromResult(new ApplicationUser { Id = "123", Email = email });
-            }
         }
 
         private class FakeUserManagerForBasicUser : UserManager<ApplicationUser>

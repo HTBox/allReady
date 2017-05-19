@@ -1,5 +1,4 @@
-﻿using System;
-using AllReady.Models;
+﻿using AllReady.Models;
 
 namespace AllReady.UnitTest.Extensions
 {
