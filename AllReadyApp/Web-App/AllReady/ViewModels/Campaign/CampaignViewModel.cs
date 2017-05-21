@@ -100,6 +100,7 @@ namespace AllReady.ViewModels.Campaign
         public string Headline { get; set; }
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
         public bool Published { get; set; }
+        public bool IsCampaignManager { get; set; }
     }
 
     public static class CampaignViewModelExtensions
