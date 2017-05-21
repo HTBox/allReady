@@ -34,8 +34,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task AddPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
         {
             //Arrange
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
             var phoneNumber = "number";
 
@@ -59,9 +59,9 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             var userId = "userId";
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
 
@@ -84,12 +84,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser {Id = userId};
             var model = new AddPhoneNumberViewModel {PhoneNumber = "phone"};
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
                                                                          It.IsAny<string>())).ReturnsAsync(token);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -114,12 +114,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser { Id = userId };
             var model = new AddPhoneNumberViewModel { PhoneNumber = "phone" };
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
                                                                          It.IsAny<string>())).ReturnsAsync(token);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -142,12 +142,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser { Id = userId };
             var model = new AddPhoneNumberViewModel { PhoneNumber = "phone" };
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
                                                                          It.IsAny<string>())).ReturnsAsync(token);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -196,9 +196,9 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             var userId = "userId";
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
 
@@ -221,12 +221,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser { Id = userId };
             var phoneNumber = "phone";
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
                                                                          It.IsAny<string>())).ReturnsAsync(token);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -251,12 +251,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser { Id = userId };
             var phoneNumber = "phone";
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
                                                                          It.IsAny<string>())).ReturnsAsync(token);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -279,12 +279,12 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser { Id = userId };
             var phoneNumber = "phone";
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.GenerateChangePhoneNumberTokenAsync(It.IsAny<ApplicationUser>(),
                                                                          It.IsAny<string>())).ReturnsAsync(token);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -375,8 +375,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task VerifyPhoneNumberPostReturnsTheSameViewAndModelWhenModelStateIsInvalid()
         {
             //Arrange
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
             var phoneNumber = "number";
 
@@ -400,9 +400,9 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             var userId = "userId";
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
 
@@ -425,13 +425,13 @@ namespace AllReady.UnitTest.Controllers
             var user = new ApplicationUser {Id = userId};
             var model = new VerifyPhoneNumberViewModel {PhoneNumber = "phone", Code = token};
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.ChangePhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                             It.IsAny<string>(),
                                                             It.IsAny<string>())).ReturnsAsync(new IdentityResult());
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -458,13 +458,13 @@ namespace AllReady.UnitTest.Controllers
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
             var model = new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber, Code = token };
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.ChangePhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                             It.IsAny<string>(),
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -488,13 +488,13 @@ namespace AllReady.UnitTest.Controllers
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
             var model = new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber, Code = token };
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.ChangePhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                             It.IsAny<string>(),
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -519,13 +519,13 @@ namespace AllReady.UnitTest.Controllers
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
             var model = new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber, Code = token };
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.ChangePhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                             It.IsAny<string>(),
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -553,13 +553,13 @@ namespace AllReady.UnitTest.Controllers
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
             var model = new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber, Code = token };
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.ChangePhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                             It.IsAny<string>(),
                                                             It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -583,8 +583,8 @@ namespace AllReady.UnitTest.Controllers
             var phoneNumber = "phone";
 
             var model = new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber, Code = token };
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
 
@@ -604,8 +604,8 @@ namespace AllReady.UnitTest.Controllers
             var phoneNumber = "phone";
 
             var model = new VerifyPhoneNumberViewModel { PhoneNumber = phoneNumber, Code = token };
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
 
@@ -651,12 +651,12 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             var userId = "userId";
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.SetPhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                             It.IsAny<string>())).ReturnsAsync(new IdentityResult());
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
 
@@ -676,12 +676,12 @@ namespace AllReady.UnitTest.Controllers
             //Arrange
             var userId = "userId";
             var user = new ApplicationUser {Id = userId};
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.SetPhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                          It.IsAny<string>())).ReturnsAsync(new IdentityResult());
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -705,12 +705,12 @@ namespace AllReady.UnitTest.Controllers
             var phoneNumber = "phone";
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.SetPhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -736,12 +736,12 @@ namespace AllReady.UnitTest.Controllers
             var phoneNumber = "phone";
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.SetPhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
@@ -763,12 +763,12 @@ namespace AllReady.UnitTest.Controllers
             var phoneNumber = "phone";
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.SetPhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -791,12 +791,12 @@ namespace AllReady.UnitTest.Controllers
             var phoneNumber = "phone";
             var user = UserWithCompleteProfile(userId, phoneNumber);
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             userManager.Setup(x => x.SetPhoneNumberAsync(It.IsAny<ApplicationUser>(),
                                                          It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
@@ -816,8 +816,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task RemovePhoneNumberRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
             //Arrange
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
 

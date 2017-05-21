@@ -14,12 +14,8 @@ using AllReady.Services.Mapping.Routing;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 using Shouldly;
 using System;
@@ -96,8 +92,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, false, false, false, false, false));
-
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            
+            var sut = new ItineraryController(mediator.Object, null, UserManagerMockHelper.CreateUserManagerMock().Object);
 
             Assert.IsType<ForbidResult>(await sut.Details(It.IsAny<int>()));
         }
@@ -112,7 +108,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(viewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(true, false, false, false, false, false));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
             Assert.Equal(result.ViewName, "Details");
@@ -126,6 +125,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DetailsGet_OptimizeRouteResultStatusQuery_WithExpectedValues()
         {
+            const string userId = "123";
             OptimizeRouteResultStatusQuery query = null;
 
             var mediator = new Mock<IMediator>();
@@ -136,24 +136,32 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .Verifiable();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(true, false, false, false, false, false));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
             await sut.Details(1);
 
             mediator.Verify(x => x.Send(It.IsAny<OptimizeRouteResultStatusQuery>()), Times.Once);
             query.ItineraryId.ShouldBe(1);
-            query.UserId.ShouldBe("123");
+            query.UserId.ShouldBe(userId);
         }
 
         [Fact]
         public async Task DetailsGet_AddsOptimizeRouteStatusToViewModel_WhenAStatusIsFoundInTheCache()
         {
+            const string userId = "123";
+
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(new ItineraryDetailsViewModel { OrganizationId = 1 });
             mediator.Setup(x => x.Send(It.IsAny<OptimizeRouteResultStatusQuery>()))
                 .Returns(new OptimizeRouteResultStatus { IsSuccess = true, StatusMessage = "test msg" });
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(true, false, false, false, false, false));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
 
@@ -1712,13 +1720,18 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task OptimizeRoute_SendsOptimzeRouteCommand_Once_WhenUserIsAuthorized()
         {
+            const string userId = "123";
+
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, false));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             await sut.OptimizeRoute(1, new OptimizeRouteInputModel { StartAddress = "123", EndSameAsStart = true });
-            mediator.Verify(x => x.SendAsync(It.Is<OptimizeRouteCommand>(y => y.ItineraryId == 1 && y.UserId == "123")), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<OptimizeRouteCommand>(y => y.ItineraryId == 1 && y.UserId == userId)), Times.Once);
         }
 
         [Fact]
@@ -1729,7 +1742,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, false));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.OptimizeRoute(itineraryId, new OptimizeRouteInputModel { StartAddress = "123", EndSameAsStart = true });
 
@@ -1747,7 +1763,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, false, false, false, false, false));
 
-            var itineraryController = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var itineraryController = new ItineraryController(mediator.Object, null, UserManagerMockHelper.CreateUserManagerMock().Object);
 
             Assert.IsType<ForbidResult>(await itineraryController.SetTeamLead(It.IsAny<int>(), It.IsAny<int>()));
         }
@@ -1758,7 +1774,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             await sut.SetTeamLead(1, 2);
             mediator.Verify(x => x.SendAsync(It.Is<SetTeamLeadCommand>(y => y.ItineraryId == 1 && y.VolunteerTaskId == 2)), Times.Once);
@@ -1771,7 +1790,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<SetTeamLeadCommand>())).ReturnsAsync(SetTeamLeadResult.Success);
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.SetTeamLead(1, 2) as RedirectToActionResult;
 
@@ -1786,7 +1808,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<SetTeamLeadCommand>())).ReturnsAsync(SetTeamLeadResult.SaveChangesFailed);
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.SetTeamLead(1, 2) as RedirectToActionResult;
 
@@ -1800,7 +1825,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, false, false, false, false, false));
 
-            var itineraryController = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var itineraryController = new ItineraryController(mediator.Object, null, UserManagerMockHelper.CreateUserManagerMock().Object);
 
             Assert.IsType<ForbidResult>(await itineraryController.RemoveTeamLead(It.IsAny<int>()));
         }
@@ -1812,7 +1837,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<RemoveTeamLeadCommand>())).ReturnsAsync(true);
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.RemoveTeamLead(1) as RedirectToActionResult;
 
@@ -1825,30 +1853,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
 
-            var sut = new ItineraryController(mediator.Object, null, new FakeUserManager());
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             await sut.RemoveTeamLead(1);
             mediator.Verify(x => x.SendAsync(It.Is<RemoveTeamLeadCommand>(y => y.ItineraryId == 1)), Times.Once);
-        }
-
-        private class FakeUserManager : UserManager<ApplicationUser>
-        {
-            public FakeUserManager()
-                : base(new Mock<IUserStore<ApplicationUser>>().Object,
-                      new Mock<IOptions<IdentityOptions>>().Object,
-                      new Mock<IPasswordHasher<ApplicationUser>>().Object,
-                      new IUserValidator<ApplicationUser>[0],
-                      new IPasswordValidator<ApplicationUser>[0],
-                      new Mock<ILookupNormalizer>().Object,
-                      new Mock<IdentityErrorDescriber>().Object,
-                      new Mock<IServiceProvider>().Object,
-                      new Mock<ILogger<UserManager<ApplicationUser>>>().Object)
-            { }
-
-            public override Task<ApplicationUser> GetUserAsync(ClaimsPrincipal user)
-            {
-                return Task.FromResult(new ApplicationUser { Id = "123" });
-            }
         }
 
         private static Mock<IItineraryEditModelValidator> MockSuccessValidation()
@@ -1859,7 +1870,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return mockValidator;
         }
 
-        private ItineraryDetailsViewModel GetItineraryForSelectRequestHappyPathTests()
+        private static ItineraryDetailsViewModel GetItineraryForSelectRequestHappyPathTests()
         {
             return new ItineraryDetailsViewModel
             {
@@ -1899,7 +1910,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             }
         }
 
-        private List<RequestListViewModel> GetRequestsForSelectRequestHappyPathTests()
+        private static List<RequestListViewModel> GetRequestsForSelectRequestHappyPathTests()
         {
             return new List<RequestListViewModel>
             {
