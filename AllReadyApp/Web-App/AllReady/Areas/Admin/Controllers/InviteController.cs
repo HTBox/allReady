@@ -80,7 +80,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var campaign = await _mediator.SendAsync(new CampaignByCampaignIdQuery { CampaignId = invite.CampaignId });
+                var campaign = await _mediator.SendAsync(new CampaignByCampaignIdQuery { CampaignId = campaignId });
 
                 if (campaign == null)
                 {
@@ -92,6 +92,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return Unauthorized();
                 }
 
+                invite.CampaignId = campaignId;
                 var user = await _userManager.GetUserAsync(User);
                 await _mediator.SendAsync(new CreateInviteCommand { Invite = invite, UserId = user?.Id });
 
@@ -114,7 +115,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var @event = await _mediator.SendAsync(new EventByEventIdQuery { EventId = invite.EventId });
+                var @event = await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
                 if (@event == null)
                 {
                     return BadRequest();
@@ -125,6 +126,7 @@ namespace AllReady.Areas.Admin.Controllers
                     return Unauthorized();
                 }
 
+                invite.EventId = eventId;
                 var user = await _userManager.GetUserAsync(User);
                 await _mediator.SendAsync(new CreateInviteCommand { Invite = invite, UserId = user?.Id });
 
