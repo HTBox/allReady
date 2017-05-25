@@ -383,7 +383,7 @@ namespace AllReady.UnitTest.Controllers
             var authorizationServiceMock = new Mock<IUserAuthorizationService>();
             authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(false);
 
-            var sut = new CampaignController(null, authorizationServiceMock.Object, MockHelper.CreateUserManagerMock().Object);
+            var sut = new CampaignController(null, authorizationServiceMock.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
 
             var result = await sut.ManageCampaign();
 
@@ -397,7 +397,7 @@ namespace AllReady.UnitTest.Controllers
             mockedMediator.Setup(m => m.SendAsync(It.IsAny<AuthorizedCampaignsQuery>())).ReturnsAsync(new List<ManageCampaignViewModel>());
             var authorizationServiceMock = new Mock<IUserAuthorizationService>();
             authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(true);
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
             var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, userManager.Object);
@@ -415,7 +415,7 @@ namespace AllReady.UnitTest.Controllers
             mockedMediator.Setup(m => m.SendAsync(It.IsAny<AuthorizedCampaignsQuery>())).ReturnsAsync(new List<ManageCampaignViewModel>());
             var authorizationServiceMock = new Mock<IUserAuthorizationService>();
             authorizationServiceMock.Setup(a => a.IsCampaignManager()).ReturnsAsync(true);
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
             var sut = new CampaignController(mockedMediator.Object, authorizationServiceMock.Object, userManager.Object);
