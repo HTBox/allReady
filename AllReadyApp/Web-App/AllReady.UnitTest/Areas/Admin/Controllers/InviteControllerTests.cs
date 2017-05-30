@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Moq;
-using Xunit;
-using MediatR;
-using AllReady.Features.Campaigns;
-using AllReady.Areas.Admin.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using AllReady.Features.Events;
-using Microsoft.AspNetCore.Identity;
-using AllReady.Models;
-using AllReady.Areas.Admin.ViewModels.Invite;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
-using AllReady.UnitTest.Extensions;
+﻿using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Invite;
+using AllReady.Areas.Admin.ViewModels.Invite;
+using AllReady.Features.Campaigns;
+using AllReady.Features.Events;
+using AllReady.Models;
+using AllReady.UnitTest.Extensions;
+using MediatR;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+using System;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -129,7 +127,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             ViewResult view = result as ViewResult;
             var model = Assert.IsType<InviteViewModel>(view.ViewData.Model);
             Assert.Equal(campaignId, model.CampaignId);
-            Assert.Equal(InviteType.CampaignManagerInvite, model.InviteType);
+            Assert.Equal("SendCampaignManagerInvite", model.FormAction);
+            Assert.Equal("Send Campaign Manager Invite", model.Title);
         }
 
         #endregion
@@ -243,7 +242,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             ViewResult view = result as ViewResult;
             var model = Assert.IsType<InviteViewModel>(view.ViewData.Model);
             Assert.Equal(eventId, model.EventId);
-            Assert.Equal(InviteType.EventManagerInvite, model.InviteType);
+            Assert.Equal("Send Event Manager Invite", model.Title);
+            Assert.Equal("SendEventManagerInvite", model.FormAction);
         }
 
         #endregion
@@ -274,7 +274,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             IActionResult result = await sut.SendCampaignManagerInvite(campaignId, null);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -305,7 +305,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.SendCampaignManagerInvite(campaignId, new InviteViewModel());
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -315,7 +315,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
-            var invite = new InviteViewModel { InviteType = InviteType.CampaignManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             var result = await sut.SendCampaignManagerInvite(campaignId, new InviteViewModel());
@@ -331,13 +331,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
-            var invite = new InviteViewModel { InviteType = InviteType.CampaignManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             var result = await sut.SendCampaignManagerInvite(campaignId, new InviteViewModel());
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -350,7 +350,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserNotAnOrgAdmin();
-            var invite = new InviteViewModel { InviteType = InviteType.CampaignManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendCampaignManagerInvite(campaignId, invite);
@@ -369,13 +369,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserNotAnOrgAdmin();
-            var invite = new InviteViewModel { InviteType = InviteType.CampaignManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendCampaignManagerInvite(campaignId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -388,7 +388,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(organizationId: "2");
-            var invite = new InviteViewModel { InviteType = InviteType.CampaignManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendCampaignManagerInvite(campaignId, invite);
@@ -407,13 +407,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(organizationId: "2");
-            var invite = new InviteViewModel { InviteType = InviteType.CampaignManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendCampaignManagerInvite(campaignId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -428,7 +428,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new InviteViewModel
             {
-                InviteType = InviteType.CampaignManagerInvite,
                 CampaignId = 1,
                 InviteeEmailAddress = "test@test.com",
                 CustomMessage = "test message"
@@ -438,7 +437,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             IActionResult result = await sut.SendCampaignManagerInvite(campaignId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.Is<CreateInviteCommand>(c => c.Invite == invite)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<CreateCampaignManagerInviteCommand>(c => c.Invite == invite)), Times.Once);
         }
 
         #endregion
@@ -470,7 +469,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             IActionResult result = await sut.SendEventManagerInvite(eventId, null);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -501,7 +500,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.SendEventManagerInvite(eventId, new InviteViewModel());
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -511,7 +510,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
-            var invite = new InviteViewModel { InviteType = InviteType.EventManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             var result = await sut.SendEventManagerInvite(eventId, invite);
@@ -527,13 +526,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
-            var invite = new InviteViewModel { InviteType = InviteType.EventManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             var result = await sut.SendCampaignManagerInvite(eventId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -549,7 +548,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserNotAnOrgAdmin();
-            var invite = new InviteViewModel { InviteType = InviteType.EventManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendEventManagerInvite(eventId, invite);
@@ -571,13 +570,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserNotAnOrgAdmin();
-            var invite = new InviteViewModel { InviteType = InviteType.EventManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendEventManagerInvite(eventId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -593,7 +592,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(organizationId: "2");
-            var invite = new InviteViewModel { InviteType = InviteType.EventManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendEventManagerInvite(eventId, invite);
@@ -615,13 +614,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             sut.MakeUserAnOrgAdmin(organizationId: "2");
-            var invite = new InviteViewModel { InviteType = InviteType.EventManagerInvite };
+            var invite = new InviteViewModel();
 
             // Act
             IActionResult result = await sut.SendEventManagerInvite(eventId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateInviteCommand>()), Times.Never);
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateCampaignManagerInviteCommand>()), Times.Never);
         }
 
         [Fact]
@@ -639,7 +638,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new InviteViewModel
             {
-                InviteType = InviteType.EventManagerInvite,
                 EventId = 1,
                 InviteeEmailAddress = "test@test.com",
                 CustomMessage = "test message"
@@ -649,7 +647,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             IActionResult result = await sut.SendEventManagerInvite(invite.EventId, invite);
 
             // Assert
-            mockMediator.Verify(x => x.SendAsync(It.Is<CreateInviteCommand>(c => c.Invite == invite)), Times.Once);
+            mockMediator.Verify(x => x.SendAsync(It.Is<CreateEventManagerInviteCommand>(c => c.Invite == invite)), Times.Once);
         }
         #endregion
 
