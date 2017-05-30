@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Invite
 {
-    public enum InviteType
-    {
-        CampaignManagerInvite = 0,
-        EventManagerInvite = 1,
-    }
-
     public class InviteViewModel
     {
         [EmailAddress]
@@ -26,6 +16,8 @@ namespace AllReady.Areas.Admin.ViewModels.Invite
 
         public int CampaignId { get; set; }
 
-        public InviteType InviteType { get; set; }
+        public string FormAction { get; set; }
+
+        public string Title { get; set; }
     }
 }
