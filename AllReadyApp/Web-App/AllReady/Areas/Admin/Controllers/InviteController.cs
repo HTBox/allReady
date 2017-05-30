@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using AllReady.Models;
-using MediatR;
+﻿using AllReady.Areas.Admin.Features.Invite;
 using AllReady.Areas.Admin.ViewModels.Invite;
-using AllReady.Features.Events;
 using AllReady.Features.Campaigns;
-using Microsoft.AspNetCore.Identity;
-using AllReady.Areas.Admin.Features.Invite;
+using AllReady.Features.Events;
+using AllReady.Models;
 using AllReady.Security;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -43,8 +39,9 @@ namespace AllReady.Areas.Admin.Controllers
 
             return View("Send", new InviteViewModel
             {
-                InviteType = InviteType.CampaignManagerInvite,
                 CampaignId = campaignId,
+                Title = "Send Campaign Manager Invite",
+                FormAction = "SendCampaignManagerInvite",
             });
         }
 
@@ -62,8 +59,9 @@ namespace AllReady.Areas.Admin.Controllers
 
             return View("Send", new InviteViewModel
             {
-                InviteType = InviteType.EventManagerInvite,
                 EventId = eventId,
+                Title = "Send Event Manager Invite",
+                FormAction = "SendEventManagerInvite",
             });
         }
 
@@ -94,7 +92,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.CampaignId = campaignId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateInviteCommand { Invite = invite, UserId = user?.Id });
+                await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user?.Id });
 
                 return RedirectToAction(actionName: "Details", controllerName: "Campaign", routeValues: new { area = "Admin", id = invite.CampaignId });
             }
@@ -128,7 +126,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.EventId = eventId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateInviteCommand { Invite = invite, UserId = user?.Id });
+                await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user?.Id });
 
                 return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = "Admin", id = invite.EventId });
             }
@@ -138,17 +136,13 @@ namespace AllReady.Areas.Admin.Controllers
 
         private bool IsUserAuthorizedToSendInvite(int organizationId)
         {
-            if (!User.IsOrganizationAdmin())
-            {
-                return false;
-            }
-
             var userOrganizationId = User.GetOrganizationId();
 
-            if (!userOrganizationId.HasValue || organizationId != userOrganizationId)
+            if (!User.IsOrganizationAdmin(organizationId))
             {
                 return false;
             }
+
             return true;
         }
 
