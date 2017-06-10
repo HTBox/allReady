@@ -48,7 +48,6 @@ namespace AllReady.Services
             }
 
             throw new Exception("Invalid file extension: " + fileName + "You can only upload images with the extension: jpg, jpeg, gif, or png");
-
         }
     }
 }

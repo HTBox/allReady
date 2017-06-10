@@ -11,7 +11,7 @@ namespace AllReady.Areas.Admin.Controllers
     [Route("admin/api/organization")]
     [Produces("application/json")]
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize(nameof(UserType.OrgAdmin))]
 
     public class OrganizationApiController : Controller
     {

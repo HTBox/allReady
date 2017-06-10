@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
-using System.Threading.Tasks;
 
 namespace AllReady.Services
 {
@@ -31,5 +31,6 @@ namespace AllReady.Services
             var blobName = blobPath + "/" + fileName;
             return await blockBlob.UploadFromStreamAsync(ContainerName, blobName, attachment);
         }
+
     }
 }

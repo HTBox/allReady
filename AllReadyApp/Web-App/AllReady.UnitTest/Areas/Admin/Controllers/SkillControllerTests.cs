@@ -827,7 +827,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, OrgAdminOrgId.ToString())
             }));
         }
@@ -836,7 +836,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))
             }));
         }
 

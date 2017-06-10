@@ -1,5 +1,8 @@
-﻿using AllReady.Areas.Admin.ViewModels.Validators;
-using AllReady.Areas.Admin.ViewModels.Validators.Task;
+﻿using System.Collections.Generic;
+using System.Reflection;
+
+using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Areas.Admin.ViewModels.Validators.VolunteerTask;
 using AllReady.Controllers;
 using AllReady.DataAccess;
 using AllReady.Providers.ExternalUserInformationProviders;
@@ -15,13 +18,11 @@ using CsvHelper;
 using Hangfire;
 using Hangfire.SqlServer;
 using MediatR;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AllReady.Configuration
 {
@@ -46,7 +47,7 @@ namespace AllReady.Configuration
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
             services.AddTransient<IBlockBlob, BlockBlob>();
-            services.AddTransient<IVolunteerTaskAttachmentService, VolunteerTaskAttachmentService>();
+            services.AddTransient<IAttachmentService, AttachmentService>();
 
             if (configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {
@@ -63,7 +64,7 @@ namespace AllReady.Configuration
             }
             else
             {
-                services.AddSingleton<IImageService, FileImageService>();
+                services.AddSingleton<IImageService, FakeImageService>();
             }
 
             if (configuration["Data:Storage:EnableAzureQueueService"] == "true")

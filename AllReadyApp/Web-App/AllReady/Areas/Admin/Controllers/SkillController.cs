@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize(nameof(UserType.OrgAdmin))]
     public class SkillController : Controller
     {
         private readonly IMediator _mediator;

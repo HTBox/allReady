@@ -658,7 +658,7 @@ namespace AllReady.DataAccess
                     PhoneNumber = "444-444-4444"
                 };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
-                _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
+                _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))).GetAwaiter().GetResult();
 
                 var user2 = new ApplicationUser
                 {
@@ -672,7 +672,7 @@ namespace AllReady.DataAccess
                 };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
-                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));
+                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Organization, _context.Organizations.First().Id.ToString()));
 
                 var user3 = new ApplicationUser

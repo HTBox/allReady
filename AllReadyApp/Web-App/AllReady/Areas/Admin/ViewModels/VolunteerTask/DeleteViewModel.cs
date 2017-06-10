@@ -1,9 +1,10 @@
-﻿using AllReady.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AllReady.Areas.Admin.ViewModels.Task
+using AllReady.Models;
+
+namespace AllReady.Areas.Admin.ViewModels.VolunteerTask
 {
     public class DeleteViewModel
     {

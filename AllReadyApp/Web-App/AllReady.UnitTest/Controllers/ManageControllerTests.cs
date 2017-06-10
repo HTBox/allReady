@@ -26,8 +26,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -49,8 +49,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -72,8 +72,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -95,8 +95,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -118,8 +118,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -141,8 +141,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -165,10 +165,10 @@ namespace AllReady.UnitTest.Controllers
             //Arrange
             var userId = "userId";
 
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Features.Manage.UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser ());
@@ -185,8 +185,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -217,8 +217,8 @@ namespace AllReady.UnitTest.Controllers
         {
             //Arrange
             //Mock controller dependencies UserManager, signinmanager and IMediator, set behaviour of called methods
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -241,10 +241,10 @@ namespace AllReady.UnitTest.Controllers
             //Arrange
             var userId = "userId";
 
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Features.Manage.UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -262,8 +262,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task IndexPostReturnsCorrectViewWhenModelStateIsInvalid()
         {
             //Arrange
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -283,8 +283,8 @@ namespace AllReady.UnitTest.Controllers
         public async Task IndexPostReturnsCorrectViewModelWhenModelStateIsInvalid()
         {
             //Arrange
-            var userManagerMock = MockHelper.CreateUserManagerMock();
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
@@ -306,10 +306,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task IndexPostInvokesRemoveClaimsAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
         {
             //Arrange
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.RemoveClaimsAsync(It.IsAny<ApplicationUser>(), It.IsAny<IEnumerable<Claim>>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             var user = new ApplicationUser { TimeZoneId = "timeZoneId" };
@@ -331,10 +331,10 @@ namespace AllReady.UnitTest.Controllers
         public async Task IndexPostInvokesAddClaimAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
         {
             //Arrange
-            var userManagerMock = MockHelper.CreateUserManagerMock();
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
-            var signInManagerMock = MockHelper.CreateSignInManagerMock(userManagerMock);
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var mediator = new Mock<IMediator>();
             var user = new ApplicationUser { TimeZoneId = "timeZoneId" };
