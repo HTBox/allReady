@@ -311,7 +311,7 @@ namespace AllReady.Models
         public void Map(EntityTypeBuilder<FileAttachment> builder)
         {
             builder.HasKey(a => a.Id);
-            builder.HasOne(a => a.Task);
+            builder.HasOne(a => a.VolunteerTask);
             builder.Property(a => a.Name).IsRequired();
         }
     }

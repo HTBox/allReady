@@ -52,7 +52,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             // Delete existing attachments
             if (message.VolunteerTask.DeleteAttachments.Count > 0)
             {
-                var attachmentsToDelete = _context.Attachments.Where(a => a.Task.Id == volunteerTask.Id && message.VolunteerTask.DeleteAttachments.Contains(a.Id)).ToList();
+                var attachmentsToDelete = _context.Attachments.Where(a => a.VolunteerTask.Id == volunteerTask.Id && message.VolunteerTask.DeleteAttachments.Contains(a.Id)).ToList();
                 _context.RemoveRange(attachmentsToDelete);
             }
 
@@ -61,13 +61,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
             {
                 var attachmentModel = message.VolunteerTask.NewAttachment;
                 var attachmentUrl = await attachmentService.UploadTaskAttachmentAsync(message.VolunteerTask.Id, attachmentModel);
-
                 var attachment = new FileAttachment
                 {
                     Name = attachmentModel.FileName,
                     Description = message.VolunteerTask.NewAttachmentDescription,
                     Url = attachmentUrl,
-                    Task = volunteerTask,
+                    VolunteerTask = volunteerTask,
                 };
 
                 _context.Add(attachment);
