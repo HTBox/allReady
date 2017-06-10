@@ -9,7 +9,6 @@ namespace AllReady.Models
     public class AllReadyContext : IdentityDbContext<ApplicationUser>
     {
         public AllReadyContext() { }
-
         public AllReadyContext(DbContextOptions options) : base(options) { }
 
         public virtual DbSet<Organization> Organizations { get; set; }

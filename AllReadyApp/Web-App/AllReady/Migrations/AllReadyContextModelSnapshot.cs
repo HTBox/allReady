@@ -13,7 +13,7 @@ namespace AllReady.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.2")
+                .HasAnnotation("ProductVersion", "1.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AllReady.Models.ApplicationUser", b =>
@@ -26,7 +26,7 @@ namespace AllReady.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<string>("Email")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
 
@@ -39,10 +39,10 @@ namespace AllReady.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<int?>("OrganizationId");
 
@@ -62,7 +62,7 @@ namespace AllReady.Migrations
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
@@ -96,7 +96,7 @@ namespace AllReady.Migrations
                     b.Property<string>("FullDescription");
 
                     b.Property<string>("Headline")
-                        .HasAnnotation("MaxLength", 150);
+                        .HasMaxLength(150);
 
                     b.Property<string>("ImageUrl");
 
@@ -286,7 +286,7 @@ namespace AllReady.Migrations
                     b.Property<int>("EventType");
 
                     b.Property<string>("Headline")
-                        .HasAnnotation("MaxLength", 150);
+                        .HasMaxLength(150);
 
                     b.Property<string>("ImageUrl");
 
@@ -389,13 +389,13 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int>("TaskId");
-
                     b.Property<string>("Url");
+
+                    b.Property<int>("VolunteerTaskId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("VolunteerTaskId");
 
                     b.ToTable("FileAttachment");
                 });
@@ -501,7 +501,7 @@ namespace AllReady.Migrations
                     b.Property<string>("PrivacyPolicyUrl");
 
                     b.Property<string>("Summary")
-                        .HasAnnotation("MaxLength", 250);
+                        .HasMaxLength(250);
 
                     b.Property<string>("WebUrl");
 
@@ -761,10 +761,10 @@ namespace AllReady.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<string>("Name")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
-                        .HasAnnotation("MaxLength", 256);
+                        .HasMaxLength(256);
 
                     b.HasKey("Id");
 
@@ -1002,9 +1002,9 @@ namespace AllReady.Migrations
 
             modelBuilder.Entity("AllReady.Models.FileAttachment", b =>
                 {
-                    b.HasOne("AllReady.Models.VolunteerTask", "Task")
+                    b.HasOne("AllReady.Models.VolunteerTask", "VolunteerTask")
                         .WithMany("Attachments")
-                        .HasForeignKey("TaskId")
+                        .HasForeignKey("VolunteerTaskId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
