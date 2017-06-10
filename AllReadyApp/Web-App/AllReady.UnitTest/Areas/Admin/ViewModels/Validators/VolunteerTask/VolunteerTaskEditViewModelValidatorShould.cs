@@ -1,15 +1,17 @@
 ﻿using System;
-using AllReady.Areas.Admin.ViewModels.Task;
-using AllReady.Areas.Admin.ViewModels.Validators.Task;
+
+using AllReady.Areas.Admin.ViewModels.Validators.VolunteerTask;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Features.Events;
 using AllReady.Models;
+
 using MediatR;
 using Moq;
 using Xunit;
 
-namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.Task
+namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.VolunteerTask
 {
-    public class TaskEditViewModelValidatorShould
+    public class VolunteerTaskEditViewModelValidatorShould
     {
         [Fact]
         public async System.Threading.Tasks.Task SendEventByIdQueryWithCorrectEventId()
