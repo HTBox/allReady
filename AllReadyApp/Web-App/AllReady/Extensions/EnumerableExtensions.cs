@@ -9,10 +9,6 @@ namespace AllReady.Extensions
 {
     public static class EnumerableExtensions
     {
-        public static string ToName(this UserType theType)
-        {
-            return Enum.GetName(typeof(UserType), theType);
-        }
 
         /// <summary>
         /// Retrieves the Display attribute of an enum.

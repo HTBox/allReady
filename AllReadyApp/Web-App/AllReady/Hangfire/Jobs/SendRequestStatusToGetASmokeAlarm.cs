@@ -33,10 +33,10 @@ namespace AllReady.Hangfire.Jobs
     
     public static class GasaStatus
     {
-        public static string New = "new";
-        public static string InProgress = "in progress";
-        public static string Installed = "";
-        public static string Canceled = "canceled";
+        public const string New = "new";
+        public const string InProgress = "in progress";
+        public const string Installed = "";
+        public const string Canceled = "canceled";
     }
 
     public interface ISendRequestStatusToGetASmokeAlarm

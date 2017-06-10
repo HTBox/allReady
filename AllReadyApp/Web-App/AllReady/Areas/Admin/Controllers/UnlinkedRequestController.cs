@@ -8,11 +8,12 @@ using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize(nameof(UserType.OrgAdmin))]
     public class UnlinkedRequestController : Controller
     {
         private readonly IMediator _mediator;

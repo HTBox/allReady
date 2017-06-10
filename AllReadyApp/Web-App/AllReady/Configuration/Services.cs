@@ -11,7 +11,6 @@ using AllReady.Services;
 using AllReady.Services.Mapping.GeoCoding;
 using AllReady.Services.Mapping.Routing;
 using AllReady.Services.Sms;
-
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Autofac.Features.Variance;
@@ -47,6 +46,8 @@ namespace AllReady.Configuration
             services.AddSingleton<ICsvFactory, CsvFactory>();
             services.AddTransient<SampleDataGenerator>();
             services.AddSingleton<IHttpClient, StaticHttpClient>();
+            services.AddTransient<IBlockBlob, BlockBlob>();
+            services.AddTransient<IAttachmentService, AttachmentService>();
 
             if (configuration["Mapping:EnableGoogleGeocodingService"] == "true")
             {
@@ -63,7 +64,7 @@ namespace AllReady.Configuration
             }
             else
             {
-                services.AddSingleton<IImageService, FileImageService>();
+                services.AddSingleton<IImageService, FakeImageService>();
             }
 
             if (configuration["Data:Storage:EnableAzureQueueService"] == "true")

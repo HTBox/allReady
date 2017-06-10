@@ -1,6 +1,4 @@
 ﻿@model IList<AllReady.ViewModels.Campaign.CampaignViewModel>
-@using AllReady.Security
-@using AllReady.ViewModels.Campaign
 
 @{
     ViewData["Title"] = "All Registered Campaigns";
@@ -43,8 +41,14 @@
                         <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
                         Include Completed Campaigns
                     </button>
-                    <span data-bind="text: '(' + total + ')' " ></span>
+                    <span data-bind="text: '(' + total + ')' "></span>
                 </div>
+                @if (Model.Any(m => m.IsCampaignManager))
+                {
+                    <div class="form-group">
+                        <a asp-controller="Campaign" asp-action="ManageCampaign" target="_blank" class="btn btn-default btn-sm">Manage Campaign</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -74,7 +78,7 @@
                     </td>
                     <td>
                         <span data-bind="text: ManagingOrganizationName"></span>
-                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br/><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
+                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br /><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>

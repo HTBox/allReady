@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Xunit;
 using Shouldly;
+using AllReady.Models;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -55,7 +56,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void TheControllerShouldHaveAnAuthorizeAttributeOfSiteAdmin()
         {
-            ClassHasCorrectAttribute(typeof(AuthorizeAttribute), "SiteAdmin");
+            ClassHasCorrectAttribute(typeof(AuthorizeAttribute), nameof(UserType.SiteAdmin));
         }
 
         #endregion

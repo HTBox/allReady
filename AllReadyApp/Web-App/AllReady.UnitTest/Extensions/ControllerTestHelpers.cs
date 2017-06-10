@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Extensions
         {
             var orgAdminClaims = new List<Claim>
             {
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.OrgAdmin)),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, organizationId)
             };
 
@@ -140,7 +140,7 @@ namespace AllReady.UnitTest.Extensions
 
         public static void MakeUserASiteAdmin(this Controller controller)
         {
-            var siteAdminClaim = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString()) };
+            var siteAdminClaim = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) };
 
             SetFakeHttpContextIfNotAlreadySet(controller);
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(siteAdminClaim));
@@ -149,7 +149,7 @@ namespace AllReady.UnitTest.Extensions
 
         public static void MakeUserNotAnOrgAdmin(this Controller controller)
         {
-            var claims = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof(UserType), UserType.BasicUser)) };
+            var claims = new List<Claim> { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.BasicUser)) };
 
             SetFakeHttpContextIfNotAlreadySet(controller);
             var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(claims));

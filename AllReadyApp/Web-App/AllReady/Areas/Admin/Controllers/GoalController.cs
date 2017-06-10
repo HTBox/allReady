@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Authorize(nameof(UserType.OrgAdmin))]
     public class GoalController : Controller
     {
         private readonly IMediator _mediator;
@@ -57,7 +57,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _mediator.SendAsync(new GoalEditCommand {Goal = model});
-                return RedirectToAction("Details", "Campaign", new {area = "admin", id = campaignId});
+                return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = "admin", id = campaignId});
             }
             return View("Edit", model);
         }
@@ -87,7 +87,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _mediator.SendAsync(new GoalDeleteCommand {GoalId = id});
-            return RedirectToAction("Details", "Campaign", new {area = "admin", id = goal.CampaignId});
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = "admin", id = goal.CampaignId});
         }
 
         // GET /Admin/Goal/Edit/{goalId}
@@ -134,7 +134,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _mediator.SendAsync(new GoalEditCommand {Goal = model});
-                return RedirectToAction("Details", "Campaign", new {area = "admin", id = goal.CampaignId});
+                return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = "admin", id = goal.CampaignId});
             }
             return View("Edit", model);
         }

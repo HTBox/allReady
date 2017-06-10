@@ -32,6 +32,21 @@ namespace AllReady.Security
         bool IsSiteAdmin { get; }
 
         /// <summary>
+        /// Indicates whether the user is an admin for any campaigns
+        /// </summary>
+        Task<bool> IsCampaignManager();
+
+        /// <summary>
+        /// Indicates whether the user is an admin for any events
+        /// </summary>
+        Task<bool> IsEventManager();
+
+        /// <summary>
+        /// Indicates whether the user is a team lead for any itineraries
+        /// </summary>
+        Task<bool> IsTeamLead();
+
+        /// <summary>
         /// Retrieves the IDs for any campaigns the user is allowed to manage
         /// </summary>
         Task<List<int>> GetManagedCampaignIds();

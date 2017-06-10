@@ -138,7 +138,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new EditRequestCommand { RequestModel = model });
 
-            return RedirectToAction("Requests", "Event", new { id = model.EventId });
+            return RedirectToAction(nameof(EventController.Requests), "Event", new { id = model.EventId });
         }
     }
 }

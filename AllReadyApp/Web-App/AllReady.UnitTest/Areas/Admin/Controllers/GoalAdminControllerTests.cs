@@ -667,7 +667,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+                new Claim(ClaimTypes.UserType, nameof(UserType.SiteAdmin))
             }));
         }
 

@@ -46,7 +46,7 @@ namespace AllReady.UnitTest.Controllers
 
             var mediator = new Mock<IMediator>();
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
             
             var sut = new EventController(mediator.Object, userManager.Object);
@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>())).ReturnsAsync(null);
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
 
             var sut = new EventController(mediator.Object, userManager.Object);
@@ -85,7 +85,7 @@ namespace AllReady.UnitTest.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>())).ReturnsAsync(eventViewModel);
 
-            var userManager = MockHelper.CreateUserManagerMock();
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });
 
             var sut = new EventController(mediator.Object, userManager.Object);
