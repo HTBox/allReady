@@ -738,15 +738,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ShouldBe("NothingToDelete");
         }
 
-        [Fact(Skip = "Broken Test")]
+         [Fact]
         public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
         {
             var viewModel = new DeleteViewModel { Id = 1, OrganizationId = 1 };
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(a => a.SendAsync(It.IsAny<DeleteCampaignCommand>())).Verifiable();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false, 1));
             var sut = new CampaignController(mediator.Object, null);
-            sut.MakeUserAnOrgAdmin(viewModel.OrganizationId.ToString());
             await sut.DeleteConfirmed(viewModel);
 
             mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
@@ -819,12 +818,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "Broken Test")]
+        [Fact]
         public async Task PublishConfirmedSendsPublishCampaignCommandWithCorrectCampaignId()
         {
             var viewModel = new PublishViewModel { Id = 1 };
 
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false, 1));
             var sut = new CampaignController(mediator.Object, null);
             await sut.PublishConfirmed(viewModel);
 
