@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Linq;
-using AllReady.Areas.Admin.ViewModels.Task;
+
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.UnitTest.Extensions;
 using Xunit;
 

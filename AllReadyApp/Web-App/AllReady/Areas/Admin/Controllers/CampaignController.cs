@@ -29,7 +29,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign
-        [Authorize("OrgAdmin")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> Index()
         {
             var query = new IndexQuery();
@@ -66,7 +66,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         // GET: Campaign/Create
-        [Authorize("OrgAdmin")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public IActionResult Create()
         {
             return View("Edit", new CampaignSummaryViewModel
@@ -266,7 +266,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize("OrgAdmin")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> LockUnlock(int id)
         {
             if (!User.IsUserType(UserType.SiteAdmin))

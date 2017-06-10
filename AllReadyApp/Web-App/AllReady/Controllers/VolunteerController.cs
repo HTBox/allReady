@@ -25,7 +25,7 @@ namespace AllReady.Controllers
     [Route("~/v")]
     public IActionResult DashboardShortUrl()
     {
-      return RedirectToAction("Dashboard");
+      return RedirectToAction(nameof(Dashboard));
     }
 
     [HttpGet]

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +24,9 @@ namespace AllReady.Features.Home
             return await _context.Events
                 .AsNoTracking()
                 .Include(x => x.Campaign).ThenInclude(x => x.ManagingOrganization)
-                .Where(ev => ev.EndDateTime.Date >= DateTimeOffsetUtcNow().Date)
+                .Where(ev => ev.EndDateTime.Date >= DateTimeOffsetUtcNow().Date && 
+                            !ev.Campaign.Locked && 
+                             ev.Campaign.Published)
                 .Select(ev => new ActiveOrUpcomingEvent()
                 {
                     Id = ev.Id,

@@ -12,12 +12,12 @@ namespace AllReady.Areas.Admin.Features.Tasks
     public class EditVolunteerTaskCommandHandler : IAsyncRequestHandler<EditVolunteerTaskCommand, int>
     {
         private readonly AllReadyContext _context;
-        private readonly IVolunteerTaskAttachmentService _volunteerTaskAttachmentService;
+        private readonly IAttachmentService attachmentService;
         
-        public EditVolunteerTaskCommandHandler(AllReadyContext context, IVolunteerTaskAttachmentService volunteerTaskAttachmentService)
+        public EditVolunteerTaskCommandHandler(AllReadyContext context, IAttachmentService attachmentService)
         {
             _context = context;
-            _volunteerTaskAttachmentService = volunteerTaskAttachmentService;
+            this.attachmentService = attachmentService;
         }
 
         public async Task<int> Handle(EditVolunteerTaskCommand message)
@@ -60,8 +60,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             if (message.VolunteerTask.NewAttachment != null && !string.IsNullOrEmpty(message.VolunteerTask.NewAttachment.FileName))
             {
                 var attachmentModel = message.VolunteerTask.NewAttachment;
-                var attachmentUrl = await _volunteerTaskAttachmentService.UploadAsync(message.VolunteerTask.Id, attachmentModel);
-
+                var attachmentUrl = await attachmentService.UploadTaskAttachmentAsync(message.VolunteerTask.Id, attachmentModel);
                 var attachment = new FileAttachment
                 {
                     Name = attachmentModel.FileName,

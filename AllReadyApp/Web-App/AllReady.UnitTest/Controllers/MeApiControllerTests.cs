@@ -22,8 +22,8 @@ namespace AllReady.UnitTest.Controllers
             };
 
             var mediator = new Mock<IMediator>();
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             signInManager.Setup(
                     x =>
                         x.PasswordSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(),
@@ -42,8 +42,8 @@ namespace AllReady.UnitTest.Controllers
         public void LoginMethodHasHttpPostAtttribute()
         {
             var mediator = new Mock<IMediator>();
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var sut = new MeApiController(userManager.Object, signInManager.Object, mediator.Object);
 
             var attribute =
@@ -55,8 +55,8 @@ namespace AllReady.UnitTest.Controllers
         public void ControllerHasRouteAttributeWithRoute()
         {
             var mediator = new Mock<IMediator>();
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var sut = new MeApiController(userManager.Object, signInManager.Object, mediator.Object);
 
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
@@ -68,8 +68,8 @@ namespace AllReady.UnitTest.Controllers
         public void LoginHasRouteAttributeWithRoute()
         {
             var mediator = new Mock<IMediator>();
-            var userManager = MockHelper.CreateUserManagerMock();
-            var signInManager = MockHelper.CreateSignInManagerMock(userManager);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var sut = new MeApiController(userManager.Object, signInManager.Object, mediator.Object);
 
             var attribute =

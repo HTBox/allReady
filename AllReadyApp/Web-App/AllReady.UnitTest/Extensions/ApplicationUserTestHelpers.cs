@@ -1,5 +1,4 @@
-﻿using System;
-using AllReady.Models;
+﻿using AllReady.Models;
 
 namespace AllReady.UnitTest.Extensions
 {
@@ -10,7 +9,7 @@ namespace AllReady.UnitTest.Extensions
             user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>
             {
                 ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.OrgAdmin)
+                ClaimValue = nameof(UserType.OrgAdmin)
             });
         }
 
@@ -19,7 +18,7 @@ namespace AllReady.UnitTest.Extensions
             user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>
             {
                 ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.SiteAdmin)
+                ClaimValue = nameof(UserType.SiteAdmin)
             });
         }
     }

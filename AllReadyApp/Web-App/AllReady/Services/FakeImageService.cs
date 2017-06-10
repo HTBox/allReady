@@ -6,13 +6,13 @@ using System.IO;
 
 namespace AllReady.Services
 {
-    public class FileImageService : IImageService
+    public class FakeImageService : IImageService
     {
         private const string UploadFolder = "upload";
         private const string WebPath = "/" + UploadFolder + "/";
         private readonly string uploadPath;
 
-        public FileImageService(IHostingEnvironment environment)
+        public FakeImageService(IHostingEnvironment environment)
         {
             uploadPath = Path.Combine(environment.WebRootPath, UploadFolder);
             var uploadDir = new DirectoryInfo(uploadPath);
