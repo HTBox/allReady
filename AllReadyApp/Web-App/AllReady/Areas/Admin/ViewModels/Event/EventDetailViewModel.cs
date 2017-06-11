@@ -220,5 +220,22 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         /// Used by the UI to determine if the user should be shown the create task, create itinerary and create request buttons
         /// </summary>
         public bool ShowCreateChildObjectButtons { get; set; }
+
+        public IEnumerable<EventManagerInviteList> EventManagerInvites { get; set; }
+
+        public class EventManagerInviteList
+        {
+            public int Id { get; set; }
+            public string InviteeEmail { get; set; }
+            public EventManagerInviteStatus Status { get; set; }
+        }
+
+        public enum EventManagerInviteStatus
+        {
+            Pending,
+            Accepted,
+            Rejected,
+            Revoked,
+        }
     }
 }
