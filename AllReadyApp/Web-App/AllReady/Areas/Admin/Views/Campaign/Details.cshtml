@@ -167,3 +167,13 @@
     </div>
 </div>
 @Html.Partial("~/Areas/Admin/Views/Resource/_List.cshtml", Model)
+
+@if (User.IsOrganizationAdmin(Model.OrganizationId))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Campaign Manager Invites</h3>
+        </div>
+    </div>
+    @Html.Partial("~/Areas/Admin/Views/CampaignManagerInvite/_List.cshtml", Model)
+}

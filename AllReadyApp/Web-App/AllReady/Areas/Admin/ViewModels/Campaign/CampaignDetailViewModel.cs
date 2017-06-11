@@ -44,6 +44,7 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         public IEnumerable<EventList> Events { get; set; }
         public IEnumerable<ResourceList> Resources { get; set; }
+        public IEnumerable<CampaignManagerInviteList> CampaignManagerInvites { get; set; }
 
         public List<CampaignGoal> CampaignGoals { get; set; }
 
@@ -91,6 +92,21 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
             public string Title { get; set; }
             public string Description { get; set; }
             public string Url { get; set; }
+        }
+
+        public class CampaignManagerInviteList
+        {
+            public int Id { get; set; }
+            public string InviteeEmail { get; set; }
+            public CampaignManagerInviteStatus Status { get; set; }
+        }
+
+        public enum CampaignManagerInviteStatus
+        {
+            Pending,
+            Accepted,
+            Rejected,
+            Revoked,
         }
     }
 }
