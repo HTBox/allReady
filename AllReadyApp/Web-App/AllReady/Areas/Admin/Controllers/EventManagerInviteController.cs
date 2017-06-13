@@ -85,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.EventId = eventId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = userToInvite?.Id });
+                await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user.Id });
                 // TODO: Send invite
 
                 return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = "Admin", id = invite.EventId });
