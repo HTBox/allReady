@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,7 +48,7 @@ namespace AllReady.Features.Notifications
                 message.AppendLine($"   Volunteer: {volunteerTaskModel.Volunteer.Name} ({volunteerTaskModel.Volunteer.Email})");
                 message.AppendLine($"   Campaign: {volunteerTaskModel.CampaignName}");
                 message.AppendLine($"   Event: {volunteerTaskModel.EventName} ({eventLink})");
-                message.AppendLine($"   Task: {volunteerTaskModel.VolunteerTaskName} (View task: {_options.Value.SiteBaseUrl}Admin/Task/Details/{volunteerTaskModel.VolunteerTaskId})");
+                message.AppendLine($"   Task: {volunteerTaskModel.VolunteerTaskName} (View task: {_options.Value.SiteBaseUrl}Admin/VolunteerTask/Details/{volunteerTaskModel.VolunteerTaskId})");
                 message.AppendLine($"   Task Start Date: {volunteerTaskModel.VolunteerTaskStartDate.Date:d}");
                 message.AppendLine($"   Remaining/Required Volunteers: {remainingRequiredVolunteersPhrase}");
                 message.AppendLine();

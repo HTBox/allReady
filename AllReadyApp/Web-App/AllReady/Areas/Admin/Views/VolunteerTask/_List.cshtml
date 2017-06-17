@@ -25,7 +25,7 @@
             {
                 <tr>
                     <td>
-                        <a asp-controller="Task" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        <a asp-controller="VolunteerTask" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a>
                     </td>
                     @if (item.AssignedVolunteers == null || item.AssignedVolunteers.Count == 0)
                     {
@@ -39,7 +39,7 @@
                     }
                     else
                     {
-                        <td><a asp-controller="Task" asp-action="Details" asp-area="Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
+                        <td><a asp-controller="VolunteerTask" asp-action="Details" asp-area="Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
                         <td>@item.AcceptedVolunteerCount / @item.AssignedVolunteers.Count Accepted</td>
                     }
 

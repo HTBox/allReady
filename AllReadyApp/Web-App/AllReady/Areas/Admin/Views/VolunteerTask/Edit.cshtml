@@ -14,7 +14,7 @@
             }
             else
             {
-                <li><a asp-controller="Task" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+                <li><a asp-controller="VolunteerTask" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
                 <li>Edit</li>
             }
         </ol>
@@ -22,7 +22,7 @@
 </div>
 <h2>@ViewBag.Title</h2>
 
-<form asp-controller="Task" asp-action="Edit" enctype="multipart/form-data">
+<form asp-controller="VolunteerTask" asp-action="Edit" enctype="multipart/form-data">
     <div class="form-horizontal">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="EventId" />

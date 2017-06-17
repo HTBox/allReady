@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace AllReady.Features.Notifications
                     return;
                 }
 
-                var volunteerTaskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/task/Details/{volunteerTask.Id}";
+                var volunteerTaskLink = $"View task: http://{_options.Value.SiteBaseUrl}/Admin/VolunteerTask/Details/{volunteerTask.Id}";
                 var volunteerTaskSignup = volunteerTask.AssignedVolunteers.FirstOrDefault(t => t.User.Id == volunteerTaskInfo.Volunteer.Id);
 
                 //set for task signup
