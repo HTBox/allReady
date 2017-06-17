@@ -27,12 +27,23 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
         private readonly IValidateEventEditViewModels _eventEditViewModelValidator;
+        private readonly IUserAuthorizationService _userAuthorizationService;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator, IUserAuthorizationService userAuthorizationService)
         {
             _imageService = imageService;
             _mediator = mediator;
             _eventEditViewModelValidator = eventEditViewModelValidator;
+            _userAuthorizationService = userAuthorizationService;
+        }
+
+        [HttpGet]
+        [Route("Admin/Event/ListAll")]
+        public async Task<IActionResult> Lister()
+        {
+            var viewModel = await _mediator.SendAsync(new EventListerQuery { UserId = _userAuthorizationService.AssociatedUserId });
+
+            return View(viewModel);
         }
 
         [HttpGet]

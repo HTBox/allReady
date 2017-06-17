@@ -60,5 +60,10 @@ namespace AllReady.Security
         /// Retrieves the IDs for any itineraries the user is the team lead for
         /// </summary>
         Task<List<int>> GetLedItineraryIds();
+
+        /// <summary>
+        /// Returns the id for the organization the currently assigned user managers. Will be null if user is not an org admin.
+        /// </summary>
+        int? GetOrganizationId { get; }
     }
 }
