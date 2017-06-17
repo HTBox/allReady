@@ -82,7 +82,7 @@
 {
     <div class="row">
         <div class="col-md-12">
-            <a asp-area="Admin" asp-controller="Task" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+            <a asp-area="Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
         </div>
     </div>
 }
@@ -121,7 +121,7 @@
     </div>
 </div>
 
-@Html.Partial("~/Areas/Admin/Views/Task/_List.cshtml", Model.VolunteerTasks)
+@Html.Partial("~/Areas/Admin/Views/VolunteerTask/_List.cshtml", Model.VolunteerTasks)
 
 @if (Model.IsItineraryEvent)
 {

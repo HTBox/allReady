@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             await sut.Create(eventId);
             mediator.Verify(x => x.SendAsync(It.Is<CreateVolunteerTaskQuery>(y => y.EventId == eventId)), Times.Once);
@@ -48,7 +48,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Events.AuthorizableEventQuery>()))
                 .ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             sut.SetDefaultHttpContext();
 
             var result = await sut.Create(It.IsAny<int>());
@@ -69,7 +69,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             await sut.Create(It.IsAny<int>());
 
@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(cancelUrl);
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.Model as EditViewModel;
@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             await sut.Create(It.IsAny<int>());
 
@@ -135,7 +135,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as EditViewModel;
@@ -154,7 +154,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
 
@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateGetHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -172,10 +172,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateGetHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Task/Create/{eventId}");
+            Assert.Equal(attribute.Template, "Admin/VolunteerTask/Create/{eventId}");
         }
 
         [Fact]
@@ -190,7 +190,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
             await sut.Edit(volunteerTaskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<EditVolunteerTaskQuery>(y => y.VolunteerTaskId == volunteerTaskId)), Times.Once);
@@ -203,7 +203,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<EditVolunteerTaskQuery>())).ReturnsAsync(new EditViewModel());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, false, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             sut.SetDefaultHttpContext();
             var result = await sut.Edit(It.IsAny<int>());
 
@@ -223,7 +223,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(cancelUrl);
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
             var modelResult = result.Model as EditViewModel;
@@ -243,7 +243,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             await sut.Edit(It.IsAny<int>());
 
@@ -262,7 +262,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(mediator.Object, null) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(mediator.Object, null) { Url = urlHelper.Object };
 
             var result = await sut.Edit(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as EditViewModel;
@@ -275,7 +275,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditGetHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -283,10 +283,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditGetHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Task/Edit/{id}");
+            Assert.Equal(attribute.Template, "Admin/VolunteerTask/Edit/{id}");
         }
 
         [Fact]
@@ -300,7 +300,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(null, validator.Object) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(null, validator.Object) { Url = urlHelper.Object };
             sut.AddModelStateError();
 
             await sut.Edit(model);
@@ -321,7 +321,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(null, validator.Object) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(null, validator.Object) { Url = urlHelper.Object };
             await sut.Edit(new EditViewModel() { EventId = 1, Id = 1 });
 
             var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(errorKey);
@@ -339,7 +339,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
-            var sut = new TaskController(Mock.Of<IMediator>(), validator.Object) { Url = urlHelper.Object };
+            var sut = new VolunteerTaskController(Mock.Of<IMediator>(), validator.Object) { Url = urlHelper.Object };
             var result = await sut.Edit(model) as ViewResult;
             var modelResult = result.ViewData.Model as EditViewModel;
 
@@ -358,7 +358,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
-            var sut = new TaskController(mediator.Object, validator.Object);
+            var sut = new VolunteerTaskController(mediator.Object, validator.Object);
             sut.SetDefaultHttpContext();
 
             var result = await sut.Edit(new EditViewModel());
@@ -380,7 +380,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
-            var sut = new TaskController(mediator.Object, validator.Object);
+            var sut = new VolunteerTaskController(mediator.Object, validator.Object);
 
             await sut.Edit(model);
 
@@ -401,7 +401,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
-            var sut = new TaskController(mediator.Object, validator.Object);
+            var sut = new VolunteerTaskController(mediator.Object, validator.Object);
 
             var result = await sut.Edit(model) as RedirectToActionResult;
 
@@ -424,21 +424,21 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validator = new Mock<IValidateVolunteerTaskEditViewModelValidator>();
             validator.Setup(x => x.Validate(It.IsAny<EditViewModel>())).ReturnsAsync(new List<KeyValuePair<string, string>>());
 
-            var sut = new TaskController(mediator.Object, validator.Object);
+            var sut = new VolunteerTaskController(mediator.Object, validator.Object);
 
             var result = await sut.Edit(model) as RedirectToActionResult;
 
             var routeValues = new Dictionary<string, object> { ["id"] = model.Id };
 
-            Assert.Equal(result.ControllerName, "Task");
-            Assert.Equal(result.ActionName, nameof(TaskController.Details));
+            Assert.Equal(result.ControllerName, "VolunteerTask");
+            Assert.Equal(result.ActionName, nameof(VolunteerTaskController.Details));
             Assert.Equal(result.RouteValues, routeValues);
         }
 
         [Fact]
         public void EditPostHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EditViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -446,7 +446,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void EditPostHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EditViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -460,7 +460,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel { });
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             await sut.Delete(volunteerTaskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<DeleteQuery>(y => y.VolunteerTaskId == volunteerTaskId)), Times.Once);
@@ -473,7 +473,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(new DeleteViewModel());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, false, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             sut.SetDefaultHttpContext();
             var result = await sut.Delete(It.IsAny<int>());
 
@@ -489,7 +489,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>())).ReturnsAsync(deleteViewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
 
             var result = await sut.Delete(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as DeleteViewModel;
@@ -504,7 +504,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             const int volunteerTaskId = 1;
             var mediator = new Mock<IMediator>();
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             await sut.Details(volunteerTaskId);
 
             mediator.Verify(x => x.SendAsync(It.Is<DetailsQuery>(y => y.VolunteerTaskId == volunteerTaskId)), Times.Once);
@@ -513,7 +513,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenTaskIsNull()
         {
-            var sut = new TaskController(Mock.Of<IMediator>(), null);
+            var sut = new VolunteerTaskController(Mock.Of<IMediator>(), null);
             var result = await sut.Details(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }
@@ -527,7 +527,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DetailsQuery>())).ReturnsAsync(detailsViewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(true, false, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
             var modelResult = result.ViewData.Model as DetailsViewModel;
 
@@ -539,7 +539,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsHasHttpGetAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -547,10 +547,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DetailsHasRouteAttributeWithCorrectTemplate()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Task/Details/{id}");
+            Assert.Equal(attribute.Template, "Admin/VolunteerTask/Details/{id}");
         }
 
         [Fact]
@@ -558,7 +558,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var model = new DeleteViewModel { UserIsOrgAdmin = false };
 
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             sut.SetDefaultHttpContext();
 
             var result = await sut.DeleteConfirmed(model);
@@ -572,7 +572,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int volunteerTaskId = 1;
             var mediator = new Mock<IMediator>();
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
 
             await sut.DeleteConfirmed(new DeleteViewModel { Id = volunteerTaskId, UserIsOrgAdmin = true });
 
@@ -587,7 +587,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
 
             var result = await sut.DeleteConfirmed(deleteViewModel) as RedirectToActionResult;
 
@@ -601,14 +601,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
         public void DeleteConfirmedHasActionNameAttributeWithCorrectActionName()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Name, "Delete");
@@ -617,7 +617,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -631,7 +631,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             sut.SetDefaultHttpContext();
             await sut.Assign(volunteerTaskId, null);
 
@@ -645,7 +645,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, false, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             sut.SetDefaultHttpContext();
             var result = await sut.Assign(1, null);
 
@@ -662,7 +662,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             await sut.Assign(volunteerTaskId, userIds);
 
             mediator.Verify(x => x.SendAsync(It.Is<AssignVolunteerTaskCommand>(y => y.VolunteerTaskId == volunteerTaskId && y.UserIds == userIds)), Times.Once);
@@ -677,20 +677,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
 
             var result = await sut.Assign(volunteerTaskId, null) as RedirectToRouteResult;
 
-            Assert.Equal(result.RouteValues["controller"], "Task");
+            Assert.Equal(result.RouteValues["controller"], "VolunteerTask");
             Assert.Equal(result.RouteValues["Area"], "Admin");
-            Assert.Equal(result.RouteValues["action"], nameof(TaskController.Details));
+            Assert.Equal(result.RouteValues["action"], nameof(VolunteerTaskController.Details));
             Assert.Equal(result.RouteValues["id"], volunteerTaskId);
         }
 
         [Fact]
         public void AssignHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -698,7 +698,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void AssignHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Assign(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -706,7 +706,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task MessageAllVolunteersReturnsBadRequestObjectResultWhenModelStateIsInvalid()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             sut.AddModelStateError();
             var result = await sut.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>());
             Assert.IsType<BadRequestObjectResult>(result);
@@ -721,7 +721,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<OrganizationIdByVolunteerTaskIdQuery>(y => y.VolunteerTaskId == model.VolunteerTaskId)), Times.Once);
@@ -734,7 +734,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, false, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             sut.SetDefaultHttpContext();
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
@@ -750,7 +750,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             await sut.MessageAllVolunteers(model);
 
             mediator.Verify(x => x.SendAsync(It.Is<MessageTaskVolunteersCommand>(y => y.Model == model)), Times.Once);
@@ -763,7 +763,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationIdByVolunteerTaskIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableTaskQuery>())).ReturnsAsync(new FakeAuthorizableTask(false, true, false, false));
 
-            var sut = new TaskController(mediator.Object, null);
+            var sut = new VolunteerTaskController(mediator.Object, null);
             var result = await sut.MessageAllVolunteers(new MessageTaskVolunteersViewModel());
 
             Assert.IsType<OkResult>(result);
@@ -772,7 +772,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MessageAllVolunteersHasHttpPostAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -780,7 +780,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void MessageAllVolunteersHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.MessageAllVolunteers(It.IsAny<MessageTaskVolunteersViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -788,7 +788,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ControllerHasAreaAtttributeWithTheCorrectAreaName()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             sut.SetDefaultHttpContext();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
@@ -798,7 +798,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void ControllerHasAuthorizeAtttributeWithTheCorrectPolicy()
         {
-            var sut = new TaskController(null, null);
+            var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal(attribute.Policy, null);

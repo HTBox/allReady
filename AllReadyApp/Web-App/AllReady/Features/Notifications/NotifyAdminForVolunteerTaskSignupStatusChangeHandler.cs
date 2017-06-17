@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Configuration;
@@ -42,7 +42,7 @@ namespace AllReady.Features.Notifications
 
             if (!string.IsNullOrWhiteSpace(adminEmail))
             {
-                var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/Task/Details/{volunteerTaskSignup.VolunteerTask.Id}";
+                var link = $"View event: http://{_options.Value.SiteBaseUrl}/Admin/VolunteerTask/Details/{volunteerTaskSignup.VolunteerTask.Id}";
 
                 var message = $@"A volunteer's status has changed for a task.
                     Volunteer: {volunteer.Name} ({volunteer.Email})
