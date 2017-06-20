@@ -94,9 +94,9 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         private CampaignDetailViewModel.CampaignManagerInviteStatus GetCampaignManagerInviteStatus(CampaignManagerInvite campaignManagerInvite)
         {
             if (campaignManagerInvite.IsAccepted) return CampaignDetailViewModel.CampaignManagerInviteStatus.Accepted;
-            else if (campaignManagerInvite.IsPending) return CampaignDetailViewModel.CampaignManagerInviteStatus.Pending;
-            else if (campaignManagerInvite.IsRejected) return CampaignDetailViewModel.CampaignManagerInviteStatus.Rejected;
-            else  return CampaignDetailViewModel.CampaignManagerInviteStatus.Revoked;
+            if (campaignManagerInvite.IsPending) return CampaignDetailViewModel.CampaignManagerInviteStatus.Pending;
+            if (campaignManagerInvite.IsRejected) return CampaignDetailViewModel.CampaignManagerInviteStatus.Rejected;
+            return CampaignDetailViewModel.CampaignManagerInviteStatus.Revoked;
         }
     }
 }

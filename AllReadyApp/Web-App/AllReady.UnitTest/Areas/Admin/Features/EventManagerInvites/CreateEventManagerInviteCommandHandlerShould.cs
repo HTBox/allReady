@@ -10,39 +10,21 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
 {
     public class CreateEventManagerInviteCommandHandlerShould : InMemoryContextTest
     {
-        protected override void LoadTestData()
-        {
-            Context.Campaigns.Add(new AllReady.Models.Campaign
-            {
-                Id = 1
-            });
+        //protected override void LoadTestData()
+        //{
+        //    Context.Campaigns.Add(new AllReady.Models.Campaign
+        //    {
+        //        Id = 1
+        //    });
 
-            Context.Events.Add(new AllReady.Models.Event
-            {
-                Id = 5,
-                CampaignId = 1
-            });
+        //    Context.Events.Add(new AllReady.Models.Event
+        //    {
+        //        Id = 5,
+        //        CampaignId = 1
+        //    });
 
-            Context.SaveChanges();
-        }
-
-        [Fact]
-        public void ThrowArgumentException_WhenEventIdIsNotValid_AndInviteTypeIsEventManager()
-        {
-            var handler = new CreateEventManagerInviteCommandHandler(Context);
-            var invite = new EventManagerInviteViewModel
-            {
-                EventId = 2,
-            };
-
-            var inviteCommand = new CreateEventManagerInviteCommand
-            {
-                Invite = invite,
-                UserId = "userId",
-            };
-
-            Should.Throw<ArgumentException>(async () => await handler.Handle(inviteCommand));
-        }
+        //    Context.SaveChanges();
+        //}
 
         [Fact]
         public async Task CreateEventManagerInvite()
@@ -67,14 +49,14 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
 
             Context.CampaignManagerInvites.Count().ShouldBe(0);
             Context.EventManagerInvites.Count().ShouldBe(1);
-            Context.EventManagerInvites.FirstOrDefault().AcceptedDateTimeUtc.ShouldBe(null);
-            Context.EventManagerInvites.FirstOrDefault().CustomMessage.ShouldBe("message");
-            Context.EventManagerInvites.FirstOrDefault().EventId.ShouldBe(5);
-            Context.EventManagerInvites.FirstOrDefault().InviteeEmailAddress.ShouldBe("test@test.com");
-            Context.EventManagerInvites.FirstOrDefault().RejectedDateTimeUtc.ShouldBe(null);
-            Context.EventManagerInvites.FirstOrDefault().RevokedDateTimeUtc.ShouldBe(null);
-            Context.EventManagerInvites.FirstOrDefault().SenderUserId.ShouldBe("userId");
-            Context.EventManagerInvites.FirstOrDefault().SentDateTimeUtc.ShouldBe(new DateTime(2016, 5, 29));
+            Context.EventManagerInvites.SingleOrDefault().AcceptedDateTimeUtc.ShouldBe(null);
+            Context.EventManagerInvites.SingleOrDefault().CustomMessage.ShouldBe("message");
+            Context.EventManagerInvites.SingleOrDefault().EventId.ShouldBe(5);
+            Context.EventManagerInvites.SingleOrDefault().InviteeEmailAddress.ShouldBe("test@test.com");
+            Context.EventManagerInvites.SingleOrDefault().RejectedDateTimeUtc.ShouldBe(null);
+            Context.EventManagerInvites.SingleOrDefault().RevokedDateTimeUtc.ShouldBe(null);
+            Context.EventManagerInvites.SingleOrDefault().SenderUserId.ShouldBe("userId");
+            Context.EventManagerInvites.SingleOrDefault().SentDateTimeUtc.ShouldBe(new DateTime(2016, 5, 29));
         }
     }
 }

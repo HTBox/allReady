@@ -22,8 +22,6 @@ namespace AllReady.Areas.Admin.Features.EventManagerInvites
                 .Include(i => i.SenderUser)
                 .SingleOrDefaultAsync(i => i.Id == message.EventManagerInviteId);
 
-            if (invite == null) return null;
-
             return new EventManagerInviteDetailsViewModel
             {
                 Id = invite.Id,
