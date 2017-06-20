@@ -56,14 +56,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.CampaignManagerInvites
         }
 
         [Fact]
-        public async Task ReturnNull_WhenInviteDoesNotExist()
-        {
-            var handler = new CampaignManagerInviteDetailQueryHandler(Context);
-            CampaignManagerInviteDetailsViewModel result = await handler.Handle(new CampaignManagerInviteDetailQuery { CampaignManagerInviteId = 5 });
-            result.ShouldBeNull();
-        }
-
-        [Fact]
         public async Task ReturnCorrectViewModel_WhenInviteExists()
         {
             var handler = new CampaignManagerInviteDetailQueryHandler(Context);

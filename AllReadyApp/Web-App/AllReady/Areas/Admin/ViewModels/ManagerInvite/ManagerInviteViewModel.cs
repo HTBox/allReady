@@ -17,6 +17,8 @@ namespace AllReady.Areas.Admin.ViewModels.ManagerInvite
         public int CampaignId { get; set; }
 
         public string CampaignName { get; set; }
+
+        public int OrganizationId { get; set; }
     }
 
     public class EventManagerInviteViewModel : ManagerInviteViewModel

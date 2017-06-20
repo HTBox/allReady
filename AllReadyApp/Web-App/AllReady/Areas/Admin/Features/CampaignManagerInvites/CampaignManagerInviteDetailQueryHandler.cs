@@ -22,8 +22,6 @@ namespace AllReady.Areas.Admin.Features.CampaignManagerInvites
                 .Include(i => i.SenderUser)
                 .SingleOrDefaultAsync(i => i.Id == message.CampaignManagerInviteId);
 
-            if (invite == null) return null;
-
             return new CampaignManagerInviteDetailsViewModel
             {
                 Id = invite.Id,

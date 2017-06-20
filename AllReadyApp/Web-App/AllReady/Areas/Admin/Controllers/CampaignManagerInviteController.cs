@@ -29,19 +29,15 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("[area]/[controller]/[action]/{campaignId:int}")]
         public async Task<IActionResult> Send(int campaignId)
         {
-            var campaign = await _mediator.SendAsync(new CampaignByCampaignIdQuery { CampaignId = campaignId });
-            if (campaign == null) return NotFound();
+            var viewModel = await _mediator.SendAsync(new CampaignManagerInviteQuery { CampaignId = campaignId });
+            if (viewModel == null) return NotFound();
 
-            if (!User.IsOrganizationAdmin(campaign.ManagingOrganizationId))
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            return View("Send", new CampaignManagerInviteViewModel
-            {
-                CampaignId = campaignId,
-                CampaignName = campaign.Name,
-            });
+            return View("Send", viewModel);
         }
 
         // POST: Admin/Invite/Send/5
@@ -58,11 +54,6 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var campaign = await _mediator.SendAsync(new CampaignByCampaignIdQuery { CampaignId = campaignId });
-
-                if (campaign == null)
-                {
-                    return BadRequest();
-                }
 
                 if (!User.IsOrganizationAdmin(campaign.ManagingOrganizationId))
                 {
@@ -84,9 +75,9 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.CampaignId = campaignId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user?.Id });
+                await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user.Id });
 
-                return RedirectToAction(actionName: "Details", controllerName: "Campaign", routeValues: new { area = "Admin", id = invite.CampaignId });
+                return RedirectToAction("Details", "Campaign", new { area = "Admin", id = invite.CampaignId });
             }
 
             return View("Send", invite);
@@ -95,7 +86,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("[area]/[controller]/[action]/{inviteId:int}")]
         public async Task<IActionResult> Details(int inviteId)
         {
-            CampaignManagerInviteDetailsViewModel viewModel = await _mediator.SendAsync(new CampaignManagerInviteDetailQuery { CampaignManagerInviteId = inviteId });
+            var viewModel = await _mediator.SendAsync(new CampaignManagerInviteDetailQuery { CampaignManagerInviteId = inviteId });
 
             if (viewModel == null)
             {
