@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,7 +32,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Send(eventId);
 
             // Assert
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<EventByEventIdQuery>(e => e.EventId == eventId)));
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<EventManagerInviteQuery>(e => e.EventId == eventId)));
         }
 
         [Fact]
@@ -39,7 +40,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync(null);
 
             var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
 
@@ -55,9 +56,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            var @event = new Event();
-            @event.Campaign = new Campaign() { ManagingOrganizationId = 1 };
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
+            var viewModel = new EventManagerInviteViewModel()
+            {
+                OrganizationId = 1
+            };
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync(viewModel);
 
             var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
             sut.MakeUserNotAnOrgAdmin();
@@ -74,9 +77,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            var @event = new Event();
-            @event.Campaign = new Campaign() { ManagingOrganizationId = 1 };
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
+            var viewModel = new EventManagerInviteViewModel
+            {
+                OrganizationId = 1
+            };
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync(viewModel);
 
             var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
             sut.MakeUserAnOrgAdmin(organizationId: "2");
@@ -93,11 +98,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            var @event = new Event();
-            @event.Campaign = new Campaign() { ManagingOrganizationId = 1 };
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
+            var viewModel = new EventManagerInviteViewModel
+            {
+                OrganizationId = 1
+            };
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync(viewModel);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+            var sut = new EventManagerInviteController(mockMediator.Object, userManager.Object);
             sut.MakeUserAnOrgAdmin(organizationId: "1");
 
             // Act
@@ -106,7 +115,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.IsType<ViewResult>(result);
             ViewResult view = result as ViewResult;
-            Assert.Equal(view.ViewName, "Send");
         }
 
         [Fact]
@@ -114,9 +122,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            var @event = new Event() { Id = eventId, Name = "TestEvent", CampaignId = campaignId };
-            @event.Campaign = new Campaign() { Id = campaignId, Name = "TestCampaign", ManagingOrganizationId = 1 };
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
+            var viewModel = new EventManagerInviteViewModel
+            {
+                EventId = eventId,
+                EventName = "TestEvent",
+                CampaignId = campaignId,
+                CampaignName = "TestCampaign",
+                OrganizationId = 1
+            };
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync(viewModel);
 
             var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
             sut.MakeUserAnOrgAdmin(organizationId: "1");
@@ -191,38 +205,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // Act
             var result = await sut.Send(eventId, new EventManagerInviteViewModel());
-
-            // Assert
-            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateEventManagerInviteCommand>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task SendReturnsBadRequestResult_WhenNoCampaignMatchesId()
-        {
-            // Arrange
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
-            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
-            var invite = new EventManagerInviteViewModel();
-
-            // Act
-            var result = await sut.Send(eventId, invite);
-
-            // Assert
-            Assert.IsType<BadRequestResult>(result);
-        }
-
-        [Fact]
-        public async Task SendShouldNotCreateInvite_WhenNoCampaignMatchesId()
-        {
-            // Arrange
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
-            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
-            var invite = new EventManagerInviteViewModel();
-
-            // Act
-            var result = await sut.Send(eventId, invite);
 
             // Assert
             mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateEventManagerInviteCommand>()), Times.Never);
@@ -388,8 +370,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Campaign = new Campaign() { ManagingOrganizationId = 1 }
             };
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+            var sut = new EventManagerInviteController(mockMediator.Object, userManager.Object);
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new EventManagerInviteViewModel
             {

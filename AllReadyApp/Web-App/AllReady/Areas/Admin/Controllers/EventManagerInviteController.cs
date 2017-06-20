@@ -29,21 +29,15 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("[area]/[controller]/[action]/{eventId:int}")]
         public async Task<IActionResult> Send(int eventId)
         {
-            var @event = await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
-            if (@event == null) return NotFound();
+            var eventViewModel = await _mediator.SendAsync(new EventManagerInviteQuery { EventId = eventId });
+            if (eventViewModel == null) return NotFound();
 
-            if (!User.IsOrganizationAdmin(@event.Campaign.ManagingOrganizationId))
+            if (!User.IsOrganizationAdmin(eventViewModel.OrganizationId))
             {
                 return Unauthorized();
             }
 
-            return View("Send", new EventManagerInviteViewModel
-            {
-                EventId = eventId,
-                EventName = @event.Name,
-                CampaignId = @event.CampaignId,
-                CampaignName = @event.Campaign.Name,
-            });
+            return View(eventViewModel);
         }
 
         // POST: Admin/Invite/Send/5
@@ -60,10 +54,6 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var @event = await _mediator.SendAsync(new EventByEventIdQuery { EventId = eventId });
-                if (@event == null)
-                {
-                    return BadRequest();
-                }
 
                 if (!User.IsOrganizationAdmin(@event.Campaign.ManagingOrganizationId))
                 {
@@ -85,8 +75,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.EventId = eventId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user?.Id });
-                // TODO: Send invite
+                await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user.Id });
 
                 return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = "Admin", id = invite.EventId });
             }
@@ -96,7 +85,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("[area]/[controller]/[action]/{inviteId:int}")]
         public async Task<IActionResult> Details(int inviteId)
         {
-            EventManagerInviteDetailsViewModel viewModel = await _mediator.SendAsync(new EventManagerInviteDetailQuery { EventManagerInviteId = inviteId });
+            var viewModel = await _mediator.SendAsync(new EventManagerInviteDetailQuery { EventManagerInviteId = inviteId });
 
             if (viewModel == null)
             {

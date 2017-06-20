@@ -19,17 +19,13 @@ namespace AllReady.Areas.Admin.Features.EventManagerInvites
 
         protected override async Task HandleCore(CreateEventManagerInviteCommand message)
         {
-            var @event = await _context.Events.AsNoTracking().SingleOrDefaultAsync(e => e.Id == message.Invite.EventId);
-
-            if (@event == null) throw new ArgumentException("EventId cannot be null for Event manager invite");
-
             var eventManagerInvite = new EventManagerInvite
             {
                 InviteeEmailAddress = message.Invite.InviteeEmailAddress,
                 SentDateTimeUtc = DateTimeUtcNow(),
                 CustomMessage = message.Invite.CustomMessage,
                 SenderUserId = message.UserId,
-                Event = @event,
+                EventId = message.Invite.EventId
             };
             _context.EventManagerInvites.Add(eventManagerInvite);
             await _context.SaveChangesAsync();

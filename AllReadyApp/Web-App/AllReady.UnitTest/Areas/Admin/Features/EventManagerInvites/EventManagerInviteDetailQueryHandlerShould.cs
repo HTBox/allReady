@@ -64,14 +64,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
         }
 
         [Fact]
-        public async Task ReturnNull_WhenInviteDoesNotExist()
-        {
-            var handler = new EventManagerInviteDetailQueryHandler(Context);
-            EventManagerInviteDetailsViewModel result = await handler.Handle(new EventManagerInviteDetailQuery { EventManagerInviteId = 5 });
-            result.ShouldBeNull();
-        }
-
-        [Fact]
         public async Task ReturnCorrectViewModel_WhenInviteExists()
         {
             var handler = new EventManagerInviteDetailQueryHandler(Context);
