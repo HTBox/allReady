@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.CampaignManagerInvites
 
         public async Task<CampaignManagerInviteViewModel> Handle(CampaignManagerInviteQuery message)
         {
-            var campaign = await _context.Campaigns.AsNoTracking().SingleOrDefaultAsync(c => c.Id == message.CampaignId);
+            var campaign = await _context.Campaigns.AsNoTracking().SingleAsync(c => c.Id == message.CampaignId);
 
             return new CampaignManagerInviteViewModel
             {

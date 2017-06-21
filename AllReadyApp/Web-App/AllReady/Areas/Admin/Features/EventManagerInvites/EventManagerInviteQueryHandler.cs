@@ -21,7 +21,7 @@ namespace AllReady.Areas.Admin.Features.EventManagerInvites
         public async Task<EventManagerInviteViewModel> Handle(EventManagerInviteQuery message)
         {
             var @event = await _context.Events.AsNoTracking()
-                .Include(e => e.Campaign).SingleOrDefaultAsync(e => e.Id == message.EventId);
+                .Include(e => e.Campaign).SingleAsync(e => e.Id == message.EventId);
 
             return new EventManagerInviteViewModel
             {
