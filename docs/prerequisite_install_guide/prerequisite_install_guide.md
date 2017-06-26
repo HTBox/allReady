@@ -532,10 +532,11 @@ To run the UI test, you first need to start up the web site.
 
 You are now ready to start working on the allReady web site and unit test.  Please read through the [Git guide](../git/gitprocess.md) for the process of contributing to the allReady repository.
 
-> **If you are planning on working on the mobile application, continue with the rest of this guide.**  
-
+> **If you are planning on working on the mobile application, continue with the rest of this guide.**
  
 ## Mobile Solution
+
+> **NOTE The Mobile App is in process of being updated to Visual Studio 2017**
 
 ###  Installing Mobile Tools
 
