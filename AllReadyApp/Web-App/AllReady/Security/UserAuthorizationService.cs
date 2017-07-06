@@ -172,25 +172,18 @@ namespace AllReady.Security
             return _ledItineraryIds;
         }
 
-        private int? GetOrganizationId
+        public int? GetOrganizationId
         {
             get
             {
-                int? result = null;
                 var organizationIdClaim = _claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Organization);
 
-                if (organizationIdClaim == null)
+                if (int.TryParse(organizationIdClaim?.Value, out int organizationId))
                 {
-                    return null;
+                    return organizationId;
                 }
 
-                int organizationId;
-                if (int.TryParse(organizationIdClaim.Value, out organizationId))
-                {
-                    result = organizationId;
-                }
-
-                return result;
+                return null;
             }
         }
     }
