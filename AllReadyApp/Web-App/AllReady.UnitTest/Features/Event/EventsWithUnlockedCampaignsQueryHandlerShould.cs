@@ -26,6 +26,14 @@ namespace AllReady.UnitTest.Features.Event
                         PostalCode = "98052",
                         Address1 = "7031 148th Ave Ne",
                         Country = "US"
+                    },
+                    Campaign = new Campaign
+                    {
+                        Locked = false,
+                        ManagingOrganization = new Organization()
+                        {
+                            Name = "Humanitarian Toolbox"
+                        }
                     }
                 },
                 new Event {Id = 2, Campaign = new Campaign {Locked = true, ManagingOrganization = new Organization()}}
