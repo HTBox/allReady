@@ -2,6 +2,8 @@
 open runner
 open System
 
+Threading.Thread.CurrentThread.CurrentCulture <- Globalization.CultureInfo "en-US"
+
 Console.WriteLine("Launching Scenario Tests")
 
 CreatingOrgsAndCampaigns.All Constants.UrlLocalHost
