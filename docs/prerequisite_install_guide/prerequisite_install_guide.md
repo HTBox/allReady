@@ -324,6 +324,11 @@ We now need to tell Visual Studio to put our PATH environment variable higher in
 
     ![External Web Tools](images/vs-install-8-external-web-tools.png)
 
+1. Select Tools for Apache Cordova
+
+1. Uncheck "Use a sandboxed version of NodeJs"
+
+    ![Tools for Apache Cordova](https://cloud.githubusercontent.com/assets/708423/19606157/50fbc792-9775-11e6-9b3c-c998a1fd1f07.png)
 
 You have now finished installing all of the required software to start working on the Web Solution.  
 
