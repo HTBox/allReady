@@ -19,6 +19,7 @@
             @if (User.IsUserType(UserType.OrgAdmin))
             {
                 <li @(isAdmin && controllerName == "UnlinkedRequest" ? " class=active" : "")><a asp-area="Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
+                <li @(isAdmin && controllerName == "Invite" ? " class=active" : "")><a asp-area="Admin" asp-controller="Invite" asp-action="Index">Invites</a></li>
             }
             <li @(isAdmin && controllerName == "Skill" ? " class=active" : "")><a asp-area="Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
