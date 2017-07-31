@@ -37,11 +37,11 @@ textarea {
     max-width: 380px;
 }
 
-    input.wide,
-    select.wide,
-    textarea.wide {
-        max-width: inherit;
-    }
+input.wide,
+select.wide,
+textarea.wide {
+    max-width: inherit;
+}
 
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
@@ -65,15 +65,15 @@ footer, footer a {
     color: #ab6627;
 }
 
-    footer a:hover {
-        text-decoration: none;
-        color: #efab6c;
-    }
+footer a:hover {
+    text-decoration: none;
+    color: #efab6c;
+}
 
-    footer > p > img, footer > p > a > img {
-        margin-left: 10px;
-        margin-right: 10px;
-    }
+footer > p > img, footer > p > a > img {
+    margin-left: 10px;
+    margin-right: 10px;
+}
 
 header {
     margin-bottom: 20px;
@@ -214,7 +214,9 @@ Navigation
 .navbar-default .navbar-nav > li > button.btn-link:hover,
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
-.navbar-default .navbar-nav > .active > a:focus {
+.navbar-default .navbar-nav > .active > a:focus,
+.navbar-collapse.collapse.in > ul > .open > a,
+.navbar-collapse.collapse.in > ul > .open > ul > li > a {
     background: none;
     color: #fff;
     text-decoration: none;
@@ -240,12 +242,55 @@ Navigation
     background-color: #ab6627;
 }
 
-.navbar .navbar-toggle:hover,
-.navbar .navbar-toggle:focus {
-    background-color: #d58033;
-}
+    .navbar .navbar-toggle:hover,
+    .navbar .navbar-toggle:focus
+    {
+        background-color: #d58033;
+    }
 
-/* Navbar dropdown */
+/*=========================
+Screen Width when Navbar Collapses
+===========================*/
+@media (max-width: 955px) {
+    .navbar-header {
+        float: none;
+    }
+    .navbar-toggle {
+        display: block;
+    }
+    .navbar-collapse {
+        border-top: 1px solid transparent;
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .navbar-collapse.collapse {
+        display: none!important;
+    }
+    .navbar-nav {
+        float: none!important;
+        margin: 7.5px -15px;
+    }
+    .navbar-nav>li {
+        float: none;
+    }
+    .navbar-nav>li>a {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .navbar-text {
+        float: none;
+        margin: 15px 0;
+    }
+    /* since 3.1.0 */
+    .navbar-collapse.collapse.in { 
+        display: block!important;
+    }
+    .collapsing {
+        overflow: hidden!important;
+    }
+}
+/*=========================
+Navbar dropdown
+===========================*/
 .navbar-nav > li > .dropdown-menu {
     margin: 0;
     -moz-border-radius: 0;
@@ -260,6 +305,25 @@ Navigation
 .dropdown-menu > .active > a, .dropdown-menu > .active > a:hover, .dropdown-menu > .active > a:focus {
     background: none;
     color: #cc1313;
+}
+
+div.navbar-collapse.collapse.in > form > ul > li.dropdown.open > ul > li.active > a,
+div.navbar-collapse.collapse.in > form > ul > li.dropdown.open > ul > li > a,
+div.navbar-collapse.collapse.in > form > ul > li.dropdown.open > a {
+    color: #fff;
+    background-color: #d58033;
+}
+
+.dropdown-toggle,
+.dropdown-menu,
+.dropdown-menu li {
+    width: 100%;
+    min-width: 130px;
+}
+
+body > header > nav > div > div.navbar-collapse.collapse.in {
+    height: auto;
+    overflow-y: visible;
 }
 
 .navbar-nav > li > a, .navbar-nav > li > a:active, .navbar-nav > li > a:visited, .navbar-nav > li > a:focus {
@@ -439,6 +503,34 @@ Navigation
 .thermometer-bulb-outline {
     stroke: black;
     stroke-width: 3;
+}
+/*=========================
+Home/Landing Page
+===========================*/
+.panel-body.home-about,
+.well.home-about {
+    background-color: #d58033;
+    border-radius: 7px;
+    padding: 24px 48px;
+}
+.panel-default {
+    border-radius:7px;
+}
+
+#headingAllReadyMission > h4 {
+    color: white;
+}
+
+#headingAllReadyMission {
+    background-color: #609E43;
+    border-radius:7px;
+}
+
+.home-about > p {
+    color: #fff;
+    font-size: 16px;
+    font-size: 2.2vh;
+    margin-bottom: 0px;
 }
 
 /* Event Details Page */
@@ -820,10 +912,12 @@ a:hover .myevents-block {
 }
 
 .featured-campaign {
-    border: 1px solid #d58033;
-    padding: 6px;
-    margin: 10px;
-    background: #e4cdb8;
+    border: 1px solid #609E43;
+    /*padding: 6px;*/
+    /*margin: 10px;*/
+    background-color: #609E43;
+    border-radius: 7px;
+    padding: 24px 48px;
 }
 
 .featured-campaign h2 {
@@ -839,6 +933,20 @@ a:hover .myevents-block {
     margin-top: 5px;
 }
 
-.featured-campaign h4, p{
-    color: black;
+.featured-campaign h4, .featured-campaign h2, .featured-campaign p {
+    color: #fff;
+}
+
+.featured-campaign a {
+    color: #88b5dd;
+}
+
+.well.featured-campaign {
+    margin-bottom: 0px;
+}
+
+
+.featured-campaign a:hover, .featured-campaign a:focus {
+    text-decoration: underline;
+    color: #efab6c;
 }

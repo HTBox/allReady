@@ -1,10 +1,12 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Features.Events;
 using AllReady.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using AllReady.ViewModels.Home;
+using AllReady.Features.Home;
 
 namespace AllReady.Controllers
 {
@@ -41,9 +43,14 @@ namespace AllReady.Controllers
         //}
 
         [HttpGet]
-        public IActionResult Index()
+        [Route("~/[controller]")]
+        public async Task<IActionResult> Index()
         {
-            return View("Events");
+            var model = new IndexViewModel
+            {
+                ActiveOrUpcomingEvents = await _mediator.SendAsync(new ActiveOrUpcomingEventsQuery())
+            };
+            return View(model);
         }
 
         [Route("[controller]/{id}/")]

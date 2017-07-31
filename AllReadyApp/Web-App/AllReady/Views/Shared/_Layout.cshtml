@@ -60,13 +60,13 @@
                         var isUser = areaName != "Admin";
                     }
                     <ul class="nav navbar-nav">
-                        <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
                         <li @(isUser && controllerName == "Organization" ? " class=active" : "")><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
-                        <li @(isUser && controllerName == "Home" && descriptor.ActionName == "About" ? " class=active" : "")><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+                        <li @(isUser && controllerName == "Event" && descriptor.ActionName == "Index" ? " class=active" : "")><a asp-area="" asp-controller="Event" asp-action="Index">Events</a></li>
                         @await Html.PartialAsync("_AdminNavigationPartial")
                     </ul>
-                    @await Html.PartialAsync("_LoginPartial")
-                </div>
+                        @await Html.PartialAsync("_LoginPartial")
+</div>
             </div>
         </nav>
     </header>

@@ -14,22 +14,39 @@
 </div>
 
 <div class="row">
-    <div class="container">
-        <h2>Active/Upcoming Events</h2>
+    <div class="visible-md-block visible-lg-block well home-about">
+        <p>While we can’t stop disasters from happening, we can lessen their impact on our families and the communities we live in by being prepared. <span style="font-weight: bold"><span style="color: #000">all</span>Ready</span> brings together community members, volunteers, humanitarian and community organizations to make our communities more resilient to the effects of disasters by making preparedness events more visible and effective to the communities they serve and the volunteers who support them.</p>
+    </div>
+    <div class="col-sm-12 visible-sm-block visible-xs-block">
+        <div class="panel panel-default">
+            <div class="panel-heading home-about" role="tab" id="headingAllReadyMission">
+                <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        allReady's Mission
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAllReadyMission">
+                <div class="panel-body home-about">
+                        <p>While we can’t stop disasters from happening, we can lessen their impact on our families and the communities we live in by being prepared. <span style="font-weight: bold"><span style="color: #000">all</span>Ready</span> brings together community members, volunteers, humanitarian and community organizations to make our communities more resilient to the effects of disasters by making preparedness events more visible and effective to the communities they serve and the volunteers who support them.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
 
 @if (Model.HasFeaturedCampaign)
 {
     <div class="row">
-        <div class="container">
-            <div class="jumbotron">
+        <div class="container-fluid">
+                <div class="row">
+                    <div class="@(string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl) ? "col-md-offset-3 col-md-6" : "col-md-12")">
+            <div class="well featured-campaign">
                 <h2>
                     <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-                    Featured
+                    Featured Campaign
                 </h2>
-                <div class="row">
-                    <div class="@(string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl) ? "col-md-12" : "col-md-9")">
                         <h3>
                             <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
                                 @Model.FeaturedCampaign.Title
@@ -41,7 +58,7 @@
                         }
                         <h4>Managed by @Model.FeaturedCampaign.OrganizationName</h4>
                         <p>@Model.FeaturedCampaign.Description</p>
-                        <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id" class="btn btn-primary btn-lg">
+                        <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id" class="btn btn-default btn-lg">
                             View
                         </a>
                     </div>
@@ -58,6 +75,13 @@
         </div>
     </div>
 }
+
+<div class="row">
+    <div class="container">
+        <h2>Active and Upcoming Events</h2>
+    </div>
+</div>
+
 <div class="row">
     <div class="container">
         @if (Model.ActiveOrUpcomingEvents.Count == 0)
@@ -91,7 +115,7 @@
                                                 <time value=@ev.StartDate format="dddd, MMMM d yyyy"></time> - <time value=@ev.EndDate format="dddd, MMMM d yyyy"></time>
                                             </p>
                                             <p>@ev.Description</p>
-                                            <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id" class="btn btn-primary">
+                                            <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id" class="btn btn-default">
                                                 View
                                             </a>
                                         </div>
