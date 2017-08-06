@@ -32,6 +32,35 @@ ko.observableArray.fn.filterBeforeDate = function (dateProperty, showOld, date) 
     });
 };
 
+ko.observableArray.fn.filterOnDateRange = function (beginDateProperty, endDateProperty) {
+    var dateInRange = ko.observable("");
+    this.dateInRange = dateInRange;
+
+    return this.filterList(function (observableArray) {
+        var selectedDateRange, selectedBeginDate, selectedEndDate;
+        selectedDateRange = dateInRange();
+        if (selectedDateRange) {
+            selectedBeginDate = moment(selectedDateRange);
+            selectedEndDate = moment(selectedDateRange);
+
+            selectedBeginDate.startOf("day");
+            selectedEndDate.endOf("day");
+
+            return ko.utils.arrayFilter(observableArray(), function (item) {
+                var beginDate = moment(item[beginDateProperty]),
+                    endDate = moment(item[endDateProperty]);
+                beginDate.startOf("day");
+                endDate.endOf("day");
+                return selectedBeginDate.isBefore(endDate) &&
+                    selectedEndDate.isAfter(beginDate);
+            });
+        }
+        else {
+            return observableArray();
+        }
+    });
+};
+
 ko.observableArray.fn.textFilter = function (searchProperties, initialTerm) {
     if (!$.isArray(searchProperties)) {
         searchProperties = [searchProperties];
