@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Features\Event\GetVolunteerEventsQueryHandlerShould .cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\AllReady.Core\AllReady.Core.csproj" />
     <ProjectReference Include="..\AllReady\AllReady.csproj" />
   </ItemGroup>
