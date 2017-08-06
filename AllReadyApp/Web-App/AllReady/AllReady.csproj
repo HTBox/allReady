@@ -12,9 +12,6 @@
     <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wpa81</PackageTargetFallback>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="Features\Volunteers\GetVolunteerEventsQueryHandler.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Update="wwwroot\**\*">

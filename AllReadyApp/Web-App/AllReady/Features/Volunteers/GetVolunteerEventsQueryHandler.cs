@@ -35,7 +35,8 @@ namespace AllReady.Features.Volunteers
                     TaskStartDate = rec.VolunteerTask.StartDateTime,
                     TaskEndDate = rec.VolunteerTask.EndDateTime,
                     CampaignName = rec.VolunteerTask.Event.Campaign.Name,
-                    OrganizationName = rec.VolunteerTask.Event.Campaign.ManagingOrganization.Name      
+                    OrganizationName = rec.VolunteerTask.Event.Campaign.ManagingOrganization.Name      ,
+                    VolunteerCount = rec.VolunteerTask.AssignedVolunteers.Count
                 })
                 .ToListAsync();
 
@@ -51,7 +52,8 @@ namespace AllReady.Features.Volunteers
                     EndDate = rec.FirstOrDefault().EventEndDate,
                     TimeZone = rec.FirstOrDefault().TimeZone,
                     Campaign = rec.FirstOrDefault().CampaignName,
-                    Organization = rec.FirstOrDefault().OrganizationName
+                    Organization = rec.FirstOrDefault().OrganizationName,
+                    VolunteerCount = rec.FirstOrDefault().VolunteerCount
                 };
 
                 results.Add(eventItem);
