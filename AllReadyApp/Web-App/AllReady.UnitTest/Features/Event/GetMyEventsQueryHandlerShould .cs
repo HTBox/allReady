@@ -19,8 +19,8 @@ namespace AllReady.UnitTest.Features.Event
             var sut = new GetVolunteerEventsQueryHandler(Context);
             var response = await sut.Handle(message);
 
-            Assert.True(response.CurrentEvents.First().EventId == 1
-                     && response.FutureEvents.First().EventId == 3);
+            Assert.True(response.CurrentEvents.Count() ==1
+                     && response.FutureEvents.Count() ==2);
         }
 
         protected override void LoadTestData()
