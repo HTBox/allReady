@@ -37,21 +37,38 @@
 $(document).ready(function () {
 
     $('#VolunteerTable').dataTable({
-        "serverSide": false,
-        "processing": true,
-        "ajax":
+        dom: 'Bfrtip',
+        serverSide: false,
+        processing: true,
+        ajax: 
         {
             "type": "GET",
-            "url": '../../api/volunteer',
-            "contentType": 'application/json; charset=utf-8',
+            "url": "../../api/volunteer",
+            "contentType": "application/json; charset=utf-8",
             "dataSrc": "" 
         },
-           "columns": [
+        columns: [
 
+               { "data": "WorkflowState" },
                { "data": "Name" },
                { "data": "Location" },
                { "data": "NumberOfTasks" },
                { "data": "NumberOfVolunteers" },
-           ]        
-    });
+        ],
+        select: true,
+        buttons: [               
+               {
+                   extend: 'collection',
+                   text: 'Export',
+                   buttons: [
+                       'copy',
+                       'excel',
+                       'csv',
+                       'pdf',
+                       'print'
+                   ]
+               }
+           ]    
+    },
+    );
 }); 
