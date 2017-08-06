@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
 using MediatR;
+using AllReady.Features.Volunteers;
 
 namespace AllReady.Controllers
 {
@@ -24,11 +25,21 @@ namespace AllReady.Controllers
         [Produces("application/json", Type = typeof(VolunteerProjection))]
         public async Task<IActionResult> GetVolunteerEvents()
         {
-            var t = new List<VolunteerProjection>()
-            {
-                new VolunteerProjection { Name="Test Event", Location="Test Location", NumberOfTasks=1, NumberOfVolunteers=10},
+            var t = new List<VolunteerProjection>();
+            var viewModel = await _mediator.SendAsync(new GetVolunteerEventsQuery());
 
-            };                    
+            foreach (var model in viewModel.PastEvents)
+            {
+                t.Add(new VolunteerProjection { Name = model.EventName, Location = string.Format("{0:g}", model.StartDate) + " to " + string.Format("{0:g}", model.EndDate) + "(" + model.TimeZone + ")", NumberOfTasks = model.Tasks.Count, NumberOfVolunteers = model.VolunteerCount });
+            }
+            foreach (var model in viewModel.CurrentEvents)
+            {
+                t.Add(new VolunteerProjection { Name = model.EventName, Location = string.Format("{0:g}", model.StartDate) + " to " + string.Format("{0:g}", model.EndDate) + "(" + model.TimeZone + ")", NumberOfTasks = model.Tasks.Count, NumberOfVolunteers = model.VolunteerCount });
+            }
+            foreach (var model in viewModel.FutureEvents)
+            {
+                t.Add(new VolunteerProjection { Name = model.EventName, Location = string.Format("{0:g}", model.StartDate) + " to " + string.Format("{0:g}", model.EndDate) + "(" + model.TimeZone + ")", NumberOfTasks = model.Tasks.Count, NumberOfVolunteers = model.VolunteerCount });
+            }
             return Json(t);
         }
 
