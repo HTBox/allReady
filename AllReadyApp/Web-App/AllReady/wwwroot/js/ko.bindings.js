@@ -59,3 +59,38 @@ ko.bindingHandlers.accordion = {
         }
     }
 };
+
+// knockout binding for datepicker date
+ko.bindingHandlers.dateTimePicker = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        //initialize datepicker with some optional options
+        var options = allBindingsAccessor().dateTimePickerOptions || {};
+        $(element).datetimepicker(options);
+
+        //when a user changes the date, update the view model
+        ko.utils.registerEventHandler(element, "dp.change", function (event) {
+            var value = valueAccessor();
+            if (ko.isObservable(value)) {
+                if (!event.date) {
+                    value(null);
+                }
+                else if (event.date instanceof Date) {
+                    value(event.date);
+                }
+                else {
+                    value(event.date.toDate());
+                }
+            }
+        });
+
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+            var picker = $(element).data("DateTimePicker");
+            if (picker) {
+                picker.destroy();
+            }
+        });
+    },
+    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        // This is for input data binding only.
+    }
+};
