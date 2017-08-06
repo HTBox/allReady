@@ -32,7 +32,7 @@ namespace AllReady.Controllers
     [Route("~/Volunteers/Dashboard")]
     public async Task<IActionResult> Dashboard()
     {
-      var viewModel = await _mediator.SendAsync(new GetMyEventsQuery { UserId = _userManager.GetUserId(User) });
+      var viewModel = await _mediator.SendAsync(new GetVolunteerEventsQuery { UserId = _userManager.GetUserId(User) });
 
       return View("Dashboard", viewModel);
     }
