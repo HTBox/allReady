@@ -100,6 +100,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             {
                 itineraryDetails.Requests[0].IsFirst = true;
                 itineraryDetails.Requests[itineraryDetails.Requests.Count - 1].IsLast = true;
+                itineraryDetails.HasAnyRequests = true;
 
                 BuildBingUrl(itineraryDetails);
             }
