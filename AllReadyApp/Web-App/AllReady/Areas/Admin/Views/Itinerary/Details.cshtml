@@ -177,7 +177,7 @@
         </div>
     </div>
 }
-@if (Model.Requests.Any())
+@if (Model.HasAnyRequests)
 {
     <form method="post" action="@Url.Action("Details", "Itinerary", new { area = "Admin" })#requests" class="form-horizontal">
         @Html.AntiForgeryToken()
