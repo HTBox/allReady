@@ -49,6 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
             var sut = new VolunteerTaskController(mediator.Object, null);
+
             sut.SetDefaultHttpContext();
 
             var result = await sut.Create(It.IsAny<int>());
@@ -514,6 +515,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsReturnsHttpNotFoundResultWhenTaskIsNull()
         {
             var sut = new VolunteerTaskController(Mock.Of<IMediator>(), null);
+
             var result = await sut.Details(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }

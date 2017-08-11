@@ -1,0 +1,41 @@
+﻿@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
+
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="CampaignManagerInvite" asp-action="Send" asp-area="Admin" asp-route-campaignId="@Model.Id"
+           class="btn btn-default">Create New</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.CampaignManagerInvites.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                </tr>
+                @foreach (var invite in Model.CampaignManagerInvites)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-controller="CampaignManagerInvite" asp-area="Admin" asp-route-inviteId="@invite.Id">@invite.InviteeEmail</a>
+                        </td>
+                        <td>
+                            @invite.Status.ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+            }
+            else
+            {
+                <br />
+                <p>There are currently no invites to display</p>
+            }
+    </div>
+</div>
