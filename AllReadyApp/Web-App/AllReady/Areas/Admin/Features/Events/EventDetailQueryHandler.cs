@@ -123,6 +123,9 @@ namespace AllReady.Areas.Admin.Features.Events
                         case RequestStatus.Canceled:
                             result.CanceledRequests = request.Count;
                             break;
+                        case RequestStatus.Requested:
+                            result.RequestedRequests = request.Count;
+                            break;
                     }
                 }
 
@@ -132,7 +135,8 @@ namespace AllReady.Areas.Admin.Features.Events
                     result.PendingConfirmationRequests +
                     result.ConfirmedRequests +
                     result.CompletedRequests + 
-                    result.CanceledRequests;
+                    result.CanceledRequests +
+                    result.RequestedRequests;
 
                 result.VolunteersRequired = await _context.VolunteerTasks.Where(rec => rec.EventId == result.Id).SumAsync(rec => rec.NumberOfVolunteersRequired);
 

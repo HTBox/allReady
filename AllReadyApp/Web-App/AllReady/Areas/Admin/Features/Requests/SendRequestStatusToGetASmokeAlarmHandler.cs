@@ -23,7 +23,7 @@ namespace AllReady.Areas.Admin.Features.Requests
             var request = await context.Requests.SingleOrDefaultAsync(x => notification.RequestId == x.RequestId && x.Source == RequestSource.Api);
             if (request != null)
             {
-                if (notification.NewStatus == RequestStatus.Completed || notification.NewStatus == RequestStatus.Canceled || notification.NewStatus == RequestStatus.Assigned || notification.NewStatus == RequestStatus.Unassigned)
+                if (notification.NewStatus == RequestStatus.Completed || notification.NewStatus == RequestStatus.Canceled || notification.NewStatus == RequestStatus.Assigned || notification.NewStatus == RequestStatus.Unassigned || notification.NewStatus == RequestStatus.Requested)
                 {
                     var gasaStatus = string.Empty;
                     var acceptance = false;
@@ -44,6 +44,9 @@ namespace AllReady.Areas.Admin.Features.Requests
                             break;
                         case RequestStatus.Unassigned:
                             gasaStatus = GasaStatus.New;
+                            break;
+                        case RequestStatus.Requested:
+                            gasaStatus = GasaStatus.Requested;
                             break;
                     }
 

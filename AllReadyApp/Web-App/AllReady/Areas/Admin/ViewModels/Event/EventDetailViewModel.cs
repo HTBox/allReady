@@ -70,6 +70,11 @@ namespace AllReady.Areas.Admin.ViewModels.Event
         public int CanceledRequests { get; set; }
 
         /// <summary>
+        /// The number of requested requests for this event
+        /// </summary>
+        public int RequestedRequests { get; set; }
+
+        /// <summary>
         /// The calculated percentage of requests which are in the unassigned status for this event
         /// </summary>
         public string UnassignedPercentage
@@ -79,7 +84,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
                 var percentage = 0.0;
 
                 if (TotalRequests > 0)
-                { 
+                {
                     percentage = UnassignedRequests / (double)TotalRequests * 100;
                 }
 
@@ -98,7 +103,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 {
-                    percentage = (AssignedRequests/(double) TotalRequests)*100;
+                    percentage = (AssignedRequests / (double)TotalRequests) * 100;
                 }
 
                 return percentage.ToString("0.0");
@@ -146,7 +151,7 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 {
-                    percentage = (CompletedRequests/(double) TotalRequests)*100;
+                    percentage = (CompletedRequests / (double)TotalRequests) * 100;
                 }
 
                 return percentage.ToString("0.0");
@@ -164,7 +169,25 @@ namespace AllReady.Areas.Admin.ViewModels.Event
 
                 if (TotalRequests > 0)
                 {
-                    percentage = (CanceledRequests/(double) TotalRequests)*100;
+                    percentage = (CanceledRequests / (double)TotalRequests) * 100;
+                }
+
+                return percentage.ToString("0.0");
+            }
+        }
+
+        /// <summary>
+        /// The calculated percentage of requests which are in the canceled status for this event
+        /// </summary>
+        public string RequestedPercentage
+        {
+            get
+            {
+                var percentage = 0.0;
+
+                if (TotalRequests > 0)
+                {
+                    percentage = (RequestedRequests / (double)TotalRequests) * 100;
                 }
 
                 return percentage.ToString("0.0");

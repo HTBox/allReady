@@ -15,6 +15,8 @@ namespace AllReady.Models
         [Display(Name = "Confirmed")]
         Confirmed = 4,
         [Display(Name = "Pending Confirmation")]
-        PendingConfirmation = 5
+        PendingConfirmation = 5,
+        [Display(Name = "Requested")]
+        Requested = 6
     }
 }
