@@ -124,6 +124,27 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
+        public async Task DetailsGet_SetsTeamManagementEnabled_FromAuthorizableItinerary()
+        {
+            const int orgId = 1;
+            var viewModel = new ItineraryDetailsViewModel { OrganizationId = orgId };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(viewModel);
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(true, false, false, false, false, true));
+
+            var userManager = UserManagerMockHelper.CreateUserManagerMock();
+            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
+
+            var result = await sut.Details(It.IsAny<int>()) as ViewResult;
+            var teamManagementEnabled = (result.ViewData.Model as ItineraryDetailsViewModel).TeamManagementEnabled;
+
+            Assert.Equal(teamManagementEnabled, true);
+        }
+
+        [Fact]
         public async Task DetailsGet_OptimizeRouteResultStatusQuery_WithExpectedValues()
         {
             const string userId = "123";

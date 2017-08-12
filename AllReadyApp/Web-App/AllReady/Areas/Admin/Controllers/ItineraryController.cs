@@ -55,6 +55,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             itinerary.TeamLeadChangedSuccess = teamLeadSuccess;
+            itinerary.TeamManagementEnabled = await authorizableItinerary.UserCanManageTeamMembers();
 
             return View("Details", itinerary);
         }
