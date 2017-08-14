@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -92,7 +92,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<CampaignContact> builder)
         {
             builder.HasKey(tc => new { tc.CampaignId, tc.ContactId, tc.ContactType });
-            builder.HasOne(tc => tc.Contact);
+            builder.HasOne(tc => tc.Contact).WithMany(x => x.CampaignContacts).HasForeignKey(x => x.ContactId);
             builder.HasOne(tc => tc.Campaign);
         }
 
@@ -105,7 +105,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<OrganizationContact> builder)
         {
             builder.HasKey(tc => new { tc.OrganizationId, tc.ContactId, tc.ContactType });
-            builder.HasOne(tc => tc.Contact);
+            builder.HasOne(tc => tc.Contact).WithMany(x => x.OrganizationContacts).HasForeignKey(x => x.ContactId);
             builder.HasOne(tc => tc.Organization);
         }
 
