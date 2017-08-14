@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using AllReady.DataAccess;
 using AllReady.Hangfire;
@@ -8,54 +8,40 @@ using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json.Serialization;
 using Hangfire;
 using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
 using AllReady.Configuration;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace AllReady
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private static Task HandleRemoteLoginFailure(RemoteFailureContext ctx)
         {
-            // Setup configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("version.json")
-                .AddJsonFile("config.json")
-                .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            if (env.IsDevelopment())
-            {
-                // This reads the configuration keys from the secret store.
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets("aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0");
-
-                builder.AddApplicationInsightsSettings(developerMode: true);
-            }
-            else if (env.IsStaging() || env.IsProduction())
-            {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: false);
-            }
-
-            Configuration = builder.Build();
-
-            Configuration["version"] = new ApplicationEnvironment().ApplicationVersion; // version in project.json
+            ctx.Response.Redirect("/Account/Login");
+            ctx.HandleResponse();
+            return Task.CompletedTask;
         }
 
-        public IConfiguration Configuration { get; set; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            Configuration["version"] = new ApplicationEnvironment().ApplicationVersion;
+        }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        public IConfiguration Configuration { get; }
+        
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             //Add CORS support.
@@ -73,23 +59,88 @@ namespace AllReady
 
             Options.LoadConfigurationOptions(services, Configuration);
 
-            // Add Identity services to the services container.
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequiredLength = 10;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireUppercase = false;
+                })
+                .AddEntityFrameworkStores<AllReadyContext>();
+
+            services.ConfigureApplicationCookie(options =>
             {
-                options.Password.RequiredLength = 10;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = true;
-                options.Password.RequireUppercase = false;
-                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Home/AccessDenied");
-            })
-            .AddEntityFrameworkStores<AllReadyContext>()
-            .AddDefaultTokenProviders();
+                options.LoginPath = "/Account/LogIn";
+                options.AccessDeniedPath = "/Home/AccessDenied";
+            });
+
+            services.AddAuthentication()
+                .AddFacebook(options => {
+                    options.AppId = Configuration["authentication:facebook:appid"];
+                    options.AppSecret = Configuration["authentication:facebook:appsecret"];
+                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
+                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
+                    options.Events = new OAuthEvents()
+                    {
+                        OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                    };
+                });
+
+
+            //if (configuration["Authentication:MicrosoftAccount:ClientId"] != null)
+            //{
+            //    var options = new MicrosoftAccountOptions
+            //    {
+            //        ClientId = configuration["Authentication:MicrosoftAccount:ClientId"],
+            //        ClientSecret = configuration["Authentication:MicrosoftAccount:ClientSecret"],
+            //        Events = new OAuthEvents()
+            //        {
+            //            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+            //        }
+            //    };
+
+            //    app.UseMicrosoftAccountAuthentication(options);
+            //}
+
+            ////Twitter doesn't automatically include email addresses, has to be enabled as a special permission
+            ////once enabled then RetrieveUserDetails property includes email in claims returned by twitter middleware
+            //if (configuration["Authentication:Twitter:ConsumerKey"] != null)
+            //{
+            //    var options = new TwitterOptions
+            //    {
+            //        ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
+            //        ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
+            //        RetrieveUserDetails = true,
+            //        Events = new TwitterEvents()
+            //        {
+
+            //            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+            //        }
+            //    };
+
+            //    app.UseTwitterAuthentication(options);
+            //}
+
+            //if (configuration["Authentication:Google:ClientId"] != null)
+            //{
+            //    var options = new GoogleOptions
+            //    {
+            //        ClientId = configuration["Authentication:Google:ClientId"],
+            //        ClientSecret = configuration["Authentication:Google:ClientSecret"],
+            //        Events = new OAuthEvents()
+            //        {
+            //            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+            //        }
+            //    };
+
+            //    app.UseGoogleAuthentication(options);
+            //}
 
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(nameof(UserType.OrgAdmin), b => b.RequireClaim(Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin), nameof(UserType.SiteAdmin)));
-                options.AddPolicy(nameof(UserType.SiteAdmin), b => b.RequireClaim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
+                options.AddPolicy(nameof(UserType.OrgAdmin), b => b.RequireClaim(ClaimTypes.UserType, nameof(UserType.OrgAdmin), nameof(UserType.SiteAdmin)));
+                options.AddPolicy(nameof(UserType.SiteAdmin), b => b.RequireClaim(ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
             });
 
             services.AddLocalization();
@@ -194,7 +245,6 @@ namespace AllReady
 
             Authentication.ConfigureAuthentication(app, Configuration);
 
-
             //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
             if (!env.IsProduction())
             {
@@ -221,7 +271,7 @@ namespace AllReady
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                await sampleData.CreateAdminUser();
+                //await sampleData.CreateAdminUser();
             }
         }
     }
