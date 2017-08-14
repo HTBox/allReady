@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Configuration;
@@ -23,11 +24,11 @@ namespace AllReady.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IOptions<GeneralSettings> _generalSettings;
         private readonly IMediator _mediator;
         private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
         private readonly IRedirectAccountControllerRequests _redirectAccountControllerRequests;
         private readonly string _externalCookieScheme;
+        private readonly TimeZoneInfo _timeZone = TimeZoneInfo.Local;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -41,7 +42,6 @@ namespace AllReady.Controllers
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _generalSettings = generalSettings;
             _mediator = mediator;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
             _redirectAccountControllerRequests = redirectAccountControllerRequests;
@@ -134,7 +134,7 @@ namespace AllReady.Controllers
                     UserName = model.Email,
                     Email = model.Email,
                     PhoneNumber = model.PhoneNumber,
-                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
+                    TimeZoneId = _timeZone.Id
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -361,7 +361,7 @@ namespace AllReady.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    TimeZoneId = _generalSettings.Value.DefaultTimeZone,
+                    TimeZoneId = _timeZone.Id,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     PhoneNumber = model.PhoneNumber

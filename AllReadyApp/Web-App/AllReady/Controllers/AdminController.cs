@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Configuration;
@@ -22,7 +23,7 @@ namespace AllReady.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMediator _mediator;
         private readonly IOptions<SampleDataSettings> _settings;
-        private readonly IOptions<GeneralSettings> _generalSettings;
+        private readonly TimeZoneInfo _timeZone = TimeZoneInfo.Local;
 
         public AdminController(
             UserManager<ApplicationUser> userManager,
@@ -35,7 +36,6 @@ namespace AllReady.Controllers
             _signInManager = signInManager;
             _mediator = mediator;
             _settings = options;
-            _generalSettings = generalSettings;
         }
 
         //
@@ -60,7 +60,7 @@ namespace AllReady.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    TimeZoneId = _generalSettings.Value.DefaultTimeZone
+                    TimeZoneId = _timeZone.Id
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
