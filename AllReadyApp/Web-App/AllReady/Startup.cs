@@ -7,7 +7,6 @@ using AllReady.Security;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -187,33 +186,10 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.
             app.UseCors("allReady");
-
-            // todo: in RC update we can read from a logging.json config file
-            loggerFactory.AddConsole((category, level) =>
-            {
-                if (category.StartsWith("Microsoft."))
-                {
-                    return level >= LogLevel.Information;
-                }
-                return true;
-            });
-
-            if (env.IsDevelopment())
-            {
-                // this will go to the VS output window
-                loggerFactory.AddDebug((category, level) =>
-                {
-                    if (category.StartsWith("Microsoft."))
-                    {
-                        return level >= LogLevel.Information;
-                    }
-                    return true;
-                });
-            }
 
             app.UseSession();
 
@@ -222,12 +198,12 @@ namespace AllReady
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
             }
             else if (env.IsStaging())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+                //app.UseDatabaseErrorPage();
             }
             else
             {
@@ -271,7 +247,7 @@ namespace AllReady
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                //await sampleData.CreateAdminUser();
+                sampleData.CreateAdminUser().GetAwaiter().GetResult();
             }
         }
     }

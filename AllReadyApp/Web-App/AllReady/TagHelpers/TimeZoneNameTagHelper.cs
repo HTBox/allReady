@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace AllReady.TagHelpers
 {
-    [HtmlTargetElement("time-zone-name", Attributes="time-zone-id")]
+    [HtmlTargetElement("time-zone-name", Attributes = "time-zone-id")]
     public class TimeZoneNameTagHelper : TagHelper
     {
         [HtmlAttributeName("time-zone-id")]
@@ -11,8 +11,10 @@ namespace AllReady.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
+            if (TimeZoneId == null) return;
+
             output.TagName = "span";
-            string timeZoneDisplayName = FormatTimeZoneDisplayName(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).DisplayName);
+            var timeZoneDisplayName = FormatTimeZoneDisplayName(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).DisplayName);
             output.Content.SetContent(timeZoneDisplayName);
         }
 
