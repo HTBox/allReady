@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Models;
@@ -27,6 +28,8 @@ namespace AllReady.UnitTest.Controllers
 {
     public class AccountControllerTests
     {
+        private readonly string _defaultTimeZone = TimeZoneInfo.Local.Id;
+
         [Fact]
         public void LoginGetPopulatesViewDataWithTheCorrectTestUrl()
         {
@@ -297,12 +300,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterPostInvokesCreateAsyncWithTheCorrectParameters_WhenModelStateIsValid()
         {
-            const string defaultTimeZone = "DefaultTimeZone";
-
             var model = new RegisterViewModel { Email = "email", Password = "Password" };
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
@@ -313,19 +314,17 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(x => x.CreateAsync(It.Is<ApplicationUser>(au =>
                 au.UserName == model.Email &&
                 au.Email == model.Email &&
-                au.TimeZoneId == defaultTimeZone),
+                au.TimeZoneId == _defaultTimeZone),
                 model.Password), Times.Once);
         }
 
         [Fact]
         public async Task RegisterPostInvokesGenerateEmailConfirmationTokenAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
-            const string defaultTimeZone = "DefaultTimeZone";
-
             var model = new RegisterViewModel { Email = "email", Password = "Password" };
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
@@ -343,7 +342,7 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(x => x.GenerateEmailConfirmationTokenAsync(It.Is<ApplicationUser>(au =>
                 au.UserName == model.Email &&
                 au.Email == model.Email &&
-                au.TimeZoneId == defaultTimeZone)), Times.Once);
+                au.TimeZoneId == _defaultTimeZone)), Times.Once);
         }
 
         [Fact]
@@ -499,11 +498,10 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RegisterPostInvokesAddClaimAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
-            const string defaultTimeZone = "DefaultTimeZone";
             var model = new RegisterViewModel { Email = "email" };
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
@@ -525,18 +523,16 @@ namespace AllReady.UnitTest.Controllers
             userManager.Verify(x => x.AddClaimAsync(It.Is<ApplicationUser>(au =>
                 au.UserName == model.Email &&
                 au.Email == model.Email &&
-                au.TimeZoneId == defaultTimeZone), It.IsAny<Claim>()), Times.Once);
+                au.TimeZoneId == _defaultTimeZone), It.IsAny<Claim>()), Times.Once);
         }
 
         [Fact]
         public async Task RegisterPostInvokesSignInAsyncWithTheCorrectParameters_WhenModelStateIsValid_AndUserCreationIsSuccessful()
         {
-            const string defaultTimeZone = "DefaultTimeZone";
-
             var model = new RegisterViewModel { Email = "email" };
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = defaultTimeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.CreateAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
@@ -560,7 +556,7 @@ namespace AllReady.UnitTest.Controllers
             signInManager.Verify(x => x.SignInAsync(It.Is<ApplicationUser>(au =>
                 au.UserName == model.Email &&
                 au.Email == model.Email &&
-                au.TimeZoneId == defaultTimeZone),
+                au.TimeZoneId == _defaultTimeZone),
             It.IsAny<bool>(), null), Times.Once);
         }
 
@@ -1787,7 +1783,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = "DefaultTimeZone" });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -1809,7 +1805,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
 
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
             var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
@@ -1819,7 +1814,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -1832,7 +1827,7 @@ namespace AllReady.UnitTest.Controllers
                         It.Is<ApplicationUser>(
                             user =>
                                 user.UserName == viewModel.Email && user.Email == viewModel.Email &&
-                                user.TimeZoneId == timeZone &&
+                                user.TimeZoneId == _defaultTimeZone &&
                                 user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName &&
                                 user.PhoneNumber == viewModel.PhoneNumber)));
         }
@@ -1843,7 +1838,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
             const string emailConfirmationToken = "ect";
 
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
@@ -1856,7 +1850,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -1872,7 +1866,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
             const string emailConfirmationToken = "ect";
 
             var userManager = CreateUserManagerMockWithSucessIdentityResult();
@@ -1886,7 +1879,7 @@ namespace AllReady.UnitTest.Controllers
             viewModel.EmailIsVerifiedByExternalLoginProvider = true;
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -1895,7 +1888,7 @@ namespace AllReady.UnitTest.Controllers
 
             userManager.Verify(u => u.ConfirmEmailAsync(It.Is<ApplicationUser>(user =>
                 user.UserName == viewModel.Email && user.Email == viewModel.Email &&
-                user.TimeZoneId == timeZone &&
+                user.TimeZoneId == _defaultTimeZone &&
                 user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName &&
                 user.PhoneNumber == viewModel.PhoneNumber), emailConfirmationToken));
         }
@@ -1906,7 +1899,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
             const string emailConfirmationToken = "ect";
             const string callback = "www.callback";
 
@@ -1921,7 +1913,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -1940,7 +1932,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
             const string emailConfirmationToken = "ect";
             const string callback = "www.callback";
 
@@ -1955,7 +1946,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -1964,7 +1955,7 @@ namespace AllReady.UnitTest.Controllers
 
             userManager.Setup(u => u.GenerateChangePhoneNumberTokenAsync(It.Is<ApplicationUser>(user =>
                 user.UserName == viewModel.Email && user.Email == viewModel.Email &&
-                user.TimeZoneId == timeZone &&
+                user.TimeZoneId == _defaultTimeZone &&
                 user.FirstName == viewModel.FirstName && user.LastName == viewModel.LastName &&
                 user.PhoneNumber == viewModel.PhoneNumber), viewModel.PhoneNumber));
         }
@@ -1975,7 +1966,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
             const string emailConfirmationToken = "ect";
             const string callback = "www.callback";
             const string changePhoneNumberToken = "cpnt";
@@ -1994,7 +1984,7 @@ namespace AllReady.UnitTest.Controllers
                 .ReturnsAsync(changePhoneNumberToken);
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -2014,7 +2004,6 @@ namespace AllReady.UnitTest.Controllers
             const string loginProvider = "test";
             const string providerKey = "test";
             const string displayName = "testDisplayName";
-            const string timeZone = "DefaultTimeZone";
             const string emailConfirmationToken = "ect";
             const string callback = "www.callback";
             const string changePhoneNumberToken = "cpnt";
@@ -2033,7 +2022,7 @@ namespace AllReady.UnitTest.Controllers
                 .ReturnsAsync(changePhoneNumberToken);
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = timeZone });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, mediator.Object, null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -2059,7 +2048,7 @@ namespace AllReady.UnitTest.Controllers
             var viewModel = CreateExternalLoginConfirmationViewModel();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = "DefaultTimeZone" });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, Mock.Of<IRedirectAccountControllerRequests>());
             sut.SetFakeUser("userId");
@@ -2088,7 +2077,7 @@ namespace AllReady.UnitTest.Controllers
             var redirectAccountControllerRequests = new Mock<IRedirectAccountControllerRequests>();
 
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = "DefaultTimeZone" });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, redirectAccountControllerRequests.Object);
             sut.SetFakeUser("userId");
@@ -2120,7 +2109,7 @@ namespace AllReady.UnitTest.Controllers
             SetupUrlHelperMockToReturnResultBaseOnLineBegining(urlHelperMock);
             var viewModel = CreateExternalLoginConfirmationViewModel();
             var generalSettings = new Mock<IOptions<GeneralSettings>>();
-            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = "DefaultTimeZone" });
+            generalSettings.Setup(x => x.Value).Returns(new GeneralSettings { DefaultTimeZone = _defaultTimeZone });
 
             var sut = new AccountController(userManager.Object, signInManager.Object, generalSettings.Object, null, Mock.Of<IMediator>(), null, null);
             sut.SetFakeUser("userId");
