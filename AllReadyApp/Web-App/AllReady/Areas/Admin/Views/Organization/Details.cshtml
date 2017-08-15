@@ -1,3 +1,4 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Organization.OrganizationDetailViewModel
 
 @{ 
@@ -69,7 +70,7 @@
 <div class="row">
     <div class="col-md-12">
         @Html.ActionLink("Edit", "Edit", "Organization", new { id = Model.Id }, new { @class = "btn btn-primary" }) 
-        @Html.RouteLink("Back to list", "areaRoute", new {area = "Admin", controller = "Organization", action = "Index"}, new {@class = "btn"})
+        @Html.RouteLink("Back to list", "areaRoute", new {area = AreaNames.Admin, controller = "Organization", action = "Index"}, new {@class = "btn"})
     </div>
 </div>
 

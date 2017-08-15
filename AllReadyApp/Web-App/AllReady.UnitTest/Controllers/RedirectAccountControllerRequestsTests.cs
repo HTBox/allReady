@@ -1,4 +1,5 @@
 ﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Constants;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
@@ -48,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
 
             var routeValueDictionary = new RouteValueDictionary
             {
-                ["area"] = "Admin"
+                ["area"] = AreaNames.Admin
             };
 
             var sut = new RedirectAccountControllerRequests(urlHelper.Object);
@@ -70,7 +71,7 @@ namespace AllReady.UnitTest.Controllers
 
             var routeValueDictionary = new RouteValueDictionary
             {
-                ["area"] = "Admin"
+                ["area"] = AreaNames.Admin
             };
 
             var sut = new RedirectAccountControllerRequests(urlHelper.Object);

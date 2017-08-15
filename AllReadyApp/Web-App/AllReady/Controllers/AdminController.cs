@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Features.Admin;
 using AllReady.Features.Manage;
 using AllReady.Models;
@@ -67,9 +68,9 @@ namespace AllReady.Controllers
                 if (result.Succeeded)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = "Admin", Values = new { userId = user.Id, token = token }, Protocol = Request.Scheme });
+                    var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmEmail), Controller = ControllerNames.Admin, Values = new { userId = user.Id, token = token }, Protocol = Request.Scheme });
                     await _mediator.SendAsync(new SendConfirmAccountEmail { Email = model.Email, CallbackUrl = callbackUrl });
-                    return RedirectToAction(nameof(DisplayEmail), "Admin");
+                    return RedirectToAction(nameof(DisplayEmail), AreaNames.Admin);
                 }
 
                 AddErrors(result);
@@ -109,7 +110,7 @@ namespace AllReady.Controllers
             // this user as a Organization Admin
             if (result.Succeeded)
             {
-                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(SiteController.EditUser), Controller = "Site", Values = new { area = "Admin", userId = user.Id }, Protocol = HttpContext.Request.Scheme });
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(SiteController.EditUser), Controller = "Site", Values = new { area = AreaNames.Admin, userId = user.Id }, Protocol = HttpContext.Request.Scheme });
                 await _mediator.SendAsync(new SendApproveOrganizationUserAccountEmail { DefaultAdminUsername = _settings.Value.DefaultAdminUsername, CallbackUrl = callbackUrl });
             }
 

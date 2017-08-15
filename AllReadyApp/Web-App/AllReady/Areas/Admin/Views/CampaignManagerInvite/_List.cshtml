@@ -1,8 +1,9 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
 <div class="row">
     <div class="col-md-12">
-        <a asp-controller="CampaignManagerInvite" asp-action="Send" asp-area="Admin" asp-route-campaignId="@Model.Id"
+        <a asp-controller="CampaignManagerInvite" asp-action="Send" asp-area="@AreaNames.Admin" asp-route-campaignId="@Model.Id"
            class="btn btn-default">Create New</a>
     </div>
 </div>
@@ -23,7 +24,7 @@
                 {
                     <tr>
                         <td>
-                            <a asp-action="Details" asp-controller="CampaignManagerInvite" asp-area="Admin" asp-route-inviteId="@invite.Id">@invite.InviteeEmail</a>
+                            <a asp-action="Details" asp-controller="CampaignManagerInvite" asp-area="@AreaNames.Admin" asp-route-inviteId="@invite.Id">@invite.InviteeEmail</a>
                         </td>
                         <td>
                             @invite.Status.ToString()

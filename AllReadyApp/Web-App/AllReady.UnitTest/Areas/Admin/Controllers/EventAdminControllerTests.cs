@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AllReady.Constants;
 using Xunit;
 using DeleteViewModel = AllReady.Areas.Admin.Features.Events.DeleteViewModel;
 
@@ -556,7 +557,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             redirectResult.ControllerName.ShouldBe("Campaign");
             redirectResult.ActionName.ShouldBe("Details");
 
-            redirectResult.RouteValues["area"].ShouldBe("Admin");
+            redirectResult.RouteValues["area"].ShouldBe(AreaNames.Admin);
             redirectResult.RouteValues["id"].ShouldBe(cmapaignId);
         }
 
@@ -850,7 +851,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = EventControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
         }
 
         [Fact]

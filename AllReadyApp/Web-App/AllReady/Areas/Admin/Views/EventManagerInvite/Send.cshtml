@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.ViewModels.ManagerInvite.EventManagerInviteViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.ManagerInvite.EventManagerInviteViewModel
 
 @{
     ViewData["Title"] = "Send Event Manager Invite";
@@ -7,9 +8,9 @@
 <div class="row">
     <div class="col-md-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">@Model.EventName</a></li>
             <li>Create Event Manager Invite</li>
         </ol>
     </div>
@@ -19,7 +20,7 @@
 
 <div class="row">
     <div class="col-12">
-        <form id="sendForm" class="form-horizontal" asp-action="Send" asp-controller="EventManagerInvite" asp-area="Admin" method="post" role="form">
+        <form id="sendForm" class="form-horizontal" asp-action="Send" asp-controller="EventManagerInvite" asp-area="@AreaNames.Admin" method="post" role="form">
             <input type="hidden" asp-for="@Model.EventName" />
             <input type="hidden" asp-for="@Model.CampaignId" />
             <input type="hidden" asp-for="@Model.CampaignName" />

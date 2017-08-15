@@ -1,4 +1,5 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Event.EventDetailViewModel
 
@@ -10,8 +11,8 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -27,11 +28,11 @@
     <div class="col-md-10">
         <h2>
             <span data-event-title>@Model.Name</span>
-            <a asp-area="Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
             @if (Model.ShowDeleteButton)
             {
-                <a asp-area="Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
-                <a asp-area="Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
+                <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
             }
         </h2>
         <p>@Model.Description</p>
@@ -82,7 +83,7 @@
 {
     <div class="row">
         <div class="col-md-12">
-            <a asp-area="Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+            <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
         </div>
     </div>
 }
@@ -95,7 +96,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="messageVolunteersLabel">Message All Volunteers</h4>
             </div>
-            <form asp-area="Admin" asp-controller="Event" asp-action="MessageAllVolunteers" method="post">
+            <form asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="MessageAllVolunteers" method="post">
                 <div class="modal-body">
                     <input type="hidden" value="@Model.Id" name="eventId" id="message-eventId">
                     <div class="form-group">
@@ -150,9 +151,9 @@
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="createItineraryLabel">Create Itinerary</h4>
                 </div>
-                <input type="hidden" id="itineraryDetailUrl" value="@string.Concat(Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0'), "{id}")" />
+                <input type="hidden" id="itineraryDetailUrl" value="@string.Concat(Url.Action("Details", "Itinerary", new { area = AreaNames.Admin, id = 0 }).TrimEnd('0'), "{id}")" />
 
-                <form asp-area="Admin" asp-controller="Itinerary" asp-action="Create" method="post">
+                <form asp-area="@AreaNames.Admin" asp-controller="Itinerary" asp-action="Create" method="post">
                     <div class="modal-body">
                         <input type="hidden" asp-for="NewItinerary.EventId" name="@nameof(Model.NewItinerary.EventId)">
                         <div class="form-group">
@@ -194,7 +195,7 @@
     {
         <div class="row">
             <div class="col-md-12">
-                <a asp-action="Create" asp-controller="Request" asp-area="Admin" asp-route-eventId="@Model.Id" class="btn btn-default">Create Request</a>
+                <a asp-action="Create" asp-controller="Request" asp-area="@AreaNames.Admin" asp-route-eventId="@Model.Id" class="btn btn-default">Create Request</a>
             </div>
             &nbsp;
         </div>

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Controllers;
 using AllReady.Extensions;
 using AllReady.Features.Admin;
@@ -144,7 +145,7 @@ namespace AllReady.UnitTest.Controllers
             //note: I can't test the Values part here b/c I do not have control over the Id generation (which is a guid represented as as string) on ApplicationUser b/c it's new'ed up in the controller
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "ConfirmEmail" &&
-                uac.Controller == "Admin" &&
+                uac.Controller == ControllerNames.Admin &&
                 uac.Protocol == requestScheme)),
                 Times.Once);
         }
@@ -197,7 +198,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Register(new RegisterViewModel()) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(AdminController.DisplayEmail));
-            Assert.Equal(result.ControllerName, "Admin");
+            Assert.Equal(result.ControllerName, ControllerNames.Admin);
         }
 
         [Fact]

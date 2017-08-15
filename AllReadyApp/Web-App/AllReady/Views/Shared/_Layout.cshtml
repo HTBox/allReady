@@ -1,4 +1,5 @@
-﻿@using Microsoft.ApplicationInsights.AspNetCore
+﻿@using AllReady.Constants
+@using Microsoft.ApplicationInsights.AspNetCore
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 <!DOCTYPE html>
@@ -57,7 +58,7 @@
                         var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
                         var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
                         var controllerName = descriptor.ControllerName;
-                        var isUser = areaName != "Admin";
+                        var isUser = areaName != AreaNames.Admin;
                     }
                     <ul class="nav navbar-nav">
                         <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>

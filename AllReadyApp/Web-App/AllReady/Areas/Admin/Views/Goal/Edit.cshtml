@@ -1,4 +1,5 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Goal.GoalEditViewModel
 @inject AllReady.Services.ISelectListService SelectListService
 
@@ -7,7 +8,7 @@
     //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
     var isEdit = Model.Id != 0;
     string actionTitle;
-    string cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = "Admin" });
+    string cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = AreaNames.Admin });
     if (isEdit)
     {
         ViewBag.Title = $"Edit Goal";
@@ -30,11 +31,11 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
             @if (isEdit)
             {
-                <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.TextualGoal</a></li>
+                <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.TextualGoal</a></li>
                 <li>Edit</li>
             }
             else
@@ -50,7 +51,7 @@
 
 
 
-<form asp-controller="Goal" asp-area="Admin" method="post" enctype="multipart/form-data">
+<form asp-controller="Goal" asp-area="@AreaNames.Admin" method="post" enctype="multipart/form-data">
 
     <div class="form-horizontal">
 

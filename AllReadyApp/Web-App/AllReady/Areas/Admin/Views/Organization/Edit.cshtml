@@ -1,3 +1,4 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Organization.OrganizationEditViewModel
 
 @{
@@ -8,20 +9,20 @@
     {
         ViewData["Title"] = $"Edit Organization {Model.Name}";
         actionTitle = "Save";
-        cancelUrl = Url.Action("Details", "Organization", new { area = "Admin", id = Model.Id });
+        cancelUrl = Url.Action("Details", "Organization", new { area = AreaNames.Admin, id = Model.Id });
     }
     else
     {
         ViewData["Title"] = "Create Organization";
         actionTitle = "Create";
-        cancelUrl = Url.Action("Index", "Organization", new { area = "Admin" });
+        cancelUrl = Url.Action("Index", "Organization", new { area = AreaNames.Admin });
     }
 }
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Organization" asp-action="Index" asp-area="Admin">Organizations</a></li>
+            <li><a asp-controller="Organization" asp-action="Index" asp-area="@AreaNames.Admin">Organizations</a></li>
             @if (isEdit)
             {
                 <li><a href="@cancelUrl">@Model.Name</a></li>
@@ -43,7 +44,7 @@
     </div>
 </div>
 
-<form asp-controller="Organization" asp-area="Admin" asp-action="Edit" method="post">
+<form asp-controller="Organization" asp-area="@AreaNames.Admin" asp-action="Edit" method="post">
     <div class="form-horizontal">
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>

@@ -4,13 +4,14 @@ using MediatR;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.SiteAdmin))]
     public class OrganizationController : Controller
     {
@@ -79,7 +80,7 @@ namespace AllReady.Areas.Admin.Controllers
                 if (isNameUnique)
                 {
                     var id = await _mediator.SendAsync(new EditOrganizationCommand { Organization = organization });
-                    return RedirectToAction(nameof(Details), new { id, area = "Admin" });
+                    return RedirectToAction(nameof(Details), new { id, area = AreaNames.Admin });
                 }
 
                 ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
@@ -109,7 +110,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _mediator.SendAsync(new DeleteOrganization { Id = id });
-            return RedirectToAction(nameof(Index), new { area = "Admin" });
+            return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
         }               
     }
 }

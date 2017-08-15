@@ -1,3 +1,4 @@
+﻿@using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignSummaryViewModel
 @inject AllReady.Services.ISelectListService SelectListService
@@ -10,13 +11,13 @@
     {
         ViewData["Title"] = "Edit Campaign";
         actionTitle = "Save";
-        cancelUrl = Url.Action("Details", "Campaign", new { area = "Admin", id = Model.Id });
+        cancelUrl = Url.Action("Details", "Campaign", new { area = AreaNames.Admin, id = Model.Id });
     }
     else
     {
         ViewData["Title"] = "Create Campaign";
         actionTitle = "Create";
-        cancelUrl = Url.Action("Index", "Campaign", new { area = "Admin" });
+        cancelUrl = Url.Action("Index", "Campaign", new { area = AreaNames.Admin });
     }
 }
 
@@ -30,7 +31,7 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
             @if (isEdit)
             {
                 <li><a href="@cancelUrl">@Model.Name</a></li>
@@ -59,7 +60,7 @@
 
     <div id="publish-tab" class="tab-pane fade in active">
 
-        <form asp-controller="Campaign" asp-area="Admin" asp-action="Edit" id="campaign-form" method="post" enctype="multipart/form-data">
+        <form asp-controller="Campaign" asp-area="@AreaNames.Admin" asp-action="Edit" id="campaign-form" method="post" enctype="multipart/form-data">
 
             <div class="form-horizontal">
 

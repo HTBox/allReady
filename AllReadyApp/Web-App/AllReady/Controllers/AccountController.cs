@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
@@ -94,7 +95,7 @@ namespace AllReady.Controllers
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, model.RememberMe });
+                    return RedirectToAction(nameof(AdminController.SendCode), AreaNames.Admin, new { ReturnUrl = returnUrl, model.RememberMe });
                 }
 
                 if (result.IsLockedOut)
@@ -439,12 +440,12 @@ namespace AllReady.Controllers
 
             if (user.IsUserType(UserType.SiteAdmin))
             {
-                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = AreaNames.Admin });
             }
 
             if (user.IsUserType(UserType.OrgAdmin))
             {
-                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = AreaNames.Admin });
             }
 
             return new RedirectToActionResult(nameof(HomeController.Index), "Home", null);

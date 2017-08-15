@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -50,7 +51,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void TheControllerShouldHaveAnAreaAttributeOfAdmin()
         {
-            ClassHasCorrectAttribute(typeof(AreaAttribute), "Admin");
+            ClassHasCorrectAttribute(typeof(AreaAttribute), AreaNames.Admin);
         }
 
         [Fact]
@@ -273,7 +274,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = (RedirectToActionResult)await controller.Edit(model);
 
             Assert.Equal("Details", result.ActionName);
-            Assert.Equal("Admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(Id, result.RouteValues["id"]);
         }
 
@@ -371,7 +372,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DeleteConfirmedShouldRedirectToTheCorrectActionAndArea()
         {
-            var routeValueDictionary = new RouteValueDictionary { ["area"] = "Admin" };
+            var routeValueDictionary = new RouteValueDictionary { ["area"] = AreaNames.Admin };
 
             var sut = new OrganizationController(Mock.Of<IMediator>(), null);
             var result = await sut.DeleteConfirmed(It.IsAny<int>()) as RedirectToActionResult;

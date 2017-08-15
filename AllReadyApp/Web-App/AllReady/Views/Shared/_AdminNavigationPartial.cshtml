@@ -1,11 +1,12 @@
-﻿@using AllReady.Security
+﻿@using AllReady.Constants
+@using AllReady.Security
 
 @if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.OrgAdmin))
 {
     var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
     var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
     var controllerName = descriptor.ControllerName;
-    var isAdmin = areaName == "Admin";
+    var isAdmin = areaName == AreaNames.Admin;
     <li class="dropdown dropdown-admin @(isAdmin? "active":"")">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
             Admin <span class="caret"></span>
@@ -13,19 +14,19 @@
         <ul class="dropdown-menu">
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <li @(isAdmin && controllerName == "Organization" ? " class=active" : "")><a asp-area="Admin" asp-controller="Organization" asp-action="Index">Organizations</a></li>
+                <li @(isAdmin && controllerName == "Organization" ? " class=active" : "")><a asp-area="@AreaNames.Admin" asp-controller="Organization" asp-action="Index">Organizations</a></li>
             }
-            <li @(isAdmin && controllerName == "Campaign" ? " class=active" : "")><a asp-area="Admin" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            <li @(isAdmin && controllerName == "Campaign" ? " class=active" : "")><a asp-area="@AreaNames.Admin" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
             @if (User.IsUserType(UserType.OrgAdmin))
             {
-                <li @(isAdmin && controllerName == "UnlinkedRequest" ? " class=active" : "")><a asp-area="Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
+                <li @(isAdmin && controllerName == "UnlinkedRequest" ? " class=active" : "")><a asp-area="@AreaNames.Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
             }
-            <li @(isAdmin && controllerName == "Skill" ? " class=active" : "")><a asp-area="Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
+            <li @(isAdmin && controllerName == "Skill" ? " class=active" : "")><a asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-area="Admin" asp-controller="Site" asp-action="Index">Site Admin</a></li>
+                <li @(isAdmin && controllerName == "Site" ? " class=active" : "")><a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index">Site Admin</a></li>
             }
-            <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-area="Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
+            <li @(isAdmin && controllerName == "Import" ? " class=active" : "")><a asp-area="@AreaNames.Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
         </ul>
     </li>
 }

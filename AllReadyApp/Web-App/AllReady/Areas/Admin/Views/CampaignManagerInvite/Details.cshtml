@@ -1,12 +1,13 @@
-﻿@model AllReady.Areas.Admin.ViewModels.ManagerInvite.CampaignManagerInviteDetailsViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.ManagerInvite.CampaignManagerInviteDetailsViewModel
 @{
     ViewData["Title"] = $"Campaign manager invite for {Model.InviteeEmailAddress}";
 }
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
             <li>Campaign manager invite for @Model.InviteeEmailAddress</li>
         </ol>
     </div>

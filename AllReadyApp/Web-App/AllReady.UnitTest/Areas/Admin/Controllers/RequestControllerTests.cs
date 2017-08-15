@@ -14,6 +14,7 @@ using Shouldly;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Constants;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -26,7 +27,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new RequestController(null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
         }
 
         [Fact]
