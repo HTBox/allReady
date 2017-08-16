@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.ViewModels.OrganizationApi;
+using AllReady.Constants;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
@@ -81,7 +82,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
         }
 
         [Fact]

@@ -1,13 +1,14 @@
-@using System.Threading.Tasks
+﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Itinerary.ItineraryEditViewModel
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
-            <li><a asp-controller="Itinerary" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Itinerary" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
             <li>Edit</li>
         </ol>
     </div>
@@ -21,7 +22,7 @@
 
 <div class="row">
     <div class="col-12">
-        <form asp-controller="Itinerary" asp-action="Edit" asp-area="Admin" method="post">
+        <form asp-controller="Itinerary" asp-action="Edit" asp-area="@AreaNames.Admin" method="post">
 
             <div class="form-horizontal row">
                 <hr />

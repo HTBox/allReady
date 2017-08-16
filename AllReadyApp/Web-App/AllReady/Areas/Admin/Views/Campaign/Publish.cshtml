@@ -1,10 +1,11 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Campaign.PublishViewModel
 @{ ViewData["Title"] = Model.Title; }
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
     </div>
@@ -41,7 +42,7 @@
                 <input type="hidden" asp-for="UserIsOrgAdmin" />
                 <div class="form-actions no-color">
                     <button type="submit" value="Publish" class="btn btn-default">Publish campaign</button> 
-                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin" class="btn btn-default">Cancel</a>
+                    <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin" class="btn btn-default">Cancel</a>
                 </div>
             }
         </div>

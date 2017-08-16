@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Linq;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
     public class EventManagerInviteController : Controller
     {
@@ -77,7 +78,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user.Id });
 
-                return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = "Admin", id = invite.EventId });
+                return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = AreaNames.Admin, id = invite.EventId });
             }
             return View("Send", invite);
         }

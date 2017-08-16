@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Security.Claims;
 using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Extensions;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
@@ -210,7 +211,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Login(model, returnUrl) as RedirectToActionResult;
 
             Assert.Equal(result.ActionName, nameof(AdminController.SendCode));
-            Assert.Equal(result.ControllerName, "Admin");
+            Assert.Equal(result.ControllerName, ControllerNames.Admin);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 

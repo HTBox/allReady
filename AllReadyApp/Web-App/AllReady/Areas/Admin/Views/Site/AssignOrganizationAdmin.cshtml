@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Site.AssignOrganizationAdminViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Site.AssignOrganizationAdminViewModel
 @{
     ViewBag.Title = "Assign Organization Admin";
 }
@@ -16,7 +17,7 @@
         </div>
         <div class="form-group">
             <input type="submit" class="btn btn-success" value="Assign Admin" />
-            <a asp-area="Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Cancel</a>
+            <a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Cancel</a>
         </div>
     }
 </div>

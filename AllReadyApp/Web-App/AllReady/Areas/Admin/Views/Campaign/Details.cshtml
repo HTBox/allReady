@@ -1,4 +1,5 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
@@ -11,7 +12,7 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -27,17 +28,17 @@
                 }
                 @Model.Name
             </h2>
-            <a asp-controller="Campaign" asp-action="Edit" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Campaign" asp-action="Delete" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Delete"><i class="glyphicon glyphicon-trash"></i></a>
+            <a asp-controller="Campaign" asp-action="Edit" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Campaign" asp-action="Delete" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Delete"><i class="glyphicon glyphicon-trash"></i></a>
             @if (!Model.Published)
             {
                 <div class="btn-group btn-group-sm row-btn-margin">
-                    <a data-toggle="tooltip" data-placement="top" title="Publish" asp-controller="Campaign" asp-action="Publish" asp-area="Admin" asp-route-id="@Model.Id" class="btn btn-primary"><span class="fa fa-upload"></span></a>
+                    <a data-toggle="tooltip" data-placement="top" title="Publish" asp-controller="Campaign" asp-action="Publish" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-primary"><span class="fa fa-upload"></span></a>
                 </div>
             }
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <form asp-controller="Campaign" asp-area="Admin" asp-action="LockUnlock" class="inline-form">
+                <form asp-controller="Campaign" asp-area="@AreaNames.Admin" asp-action="LockUnlock" class="inline-form">
                     <input asp-for="Id" type="hidden" />
                     @if (Model.Locked)
                     {
@@ -133,7 +134,7 @@
         <h3>Goals</h3>
     </div>
     <div class="col-md-12">
-        <a asp-controller="Goal" asp-action="Create" asp-area="Admin" asp-route-campaignId="@Model.Id"
+        <a asp-controller="Goal" asp-action="Create" asp-area="@AreaNames.Admin" asp-route-campaignId="@Model.Id"
            class="btn btn-default">Create New</a>
     </div>
     @foreach (var campaignGoal in Model.CampaignGoals)

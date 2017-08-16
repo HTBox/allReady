@@ -5,7 +5,7 @@ using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using AllReady.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize]
     public class VolunteerTaskController : Controller
     {
@@ -56,7 +56,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new ForbidResult();
             }
 
-            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = "Admin" } });
+            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = AreaNames.Admin } });
 
             ViewBag.Title = "Create Task";
 
@@ -74,7 +74,7 @@ namespace AllReady.Areas.Admin.Controllers
                 return new ForbidResult();
             }
 
-            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "VolunteerTask", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
+            viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "VolunteerTask", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = AreaNames.Admin } });
             ViewBag.Title = "Edit Task";
 
             return View("Edit", viewModel);
@@ -114,11 +114,11 @@ namespace AllReady.Areas.Admin.Controllers
             }
             if (viewModel.Id == 0)
             {
-                viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = "Admin" } });
+                viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(EventController.Details), Controller = "Event", Values = new { id = viewModel.EventId, area = AreaNames.Admin } });
             }
             else
             {
-                viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "VolunteerTask", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = "Admin" } });
+                viewModel.CancelUrl = Url.Action(new UrlActionContext { Action = nameof(Details), Controller = "VolunteerTask", Values = new { eventId = viewModel.EventId, id = viewModel.Id, area = AreaNames.Admin } });
             }
             return View(viewModel);
         }
@@ -165,7 +165,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new AssignVolunteerTaskCommand { VolunteerTaskId = id, UserIds = userIds });
 
-            return RedirectToRoute(new { controller = "VolunteerTask", Area = "Admin", action = nameof(Details), id });
+            return RedirectToRoute(new { controller = "VolunteerTask", area = AreaNames.Admin, action = nameof(Details), id });
         }
 
         [HttpPost]

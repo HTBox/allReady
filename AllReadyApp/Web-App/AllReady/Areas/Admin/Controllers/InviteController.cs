@@ -9,10 +9,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
     public class InviteController : Controller
     {
@@ -94,7 +95,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user?.Id });
 
-                return RedirectToAction(actionName: "Details", controllerName: "Campaign", routeValues: new { area = "Admin", id = invite.CampaignId });
+                return RedirectToAction(actionName: "Details", controllerName: "Campaign", routeValues: new { area = AreaNames.Admin, id = invite.CampaignId });
             }
 
             return View("Send", invite);
@@ -128,7 +129,7 @@ namespace AllReady.Areas.Admin.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user?.Id });
 
-                return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = "Admin", id = invite.EventId });
+                return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = AreaNames.Admin, id = invite.EventId });
             }
 
             return View("Send", invite);

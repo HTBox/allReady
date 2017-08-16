@@ -6,6 +6,7 @@ using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Resource;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Areas.Admin.ViewModels.Resource;
+using AllReady.Constants;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
@@ -175,7 +176,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             result.ShouldBeOfType<RedirectToActionResult>();
             result.ActionName.ShouldBe(nameof(CampaignController.Details));
             result.ControllerName.ShouldBe(nameof(Campaign));
-            result.RouteValues["area"].ShouldBe("Admin");
+            result.RouteValues["area"].ShouldBe(AreaNames.Admin);
             result.RouteValues["id"].ShouldBe(resourceEditViewModel.CampaignId);
         }
 
@@ -412,7 +413,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             result.ShouldNotBeNull();
             result.ActionName.ShouldBe(nameof(CampaignController.Details));
             result.ControllerName.ShouldBe("Campaign");
-            result.RouteValues["area"].ShouldBe("Admin");
+            result.RouteValues["area"].ShouldBe(AreaNames.Admin);
             result.RouteValues["id"].ShouldBe(deleteResourceQuery.CampaignId);
         }
 

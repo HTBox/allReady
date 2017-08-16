@@ -1,4 +1,5 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @using AllReady.Security
 @model List<AllReady.Areas.Admin.ViewModels.Event.EventListerViewModel>
 
@@ -28,7 +29,7 @@
                         {
                         <tr>
                             <td>
-                                <a asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@item.EventId">@item.Name</a>
+                                <a asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.EventId">@item.Name</a>
                             </td>
                             <td>
                                 @item.CampaignName

@@ -15,10 +15,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize]
     public class ItineraryController : Controller
     {
@@ -183,7 +184,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
 
-            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });
+            return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id = model.Id });
         }
 
         [HttpPost]

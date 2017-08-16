@@ -61,7 +61,6 @@ namespace AllReady.Controllers
 
             if (result.RequiresTwoFactor)
             {
-                //return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, model.RememberMe });
                 return BadRequest("2 factor not supported yet!");
 
             }

@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AllReady.Constants;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -249,7 +250,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.Is<EditCampaignCommand>(c => c.Campaign.OrganizationId == organizationId)));
 
             // verify that the next route
-            Assert.Equal(view.RouteValues["area"], "Admin");
+            Assert.Equal(view.RouteValues["area"], AreaNames.Admin);
             Assert.Equal(view.RouteValues["id"], newCampaignId);
         }
 
@@ -283,7 +284,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = (RedirectToActionResult)await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
 
             Assert.Equal(result.ActionName, "Details");
-            Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal(result.RouteValues["area"], AreaNames.Admin);
             Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
@@ -786,7 +787,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new CampaignController(mediator.Object, null);
 
-            var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
+            var routeValues = new Dictionary<string, object> { ["area"] = AreaNames.Admin };
 
             var result = await sut.DeleteConfirmed(viewModel) as RedirectToActionResult;
             Assert.Equal(result.ActionName, nameof(CampaignController.Index));
@@ -866,7 +867,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = new CampaignController(mediator.Object, null);
 
-            var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
+            var routeValues = new Dictionary<string, object> { ["area"] = AreaNames.Admin };
 
             var result = await sut.PublishConfirmed(viewModel) as RedirectToActionResult;
             Assert.Equal(result.ActionName, nameof(CampaignController.Index));
@@ -933,7 +934,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             // verify the next route
             Assert.Equal(view.ActionName, nameof(CampaignController.Details));
-            Assert.Equal(view.RouteValues["area"], "Admin");
+            Assert.Equal(view.RouteValues["area"], AreaNames.Admin);
             Assert.Equal(view.RouteValues["id"], campaignId);
         }
 

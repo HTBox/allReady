@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Validators.VolunteerTask;
 using AllReady.Areas.Admin.ViewModels.VolunteerTask;
+using AllReady.Constants;
 using AllReady.Extensions;
 using AllReady.UnitTest.Extensions;
 
@@ -684,7 +684,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.Assign(volunteerTaskId, null) as RedirectToRouteResult;
 
             Assert.Equal(result.RouteValues["controller"], "VolunteerTask");
-            Assert.Equal(result.RouteValues["Area"], "Admin");
+            Assert.Equal(result.RouteValues["Area"], AreaNames.Admin);
             Assert.Equal(result.RouteValues["action"], nameof(VolunteerTaskController.Details));
             Assert.Equal(result.RouteValues["id"], volunteerTaskId);
         }
@@ -794,7 +794,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.SetDefaultHttpContext();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
         }
 
         [Fact]

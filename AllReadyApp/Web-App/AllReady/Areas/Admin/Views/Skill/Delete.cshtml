@@ -1,3 +1,4 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Skill.SkillDeleteViewModel
 
 <div class="row">
@@ -27,7 +28,7 @@
             <input asp-for="SkillBelongsToSameOrgAsOrgAdmin" type="hidden" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-default">Delete</button>
-                <a class="btn btn-default" asp-area="Admin" asp-controller="Skill" asp-action="Index">Back to List</a>
+                <a class="btn btn-default" asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Index">Back to List</a>
             </div>
         }
     </div>

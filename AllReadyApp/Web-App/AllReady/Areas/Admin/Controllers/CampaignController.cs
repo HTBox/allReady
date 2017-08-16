@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize]
     public class CampaignController : Controller
     {
@@ -151,7 +152,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 var id = await _mediator.SendAsync(new EditCampaignCommand { Campaign = campaign });
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id });
             }
 
             return View(campaign);
@@ -191,7 +192,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = viewModel.Id });
 
-            return RedirectToAction(nameof(Index), new { area = "Admin" });
+            return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
         }
 
         [HttpPost]
@@ -261,7 +262,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new PublishCampaignCommand { CampaignId = viewModel.Id });
 
-            return RedirectToAction(nameof(Index), new { area = "Admin" });
+            return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
         }
 
         [HttpPost]
@@ -276,7 +277,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new LockUnlockCampaignCommand { CampaignId = id });
 
-            return RedirectToAction(nameof(Details), new { area = "Admin", id });
+            return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id });
         }
     }
 }

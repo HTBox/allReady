@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.ViewModels.OrganizationApi;
+using AllReady.Constants;
 using AllReady.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +11,7 @@ namespace AllReady.Areas.Admin.Controllers
 {
     [Route("admin/api/organization")]
     [Produces("application/json")]
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
 
     public class OrganizationApiController : Controller
