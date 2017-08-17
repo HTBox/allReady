@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using AllReady.Models;
@@ -42,15 +42,15 @@ namespace AllReady.UnitTest.Extensions
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
         }
 
-        public static void SetFakeUserWithCookieAuthenticationType(this Controller controller, string userId)
-        {
-            SetFakeHttpContextIfNotAlreadySet(controller);
+        //public static void SetFakeUserWithCookieAuthenticationType(this Controller controller, string userId)
+        //{
+        //    SetFakeHttpContextIfNotAlreadySet(controller);
 
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId)}, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(identity);
+        //    var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId)}, new CookieOptions().ApplicationCookieAuthenticationScheme);
+        //    var claimsPrincipal = new ClaimsPrincipal(identity);
            
-            Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
-        }
+        //    Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
+        //}
 
         public static void SetFakeUserType(this Controller controller, UserType userType)
         {

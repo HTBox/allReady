@@ -38,9 +38,9 @@ namespace AllReady
             Configuration = configuration;
             Configuration["version"] = new ApplicationEnvironment().ApplicationVersion;
         }
-
-        public IConfiguration Configuration { get; }
         
+        public IConfiguration Configuration { get; }
+
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             //Add CORS support.
@@ -49,9 +49,6 @@ namespace AllReady
             {
                 options.AddPolicy("allReady", AllReadyCorsPolicyFactory.BuildAllReadyOpenCorsPolicy());
             });
-
-            // Add Application Insights data collection services to the services container.
-            services.AddApplicationInsightsTelemetry(Configuration);
 
             // Add Entity Framework services to the services container.
             services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
@@ -159,11 +156,11 @@ namespace AllReady
             // Add MVC services to the services container.
             // config add to get passed Angular failing on Options request when logging in.
             services.AddMvc(config =>
-            {
-                config.ModelBinderProviders.Insert(0, new AdjustToTimezoneModelBinderProvider());
-            })
-            .AddJsonOptions(options =>
-            options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+                {
+                    config.ModelBinderProviders.Insert(0, new AdjustToTimezoneModelBinderProvider());
+                })
+                .AddJsonOptions(options =>
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
@@ -186,7 +183,7 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, AllReadyContext context, SampleDataGenerator sampleData)
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.
             app.UseCors("allReady");
@@ -198,12 +195,12 @@ namespace AllReady
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                //app.UseDatabaseErrorPage();
+                app.UseDatabaseErrorPage();
             }
             else if (env.IsStaging())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseDatabaseErrorPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -227,7 +224,7 @@ namespace AllReady
                 context.Database.Migrate();
             }
 
-            //Hangfire
+            ////Hangfire
             app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangireDashboardAuthorizationFilter() } });
             app.UseHangfireServer();
 

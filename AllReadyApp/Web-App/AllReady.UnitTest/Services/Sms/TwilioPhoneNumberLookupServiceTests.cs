@@ -1,4 +1,4 @@
-﻿using AllReady.Services.Sms;
+using AllReady.Services.Sms;
 using Microsoft.Extensions.Options;
 using Moq;
 using Shouldly;
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Services.Sms
 
             await sut.LookupNumber("123456789", "us");
 
-            fetchOptions.PhoneNumber.ToString().ShouldBe(new Twilio.Types.PhoneNumber("123456789").ToString());
+            fetchOptions.PathPhoneNumber.ToString().ShouldBe(new Twilio.Types.PhoneNumber("123456789").ToString());
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Services.Sms
 
             var twilioWrapper = new Mock<ITwilioWrapper>();
             twilioWrapper.Setup(x => x.FetchPhoneNumberResource(It.IsAny<FetchPhoneNumberOptions>(), It.IsAny<ITwilioRestClient>()))
-                .ReturnsAsync(null);
+                .ReturnsAsync((PhoneNumberResource)null);
 
             var sut = new TwilioPhoneNumberLookupService(options.Object, twilioWrapper.Object);
 

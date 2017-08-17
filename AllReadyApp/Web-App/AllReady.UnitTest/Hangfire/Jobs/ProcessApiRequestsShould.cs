@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Configuration;
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var geocoder = new Mock<IGeocodeService>();
             geocoder.Setup(service => service.GetCoordinatesFromAddress(It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(null);
+                .ReturnsAsync((Coordinates)null);
 
             var sut = new ProcessApiRequests(Context, geocoder.Object,
                 Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())

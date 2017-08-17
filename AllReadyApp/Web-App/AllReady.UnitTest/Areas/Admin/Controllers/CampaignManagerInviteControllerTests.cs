@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.CampaignManagerInvites;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Campaigns;
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignManagerInviteQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignManagerInviteQuery>())).ReturnsAsync((CampaignManagerInviteViewModel)null);
 
             var sut = new CampaignManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
 

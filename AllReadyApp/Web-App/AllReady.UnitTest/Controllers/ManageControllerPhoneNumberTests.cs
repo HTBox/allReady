@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using AllReady.Controllers;
@@ -200,7 +200,7 @@ namespace AllReady.UnitTest.Controllers
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
 
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -404,7 +404,7 @@ namespace AllReady.UnitTest.Controllers
             userManagerMock.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
             var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
 
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
@@ -819,7 +819,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(userManager);
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
 
             var controller = new ManageController(userManager.Object, signInManager.Object, mediator.Object);
 

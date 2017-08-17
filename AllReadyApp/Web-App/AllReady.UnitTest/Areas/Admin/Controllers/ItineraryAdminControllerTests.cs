@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Organizations;
@@ -69,7 +69,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsGet_SendsEventDetailQueryWithCorrectEventId()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync((ItineraryDetailsViewModel)null).Verifiable();
 
             var sut = new ItineraryController(mockMediator.Object, null, null);
             await sut.Details(1);
@@ -81,7 +81,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsGet_ReturnsHttpNotFoundResultWhenEventIsNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync((ItineraryDetailsViewModel)null).Verifiable();
 
             var controller = new ItineraryController(mockMediator.Object, null, null);
             Assert.IsType<NotFoundResult>(await controller.Details(It.IsAny<int>()));
@@ -195,7 +195,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsPost_SendsEventDetailQueryWithCorrectEventId()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync((ItineraryDetailsViewModel)null).Verifiable();
 
             var sut = new ItineraryController(mockMediator.Object, null, null);
             await sut.Details(1, null, null);
@@ -207,7 +207,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsPost_ReturnsHttpNotFoundResultWhenEventIsNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<ItineraryDetailQuery>())).ReturnsAsync((ItineraryDetailsViewModel)null).Verifiable();
 
             var controller = new ItineraryController(mockMediator.Object, null, null);
             Assert.IsType<NotFoundResult>(await controller.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()));
@@ -347,7 +347,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task CreateReturnsHttpBadRequestIfEventNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync((EventSummaryViewModel)null);
 
             var sut = new ItineraryController(mockMediator.Object, MockSuccessValidation().Object, null);
             Assert.IsType<BadRequestResult>(await sut.Create(It.IsAny<ItineraryEditViewModel>()));
@@ -544,7 +544,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditGet_SendsEditItineraryQuery_WithCorrectId()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(null).Verifiable();
+            mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync((ItineraryEditViewModel)null).Verifiable();
 
             var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
             await sut.Edit(1);
@@ -556,7 +556,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditGet_ReturnsBadResult_WhenEditItineraryQuery_ReturnsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<EditItineraryQuery>())).ReturnsAsync((ItineraryEditViewModel)null);
 
             var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
 
@@ -624,7 +624,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPost_SendsItinerarySummaryQuery_WithCorrectId()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync((ItinerarySummaryViewModel)null).Verifiable();
 
             var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
             await sut.Edit(new ItineraryEditViewModel { Id = 50 });
@@ -636,7 +636,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPost_ReturnsBadResult_WhenEditItineraryQuery_ReturnsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ItinerarySummaryQuery>())).ReturnsAsync((ItinerarySummaryViewModel)null);
 
             var sut = new ItineraryController(mediator.Object, Mock.Of<IItineraryEditModelValidator>(), null);
 
@@ -1322,7 +1322,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(true, false, false, false, false, false));
-            mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskSignupSummaryQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskSignupSummaryQuery>())).ReturnsAsync((VolunteerTaskSignupSummaryViewModel)null);
 
             var sut = new ItineraryController(mediator.Object, null, null);
 

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using AllReady.Controllers;
 using AllReady.Features.Organizations;
 using MediatR;
@@ -160,7 +160,7 @@ namespace AllReady.UnitTest.Controllers
         private static void MockMediatorOrganizationDetailsQueryNullResult(out OrganizationController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).ReturnsAsync((OrganizationViewModel)null).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
@@ -176,7 +176,7 @@ namespace AllReady.UnitTest.Controllers
         private static void MockMediatorOrganizationPrivacyPolicyQueryNullResult(out OrganizationController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).ReturnsAsync((OrganizationPrivacyPolicyViewModel)null).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 

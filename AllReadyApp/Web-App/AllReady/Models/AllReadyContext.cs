@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -11,7 +10,7 @@ namespace AllReady.Models
         public AllReadyContext() { }
         public AllReadyContext(DbContextOptions options) : base(options) { }
 
-        public virtual DbSet<Organization> Organizations { get; set; }
+        public DbSet<Organization> Organizations { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<CampaignGoal> CampaignGoals { get; set; }
         public DbSet<Event> Events { get; set; }
@@ -22,7 +21,7 @@ namespace AllReady.Models
         public DbSet<VolunteerTaskSkill> VolunteerTaskSkills { get; set; }
         public DbSet<VolunteerTaskSignup> VolunteerTaskSignups { get; set; }
         public DbSet<Resource> Resources { get; set; }
-        public virtual DbSet<Skill> Skills { get; set; }
+        public DbSet<Skill> Skills { get; set; }
         public DbSet<UserSkill> UserSkills { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<OrganizationContact> OrganizationContacts { get; set; }
@@ -48,6 +47,7 @@ namespace AllReady.Models
                 entity.Relational().TableName = entity.DisplayName();
             }
 
+            Map(modelBuilder.Entity<Location>());
             Map(modelBuilder.Entity<Campaign>());
             Map(modelBuilder.Entity<CampaignSponsors>());
             Map(modelBuilder.Entity<Event>());
@@ -74,6 +74,12 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<EventManagerInvite>());
             Map(modelBuilder.Entity<CampaignManagerInvite>());
             Map(modelBuilder.Entity<FileAttachment>());
+        }
+
+        private void Map(EntityTypeBuilder<Location> builder)
+        {
+            builder.HasKey(x => x.Id);
+            builder.Ignore(x => x.FullAddress);
         }
 
         private void Map(EntityTypeBuilder<Request> builder)
@@ -131,7 +137,7 @@ namespace AllReady.Models
             builder.HasOne(t => t.Event).WithMany(e => e.VolunteerTasks).HasForeignKey(t => t.EventId);
             builder.HasOne(t => t.Organization);
             builder.HasMany(t => t.AssignedVolunteers)
-                .WithOne(ts => ts.VolunteerTask)
+                .WithOne(ts => ts.VolunteerTask).HasForeignKey(ts => ts.VolunteerTaskId)
                 .OnDelete(DeleteBehavior.Cascade);
             builder.HasMany(t => t.RequiredSkills).WithOne(ts => ts.VolunteerTask);
             builder.Property(p => p.Name).IsRequired();
@@ -141,6 +147,7 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<VolunteerTaskSkill> builder)
         {
             builder.HasKey(acsk => new { TaskId = acsk.VolunteerTaskId, acsk.SkillId });
+            builder.HasOne(x => x.VolunteerTask).WithMany(x => x.RequiredSkills).HasForeignKey(x => x.VolunteerTaskId);
         }
 
         private void Map(EntityTypeBuilder<Event> builder)

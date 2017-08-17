@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
@@ -164,7 +164,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var org = new Organization { Id = orgId, Name = orgName };
             var userId = It.IsAny<string>();
 
-            user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>
+            user.Claims.Add(new Microsoft.AspNetCore.Identity.IdentityUserClaim<string>
             {
                 ClaimType = AllReady.Security.ClaimTypes.Organization,
                 ClaimValue = orgId.ToString()
@@ -468,7 +468,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userId = "1234";
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).ReturnsAsync(null); 
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).ReturnsAsync((ApplicationUser)null); 
 
             var controller = new SiteController(null, null, mediator.Object);
             await controller.ResetPassword(userId);
@@ -845,7 +845,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             {
                 Id = "1234"
             };
-            user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>
+            user.Claims.Add(new IdentityUserClaim<string>
             {
                 ClaimType = AllReady.Security.ClaimTypes.UserType,
                 ClaimValue = nameof(UserType.SiteAdmin)

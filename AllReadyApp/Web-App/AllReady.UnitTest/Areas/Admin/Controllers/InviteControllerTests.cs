@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Invite;
 using AllReady.Areas.Admin.ViewModels.Invite;
 using AllReady.Features.Campaigns;
@@ -43,7 +43,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync((Campaign)null);
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
 
@@ -153,7 +153,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync((Event)null);
 
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
 
@@ -313,7 +313,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync((Campaign)null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             var invite = new InviteViewModel();
 
@@ -329,7 +329,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync((Campaign)null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             var invite = new InviteViewModel();
 
@@ -508,7 +508,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync((Event)null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             var invite = new InviteViewModel();
 
@@ -524,7 +524,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync((Event)null);
             var sut = new InviteController(mockMediator.Object, new FakeUserManager());
             var invite = new InviteViewModel();
 
