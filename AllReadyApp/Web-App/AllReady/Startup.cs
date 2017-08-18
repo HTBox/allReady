@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Hangfire;
 using AllReady.ModelBinding;
@@ -20,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace AllReady
@@ -62,7 +62,8 @@ namespace AllReady
                     options.Password.RequireDigit = true;
                     options.Password.RequireUppercase = false;
                 })
-                .AddEntityFrameworkStores<AllReadyContext>();
+                .AddEntityFrameworkStores<AllReadyContext>()
+                .AddDefaultTokenProviders();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -70,67 +71,62 @@ namespace AllReady
                 options.AccessDeniedPath = "/Home/AccessDenied";
             });
 
-            services.AddAuthentication()
-                .AddFacebook(options => {
-                    options.AppId = Configuration["authentication:facebook:appid"];
-                    options.AppSecret = Configuration["authentication:facebook:appsecret"];
-                    options.BackchannelHttpHandler = new FacebookBackChannelHandler();
-                    options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
-                    options.Events = new OAuthEvents()
-                    {
-                        OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-                    };
-                });
+            services.AddAuthentication();
 
+            if (Configuration["Authentication:Facebook:AppId"] != null)
+            {
+                services.AddAuthentication()
+                    .AddFacebook(options => {
+                        options.AppId = Configuration["authentication:facebook:appid"];
+                        options.AppSecret = Configuration["authentication:facebook:appsecret"];
+                        options.BackchannelHttpHandler = new FacebookBackChannelHandler();
+                        options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
+                        options.Events = new OAuthEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
 
-            //if (configuration["Authentication:MicrosoftAccount:ClientId"] != null)
-            //{
-            //    var options = new MicrosoftAccountOptions
-            //    {
-            //        ClientId = configuration["Authentication:MicrosoftAccount:ClientId"],
-            //        ClientSecret = configuration["Authentication:MicrosoftAccount:ClientSecret"],
-            //        Events = new OAuthEvents()
-            //        {
-            //            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-            //        }
-            //    };
+            if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
+            {
+                services.AddAuthentication()
+                    .AddMicrosoftAccount(options => {
+                        options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
+                        options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
+                        options.Events = new OAuthEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
 
-            //    app.UseMicrosoftAccountAuthentication(options);
-            //}
+            if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
+            {
+                services.AddAuthentication()
+                    .AddTwitter(options => {
+                        options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                        options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                        options.RetrieveUserDetails = true;
+                        options.Events = new TwitterEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
 
-            ////Twitter doesn't automatically include email addresses, has to be enabled as a special permission
-            ////once enabled then RetrieveUserDetails property includes email in claims returned by twitter middleware
-            //if (configuration["Authentication:Twitter:ConsumerKey"] != null)
-            //{
-            //    var options = new TwitterOptions
-            //    {
-            //        ConsumerKey = configuration["Authentication:Twitter:ConsumerKey"],
-            //        ConsumerSecret = configuration["Authentication:Twitter:ConsumerSecret"],
-            //        RetrieveUserDetails = true,
-            //        Events = new TwitterEvents()
-            //        {
-
-            //            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-            //        }
-            //    };
-
-            //    app.UseTwitterAuthentication(options);
-            //}
-
-            //if (configuration["Authentication:Google:ClientId"] != null)
-            //{
-            //    var options = new GoogleOptions
-            //    {
-            //        ClientId = configuration["Authentication:Google:ClientId"],
-            //        ClientSecret = configuration["Authentication:Google:ClientSecret"],
-            //        Events = new OAuthEvents()
-            //        {
-            //            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-            //        }
-            //    };
-
-            //    app.UseGoogleAuthentication(options);
-            //}
+            if (Configuration["Authentication:Google:ClientId"] != null)
+            {
+                services.AddAuthentication()
+                    .AddGoogle(options => {
+                        options.ClientId = Configuration["Authentication:Google:ClientId"];
+                        options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                        options.Events = new OAuthEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
 
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
