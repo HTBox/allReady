@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Goals;
 using AllReady.Models;
 using Xunit;
@@ -12,6 +12,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Goals
 
         protected override void LoadTestData()
         {
+            var org = new Organization {Id = OrgId};
+            Context.Organizations.Add(org);
+
             Context.CampaignGoals.Add(new CampaignGoal
             {
                 Id = 4,
@@ -19,7 +22,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Goals
                 TextualGoal = "Goal 4",
                 NumericGoal = 100,
                 CampaignId = CampaignId,
-                Campaign = new Campaign {Id = CampaignId, ManagingOrganizationId = OrgId}
+                Campaign = new Campaign {Id = CampaignId, ManagingOrganizationId = OrgId, ManagingOrganization = org }
             });
             Context.SaveChanges();
         }

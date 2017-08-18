@@ -1,4 +1,4 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using AllReady.Security;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
@@ -128,13 +128,13 @@ namespace AllReady.UnitTest.Security
 
             Context.Events.Add(@event);
 
-            var task = new VolunteerTask { Id = TaskId, EventId = 10, Organization = org };
-            var taskWithoutLinks = new VolunteerTask { Id = TaskIdForTaskWithoutLinks };
-            var TaskWithPartialLinks = new VolunteerTask { Id = TaskIdForTaskWithPartialLinks, Organization = org };
+            var task = new VolunteerTask { Id = TaskId, EventId = 10, Organization = org, Event = @event };
+            var taskWithoutLinks = new VolunteerTask { Id = TaskIdForTaskWithoutLinks, Organization = new Organization()};
+            var taskWithPartialLinks = new VolunteerTask { Id = TaskIdForTaskWithPartialLinks, Organization = org };
 
             Context.VolunteerTasks.Add(task);
             Context.VolunteerTasks.Add(taskWithoutLinks);
-            Context.VolunteerTasks.Add(TaskWithPartialLinks);
+            Context.VolunteerTasks.Add(taskWithPartialLinks);
 
             Context.SaveChanges();
         }

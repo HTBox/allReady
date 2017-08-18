@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Itineraries;
@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var handler = new AddTeamMemberCommandHandler(Context, null);
             var result = await handler.Handle(query);
 
-            Assert.Equal(false, result);
+            Assert.False(result);
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var handler = new AddTeamMemberCommandHandler(Context, Mock.Of<IMediator>());
             var result = await handler.Handle(query);
 
-            Assert.Equal(true, result);
+            Assert.True(result);
         }
 
         [Fact]

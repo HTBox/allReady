@@ -77,7 +77,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}");
+            Assert.Equal("{id}", attribute.Template);
         }
 
         [Fact]
@@ -86,8 +86,8 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Type, typeof(EventViewModel));
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal(typeof(EventViewModel), attribute.Type);
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{start}/{end}");
+            Assert.Equal("{start}/{end}", attribute.Template);
         }
 
         [Fact]
@@ -105,8 +105,8 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes[0], "application/json");
-            Assert.Equal(attribute.Type, typeof(EventViewModel));
+            Assert.Equal("application/json", attribute.ContentTypes[0]);
+            Assert.Equal(typeof(EventViewModel), attribute.Type);
         }
 
         [Fact]
@@ -186,7 +186,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByPostalCode(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "search");
+            Assert.Equal("search", attribute.Template);
         }
 
         [Fact]
@@ -223,7 +223,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "searchbylocation");
+            Assert.Equal("searchbylocation", attribute.Template);
         }
 
 
@@ -265,7 +265,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetCheckin(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}/checkin");
+            Assert.Equal("{id}/checkin", attribute.Template);
         }
 
         [Fact]
@@ -274,7 +274,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/event");
+            Assert.Equal("api/event", attribute.Template);
         }
 
         [Fact]
@@ -283,7 +283,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
     }
 }

@@ -213,7 +213,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
             var handler = new ItineraryDetailQueryHandler(Context, Mock.Of<IMediator>());
             var result = await handler.Handle(query);
-            Assert.Equal(1, result.Requests.Count);
+            Assert.Single(result.Requests);
             Assert.Equal("Request 1", result.Requests[0].Name);
         }
     }

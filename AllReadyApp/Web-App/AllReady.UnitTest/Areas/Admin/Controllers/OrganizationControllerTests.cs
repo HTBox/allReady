@@ -377,7 +377,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationController(Mock.Of<IMediator>(), null);
             var result = await sut.DeleteConfirmed(It.IsAny<int>()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(OrganizationController.Index));
+            Assert.Equal(nameof(OrganizationController.Index), result.ActionName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 

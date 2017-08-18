@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>AllReady.UnitTests</Description>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <NoWarn>$(NoWarn);0618</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyName>AllReady.UnitTest</AssemblyName>
-    <PackageId>AllReady.UnitTest</PackageId>
     <IsPackable>false</IsPackable>
-    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wpa81</AssetTargetFallback>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <ItemGroup>

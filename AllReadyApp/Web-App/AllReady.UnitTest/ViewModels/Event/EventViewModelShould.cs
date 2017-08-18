@@ -144,7 +144,7 @@ namespace AllReady.UnitTest.ViewModels.Event
             var sut = new EventViewModel(@event);
 
             Assert.IsType<List<VolunteerTaskViewModel>>(sut.Tasks);
-            Assert.Equal(sut.Tasks.IsOrderedByAscending(x => x.StartDateTime), true);
+            Assert.True(sut.Tasks.IsOrderedByAscending(x => x.StartDateTime));
         }
 
         [Fact]

@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new OrganizationController(null);
             var routeAttribute = sut.GetAttributesOn(x => x.Index()).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Organizations/");
+            Assert.Equal("Organizations/", routeAttribute.Template);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new OrganizationController(null);
             var routeAttribute = (RouteAttribute)sut.GetAttributesOn(x => x.ShowOrganization(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(RouteAttribute));
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Organization/{id}/");
+            Assert.Equal("Organization/{id}/", routeAttribute.Template);
         }
 
         [Fact]

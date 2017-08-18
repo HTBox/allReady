@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             Assert.IsType<ViewResult>(result);
             ViewResult view = result as ViewResult;
-            Assert.Equal(view.ViewName, "Send");
+            Assert.Equal("Send", view.ViewName);
         }
 
         [Fact]

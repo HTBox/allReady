@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.ViewModels.Request;
@@ -14,7 +14,6 @@ using Shouldly;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AllReady.Constants;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -27,7 +26,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new RequestController(null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
+            Assert.Equal(attribute.RouteValue, "Admin");
         }
 
         [Fact]

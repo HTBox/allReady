@@ -100,7 +100,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await controller.ConfirmDeleteUser(It.IsAny<string>()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(SiteController.Index));
+            Assert.Equal(nameof(SiteController.Index), result.ActionName);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 var result = controller.EditUser(userId);
                 var model = ((ViewResult)await result).ViewData.Model as EditUserViewModel;
 
-                Assert.Equal(model.Organization, null);
+                Assert.Null(model.Organization);
                 Assert.IsType<EditUserViewModel>(model);
             }
         }
@@ -1355,7 +1355,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, null);
             var attribute = controller.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
+            Assert.Equal(AreaNames.Admin, attribute.RouteValue);
         }
 
         [Fact]
@@ -1364,7 +1364,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, null);
             var attribute = controller.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Policy, nameof(UserType.SiteAdmin));
+            Assert.Equal(nameof(UserType.SiteAdmin), attribute.Policy);
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()

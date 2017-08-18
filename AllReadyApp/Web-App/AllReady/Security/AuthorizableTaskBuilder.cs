@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AllReady.Models;
 using System.Linq;
@@ -56,8 +56,8 @@ namespace AllReady.Security
                 }
 
                 finalEventId = loadedIds.Event == null ? -1 : loadedIds.EventId;
-                finalCampaignId = loadedIds.Event == null ? -1 : loadedIds.Event.CampaignId;
-                finalOrgId = loadedIds.Organization == null ? -1 : loadedIds.Organization.Id;
+                finalCampaignId = loadedIds.Event?.CampaignId ?? -1;
+                finalOrgId = loadedIds.Organization?.Id ?? -1;
             }
             else
             {

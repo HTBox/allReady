@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, AreaNames.Admin);
+            Assert.Equal(AreaNames.Admin, attribute.RouteValue);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Policy, null);
+            Assert.Null(attribute.Policy);
         }
 
         [Fact]
@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>(), null)).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Details/{id}");
+            Assert.Equal("Admin/Itinerary/Details/{id}", routeAttribute.Template);
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(mediator.Object, null, userManager.Object);
 
             var result = await sut.Details(It.IsAny<int>()) as ViewResult;
-            Assert.Equal(result.ViewName, "Details");
+            Assert.Equal("Details", result.ViewName);
 
             var resultViewModel = result.ViewData.Model;
             Assert.IsType<ItineraryDetailsViewModel>(resultViewModel);
@@ -188,7 +188,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()))
                 .OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Details/{id}");
+            Assert.Equal("Admin/Itinerary/Details/{id}", routeAttribute.Template);
         }
 
         [Fact]
@@ -238,7 +238,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(mediator.Object, null, null);
 
             var result = await sut.Details(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<RequestStatus?>()) as ViewResult;
-            Assert.Equal(result.ViewName, "Details");
+            Assert.Equal("Details", result.ViewName);
 
             var resultViewModel = result.ViewData.Model;
             Assert.IsType<ItineraryDetailsViewModel>(resultViewModel);
@@ -305,7 +305,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ItineraryEditViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Create");
+            Assert.Equal("Admin/Itinerary/Create", routeAttribute.Template);
         }
 
         [Fact]
@@ -537,7 +537,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Edit/{id}");
+            Assert.Equal("Admin/Itinerary/Edit/{id}", routeAttribute.Template);
         }
 
         [Fact]
@@ -617,7 +617,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<ItineraryEditViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/Edit/{id}");
+            Assert.Equal("Admin/Itinerary/Edit/{id}", routeAttribute.Template);
         }
 
         [Fact]
@@ -832,7 +832,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.AddTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/AddTeamMember");
+            Assert.Equal("Admin/Itinerary/AddTeamMember", routeAttribute.Template);
         }
 
         [Fact]
@@ -927,7 +927,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.SelectRequests(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
+            Assert.Equal("Admin/Itinerary/{id}/[Action]", routeAttribute.Template);
         }
 
         [Fact]
@@ -1062,7 +1062,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await sut.AddRequests(itineraryId, selectedRequests) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(ItineraryController.Details));
+            Assert.Equal(nameof(ItineraryController.Details), result.ActionName);
             Assert.Equal(result.RouteValues, new Dictionary<string, object> { ["id"] = itineraryId });
         }
 
@@ -1080,7 +1080,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.AddRequests(It.IsAny<int>(), It.IsAny<List<string>>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{id}/[Action]");
+            Assert.Equal("Admin/Itinerary/{id}/[Action]", routeAttribute.Template);
         }
 
         [Fact]
@@ -1190,7 +1190,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>()) as ViewResult;
             var resultViewModel = result.ViewData.Model as RequestSummaryViewModel;
 
-            Assert.Equal(result.ViewName, "ConfirmRemoveRequest");
+            Assert.Equal("ConfirmRemoveRequest", result.ViewName);
             Assert.IsType<RequestSummaryViewModel>(resultViewModel);
         }
 
@@ -1208,7 +1208,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.ConfirmRemoveRequest(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{requestId}", attribute.Template);
         }
 
         [Fact]
@@ -1244,7 +1244,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var routeValueDictionary = new RouteValueDictionary { ["id"] = viewModel.ItineraryId };
 
-            Assert.Equal(result.ActionName, "Details");
+            Assert.Equal("Details", result.ActionName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
@@ -1270,7 +1270,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.RemoveRequest(It.IsAny<RequestSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{requestId}", attribute.Template);
         }
 
         [Fact]
@@ -1340,7 +1340,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await sut.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "ConfirmRemoveTeamMember");
+            Assert.Equal("ConfirmRemoveTeamMember", result.ViewName);
 
             var resultViewModel = result.ViewData.Model;
             Assert.IsType<VolunteerTaskSignupSummaryViewModel>(resultViewModel);
@@ -1360,7 +1360,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.ConfirmRemoveTeamMember(It.IsAny<int>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{volunteerTaskSignupId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{volunteerTaskSignupId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -1405,7 +1405,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(mediator.Object, null, null);
             var result = await sut.RemoveTeamMember(viewModel) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(ItineraryController.Details));
+            Assert.Equal(nameof(ItineraryController.Details), result.ActionName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
@@ -1431,7 +1431,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.RemoveTeamMember(It.IsAny<VolunteerTaskSignupSummaryViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{taskSignupId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -1448,7 +1448,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ItineraryController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.MarkComplete(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{requestId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -1531,7 +1531,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var itineraryController = new ItineraryController(null, null, null);
             var routeAttribute = itineraryController.GetAttributesOn(x => x.MarkConfirmed(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{requestId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -1626,7 +1626,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var itineraryController = new ItineraryController(null, null, null);
             var routeAttribute = itineraryController.GetAttributesOn(x => x.MarkUnassigned(It.IsAny<int>(), It.IsAny<Guid>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Itinerary/{itineraryId}/[Action]/{requestId}");
+            Assert.Equal("Admin/Itinerary/{itineraryId}/[Action]/{requestId}", routeAttribute.Template);
         }
 
         [Fact]

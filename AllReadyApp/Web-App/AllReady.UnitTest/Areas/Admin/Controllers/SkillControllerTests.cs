@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using Xunit;
 using Moq;
 using MediatR;
@@ -13,7 +13,6 @@ using AllReady.Areas.Admin.Features.Organizations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using AllReady.Areas.Admin.ViewModels.Skill;
-using AllReady.Constants;
 using AllReady.UnitTest.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Shouldly;
@@ -696,7 +695,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var viewModel = new SkillDeleteViewModel { SkillBelongsToSameOrgAsOrgAdmin = true };
 
-            var routeValueDictionary = new RouteValueDictionary { ["area"] = AreaNames.Admin };
+            var routeValueDictionary = new RouteValueDictionary { ["area"] = "Admin" };
 
             var mockContext = MockControllerContextWithUser(SiteAdmin());
             controller.ControllerContext = mockContext.Object;

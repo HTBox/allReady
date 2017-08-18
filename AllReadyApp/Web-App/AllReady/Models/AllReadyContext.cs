@@ -152,7 +152,7 @@ namespace AllReady.Models
 
         private void Map(EntityTypeBuilder<Event> builder)
         {
-            builder.HasOne(a => a.Campaign);
+            builder.HasOne(a => a.Campaign).WithMany(x => x.Events).HasForeignKey(x => x.CampaignId).IsRequired();
             builder.HasOne(a => a.Location);
             builder.HasMany(a => a.VolunteerTasks)
                 .WithOne(t => t.Event)
@@ -183,7 +183,7 @@ namespace AllReady.Models
         }
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
-            builder.HasOne(c => c.ManagingOrganization);
+            builder.HasOne(c => c.ManagingOrganization).WithMany().HasForeignKey(x => x.ManagingOrganizationId);
             builder.HasMany(c => c.CampaignGoals);
             builder.HasMany(c => c.Events);
             builder.HasMany(c => c.Resources).WithOne(c => c.Campaign).HasForeignKey(c => c.CampaignId);
@@ -238,6 +238,8 @@ namespace AllReady.Models
         {
             builder.HasKey(x => new { x.ItineraryId, x.RequestId });
             builder.HasIndex(x => x.RequestId).IsUnique();
+            builder.HasOne(x => x.Itinerary).WithMany().HasForeignKey(x => x.ItineraryId);
+            builder.HasOne(x => x.Request).WithMany().HasForeignKey(x => x.RequestId);
         }
 
         private void Map(EntityTypeBuilder<CampaignManager> builder)

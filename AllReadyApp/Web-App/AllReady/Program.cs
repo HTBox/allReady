@@ -14,10 +14,10 @@ namespace AllReady
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                //.ConfigureLogging(x => x.AddConsole())
-                //.ConfigureAppConfiguration((ctx, config) =>
-                //    config.SetBasePath(ctx.HostingEnvironment.ContentRootPath)
-                //        .AddJsonFile("version.json"))
+                .ConfigureLogging(x => x.AddConsole())
+                .ConfigureAppConfiguration((ctx, config) =>
+                    config.SetBasePath(ctx.HostingEnvironment.ContentRootPath)
+                        .AddJsonFile("version.json"))
                 .UseStartup<Startup>()
                 .Build();
     }
