@@ -1,4 +1,4 @@
-![AllReady](/HTBox/allReady/raw/master/docs/user_documentation/images/ALLReady.PNG)
+![AllReady](images/ALLReady.PNG?raw=true)
 # Campaigns 
 ## Table of Contents  
 * [Overview](#Overview)
