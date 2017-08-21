@@ -11,7 +11,11 @@ The goal is to use your skills to help people in need. Build some code to help a
 
 ### How to Contribute
 
-First, start by choosing what you'd like to do - you can have a look at [issues jump-in label](https://github.com/HTBox/allReady/issues?q=is%3Aopen+is%3Aissue+label%3Ajump-in). We have also prepared other possibilities for you to have a look at listed below. Then fork the repo, clone it locally and you are ready to develop. Finally, create a pull request to the master branch, make sure that you have merged the latest changes and that the PR has a readable diff (please avoid reformatting documents, refactoring stuff, changing CRLF to LF or tabs to spaces etc.)
+First, add yourself to our [signup issue](https://github.com/HTBox/allReady/issues/2079) to get your name on our list of contributors for the event.
+
+Next, choose how you'd like to help out - you can have a look at [issues jump-in label](https://github.com/HTBox/allReady/issues?q=is%3Aopen+is%3Aissue+label%3Ajump-in). We have also prepared other possibilities for you to have a look at listed below. Then fork the repo, clone it locally and you are ready to develop. 
+
+Finally, create a pull request to the master branch, make sure that you have merged the latest changes and that the PR has a readable diff (please avoid reformatting documents, refactoring stuff, changing CRLF to LF or tabs to spaces etc.)
 
 ### Which are the things I can work on?
 
