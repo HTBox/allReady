@@ -563,7 +563,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfNotFound()
         {
             var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(null);
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null);
             var imageServiceMock = new Mock<IImageService>();
             var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
 

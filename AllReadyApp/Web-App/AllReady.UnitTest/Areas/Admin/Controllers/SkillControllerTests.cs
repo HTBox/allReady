@@ -773,7 +773,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillEditQueryNullModel(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).ReturnsAsync((SkillEditViewModel)null).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -791,7 +791,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillDeleteQueryNullModel(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>())).ReturnsAsync((SkillDeleteViewModel)null).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }

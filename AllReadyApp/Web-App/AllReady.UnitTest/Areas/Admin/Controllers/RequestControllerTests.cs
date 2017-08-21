@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int id = 1;
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync((EventSummaryViewModel)null).Verifiable();
 
             var sut = new RequestController(mediator.Object);
             await sut.Create(id);
@@ -82,7 +82,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task Create_ReturnsBadRequest_WhenEventSummaryQueryReturnsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync((EventSummaryViewModel)null).Verifiable();
 
             var sut = new RequestController(mediator.Object);
             var result = await sut.Create(1);
@@ -180,7 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPost_ReturnsBadRequest_WhenEventSummaryQueryReturnsNull()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mediator.Setup(mock => mock.SendAsync(It.IsAny<EventSummaryQuery>())).ReturnsAsync((EventSummaryViewModel)null).Verifiable();
 
             var sut = new RequestController(mediator.Object);
             var result = await sut.Edit(new EditRequestViewModel { EventId = 1 });
