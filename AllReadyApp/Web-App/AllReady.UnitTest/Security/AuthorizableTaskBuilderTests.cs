@@ -57,32 +57,6 @@ namespace AllReady.UnitTest.Security
             result.OrganizationId.ShouldBe(30);
         }
 
-        [Fact (Skip = "2.0.0 EF include changes - Needs fixup")]
-        public async Task Build_WithJustTaskId_ReturnsTheAuthorizableTaskFromTheDatabase_WithExpectedIds_WhenNoLinkedElements()
-        {
-            var sut = new AuthorizableTaskBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
-
-            var result = await sut.Build(TaskIdForTaskWithoutLinks);
-
-            result.TaskId.ShouldBe(TaskIdForTaskWithoutLinks);
-            result.EventId.ShouldBe(-1);
-            result.CampaignId.ShouldBe(-1);
-            result.OrganizationId.ShouldBe(-1);
-        }
-
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
-        public async Task Build_WithJustTaskId_ReturnsTheAuthorizableTaskFromTheDatabase_WithExpectedIds_WhenPartialLinkedElements()
-        {
-            var sut = new AuthorizableTaskBuilder(Context, new MemoryCache(new MemoryCacheOptions()), Mock.Of<IUserAuthorizationService>());
-
-            var result = await sut.Build(TaskIdForTaskWithPartialLinks);
-
-            result.TaskId.ShouldBe(TaskIdForTaskWithPartialLinks);
-            result.EventId.ShouldBe(-1);
-            result.CampaignId.ShouldBe(-1);
-            result.OrganizationId.ShouldBe(30);
-        }
-
         [Fact]
         public async Task Build_SetsCaches_WithTheAuthorizableTask()
         {
@@ -129,8 +103,8 @@ namespace AllReady.UnitTest.Security
             Context.Events.Add(@event);
 
             var task = new VolunteerTask { Id = TaskId, EventId = 10, Organization = org, Event = @event };
-            var taskWithoutLinks = new VolunteerTask { Id = TaskIdForTaskWithoutLinks, Organization = new Organization()};
-            var taskWithPartialLinks = new VolunteerTask { Id = TaskIdForTaskWithPartialLinks, Organization = org };
+            var taskWithoutLinks = new VolunteerTask { Id = TaskIdForTaskWithoutLinks, Organization = new Organization(), Event = new Event { Campaign = new Campaign() } };
+            var taskWithPartialLinks = new VolunteerTask { Id = TaskIdForTaskWithPartialLinks, Organization = org, Event = new Event { Campaign = new Campaign() } };
 
             Context.VolunteerTasks.Add(task);
             Context.VolunteerTasks.Add(taskWithoutLinks);

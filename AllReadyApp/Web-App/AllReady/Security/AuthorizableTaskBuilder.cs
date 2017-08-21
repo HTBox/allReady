@@ -55,9 +55,9 @@ namespace AllReady.Security
                     return new NotFoundAuthorizableTask();
                 }
 
-                finalEventId = loadedIds.Event == null ? -1 : loadedIds.EventId;
-                finalCampaignId = loadedIds.Event?.CampaignId ?? -1;
-                finalOrgId = loadedIds.Organization?.Id ?? -1;
+                finalEventId = loadedIds.EventId;
+                finalCampaignId = loadedIds.Event.CampaignId;
+                finalOrgId = loadedIds.Organization.Id;
             }
             else
             {
