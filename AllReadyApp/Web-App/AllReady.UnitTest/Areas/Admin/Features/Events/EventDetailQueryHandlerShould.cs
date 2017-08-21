@@ -209,7 +209,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.NotNull(result.Location?.Country);
         }
 
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task ItineraryEventIncludesCorrectItineraryDetails()
         {
             var query = new EventDetailQuery { EventId = 1 };
