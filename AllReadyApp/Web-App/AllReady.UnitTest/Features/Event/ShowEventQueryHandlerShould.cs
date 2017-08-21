@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Features.Event
     public class ShowEventQueryHandlerShould : InMemoryContextTest
     {
         //happy path test. set up data to get all possible properties populated when EventViewModel is returned from handler
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task SetsTaskSignupViewModel_WithTheCorrectData()
         {
             var options = CreateNewContextOptions();
@@ -98,7 +98,7 @@ namespace AllReady.UnitTest.Features.Event
             }
         }
 
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task SetUserSkillsToNull_WhenAppUserIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
             var options = CreateNewContextOptions();
@@ -125,7 +125,7 @@ namespace AllReady.UnitTest.Features.Event
             }
         }
 
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task SetUserSkillsToNull_WhenAppUserIsNotNull_AndAppUserAssociatedSkillsIsNull_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
             var options = CreateNewContextOptions();
@@ -152,7 +152,7 @@ namespace AllReady.UnitTest.Features.Event
             }
         }
 
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task SetUserTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasVolunteeredInAscendingOrderByTaskStartDateTime_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
             var options = CreateNewContextOptions();
@@ -187,7 +187,7 @@ namespace AllReady.UnitTest.Features.Event
             }
         }
 
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task SetTasksToListOfTaskViewModelForAnyTasksWhereTheUserHasNotVolunteeredInAscendingOrderByTaskStartDateTime_AndEventIsNotNullAndEventsCampaignIsUnlocked()
         {
             var options = CreateNewContextOptions();
@@ -211,7 +211,7 @@ namespace AllReady.UnitTest.Features.Event
                 var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
-                Assert.Equal(allReadyEvent.VolunteerTasks.Where(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))).Count(),
+                Assert.Equal(allReadyEvent.VolunteerTasks.Count(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))),
                     eventViewModel.Tasks.Count);
                 var previousDateTime = DateTimeOffset.MinValue;
                 foreach (var userTask in eventViewModel.Tasks)
@@ -227,7 +227,8 @@ namespace AllReady.UnitTest.Features.Event
             return new Event
             {
                 Id = eventId,
-                Campaign = new Campaign { Locked = false },
+                Campaign = new Campaign { Locked = false, ManagingOrganization = new Organization() },
+                Location = new Location(),
                 VolunteerTasks = new List<VolunteerTask>
                 {
                     new VolunteerTask { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } } },
