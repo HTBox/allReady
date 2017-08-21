@@ -46,7 +46,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Event = queenAnne,
                 Name = "1st Itinerary",
                 Id = 1,
-                Date = new DateTime(2016, 07, 01)
+                Date = new DateTime(2016, 07, 01),
+                StartLocation = new Location{ Id = 1 },
+                EndLocation = new Location {  Id = 2}
             };
 
             var volunteerTask = new VolunteerTask
@@ -207,7 +209,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             Assert.Equal("Jones, Carol", result.TeamMembers[2].DisplayName);
         }
 
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task ItineraryQueryLoadsRequests()
         {
             var query = new ItineraryDetailQuery { ItineraryId = 1 };

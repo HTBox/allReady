@@ -238,7 +238,7 @@ namespace AllReady.Models
         {
             builder.HasKey(x => new { x.ItineraryId, x.RequestId });
             builder.HasIndex(x => x.RequestId).IsUnique();
-            builder.HasOne(x => x.Itinerary).WithMany().HasForeignKey(x => x.ItineraryId);
+            builder.HasOne(x => x.Itinerary).WithMany(x => x.Requests).HasForeignKey(x => x.ItineraryId);
             builder.HasOne(x => x.Request).WithMany().HasForeignKey(x => x.RequestId);
         }
 
