@@ -1,4 +1,5 @@
-﻿@using System.Collections.Generic
+@using System.Collections.Generic
+@using System.Linq
 @using Microsoft.AspNetCore.Http
 @using Microsoft.AspNetCore.Http.Authentication
 @using AllReady.ViewModels.Account
@@ -80,7 +81,7 @@
             <h4>Register with these services.</h4>
             <hr />
             @{
-                var loginProviders = SignInManager.GetExternalAuthenticationSchemes().ToList();
+                var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
                 if (loginProviders.Count == 0)
                 {
                     <div>
@@ -100,8 +101,8 @@
                                     <div class="row">
                                         <div class="col-md-2"></div>
                                         <div class="col-md-4">
-                                            <button type="submit" class="btn btn-default btn-block" name="provider" value="@provider.AuthenticationScheme" title="Log in using your @provider.DisplayName account">
-                                                <span class="fa fa-2x fa-@((provider.AuthenticationScheme.ToLower() == "microsoft") ? "windows" : provider.AuthenticationScheme.ToLower())"></span><span class="btn-authenticator-txt">@provider.AuthenticationScheme</span>
+                                            <button type="submit" class="btn btn-default btn-block" name="provider" value="@provider.DisplayName" title="Log in using your @provider.DisplayName account">
+                                                <span class="fa fa-2x fa-@((provider.DisplayName.ToLower() == "microsoft") ? "windows" : provider.DisplayName.ToLower())"></span><span class="btn-authenticator-txt">@provider.DisplayName</span>
                                             </button><br /><br />
                                         </div>
                                         <div class="col-md-2"></div>
