@@ -183,7 +183,7 @@ namespace AllReady.Models
         }
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
-            builder.HasOne(c => c.ManagingOrganization).WithMany().HasForeignKey(x => x.ManagingOrganizationId);
+            builder.HasOne(c => c.ManagingOrganization).WithMany(x => x.Campaigns).HasForeignKey(x => x.ManagingOrganizationId);
             builder.HasMany(c => c.CampaignGoals);
             builder.HasMany(c => c.Events);
             builder.HasMany(c => c.Resources).WithOne(c => c.Campaign).HasForeignKey(c => c.CampaignId);
