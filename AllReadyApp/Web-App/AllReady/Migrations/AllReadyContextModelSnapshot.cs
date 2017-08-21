@@ -115,6 +115,8 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int?>("OrganizationId");
+
                     b.Property<string>("OrganizerId");
 
                     b.Property<bool>("Published");
@@ -129,6 +131,8 @@ namespace AllReady.Migrations
                     b.HasIndex("LocationId");
 
                     b.HasIndex("ManagingOrganizationId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("OrganizerId");
 
@@ -439,9 +443,13 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("DateAssigned");
 
+                    b.Property<int?>("ItineraryId1");
+
                     b.Property<int>("OrderIndex");
 
                     b.HasKey("ItineraryId", "RequestId");
+
+                    b.HasIndex("ItineraryId1");
 
                     b.HasIndex("RequestId")
                         .IsUnique();
@@ -596,9 +604,7 @@ namespace AllReady.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.HasIndex("ItineraryId1", "ItineraryRequestId")
-                        .IsUnique()
-                        .HasFilter("[ItineraryId1] IS NOT NULL AND [ItineraryRequestId] IS NOT NULL");
+                    b.HasIndex("ItineraryId1", "ItineraryRequestId");
 
                     b.ToTable("Request");
                 });
@@ -875,9 +881,13 @@ namespace AllReady.Migrations
                         .HasForeignKey("LocationId");
 
                     b.HasOne("AllReady.Models.Organization", "ManagingOrganization")
-                        .WithMany("Campaigns")
+                        .WithMany()
                         .HasForeignKey("ManagingOrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.Organization")
+                        .WithMany("Campaigns")
+                        .HasForeignKey("OrganizationId");
 
                     b.HasOne("AllReady.Models.ApplicationUser", "Organizer")
                         .WithMany()
@@ -1024,8 +1034,17 @@ namespace AllReady.Migrations
             modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
                 {
                     b.HasOne("AllReady.Models.Itinerary", "Itinerary")
-                        .WithMany("Requests")
+                        .WithMany()
                         .HasForeignKey("ItineraryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.Itinerary")
+                        .WithMany("Requests")
+                        .HasForeignKey("ItineraryId1");
+
+                    b.HasOne("AllReady.Models.Request", "Request")
+                        .WithMany()
+                        .HasForeignKey("RequestId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -1061,8 +1080,8 @@ namespace AllReady.Migrations
                         .HasForeignKey("OrganizationId");
 
                     b.HasOne("AllReady.Models.ItineraryRequest", "Itinerary")
-                        .WithOne("Request")
-                        .HasForeignKey("AllReady.Models.Request", "ItineraryId1", "ItineraryRequestId");
+                        .WithMany()
+                        .HasForeignKey("ItineraryId1", "ItineraryRequestId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Resource", b =>
