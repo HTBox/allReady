@@ -11,7 +11,7 @@ The goal is to use your skills to help people in need. Build some code to help a
 
 ### How to Contribute
 
-First, add yourself to our [signup issue](https://github.com/HTBox/allReady/issues/2079) to get your name on our list of contributors for the event.
+First, add yourself to our [signup issue](https://github.com/HTBox/allReady/issues/2079) to get your name on our list of contributors for the event. You can also use this issue to request access to our slack channel.
 
 Next, choose how you'd like to help out - you can have a look at [issues jump-in label](https://github.com/HTBox/allReady/issues?q=is%3Aopen+is%3Aissue+label%3Ajump-in). We have also prepared other possibilities for you to have a look at listed below. Then fork the repo, clone it locally and you are ready to develop. 
 
@@ -19,7 +19,7 @@ Finally, create a pull request to the master branch, make sure that you have mer
 
 ### Which are the things I can work on?
 
-* [jump-in issues](hhttps://github.com/HTBox/allReady/issues?q=is%3Aopen+is%3Aissue+label%3Ajump-in
+* Check out the [jump-in issues](https://github.com/HTBox/allReady/issues?q=is%3Aopen+is%3Aissue+label%3Ajump-in)
 * If you'd like to implement your own feature, I'd recommend you to describe it first in an issue, so we can discuss it and help you with implementation. Sometimes the feature might be already implemented, but just have a different name.
 * [Tasks in the .NET Conf Summer Hackfest](https://github.com/HTBox/allReady/projects/3). We have identified specific tasks and issues for the .NET Conf Summer Hackfest that you can work on. Just grab an issue, and start coding.
 * [Polishing for the 1.0 release](https://github.com/HTBox/allReady/milestone/21) We have some lingering issues that need addressing for our official 1.0 release. Help us get there by working on some of these issues.
@@ -31,13 +31,12 @@ To get started, follow the [developer setup](https://github.com/HTBox/allReady/w
 ## Communication
 
 If you have any questions or want to ask anything, you can @-mention any of the team in an issue or a pull request:
-@CanadianJames
-@BillWagner
-@TonySurma
+
+- @CanadianJames
+- @BillWagner
+- @TonySurma
 
 We'll route it to the right person.
-
-TBD: instructions for joining the Slack channel.
 
 ## Events
 
