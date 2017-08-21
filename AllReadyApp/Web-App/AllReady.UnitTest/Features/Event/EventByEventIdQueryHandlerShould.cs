@@ -9,8 +9,7 @@ namespace AllReady.UnitTest.Features.Event
 
     public class EventByEventIdQueryHandlerShould : InMemoryContextTest
     {
-
-        [Fact(Skip = "2.0.0 EF include changes - Needs fixup")]
+        [Fact]
         public async Task CallsGetEventWithTheCorrectEventId()
         {
             var options = CreateNewContextOptions();
@@ -22,7 +21,9 @@ namespace AllReady.UnitTest.Features.Event
             {
                 context.Events.Add(new Event
                 {
-                    Id = eventId
+                    Id = eventId,
+                    Location = new Location(),
+                    Campaign = new Campaign {  ManagingOrganization = new Organization()},
                 });
                 await context.SaveChangesAsync();
             }
