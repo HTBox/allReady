@@ -15,10 +15,10 @@ We are on the path to our first production v1.0 release!  We are tracking requir
 
 More info to come in our [biweekly standups](https://www.youtube.com/channel/UCMHQ4xrqudcTtaXFw4Bw54Q/)
 
-## .NET Core 2.0.x (LTS)
-As part of the work to support cross platform development, we have modified the allReady projects to support .NET Core.  This will allow development on Mac devices*. We are tracking the Long Term Support stream of .NET Core, currently 2.0.0.
+## .NET Core 2.0.x
+As part of the work to support cross platform development, we have modified the allReady projects to support .NET Core.  This will allow development on Mac devices*. We are currently tracking .NET Core 2.0.x, which we expect to fall into LTS support.
 
-Existing and new developers will need to ensure they have the latest .NET Core SDK supporting the current release 1.0.x. We have added basic steps for developers to setup their device at https://github.com/HTBox/allReady/wiki/Developer-Setup
+Existing and new developers will need to ensure they have the latest .NET Core SDK supporting the current release 2.0.x. We have added basic steps for developers to setup their device at https://github.com/HTBox/allReady/wiki/Developer-Setup
 
 More detailed setup information for new developers exists at https://github.com/HTBox/allReady/blob/master/docs/prerequisite_install_guide/prerequisite_install_guide.md
 
