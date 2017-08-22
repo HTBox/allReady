@@ -1,4 +1,4 @@
-@using AllReady.Constants
+﻿@using AllReady.Constants
 @using Microsoft.ApplicationInsights.AspNetCore
 @using Microsoft.AspNetCore.Mvc.Rendering
 
@@ -29,8 +29,6 @@
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
-
-    @Html.Raw(JavaScriptSnippet.FullScript)
 
     @RenderSection("styles", required: false)
 
