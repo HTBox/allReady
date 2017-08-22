@@ -32,9 +32,10 @@ To get started, follow the [developer setup](https://github.com/HTBox/allReady/w
 
 If you have any questions or want to ask anything, you can @-mention any of the team in an issue or a pull request:
 
-- @CanadianJames
-- @BillWagner
-- @TonySurma
+- @CanadianJames  (project lead/contributor/maintainer)
+- @BillWagner     (sponsor/founder)
+- @TonySurma      (sponser/maintainer/customer advocate/general awesomeness)
+- @stevejgordon   (core contributor/great option for European timezones)
 
 We'll route it to the right person.
 
