@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
@@ -27,10 +27,9 @@ namespace AllReady.Services
 
         private async Task<string> UploadAsync(string blobPath, IFormFile attachment)
         {
-            var fileName = ContentDispositionHeaderValue.Parse(attachment.ContentDisposition).FileName.Trim('"').ToLower();
+            var fileName = ContentDispositionHeaderValue.Parse(attachment.ContentDisposition).FileName.ToString().Trim('"').ToLower();
             var blobName = blobPath + "/" + fileName;
             return await blockBlob.UploadFromStreamAsync(ContainerName, blobName, attachment);
         }
-
     }
 }

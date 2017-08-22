@@ -64,7 +64,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Post(new VolunteerTaskViewModel()) as BadRequestObjectResult;
 
             Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(result.StatusCode, 400);
+            Assert.Equal(400, result.StatusCode);
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Post(model) as CreatedResult;
 
             Assert.IsType<CreatedResult>(result);
-            Assert.Equal(result.StatusCode, 201);
+            Assert.Equal(201, result.StatusCode);
         }
 
         [Fact]
@@ -213,7 +213,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Put(It.IsAny<int>(), model) as NoContentResult;
 
             Assert.IsType<NoContentResult>(result);
-            Assert.Equal(result.StatusCode, 204);
+            Assert.Equal(204, result.StatusCode);
         }
 
         [Fact]
@@ -222,7 +222,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.Put(It.IsAny<int>(), It.IsAny<VolunteerTaskViewModel>())).OfType<HttpPutAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}");
+            Assert.Equal("{id}", attribute.Template);
         }
         #endregion
 
@@ -286,7 +286,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.Delete(It.IsAny<int>())).OfType<HttpDeleteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}");
+            Assert.Equal("{id}", attribute.Template);
         }
         #endregion
 
@@ -375,7 +375,7 @@ namespace AllReady.UnitTest.Controllers
 
             Assert.False(successStatus);
             Assert.NotNull(errors);
-            Assert.Equal(1, errors.Count());
+            Assert.Single(errors);
             Assert.Equal("Signup failed - The event could not be found", errors[0]);
         }
 
@@ -401,7 +401,7 @@ namespace AllReady.UnitTest.Controllers
 
             Assert.False(successStatus);
             Assert.NotNull(errors);
-            Assert.Equal(1, errors.Count());
+            Assert.Single(errors);
             Assert.Equal("Signup failed - The task could not be found", errors[0]);
         }
 
@@ -427,7 +427,7 @@ namespace AllReady.UnitTest.Controllers
 
             Assert.False(successStatus);
             Assert.NotNull(errors);
-            Assert.Equal(1, errors.Count());
+            Assert.Single(errors);
             Assert.Equal("Signup failed - Task is closed", errors[0]);
         }
 
@@ -446,7 +446,7 @@ namespace AllReady.UnitTest.Controllers
             var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<VolunteerTaskSignupViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "signup");
+            Assert.Equal("signup", attribute.Template);
         }
 
         [Fact]
@@ -465,7 +465,7 @@ namespace AllReady.UnitTest.Controllers
             var attribute = sut.GetAttributesOn(x => x.RegisterTask(It.IsAny<VolunteerTaskSignupViewModel>())).OfType<ProducesAttribute>().SingleOrDefault();
 
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
         #endregion
 
@@ -564,7 +564,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.UnregisterTask(It.IsAny<int>())).OfType<HttpDeleteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}/signup");
+            Assert.Equal("{id}/signup", attribute.Template);
         }
         #endregion
 
@@ -667,7 +667,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             var attribute = sut.GetAttributesOn(x => x.ChangeStatus(It.IsAny<VolunteerTaskChangeModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "changestatus");
+            Assert.Equal("changestatus", attribute.Template);
         }
         #endregion
 
@@ -677,7 +677,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/task");
+            Assert.Equal("api/task", attribute.Template);
         }
 
         [Fact]
@@ -686,7 +686,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new TaskApiController(null, null, null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
     }
 }

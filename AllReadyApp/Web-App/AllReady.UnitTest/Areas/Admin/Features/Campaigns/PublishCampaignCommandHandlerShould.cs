@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Models;
@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
 
             var result = Context.Campaigns.Single(c => c.Id == 1);
 
-            Assert.Equal(true, result.Published);
+            Assert.True(result.Published);
         }
     }
 }

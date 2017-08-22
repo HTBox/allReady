@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options))
             {
                 var volunteerTaskSignups = context.VolunteerTaskSignups.Count();
-                Assert.Equal(volunteerTaskSignups, 0);
+                Assert.Equal(0, volunteerTaskSignups);
             }
         }
 
@@ -74,9 +74,9 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options))
             {
                 var signup1 = context.VolunteerTaskSignups.FirstOrDefault(x => x.Id == firstId);
-                Assert.Equal(signup1 != null, true);
+                Assert.True(signup1 != null);
                 var signup2 = context.VolunteerTaskSignups.FirstOrDefault(x => x.Id == secondId);
-                Assert.Equal(signup2 != null, true);
+                Assert.True(signup2 != null);
             }
         }
 
@@ -113,7 +113,7 @@ namespace AllReady.UnitTest.Features.Event
             using (var context = new AllReadyContext(options))
             {
                 var signup = context.VolunteerTaskSignups.FirstOrDefault(x => x.Id == volunteerTaskSignupId);
-                Assert.Equal(signup != null, true);
+                Assert.True(signup != null);
             }
         }
     }

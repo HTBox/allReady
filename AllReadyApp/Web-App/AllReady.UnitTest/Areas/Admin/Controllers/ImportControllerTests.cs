@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using AllReady.Areas.Admin.Controllers;
@@ -79,7 +79,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ImportController(null, null, null);
             var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel())).Model;
 
-            Assert.True(result.ImportErrors.Contains("please select an Event."));
+            Assert.Contains("please select an Event.", result.ImportErrors);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ImportController(null, null, null);
             var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel())).Model;
 
-            Assert.True(result.ImportErrors.Contains("please select a file to upload."));
+            Assert.Contains("please select a file to upload.", result.ImportErrors);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ImportController(null, null, csvFactory.Object);
             var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
 
-            Assert.True(result.ImportErrors.Contains("you uploaded an empty file."));
+            Assert.Contains("you uploaded an empty file.", result.ImportErrors);
         }
 
         [Fact]
@@ -148,7 +148,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new ImportController(mediator.Object, null, csvFactory.Object);
             var result = (IndexViewModel)((ViewResult) await sut.Index(new IndexViewModel { EventId = 1, File = iFormFile.Object })).Model;
 
-            Assert.True(result.ImportErrors.Contains($"These id's already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateIds)}"));
+            Assert.Contains($"These id's already exist in the system. Please remove them from the CSV and try again: {string.Join(", ", duplicateIds)}", result.ImportErrors);
         }
 
         [Fact]
@@ -221,13 +221,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = viewResult.Model as IndexViewModel;
 
             Assert.Equal(result.ValidationErrors[0].ProviderRequestId, importRequestViewModels[0].Id);
-            Assert.Equal(result.ValidationErrors[0].Errors[0].ErrorMessage, "The Name field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[1].ErrorMessage, "The Address field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[2].ErrorMessage, "The City field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[3].ErrorMessage, "The State field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[4].ErrorMessage, "The PostalCode field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[5].ErrorMessage, "The Phone field is required.");
-            Assert.Equal(result.ValidationErrors[0].Errors[6].ErrorMessage, "Invalid Email Address");
+            Assert.Equal("The Name field is required.", result.ValidationErrors[0].Errors[0].ErrorMessage);
+            Assert.Equal("The Address field is required.", result.ValidationErrors[0].Errors[1].ErrorMessage);
+            Assert.Equal("The City field is required.", result.ValidationErrors[0].Errors[2].ErrorMessage);
+            Assert.Equal("The State field is required.", result.ValidationErrors[0].Errors[3].ErrorMessage);
+            Assert.Equal("The PostalCode field is required.", result.ValidationErrors[0].Errors[4].ErrorMessage);
+            Assert.Equal("The Phone field is required.", result.ValidationErrors[0].Errors[5].ErrorMessage);
+            Assert.Equal("Invalid Email Address", result.ValidationErrors[0].Errors[6].ErrorMessage);
         }
 
         [Fact]

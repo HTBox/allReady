@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
             var errors = validator.Validate(model, parentCampaign);
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
-            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be earlier than the start date");
+            Assert.Equal("End date cannot be earlier than the start date", errors.Find(x => x.Key == "EndDateTime").Value);
         }
 
         [Fact]

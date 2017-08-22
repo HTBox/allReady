@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using MediatR;
 using Moq;
@@ -105,7 +105,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CreateSut();
 
-            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).ReturnsAsync(null);
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).ReturnsAsync((OrganizationDetailViewModel)null);
 
             var result = await _sut.Details(Id);
 
@@ -158,7 +158,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditGetReturnsHttpNotFoundResult_WhenOrganizationIsNotFound()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationEditQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationEditQuery>())).ReturnsAsync((OrganizationEditViewModel)null);
 
             var sut = new OrganizationController(mediator.Object, null);
             var result = await sut.Edit(It.IsAny<int>());
@@ -377,7 +377,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationController(Mock.Of<IMediator>(), null);
             var result = await sut.DeleteConfirmed(It.IsAny<int>()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(OrganizationController.Index));
+            Assert.Equal(nameof(OrganizationController.Index), result.ActionName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 

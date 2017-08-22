@@ -1,9 +1,10 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace AllReady.Security.Middleware
 {
@@ -34,7 +35,7 @@ namespace AllReady.Security.Middleware
                 var headers = httpContext.Request.Headers;
                 if (!(headers.ContainsKey("ApiUser") && headers.ContainsKey("ApiToken")))
                 {
-                    await httpContext.Authentication.ChallengeAsync();
+                    await httpContext.ChallengeAsync();
                     return;
                 }
 
@@ -46,7 +47,7 @@ namespace AllReady.Security.Middleware
 
                 if (!authorized)
                 {
-                    await httpContext.Authentication.ChallengeAsync();
+                    await httpContext.ChallengeAsync();
                     return;
                 }
             }

@@ -46,7 +46,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.VolunteerTask
             });
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
-            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "End date cannot be earlier than the start date");
+            Assert.Equal("End date cannot be earlier than the start date", errors.Find(x => x.Key == "EndDateTime").Value);
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators.VolunteerTask
             });
 
             Assert.True(errors.Exists(x => x.Key.Equals("EndDateTime")));
-            Assert.Equal(errors.Find(x => x.Key == "EndDateTime").Value, "For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days");
+            Assert.Equal("For itinerary events the task end date must occur on the same day as the start date. Tasks cannot span multiple days", errors.Find(x => x.Key == "EndDateTime").Value);
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -47,8 +47,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()), sut.EndDateTime);
             Assert.Equal("Organizer", sut.Organizer.Id);
             Assert.Equal("ImageUrl", sut.ImageUrl);
-            Assert.Equal(false, sut.IsLimitVolunteers);
-            Assert.Equal(true, sut.IsAllowWaitList);
+            Assert.False(sut.IsLimitVolunteers);
+            Assert.True(sut.IsAllowWaitList);
         }
 
         [Fact]
@@ -145,8 +145,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var @event = await GetEvent(eventId);
             var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
-            Assert.Equal(0, sut[0].AssignedVolunteers.Count());
-            Assert.Equal(0, sut[1].AssignedVolunteers.Count());
+            Assert.Empty(sut[0].AssignedVolunteers);
+            Assert.Empty(sut[1].AssignedVolunteers);
         }
 
         [Fact]
@@ -159,7 +159,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(2, sut[0].RequiredSkills.Count());
             Assert.Equal("Skill One", sut[0].RequiredSkills.OrderBy(ts => ts.Skill.Name).ToList()[0].Skill.Name);
             Assert.Equal("Skill Two", sut[0].RequiredSkills.OrderBy(ts => ts.Skill.Name).ToList()[1].Skill.Name);
-            Assert.Equal(0, sut[1].RequiredSkills.Count());
+            Assert.Empty(sut[1].RequiredSkills);
         }
 
         [Fact]

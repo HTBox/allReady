@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AllReady.Models;
 using System.Linq;
@@ -55,9 +55,9 @@ namespace AllReady.Security
                     return new NotFoundAuthorizableTask();
                 }
 
-                finalEventId = loadedIds.Event == null ? -1 : loadedIds.EventId;
-                finalCampaignId = loadedIds.Event == null ? -1 : loadedIds.Event.CampaignId;
-                finalOrgId = loadedIds.Organization == null ? -1 : loadedIds.Organization.Id;
+                finalEventId = loadedIds.EventId;
+                finalCampaignId = loadedIds.Event.CampaignId;
+                finalOrgId = loadedIds.Organization.Id;
             }
             else
             {
