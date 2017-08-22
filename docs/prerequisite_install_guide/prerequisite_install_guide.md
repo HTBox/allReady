@@ -272,7 +272,9 @@ To verify that the gulp-cli was installed, run the command `gulp -v`.  As of thi
 
 ### Visual Studio
 
-allReady uses Visual Studio 2017 along with .NET Core.  This guide will be using the free Visual Studio 2017 Community Edition but any edition of Visual Studio 2017 will work and the steps are the same for all versions.  
+allReady uses Visual Studio 2017 along with .NET Core 2.0.  This guide will be using the free Visual Studio 2017 Community Edition but any edition of Visual Studio 2017 will work and the steps are the same for all versions.  
+
+***Note**: we recommend using a minimum version number of Visual Studio 15.3.1 to have all the latest tools and facilities.*
 
 1. Download Visual Studio 2017 Community Edition from [https://www.visualstudio.com/downloads/](https://www.visualstudio.com/downloads/)
 
