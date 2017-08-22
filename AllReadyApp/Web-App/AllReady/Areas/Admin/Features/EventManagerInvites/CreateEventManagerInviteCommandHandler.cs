@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.EventManagerInvites
 {
-    public class CreateEventManagerInviteCommandHandler : AsyncRequestHandler<CreateEventManagerInviteCommand>
+    public class CreateEventManagerInviteCommandHandler : IAsyncRequestHandler<CreateEventManagerInviteCommand, int>
     {
         private AllReadyContext _context;
 
@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.EventManagerInvites
 
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        protected override async Task HandleCore(CreateEventManagerInviteCommand message)
+        public async Task<int> Handle(CreateEventManagerInviteCommand message)
         {
             var eventManagerInvite = new EventManagerInvite
             {
@@ -29,6 +29,7 @@ namespace AllReady.Areas.Admin.Features.EventManagerInvites
             };
             _context.EventManagerInvites.Add(eventManagerInvite);
             await _context.SaveChangesAsync();
+            return eventManagerInvite.Id;
         }
 
     }

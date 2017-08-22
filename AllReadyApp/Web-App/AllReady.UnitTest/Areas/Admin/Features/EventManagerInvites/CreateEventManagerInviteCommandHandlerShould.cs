@@ -10,22 +10,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
 {
     public class CreateEventManagerInviteCommandHandlerShould : InMemoryContextTest
     {
-        //protected override void LoadTestData()
-        //{
-        //    Context.Campaigns.Add(new AllReady.Models.Campaign
-        //    {
-        //        Id = 1
-        //    });
-
-        //    Context.Events.Add(new AllReady.Models.Event
-        //    {
-        //        Id = 5,
-        //        CampaignId = 1
-        //    });
-
-        //    Context.SaveChanges();
-        //}
-
         [Fact]
         public async Task CreateEventManagerInvite()
         {
@@ -35,6 +19,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
                 CustomMessage = "message",
                 EventId = 5,
                 InviteeEmailAddress = "test@test.com",
+                Id = 5
             };
 
             var inviteCommand = new CreateEventManagerInviteCommand
@@ -45,8 +30,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
 
             handler.DateTimeUtcNow = () => new DateTime(2016, 5, 29);
 
-            await handler.Handle(inviteCommand);
+            int id = await handler.Handle(inviteCommand);
 
+            id.ShouldBeGreaterThan(0);
             Context.CampaignManagerInvites.Count().ShouldBe(0);
             Context.EventManagerInvites.Count().ShouldBe(1);
             Context.EventManagerInvites.SingleOrDefault().AcceptedDateTimeUtc.ShouldBe(null);

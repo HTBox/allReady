@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.EventManagerInvites;
+using AllReady.Areas.Admin.Features.EventManagerInvites;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Events;
 using AllReady.Models;
@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System.Linq;
 using AllReady.Constants;
-
+using AllReady.Areas.Admin.Features.Notifications;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area(AreaNames.Admin)]
@@ -68,7 +68,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
 
                 var userToInvite = await _userManager.FindByEmailAsync(invite.InviteeEmailAddress);
-                if (userToInvite != null && userToInvite.ManagedEvents.Any(m => m.EventId == eventId))
+                if (userToInvite?.ManagedEvents != null && userToInvite.ManagedEvents.Any(m => m.EventId == eventId))
                 {
                     ModelState.AddModelError("InviteeEmailAddress", $"{invite.InviteeEmailAddress} is allready a manager for this event");
                     return View("Send", invite);
@@ -76,7 +76,19 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.EventId = eventId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user.Id });
+                var inviteId = await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user.Id });
+
+                await _mediator.PublishAsync(new SendEventManagerInvite
+                {
+                    InviteeEmail = invite.InviteeEmailAddress,
+                    EventName = invite.EventName,
+                    SenderName = user.Name,
+                    AcceptUrl = Url.Link("EventManagerInviteAcceptRoute", new { inviteId = inviteId }),
+                    DeclineUrl = Url.Link("EventManagerInviteDeclineRoute", new { inviteId = inviteId }),
+                    RegisterUrl = Url.Action(action: "Register", controller: "Account"),
+                    IsInviteeRegistered = userToInvite != null,
+                    Message = invite.CustomMessage
+                });
 
                 return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = AreaNames.Admin, id = invite.EventId });
             }
@@ -99,6 +111,20 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "EventManagerInviteAcceptRoute")]
+        public async Task<IActionResult> Accept(int inviteId)
+        {
+            // Implement in Issue 1891
+            return View();
+        }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "EventManagerInviteDeclineRoute")]
+        public async Task<IActionResult> Decline(int inviteId)
+        {
+            // Implement in Issue 1891
+            return View();
         }
     }
 }

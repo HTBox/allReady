@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.Notifications;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
@@ -68,7 +69,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
 
                 var userToInvite = await _userManager.FindByEmailAsync(invite.InviteeEmailAddress);
-                if (userToInvite != null && userToInvite.ManagedCampaigns.Any(m => m.CampaignId == campaignId))
+                if (userToInvite?.ManagedCampaigns != null && userToInvite.ManagedCampaigns.Any(m => m.CampaignId == campaignId))
                 {
                     ModelState.AddModelError("InviteeEmailAddress", $"{invite.InviteeEmailAddress} is allready a manager for this campaign");
                     return View("Send", invite);
@@ -76,7 +77,19 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.CampaignId = campaignId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user.Id });
+                var inviteId = await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user.Id });
+
+                await _mediator.PublishAsync(new SendCampaignManagerInvite
+                {
+                    InviteeEmail = invite.InviteeEmailAddress,
+                    CampaignName = invite.CampaignName,
+                    SenderName = user.Name,
+                    AcceptUrl = Url.Link("CampaignManagerInviteAcceptRoute", new { inviteId = inviteId }),
+                    DeclineUrl = Url.Link("CampaignManagerInviteDeclineRoute", new { inviteId = inviteId }),
+                    RegisterUrl = Url.Action(action: "Register", controller: "Account"),
+                    IsInviteeRegistered = userToInvite != null,
+                    Message = invite.CustomMessage
+                });
 
                 return RedirectToAction("Details", "Campaign", new { area = AreaNames.Admin, id = invite.CampaignId });
             }
@@ -100,6 +113,20 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteAcceptRoute")]
+        public async Task<IActionResult> Accept(int inviteId)
+        {
+            // Implement in Issue 1891
+            return View();
+        }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteDeclineRoute")]
+        public async Task<IActionResult> Decline(int inviteId)
+        {
+            // Implement in Issue 1891
+            return View();
         }
     }
 }

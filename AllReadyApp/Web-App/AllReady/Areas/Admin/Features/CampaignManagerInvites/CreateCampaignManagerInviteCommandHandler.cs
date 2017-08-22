@@ -1,4 +1,4 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AllReady.Areas.Admin.Features.CampaignManagerInvites
 {
-    public class CreateCampaignManagerInviteCommandHandler : AsyncRequestHandler<CreateCampaignManagerInviteCommand>
+    public class CreateCampaignManagerInviteCommandHandler : IAsyncRequestHandler<CreateCampaignManagerInviteCommand, int>
     {
         private AllReadyContext _context;
 
@@ -17,7 +17,7 @@ namespace AllReady.Areas.Admin.Features.CampaignManagerInvites
 
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        protected override async Task HandleCore(CreateCampaignManagerInviteCommand message)
+        public async Task<int> Handle(CreateCampaignManagerInviteCommand message)
         {
             var campaignManagerInvite = new CampaignManagerInvite
             {
@@ -29,6 +29,7 @@ namespace AllReady.Areas.Admin.Features.CampaignManagerInvites
             };
             _context.CampaignManagerInvites.Add(campaignManagerInvite);
             await _context.SaveChangesAsync();
+            return campaignManagerInvite.Id;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.CampaignManagerInvites;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using Shouldly;
 using System;
@@ -10,22 +10,6 @@ namespace AllReady.UnitTest.Areas.Admin.Features.CampaignManagerInvites
 {
     public class CreateCampaignManagerInviteCommandHandlerShould : InMemoryContextTest
     {
-        //protected override void LoadTestData()
-        //{
-        //    Context.Campaigns.Add(new AllReady.Models.Campaign
-        //    {
-        //        Id = 1
-        //    });
-
-        //    Context.Events.Add(new AllReady.Models.Event
-        //    {
-        //        Id = 5,
-        //        CampaignId = 1
-        //    });
-
-        //    Context.SaveChanges();
-        //}
-
         [Fact]
         public async Task CreateCampaignManagerInvite()
         {
@@ -45,8 +29,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.CampaignManagerInvites
 
             handler.DateTimeUtcNow = () => new DateTime(2016, 5, 29);
 
-            await handler.Handle(inviteCommand);
+            int id = await handler.Handle(inviteCommand);
 
+            id.ShouldBeGreaterThan(0);
             Context.EventManagerInvites.Count().ShouldBe(0);
             Context.CampaignManagerInvites.Count().ShouldBe(1);
             Context.CampaignManagerInvites.SingleOrDefault().AcceptedDateTimeUtc.ShouldBe(null);
