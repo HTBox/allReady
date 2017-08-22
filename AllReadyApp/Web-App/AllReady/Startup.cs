@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using AllReady.DataAccess;
 using AllReady.Hangfire;
@@ -7,55 +7,40 @@ using AllReady.Security;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using Newtonsoft.Json.Serialization;
 using Hangfire;
 using AllReady.ModelBinding;
 using Microsoft.AspNetCore.Localization;
 using AllReady.Configuration;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Twitter;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace AllReady
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private static Task HandleRemoteLoginFailure(RemoteFailureContext ctx)
         {
-            // Setup configuration sources.
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("version.json")
-                .AddJsonFile("config.json")
-                .AddJsonFile($"config.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            if (env.IsDevelopment())
-            {
-                // This reads the configuration keys from the secret store.
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                builder.AddUserSecrets("aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0");
-
-                builder.AddApplicationInsightsSettings(developerMode: true);
-            }
-            else if (env.IsStaging() || env.IsProduction())
-            {
-                // This will push telemetry data through Application Insights pipeline faster, allowing you to view results immediately.
-                builder.AddApplicationInsightsSettings(developerMode: false);
-            }
-
-            Configuration = builder.Build();
-
-            Configuration["version"] = new ApplicationEnvironment().ApplicationVersion; // version in project.json
+            ctx.Response.Redirect("/Account/Login");
+            ctx.HandleResponse();
+            return Task.CompletedTask;
         }
 
-        public IConfiguration Configuration { get; set; }
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            Configuration["version"] = new ApplicationEnvironment().ApplicationVersion;
+        }
+        
+        public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             //Add CORS support.
@@ -65,31 +50,89 @@ namespace AllReady
                 options.AddPolicy("allReady", AllReadyCorsPolicyFactory.BuildAllReadyOpenCorsPolicy());
             });
 
-            // Add Application Insights data collection services to the services container.
-            services.AddApplicationInsightsTelemetry(Configuration);
-
             // Add Entity Framework services to the services container.
             services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
 
             Options.LoadConfigurationOptions(services, Configuration);
 
-            // Add Identity services to the services container.
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequiredLength = 10;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireUppercase = false;
+                })
+                .AddEntityFrameworkStores<AllReadyContext>()
+                .AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(options =>
             {
-                options.Password.RequiredLength = 10;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireDigit = true;
-                options.Password.RequireUppercase = false;
-                options.Cookies.ApplicationCookie.AccessDeniedPath = new PathString("/Home/AccessDenied");
-            })
-            .AddEntityFrameworkStores<AllReadyContext>()
-            .AddDefaultTokenProviders();
+                options.LoginPath = "/Account/LogIn";
+                options.AccessDeniedPath = "/Home/AccessDenied";
+            });
+
+            services.AddAuthentication();
+
+            if (Configuration["Authentication:Facebook:AppId"] != null)
+            {
+                services.AddAuthentication()
+                    .AddFacebook(options => {
+                        options.AppId = Configuration["authentication:facebook:appid"];
+                        options.AppSecret = Configuration["authentication:facebook:appsecret"];
+                        options.BackchannelHttpHandler = new FacebookBackChannelHandler();
+                        options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
+                        options.Events = new OAuthEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
+
+            if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
+            {
+                services.AddAuthentication()
+                    .AddMicrosoftAccount(options => {
+                        options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
+                        options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
+                        options.Events = new OAuthEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
+
+            if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
+            {
+                services.AddAuthentication()
+                    .AddTwitter(options => {
+                        options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                        options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                        options.RetrieveUserDetails = true;
+                        options.Events = new TwitterEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
+
+            if (Configuration["Authentication:Google:ClientId"] != null)
+            {
+                services.AddAuthentication()
+                    .AddGoogle(options => {
+                        options.ClientId = Configuration["Authentication:Google:ClientId"];
+                        options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                        options.Events = new OAuthEvents()
+                        {
+                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
+                        };
+                    });
+            }
 
             // Add Authorization rules for the app
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(nameof(UserType.OrgAdmin), b => b.RequireClaim(Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin), nameof(UserType.SiteAdmin)));
-                options.AddPolicy(nameof(UserType.SiteAdmin), b => b.RequireClaim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
+                options.AddPolicy(nameof(UserType.OrgAdmin), b => b.RequireClaim(ClaimTypes.UserType, nameof(UserType.OrgAdmin), nameof(UserType.SiteAdmin)));
+                options.AddPolicy(nameof(UserType.SiteAdmin), b => b.RequireClaim(ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
             });
 
             services.AddLocalization();
@@ -109,11 +152,11 @@ namespace AllReady
             // Add MVC services to the services container.
             // config add to get passed Angular failing on Options request when logging in.
             services.AddMvc(config =>
-            {
-                config.ModelBinderProviders.Insert(0, new AdjustToTimezoneModelBinderProvider());
-            })
-            .AddJsonOptions(options =>
-            options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+                {
+                    config.ModelBinderProviders.Insert(0, new AdjustToTimezoneModelBinderProvider());
+                })
+                .AddJsonOptions(options =>
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
@@ -136,33 +179,10 @@ namespace AllReady
         }
 
         // Configure is called after ConfigureServices is called.
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, SampleDataGenerator sampleData, AllReadyContext context, IConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, AllReadyContext context, SampleDataGenerator sampleData)
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.
             app.UseCors("allReady");
-
-            // todo: in RC update we can read from a logging.json config file
-            loggerFactory.AddConsole((category, level) =>
-            {
-                if (category.StartsWith("Microsoft."))
-                {
-                    return level >= LogLevel.Information;
-                }
-                return true;
-            });
-
-            if (env.IsDevelopment())
-            {
-                // this will go to the VS output window
-                loggerFactory.AddDebug((category, level) =>
-                {
-                    if (category.StartsWith("Microsoft."))
-                    {
-                        return level >= LogLevel.Information;
-                    }
-                    return true;
-                });
-            }
 
             app.UseSession();
 
@@ -194,14 +214,13 @@ namespace AllReady
 
             Authentication.ConfigureAuthentication(app, Configuration);
 
-
             //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
             if (!env.IsProduction())
             {
                 context.Database.Migrate();
             }
 
-            //Hangfire
+            ////Hangfire
             app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangireDashboardAuthorizationFilter() } });
             app.UseHangfireServer();
 
@@ -221,7 +240,7 @@ namespace AllReady
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                await sampleData.CreateAdminUser();
+                sampleData.CreateAdminUser().GetAwaiter().GetResult();
             }
         }
     }

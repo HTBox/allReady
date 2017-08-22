@@ -10,7 +10,7 @@ namespace AllReady.UnitTest.Extensions
         public static IEnumerable<Attribute> GetAttributes<T>(this T obj)
         {
             var type = typeof(T);
-            return type.GetTypeInfo().GetCustomAttributes(true);
+            return type.GetTypeInfo().GetCustomAttributes();
         }
 
         public static IEnumerable<Attribute> GetAttributesOn<T>(this T obj, Expression<Func<T, object>> expression)
@@ -19,12 +19,12 @@ namespace AllReady.UnitTest.Extensions
 
             var callExpression = expression.Body as MethodCallExpression;
             if (callExpression != null)
-                attributes = callExpression.Method.GetCustomAttributes(true);
+                attributes = callExpression.Method.GetCustomAttributes();
 
             var body = expression.Body as UnaryExpression;
             var memberExpression = body?.Operand as MemberExpression;
             if (memberExpression != null)
-                attributes = memberExpression.Member.GetCustomAttributes(true);
+                attributes = memberExpression.Member.GetCustomAttributes();
 
             return attributes;
         }

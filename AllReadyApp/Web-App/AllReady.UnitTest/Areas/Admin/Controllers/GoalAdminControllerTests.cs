@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Goals;
@@ -214,7 +214,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
-                .ReturnsAsync(null)
+                .ReturnsAsync((GoalDeleteViewModel)null)
                 .Verifiable();
 
             var goalController = new GoalController(mockMediator.Object);
@@ -327,7 +327,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
-                .ReturnsAsync(null)
+                .ReturnsAsync((GoalDeleteViewModel)null)
                 .Verifiable();
 
             var goalController = new GoalController(mockMediator.Object);
@@ -439,7 +439,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalEditQuery>()))
-                .ReturnsAsync(null)
+                .ReturnsAsync((GoalEditViewModel)null)
                 .Verifiable();
 
             var goalController = new GoalController(mockMediator.Object);

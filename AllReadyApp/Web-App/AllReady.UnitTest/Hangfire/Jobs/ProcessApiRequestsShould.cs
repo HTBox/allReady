@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Configuration;
@@ -34,7 +34,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var sut = new ProcessApiRequests(Context, geocodeService.Object, Mock.Of<IOptions<ApprovedRegionsSettings>>(), backgroundJobClient.Object);
             sut.Process(model);
 
-            Assert.Equal(Context.Requests.Count(x => x.ProviderRequestId == providerRequestId), 1);
+            Assert.Equal(1, Context.Requests.Count(x => x.ProviderRequestId == providerRequestId));
             geocodeService.Verify(x => x.GetCoordinatesFromAddress(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
             backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => job.Method.Name == nameof(ISendRequestStatusToGetASmokeAlarm.Send)), It.IsAny<EnqueuedState>()), Times.Never);
         }
@@ -70,7 +70,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var request = Context.Requests.Single(x => x.RequestId == requestId);
 
             Assert.Equal(request.RequestId, requestId);
-            Assert.Equal(request.OrganizationId, 1);
+            Assert.Equal(1, request.OrganizationId);
             Assert.Equal(request.ProviderRequestId, viewModel.ProviderRequestId);
             Assert.Equal(request.ProviderData, viewModel.ProviderData);
             Assert.Equal(request.Address, viewModel.Address);
@@ -80,8 +80,8 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             Assert.Equal(request.Name, viewModel.Name);
             Assert.Equal(request.State, viewModel.State);
             Assert.Equal(request.PostalCode, viewModel.PostalCode);
-            Assert.Equal(request.Status, RequestStatus.Unassigned);
-            Assert.Equal(request.Source, RequestSource.Api);
+            Assert.Equal(RequestStatus.Unassigned, request.Status);
+            Assert.Equal(RequestSource.Api, request.Source);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace AllReady.UnitTest.Hangfire.Jobs
             var geocoder = new Mock<IGeocodeService>();
             geocoder.Setup(service => service.GetCoordinatesFromAddress(It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .ReturnsAsync(null);
+                .ReturnsAsync((Coordinates)null);
 
             var sut = new ProcessApiRequests(Context, geocoder.Object,
                 Options.Create(new ApprovedRegionsSettings()), Mock.Of<IBackgroundJobClient>())

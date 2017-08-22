@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -53,17 +53,16 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = seattle,
                 RequiredSkills = new List<EventSkill>(),
-                EventType = EventType.Itinerary
-            };
-
-            queenAnne.ManagementInvites = new List<EventManagerInvite>
-            {
-                new EventManagerInvite
+                EventType = EventType.Itinerary,
+                ManagementInvites = new List<EventManagerInvite>
                 {
-                    Id = 1,
-                    InviteeEmailAddress = "test@test.com",
-                    SentDateTimeUtc = new DateTime(2015, 5, 28),
-                    EventId = _queenAnneEventId,
+                    new EventManagerInvite
+                    {
+                        Id = 1,
+                        InviteeEmailAddress = "test@test.com",
+                        SentDateTimeUtc = new DateTime(2015, 5, 28),
+                        EventId = _queenAnneEventId,
+                    }
                 }
             };
 

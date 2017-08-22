@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Services
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(1, organizations.Count);
+            Assert.Single(organizations);
             Assert.Equal(_organizationId1.ToString(), organizations.First().Value);
             Assert.Equal(_organizationName1, organizations.First().Text);
         }
@@ -52,7 +52,7 @@ namespace AllReady.UnitTest.Services
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(0, organizations.Count);
+            Assert.Empty(organizations);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace AllReady.UnitTest.Services
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(0, organizations.Count);
+            Assert.Empty(organizations);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Services
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(0, organizations.Count);
+            Assert.Empty(organizations);
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.EventManagerInvites;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Events;
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventManagerInviteQuery>())).ReturnsAsync((EventManagerInviteViewModel)null);
 
             var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
 

@@ -22,7 +22,7 @@ namespace AllReady.UnitTest.Features.Tasks
 
             using (var context = new AllReadyContext(options)) {
                 var volunteerTasks = context.VolunteerTasks.Count();
-                Assert.Equal(volunteerTasks, 1);
+                Assert.Equal(1, volunteerTasks);
             }
         }
     }

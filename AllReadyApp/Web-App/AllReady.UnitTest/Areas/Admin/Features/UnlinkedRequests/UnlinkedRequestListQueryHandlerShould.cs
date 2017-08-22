@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.UnlinkedRequests
             var sut = new UnlinkedRequestListQueryHandler(context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(result.Requests.Count, 2);
+            Assert.Equal(2, result.Requests.Count);
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.UnlinkedRequests
             var sut = new UnlinkedRequestListQueryHandler(context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(result.Events.Count, 3);
+            Assert.Equal(3, result.Events.Count);
             Assert.Equal(result.Events.Select(x => x.Value), new List<string> {"1", "2", "3"});
             Assert.Equal(result.Events.Select(x => x.Text), new List<string>()
             {
@@ -186,7 +186,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.UnlinkedRequests
             var sut = new UnlinkedRequestListQueryHandler(context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(result.Requests.Count, 1);
+            Assert.Single(result.Requests);
             Assert.Equal(result.Requests.First().Name, expectedName);
             Assert.Equal(result.Requests.First().City, expectedCity);
             Assert.Equal(result.Requests.First().Address, expectedAddress);

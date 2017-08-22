@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new RequestApiController(null, null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/request");
+            Assert.Equal("api/request", attribute.Template);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace AllReady.UnitTest.Controllers
             var result = await sut.Post(new RequestApiViewModel { Status = "new" }) as StatusCodeResult;
 
             Assert.IsType<StatusCodeResult>(result);
-            Assert.Equal(result.StatusCode, 202);
+            Assert.Equal(202, result.StatusCode);
         }
     }
 }

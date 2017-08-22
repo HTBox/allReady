@@ -1,4 +1,4 @@
-﻿using AllReady.Features.Tasks;
+using AllReady.Features.Tasks;
 using AllReady.Models;
 using Xunit;
 
@@ -8,24 +8,23 @@ namespace AllReady.UnitTest.Tasks
 
     public class TaskByTaskIdQueryHandlerShould : InMemoryContextTest
     {
+        private const int VolunteerTaskId = 1;
+
+        protected override void LoadTestData()
+        {
+            Context.VolunteerTasks.Add(new VolunteerTask { Id = VolunteerTaskId, Organization = new Organization(), Event = new Event{ Campaign = new Campaign()}});
+            Context.SaveChanges();
+        }
+
         [Fact]
-        public async Task WhenHandlingTaskByTaskIdQueryGetTaskIsInvokedWithCorrectTaskId() {
-            var options = this.CreateNewContextOptions();
+        public async Task WhenHandlingTaskByTaskIdQueryGetTaskIsInvokedWithCorrectTaskId()
+        {
+            var message = new VolunteerTaskByVolunteerTaskIdQuery { VolunteerTaskId = VolunteerTaskId };
+            
+            var sut = new VolunteerTaskByVolunteerTaskIdQueryHandler(Context);
+            var volunteerTask = await sut.Handle(message);
 
-            const int volunteerTaskId = 1;
-            var message = new VolunteerTaskByVolunteerTaskIdQuery { VolunteerTaskId = volunteerTaskId };
-
-            using (var context = new AllReadyContext(options)) {
-                context.VolunteerTasks.Add(new VolunteerTask {Id = volunteerTaskId});
-                await context.SaveChangesAsync();
-            }
-
-            using (var context = new AllReadyContext(options)) {
-                var sut = new VolunteerTaskByVolunteerTaskIdQueryHandler(context);
-                var volunteerTask = await sut.Handle(message);
-
-                Assert.Equal(volunteerTask.Id, volunteerTaskId);
-            }
+            Assert.Equal(volunteerTask.Id, VolunteerTaskId);
         }
     }
 }

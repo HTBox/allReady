@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Features.Tasks
             using (var context = new AllReadyContext(options)) {
                 var volunteerTask = context.VolunteerTasks.Include(t => t.RequiredSkills).FirstOrDefault(t => t.Id == volunteerTaskId);
                 Assert.NotNull(volunteerTask);
-                Assert.Equal(volunteerTask.RequiredSkills.Count, 0);
+                Assert.Empty(volunteerTask.RequiredSkills);
             }
         }
     }

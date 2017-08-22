@@ -53,7 +53,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Campaigns
             var sut = new IndexQueryHandler(Context);
             var result = await sut.Handle(new IndexQuery());
 
-            Assert.Equal(result.Count(), 2);
+            Assert.Equal(2, result.Count());
         }
     }
 }

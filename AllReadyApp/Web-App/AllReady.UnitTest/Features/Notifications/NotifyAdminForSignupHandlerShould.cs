@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Configuration;
@@ -127,7 +127,7 @@ namespace AllReady.UnitTest.Features.Notifications
         {
             var taskDetailForNotificationModel = new VolunteerTaskDetailForNotificationModel
             {
-                Volunteer = new ApplicationUser {Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber"},
+                Volunteer = new ApplicationUser { Email = "VolunteerEmail", PhoneNumber = "VolunteerPhoneNumber" },
                 CampaignContacts = new List<CampaignContact>
                 {
                     new CampaignContact

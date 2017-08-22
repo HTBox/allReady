@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Controllers;
@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Controllers
             const string userId = "1";
 
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<ShowEventQuery>())).ReturnsAsync((EventViewModel)null);
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser { Id = userId });

@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignApiController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/campaign");
+            Assert.Equal("api/campaign", attribute.Template);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
@@ -40,7 +40,7 @@ namespace AllReady.Services
 
         private async Task<string> UploadAsync(string blobPath, IFormFile image)
         {
-            var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.Trim('"').ToLower();
+            var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.ToString().Trim('"').ToLower();
             if (fileName.EndsWith(".jpg") || fileName.EndsWith(".jpeg") || fileName.EndsWith(".png") || fileName.EndsWith(".gif"))
             {    
                 var blobName = blobPath + "/" + fileName;

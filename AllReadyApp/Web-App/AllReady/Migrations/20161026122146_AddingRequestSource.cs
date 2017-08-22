@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using AllReady.Models;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -13,7 +13,7 @@ namespace AllReady.Migrations
                 name: "Source",
                 table: "Request",
                 nullable: false,
-                defaultValue: RequestSource.Unknown);
+                defaultValue: (int)RequestSource.Unknown);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

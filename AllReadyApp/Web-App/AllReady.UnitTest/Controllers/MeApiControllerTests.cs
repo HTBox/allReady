@@ -61,7 +61,7 @@ namespace AllReady.UnitTest.Controllers
 
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/me");
+            Assert.Equal("api/me", attribute.Template);
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Controllers
             var attribute =
                 sut.GetAttributesOn(x => x.Login(new LoginViewModel())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "login");
+            Assert.Equal("login", attribute.Template);
         }
     }
 }

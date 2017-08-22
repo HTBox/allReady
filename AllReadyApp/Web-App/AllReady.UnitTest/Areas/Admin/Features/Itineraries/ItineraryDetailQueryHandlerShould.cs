@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Itineraries;
+using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Models;
 using MediatR;
 using Moq;
@@ -46,7 +46,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Event = queenAnne,
                 Name = "1st Itinerary",
                 Id = 1,
-                Date = new DateTime(2016, 07, 01)
+                Date = new DateTime(2016, 07, 01),
+                StartLocation = new Location{ Id = 1 },
+                EndLocation = new Location {  Id = 2}
             };
 
             var volunteerTask = new VolunteerTask
@@ -213,7 +215,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new ItineraryDetailQuery { ItineraryId = 1 };
             var handler = new ItineraryDetailQueryHandler(Context, Mock.Of<IMediator>());
             var result = await handler.Handle(query);
-            Assert.Equal(1, result.Requests.Count);
+            Assert.Single(result.Requests);
             Assert.Equal("Request 1", result.Requests[0].Name);
         }
     }
