@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.12
+VisualStudioVersion = 15.0.26730.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{2C1DD2C4-73FF-4D1D-9E88-6B413317FC29}"
 EndProject
@@ -31,6 +31,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Builds", "Builds", "{79E5CF
 	ProjectSection(SolutionItems) = preProject
 		..\appveyor.yml = ..\appveyor.yml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{FCF7C316-22CF-45BF-A113-6748B3358DDD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationProcessing", "NotificationProcessing\NotificationProcessing.csproj", "{32790016-E900-47AF-84D6-A1C9C4558055}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -233,6 +237,42 @@ Global
 		{BFF4752B-274B-47E5-82FD-9B351792FF2D}.Release|Windows-x64.Build.0 = Release|Any CPU
 		{BFF4752B-274B-47E5-82FD-9B351792FF2D}.Release|Windows-x86.ActiveCfg = Release|Any CPU
 		{BFF4752B-274B-47E5-82FD-9B351792FF2D}.Release|Windows-x86.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Android.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Android.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|iOS.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|iOS.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows Phone (Universal).ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows Phone (Universal).Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows Phone 8.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows Phone 8.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-AnyCPU.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-AnyCPU.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-ARM.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-ARM.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-x64.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-x64.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-x86.ActiveCfg = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Debug|Windows-x86.Build.0 = Debug|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Android.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Android.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|iOS.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|iOS.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows Phone (Universal).ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows Phone (Universal).Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows Phone 8.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows Phone 8.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-AnyCPU.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-AnyCPU.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-ARM.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-ARM.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-x64.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-x64.Build.0 = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-x86.ActiveCfg = Release|Any CPU
+		{32790016-E900-47AF-84D6-A1C9C4558055}.Release|Windows-x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,5 +284,9 @@ Global
 		{333122C9-FC41-4280-ACE3-3D75260899E1} = {62E3F7E3-05AC-4915-A3AC-281B0CD9B64B}
 		{BFF4752B-274B-47E5-82FD-9B351792FF2D} = {CB31A2DF-9F47-41D5-AD0F-491C98A8D4CB}
 		{79E5CFB4-6FF7-4F89-B560-9342FFE91898} = {364DE571-98D2-4F69-8D93-F25F832E7D7A}
+		{32790016-E900-47AF-84D6-A1C9C4558055} = {FCF7C316-22CF-45BF-A113-6748B3358DDD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62513E2E-6075-414B-89AC-B8E66B6BDBE6}
 	EndGlobalSection
 EndGlobal
