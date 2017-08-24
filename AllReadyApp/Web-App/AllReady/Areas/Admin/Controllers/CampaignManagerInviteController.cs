@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Constants;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -86,7 +87,13 @@ namespace AllReady.Areas.Admin.Controllers
                     SenderName = user.Name,
                     AcceptUrl = Url.Link("CampaignManagerInviteAcceptRoute", new { inviteId = inviteId }),
                     DeclineUrl = Url.Link("CampaignManagerInviteDeclineRoute", new { inviteId = inviteId }),
-                    RegisterUrl = Url.Action(action: "Register", controller: "Account"),
+                    RegisterUrl = Url.Action(new UrlActionContext
+                    {
+                        Action = nameof(AllReady.Controllers.AccountController.Register),
+                        Controller = "Account",
+                        Values = new { area = "" },
+                        Protocol = HttpContext.Request.Scheme
+                    }),
                     IsInviteeRegistered = userToInvite != null,
                     Message = invite.CustomMessage
                 });

@@ -380,6 +380,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
 
             var sut = new EventManagerInviteController(mockMediator.Object, userManager.Object) { Url = urlHelper.Object };
+            
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new EventManagerInviteViewModel
             {

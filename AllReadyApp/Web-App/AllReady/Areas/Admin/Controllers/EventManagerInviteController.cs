@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using AllReady.Constants;
 using AllReady.Areas.Admin.Features.Notifications;
+using Microsoft.AspNetCore.Mvc.Routing;
+
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area(AreaNames.Admin)]
@@ -85,11 +87,16 @@ namespace AllReady.Areas.Admin.Controllers
                     SenderName = user.Name,
                     AcceptUrl = Url.Link("EventManagerInviteAcceptRoute", new { inviteId = inviteId }),
                     DeclineUrl = Url.Link("EventManagerInviteDeclineRoute", new { inviteId = inviteId }),
-                    RegisterUrl = Url.Action(action: "Register", controller: "Account"),
+                    RegisterUrl = Url.Action(new UrlActionContext
+                    {
+                        Action = nameof(AllReady.Controllers.AccountController.Register),
+                        Controller = "Account",
+                        Values = new { area = "" },
+                        Protocol = HttpContext.Request.Scheme
+                    }),
                     IsInviteeRegistered = userToInvite != null,
                     Message = invite.CustomMessage
                 });
-
                 return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = AreaNames.Admin, id = invite.EventId });
             }
             return View("Send", invite);

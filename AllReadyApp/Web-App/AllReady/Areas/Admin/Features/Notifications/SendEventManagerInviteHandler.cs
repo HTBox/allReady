@@ -39,7 +39,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
             var plainTextMessage = new StringBuilder();
             plainTextMessage.AppendLine($"Event manager invite for event {notification.EventName}");
             plainTextMessage.AppendLine();
-            plainTextMessage.Append($"{notification.SenderName} has invited you have been invited you to become event manager for the event {notification.EventName}");
+            plainTextMessage.Append($"{notification.SenderName} has invited you to become event manager for the event {notification.EventName}");
 
             if (!string.IsNullOrWhiteSpace(notification.Message))
             {
@@ -71,7 +71,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
             var htmlTextMessage = new StringBuilder();
             htmlTextMessage.AppendLine($"Event manager invite for event {notification.EventName}");
             htmlTextMessage.AppendLine();
-            htmlTextMessage.Append($"{notification.SenderName} has invited you have been invited you to become event manager for the event {notification.EventName}");
+            htmlTextMessage.Append($"{notification.SenderName} has invited you to become event manager for the event {notification.EventName}");
 
             if (!string.IsNullOrWhiteSpace(notification.Message))
             {

@@ -80,7 +80,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
             var plainTextMessage = new StringBuilder();
             plainTextMessage.AppendLine($"Event manager invite for event {eventName}");
             plainTextMessage.AppendLine();
-            plainTextMessage.Append($"{senderName} has invited you have been invited you to become event manager for the event {eventName}");
+            plainTextMessage.Append($"{senderName} has invited you to become event manager for the event {eventName}");
 
             plainTextMessage.Append(" with the following message:");
             plainTextMessage.AppendLine();
@@ -106,7 +106,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
             var htmlTextMessage = new StringBuilder();
             htmlTextMessage.AppendLine($"Event manager invite for event {eventName}");
             htmlTextMessage.AppendLine();
-            htmlTextMessage.Append($"{senderName} has invited you have been invited you to become event manager for the event {eventName}");
+            htmlTextMessage.Append($"{senderName} has invited you to become event manager for the event {eventName}");
 
             htmlTextMessage.Append(" with the following message:");
             htmlTextMessage.AppendLine();
@@ -129,7 +129,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
             var htmlTextMessage = new StringBuilder();
             htmlTextMessage.AppendLine($"Event manager invite for event {eventName}");
             htmlTextMessage.AppendLine();
-            htmlTextMessage.Append($"{senderName} has invited you have been invited you to become event manager for the event {eventName}");
+            htmlTextMessage.Append($"{senderName} has invited you to become event manager for the event {eventName}");
 
             htmlTextMessage.Append(" with the following message:");
             htmlTextMessage.AppendLine();
@@ -149,7 +149,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
             var plainTextMessage = new StringBuilder();
             plainTextMessage.AppendLine($"Event manager invite for event {eventName}");
             plainTextMessage.AppendLine();
-            plainTextMessage.Append($"{senderName} has invited you have been invited you to become event manager for the event {eventName}");
+            plainTextMessage.Append($"{senderName} has invited you to become event manager for the event {eventName}");
 
             plainTextMessage.Append(" with the following message:");
             plainTextMessage.AppendLine();
