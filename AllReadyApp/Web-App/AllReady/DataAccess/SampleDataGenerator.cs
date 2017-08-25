@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -677,8 +677,8 @@ namespace AllReady.DataAccess
 
                 var user3 = new ApplicationUser
                 {
-                    FirstName = "FirstName5",
-                    LastName = "LastName5",
+                    FirstName = "FirstName6",
+                    LastName = "LastName6",
                     UserName = _settings.DefaultUsername,
                     Email = _settings.DefaultUsername,
                     TimeZoneId = _timeZone.Id,
