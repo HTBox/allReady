@@ -332,7 +332,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenApiResult_IsSuccess()
         {
-            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.SUCCESS;
+            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.Success;
             var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<VolunteerTaskSignupCommand>(y => y.TaskSignupModel == model)))
@@ -356,7 +356,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenEventNotFound()
         {
-            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.FAILURE_EVENTNOTFOUND;
+            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.Failure_EventNotFound;
 
             var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
@@ -382,7 +382,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenTaskNotFound()
         {
-            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.FAILURE_TASKNOTFOUND;
+            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.Failure_TaskNotFound;
 
             var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();
@@ -408,7 +408,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task Register_ReturnsCorrectJson_WhenTaskIsClosed()
         {
-            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.FAILURE_CLOSEDTASK;
+            const TaskResultStatus volunteerTaskSignUpResultStatus = TaskResultStatus.Failure_ClosedTask;
 
             var model = new VolunteerTaskSignupViewModel();
             var mediator = new Mock<IMediator>();

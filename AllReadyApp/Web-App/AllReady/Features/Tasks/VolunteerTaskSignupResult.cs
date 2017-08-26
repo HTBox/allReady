@@ -4,10 +4,10 @@ namespace AllReady.Features.Tasks
 {
     public enum TaskResultStatus : int
     {
-        SUCCESS,
-        FAILURE_CLOSEDTASK,
-        FAILURE_EVENTNOTFOUND,
-        FAILURE_TASKNOTFOUND,
+        Success,
+        Failure_ClosedTask,
+        Failure_EventNotFound,
+        Failure_TaskNotFound,
     }
 
     public class VolunteerTaskSignupResult

@@ -132,28 +132,28 @@ namespace AllReady.Controllers
 
             switch (result.Status)
             {
-            case TaskResultStatus.SUCCESS:
+            case TaskResultStatus.Success:
               return Json(new
               {
                 isSuccess = true,
                 task = result.VolunteerTask == null ? null : new VolunteerTaskViewModel(result.VolunteerTask, signupModel.UserId)
               });
 
-            case TaskResultStatus.FAILURE_CLOSEDTASK:
+            case TaskResultStatus.Failure_ClosedTask:
               return Json(new
               {
                 isSuccess = false,
                 errors = new[] { "Signup failed - Task is closed" },
               });
 
-            case TaskResultStatus.FAILURE_EVENTNOTFOUND:
+            case TaskResultStatus.Failure_EventNotFound:
               return Json(new
               {
                 isSuccess = false,
                 errors = new[] { "Signup failed - The event could not be found" },
               });
 
-            case TaskResultStatus.FAILURE_TASKNOTFOUND:
+            case TaskResultStatus.Failure_TaskNotFound:
               return Json(new
               {
                 isSuccess = false,
