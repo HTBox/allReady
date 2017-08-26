@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Security;
 using AllReady.Models;
@@ -132,28 +132,28 @@ namespace AllReady.Controllers
 
             switch (result.Status)
             {
-            case VolunteerTaskSignupResult.SUCCESS:
+            case TaskResultStatus.SUCCESS:
               return Json(new
               {
                 isSuccess = true,
                 task = result.VolunteerTask == null ? null : new VolunteerTaskViewModel(result.VolunteerTask, signupModel.UserId)
               });
 
-            case VolunteerTaskSignupResult.FAILURE_CLOSEDTASK:
+            case TaskResultStatus.FAILURE_CLOSEDTASK:
               return Json(new
               {
                 isSuccess = false,
                 errors = new[] { "Signup failed - Task is closed" },
               });
 
-            case VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND:
+            case TaskResultStatus.FAILURE_EVENTNOTFOUND:
               return Json(new
               {
                 isSuccess = false,
                 errors = new[] { "Signup failed - The event could not be found" },
               });
 
-            case VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND:
+            case TaskResultStatus.FAILURE_TASKNOTFOUND:
               return Json(new
               {
                 isSuccess = false,

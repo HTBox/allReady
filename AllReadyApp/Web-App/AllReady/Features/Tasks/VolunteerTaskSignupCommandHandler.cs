@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Notifications;
@@ -36,18 +36,18 @@ namespace AllReady.Features.Tasks
 
             if (@event == null)
             {
-                return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND };
+                return new VolunteerTaskSignupResult { Status = TaskResultStatus.FAILURE_EVENTNOTFOUND };
             }
 
             var volunteerTask = @event.VolunteerTasks.SingleOrDefault(t => t.Id == model.VolunteerTaskId);
             if (volunteerTask == null)
             {
-                return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND };
+                return new VolunteerTaskSignupResult { Status = TaskResultStatus.FAILURE_TASKNOTFOUND };
             }
 
             if (volunteerTask.IsClosed)
             {
-                return new VolunteerTaskSignupResult { Status = VolunteerTaskSignupResult.FAILURE_CLOSEDTASK };
+                return new VolunteerTaskSignupResult { Status = TaskResultStatus.FAILURE_CLOSEDTASK };
             }
 
             // If somehow the user has already been signed up for the task, don't sign them up again
@@ -80,7 +80,7 @@ namespace AllReady.Features.Tasks
             //Notify admins of a new volunteer
             await _mediator.PublishAsync(new VolunteerSignedUpNotification { UserId = model.UserId, VolunteerTaskId = volunteerTask.Id });
 
-            return new VolunteerTaskSignupResult {Status = "success", VolunteerTask = volunteerTask};
+            return new VolunteerTaskSignupResult {Status = TaskResultStatus.SUCCESS, VolunteerTask = volunteerTask};
         }
     }
 }
