@@ -24,23 +24,23 @@ User should be an administrator within the allReady application in order to see 
 First, user will sign in to the allReady application with administrator account.
 Within Admin options, the user will select Campaigns.
 
-![CampaignDropdownOption](/images/AdminCampaignDropdown.png) 
+![CampaignDropdownOption](images/AdminCampaignDropdown.png?raw=true) 
 
 Once on the Campaigns page, the user will select the campaign that pertains to the event in which additional tasks are necessary to be added.
 
-![AdminSelectCampaign](/images/AdminSelectCampaign.png) 
+![AdminSelectCampaign](images/AdminSelectCampaign.png?raw=true) 
 
 Once the specific Campaign is selected, the user can now select the event to add tasks for.
 
-![AdminSelectEvent](/images/AdminSelectEvent.png) 
+![AdminSelectEvent](images/AdminSelectEvent.png?raw=true) 
 
 Once the event is selected, the user will navigate to Tasks section of the event, and select Create Task button to add a new task to an event.
 
-![AdminCreateTaskButton](/images/AdminCreateTaskButton.png) 
+![AdminCreateTaskButton](images/AdminCreateTaskButton.png?raw=true) 
 
 On the Create Task screen, the user will add the information relevant to the Task to create, and click Save button to add the task to the event. If the task was created in error, the user will select the Cancel button to cancel the task creation.
 
-![AdminCreateTaskPage](/images/AdminCreateTaskPage.png) 
+![AdminCreateTaskPage](images/AdminCreateTaskPage.png?raw=true) 
 
 ## <a name='Success_Criteria'/>Success Criteria   
  
