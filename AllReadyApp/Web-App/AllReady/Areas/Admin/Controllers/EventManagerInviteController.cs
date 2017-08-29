@@ -78,25 +78,15 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.EventId = eventId;
                 var user = await _userManager.GetUserAsync(User);
-                var inviteId = await _mediator.SendAsync(new CreateEventManagerInviteCommand { Invite = invite, UserId = user.Id });
-
-                await _mediator.PublishAsync(new SendEventManagerInvite
+                var inviteId = await _mediator.SendAsync(new CreateEventManagerInviteCommand
                 {
-                    InviteeEmail = invite.InviteeEmailAddress,
-                    EventName = invite.EventName,
-                    SenderName = user.Name,
-                    AcceptUrl = Url.Link("EventManagerInviteAcceptRoute", new { inviteId = inviteId }),
-                    DeclineUrl = Url.Link("EventManagerInviteDeclineRoute", new { inviteId = inviteId }),
-                    RegisterUrl = Url.Action(new UrlActionContext
-                    {
-                        Action = nameof(AllReady.Controllers.AccountController.Register),
-                        Controller = "Account",
-                        Values = new { area = "" },
-                        Protocol = HttpContext.Request.Scheme
-                    }),
+                    Invite = invite,
+                    UserId = user.Id,
                     IsInviteeRegistered = userToInvite != null,
-                    Message = invite.CustomMessage
+                    RegisterUrl = Url.Action(nameof(AllReady.Controllers.AccountController.Register), "Account", new { area="" }, HttpContext.Request.Scheme),
+                    SenderName = user.Name
                 });
+
                 return RedirectToAction(actionName: "Details", controllerName: "Event", routeValues: new { area = AreaNames.Admin, id = invite.EventId });
             }
             return View("Send", invite);

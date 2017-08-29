@@ -78,24 +78,13 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.CampaignId = campaignId;
                 var user = await _userManager.GetUserAsync(User);
-                var inviteId = await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user.Id });
-
-                await _mediator.PublishAsync(new SendCampaignManagerInvite
+                var inviteId = await _mediator.SendAsync(new CreateCampaignManagerInviteCommand
                 {
-                    InviteeEmail = invite.InviteeEmailAddress,
-                    CampaignName = invite.CampaignName,
-                    SenderName = user.Name,
-                    AcceptUrl = Url.Link("CampaignManagerInviteAcceptRoute", new { inviteId = inviteId }),
-                    DeclineUrl = Url.Link("CampaignManagerInviteDeclineRoute", new { inviteId = inviteId }),
-                    RegisterUrl = Url.Action(new UrlActionContext
-                    {
-                        Action = nameof(AllReady.Controllers.AccountController.Register),
-                        Controller = "Account",
-                        Values = new { area = "" },
-                        Protocol = HttpContext.Request.Scheme
-                    }),
+                    Invite = invite,
+                    UserId = user.Id,
                     IsInviteeRegistered = userToInvite != null,
-                    Message = invite.CustomMessage
+                    SenderName = user.Name,
+                    RegisterUrl = Url.Action(nameof(AllReady.Controllers.AccountController.Register), "Account", new { area=""}, HttpContext.Request.Scheme)
                 });
 
                 return RedirectToAction("Details", "Campaign", new { area = AreaNames.Admin, id = invite.CampaignId });

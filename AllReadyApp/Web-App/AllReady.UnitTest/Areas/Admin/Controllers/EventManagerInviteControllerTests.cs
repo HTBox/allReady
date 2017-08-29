@@ -396,52 +396,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(x => x.SendAsync(It.Is<CreateEventManagerInviteCommand>(c => c.Invite == invite)), Times.Once);
         }
 
-        [Fact]
-        public async Task SendShouldSendEmail_WhenUserIsOrgAdminForCampaign()
-        {
-            // Arrange
-            var mockMediator = new Mock<IMediator>();
-            var @event = new Event
-            {
-                Campaign = new Campaign() { ManagingOrganizationId = 1 },
-            };
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
-
-            var userManager = UserManagerMockHelper.CreateUserManagerMock();
-            userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser() { FirstName = "John", LastName = "Smith" });
-            userManager.Setup(x => x.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser() { ManagedEvents = new List<EventManager>() });
-
-            var urlHelper = new Mock<IUrlHelper>();
-            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns("http://register.com/");
-            urlHelper.Setup(x => x.Link("EventManagerInviteAcceptRoute", It.IsAny<object>())).Returns("http://accept.com/");
-            urlHelper.Setup(x => x.Link("EventManagerInviteDeclineRoute", It.IsAny<object>())).Returns("http://decline.com/");
-
-            var sut = new EventManagerInviteController(mockMediator.Object, userManager.Object) { Url = urlHelper.Object };
-            sut.MakeUserAnOrgAdmin(organizationId: "1");
-            var invite = new EventManagerInviteViewModel
-            {
-                EventId = 1,
-                InviteeEmailAddress = "test@test.com",
-                CustomMessage = "test message",
-                EventName = "My event",
-            };
-
-            // Act
-            IActionResult result = await sut.Send(invite.EventId, invite);
-
-            // Assert
-            mockMediator.Verify(x => x.PublishAsync(It.Is<SendEventManagerInvite>(i =>
-                i.InviteeEmail == invite.InviteeEmailAddress &&
-                i.EventName == invite.EventName &&
-                i.SenderName == "John Smith" &&
-                i.AcceptUrl == "http://accept.com/" &&
-                i.DeclineUrl == "http://decline.com/" &&
-                i.RegisterUrl == "http://register.com/" &&
-                i.IsInviteeRegistered &&
-                i.Message == "test message"
-            )), Times.Once);
-        }
-
         #endregion
 
         #region Details Tests
