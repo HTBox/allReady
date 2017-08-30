@@ -44,7 +44,6 @@ namespace AllReady.UnitTest.TagHelpers
             tagHelper.Process(GetContext(), output);
 
             Assert.Null(output.TagName);
-            //Assert.Equal("12/25/2014 1:21 PM", output.Content.GetContent());
             Assert.Equal(value.ToString("g"), output.Content.GetContent());
         }
 
