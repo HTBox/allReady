@@ -1,4 +1,4 @@
-﻿/*Helpers*/
+/*Helpers*/
 
 .margin-1 {
     margin-bottom: 10px;
@@ -12,7 +12,7 @@
 
 body {
     margin: 0;
-    padding: 0;
+    padding-top: 50px;
     font-family: sans-serif;
     position: relative;
     padding-bottom: 16rem;
@@ -129,6 +129,7 @@ footer {
 }
 
 .navbar {
+    
     background-color:#d58033;
     border-radius: 0;
     margin-bottom:0;
