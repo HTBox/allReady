@@ -10,6 +10,7 @@ using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,6 @@ namespace AllReady.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
-            //IOptions<IdentityCookieOptions> identityCookieOptions,
             IMediator mediator,
             IExternalUserInformationProviderFactory externalUserInformationProviderFactory,
             IRedirectAccountControllerRequests redirectAccountControllerRequests
@@ -50,8 +50,10 @@ namespace AllReady.Controllers
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
