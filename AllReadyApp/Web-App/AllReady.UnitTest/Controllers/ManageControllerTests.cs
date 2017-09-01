@@ -450,12 +450,12 @@ namespace AllReady.UnitTest.Controllers
 
             var urlcontext = new UrlActionContext
             {
-                Action = nameof(controller.ConfirmNewEmail),
+                Action = nameof(AccountController.ConfirmEmail),
                 Controller = "Account",
                 Values = new { userId = user.Id, code }
             };
 
-            urlMock.Verify(a => a.Action(It.Is<UrlActionContext>(i => i.Action == urlcontext.Action && i.Controller == urlcontext.Controller && i.Values.ToString() == $"{{ userId = {user.Id}, code = token }}" && i.Protocol == controller.HttpContext.Request
+            urlMock.Verify(a => a.Action(It.Is<UrlActionContext>(i => i.Action == urlcontext.Action && i.Controller == urlcontext.Controller && i.Values.ToString() == $"{{ userId = {user.Id}, token = token }}" && i.Protocol == controller.HttpContext.Request
             .Scheme)),Times.Once);
         }
 
