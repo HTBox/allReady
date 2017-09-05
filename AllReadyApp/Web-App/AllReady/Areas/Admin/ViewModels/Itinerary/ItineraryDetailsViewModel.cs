@@ -90,5 +90,10 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public bool? TeamLeadChangedSuccess { get; set; }
 
         public bool HasTeamLeadResult => TeamLeadChangedSuccess.HasValue;
+
+        /// <summary>
+        /// Identifies whether team management functions are enabled and should be shown in the UI.
+        /// </summary>
+        public bool TeamManagementEnabled { get; set; }
     }
 }
