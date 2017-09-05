@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.Notifications;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Constants;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -68,7 +70,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
 
                 var userToInvite = await _userManager.FindByEmailAsync(invite.InviteeEmailAddress);
-                if (userToInvite != null && userToInvite.ManagedCampaigns.Any(m => m.CampaignId == campaignId))
+                if (userToInvite?.ManagedCampaigns != null && userToInvite.ManagedCampaigns.Any(m => m.CampaignId == campaignId))
                 {
                     ModelState.AddModelError("InviteeEmailAddress", $"{invite.InviteeEmailAddress} is allready a manager for this campaign");
                     return View("Send", invite);
@@ -76,7 +78,14 @@ namespace AllReady.Areas.Admin.Controllers
 
                 invite.CampaignId = campaignId;
                 var user = await _userManager.GetUserAsync(User);
-                await _mediator.SendAsync(new CreateCampaignManagerInviteCommand { Invite = invite, UserId = user.Id });
+                var inviteId = await _mediator.SendAsync(new CreateCampaignManagerInviteCommand
+                {
+                    Invite = invite,
+                    UserId = user.Id,
+                    IsInviteeRegistered = userToInvite != null,
+                    SenderName = user.Name,
+                    RegisterUrl = Url.Action(nameof(AllReady.Controllers.AccountController.Register), "Account", new { area=""}, HttpContext.Request.Scheme)
+                });
 
                 return RedirectToAction("Details", "Campaign", new { area = AreaNames.Admin, id = invite.CampaignId });
             }
@@ -100,6 +109,20 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteAcceptRoute")]
+        public async Task<IActionResult> Accept(int inviteId)
+        {
+            // Implement in Issue 1891
+            return View();
+        }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteDeclineRoute")]
+        public async Task<IActionResult> Decline(int inviteId)
+        {
+            // Implement in Issue 1891
+            return View();
         }
     }
 }

@@ -1,5 +1,9 @@
-﻿using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.CampaignManagerInvites;
+using AllReady.Areas.Admin.Features.Notifications;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 using Shouldly;
 using System;
 using System.Linq;
@@ -10,26 +14,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.CampaignManagerInvites
 {
     public class CreateCampaignManagerInviteCommandHandlerShould : InMemoryContextTest
     {
-        //protected override void LoadTestData()
-        //{
-        //    Context.Campaigns.Add(new AllReady.Models.Campaign
-        //    {
-        //        Id = 1
-        //    });
-
-        //    Context.Events.Add(new AllReady.Models.Event
-        //    {
-        //        Id = 5,
-        //        CampaignId = 1
-        //    });
-
-        //    Context.SaveChanges();
-        //}
-
         [Fact]
         public async Task CreateCampaignManagerInvite()
         {
-            var handler = new CreateCampaignManagerInviteCommandHandler(Context);
+            var mockMediator = new Mock<IMediator>();
+            var urlHelper = new Mock<IUrlHelper>();
+            var handler = new CreateCampaignManagerInviteCommandHandler(Context, mockMediator.Object, urlHelper.Object);
             var invite = new CampaignManagerInviteViewModel
             {
                 CustomMessage = "message",
@@ -57,6 +47,52 @@ namespace AllReady.UnitTest.Areas.Admin.Features.CampaignManagerInvites
             Context.CampaignManagerInvites.SingleOrDefault().RevokedDateTimeUtc.ShouldBe(null);
             Context.CampaignManagerInvites.SingleOrDefault().SenderUserId.ShouldBe("userId");
             Context.CampaignManagerInvites.SingleOrDefault().SentDateTimeUtc.ShouldBe(new DateTime(2016, 5, 29));
+        }
+
+        [Fact]
+        public async Task ShouldSendCampaignManagerInviteEmail()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Link("CampaignManagerInviteAcceptRoute", It.IsAny<object>())).Returns("http://accept.com/");
+            urlHelper.Setup(x => x.Link("CampaignManagerInviteDeclineRoute", It.IsAny<object>())).Returns("http://decline.com/");
+
+            var handler = new CreateCampaignManagerInviteCommandHandler(Context, mockMediator.Object, urlHelper.Object);
+            var invite = new CampaignManagerInviteViewModel
+            {
+                CustomMessage = "test message",
+                CampaignId = 1,
+                InviteeEmailAddress = "test@test.com",
+                CampaignName = "Test Campaign",
+                
+            };
+
+            var inviteCommand = new CreateCampaignManagerInviteCommand
+            {
+                Invite = invite,
+                UserId = "userId",
+                SenderName = "John Smith",
+                RegisterUrl = "http://register.com/",
+                IsInviteeRegistered = true
+            };
+
+            handler.DateTimeUtcNow = () => new DateTime(2016, 5, 29);
+
+            // Act
+            await handler.Handle(inviteCommand);
+
+            // Assert
+            mockMediator.Verify(x => x.PublishAsync(It.Is<CampaignManagerInvited>(i =>
+                i.InviteeEmail == invite.InviteeEmailAddress &&
+                i.CampaignName == invite.CampaignName &&
+                i.SenderName == "John Smith" &&
+                i.AcceptUrl == "http://accept.com/" &&
+                i.DeclineUrl == "http://decline.com/" &&
+                i.RegisterUrl == "http://register.com/" &&
+                i.IsInviteeRegistered &&
+                i.Message == "test message"
+            )), Times.Once);
         }
     }
 }

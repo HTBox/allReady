@@ -1,11 +1,13 @@
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.EventManagerInvites;
+using AllReady.Areas.Admin.Features.Notifications;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Events;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Moq;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -370,10 +372,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Campaign = new Campaign() { ManagingOrganizationId = 1 }
             };
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
+
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var sut = new EventManagerInviteController(mockMediator.Object, userManager.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+
+            var sut = new EventManagerInviteController(mockMediator.Object, userManager.Object) { Url = urlHelper.Object };
+            
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new EventManagerInviteViewModel
             {
@@ -388,6 +395,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Assert
             mockMediator.Verify(x => x.SendAsync(It.Is<CreateEventManagerInviteCommand>(c => c.Invite == invite)), Times.Once);
         }
+
         #endregion
 
         #region Details Tests
