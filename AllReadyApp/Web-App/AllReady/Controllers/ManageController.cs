@@ -113,8 +113,8 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ResendEmailConfirmation()
         {
             var user = await _userManager.GetUserAsync(User);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = "Account", Values = new { userId = user.Id, code },
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(AccountController.ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token },
                 Protocol = HttpContext.Request.Scheme });
 
             await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
