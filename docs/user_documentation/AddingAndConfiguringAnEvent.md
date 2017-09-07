@@ -1,4 +1,4 @@
-![AllReady](/images/ALLReady.png)  
+![](images/ALLReady.PNG)  
 # Adding and Configuring An Event 
 ## Table of Contents    
 * [Overview](#Overview) 

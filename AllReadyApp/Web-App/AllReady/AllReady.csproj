@@ -9,6 +9,7 @@
     <PackageId>AllReady</PackageId>
     <UserSecretsId>aspnet5-AllReady-468aac76-4430-43e6-848e-f4a3b90d61d0</UserSecretsId>
     <AssetTargetFallback>$(AssetTargetFallback);portable-wp8+netcore45+net45+wp81+wpa81</AssetTargetFallback>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
