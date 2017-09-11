@@ -4,7 +4,7 @@ using Hangfire.Dashboard;
 
 namespace AllReady.Hangfire
 {
-    public class HangireDashboardAuthorizationFilter : IDashboardAuthorizationFilter
+    public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilter
     {
         public bool Authorize(DashboardContext context)
         {

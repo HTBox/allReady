@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authentication;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.Extensions.PlatformAbstractions;
+using System.Linq;
 
 namespace AllReady
 {
@@ -214,14 +215,23 @@ namespace AllReady
 
             Authentication.ConfigureAuthentication(app, Configuration);
 
+            // Check for -PurgeRefreshSampleData command line argument.
+            bool purgeRefreshSampleData = Environment.GetCommandLineArgs().Contains("-PurgeRefreshSampleData", StringComparer.InvariantCultureIgnoreCase);
+
+            if (purgeRefreshSampleData)
+            {
+                // Note: This will also delete Hangfire and other non-code-first objects.
+                context.Database.EnsureDeleted();
+            }
+
             //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
-            if (!env.IsProduction())
+            if (purgeRefreshSampleData || !env.IsProduction())
             {
                 context.Database.Migrate();
             }
 
             ////Hangfire
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangireDashboardAuthorizationFilter() } });
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangfireDashboardAuthorizationFilter() } });
             app.UseHangfireServer();
 
             // Add MVC to the request pipeline.
@@ -233,7 +243,7 @@ namespace AllReady
 
             // Add sample data and test admin accounts if specified in Config.Json.
             // for production applications, this should either be set to false or deleted.
-            if (Configuration["SampleData:InsertSampleData"] == "true")
+            if (purgeRefreshSampleData || Configuration["SampleData:InsertSampleData"] == "true")
             {
                 sampleData.InsertTestData();
             }

@@ -1,4 +1,4 @@
-﻿using AllReady.Features.Tasks;
+using AllReady.Features.Tasks;
 using AllReady.Models;
 using MediatR;
 using Moq;
@@ -23,7 +23,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(VolunteerTaskSignupResult.FAILURE_CLOSEDTASK, result.Status);
+            Assert.Equal(TaskResultStatus.Failure_ClosedTask, result.Status);
             Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
@@ -36,7 +36,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(VolunteerTaskSignupResult.FAILURE_EVENTNOTFOUND, result.Status);
+            Assert.Equal(TaskResultStatus.Failure_EventNotFound, result.Status);
             Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(VolunteerTaskSignupResult.FAILURE_TASKNOTFOUND, result.Status);
+            Assert.Equal(TaskResultStatus.Failure_TaskNotFound, result.Status);
             Assert.Equal(0, Context.VolunteerTaskSignups.Count());
         }
 
@@ -62,7 +62,7 @@ namespace AllReady.UnitTest.Features.Tasks
             var sut = new VolunteerTaskSignupCommandHandler(mockMediator.Object, Context);
             var result = await sut.Handle(message);
 
-            Assert.Equal(VolunteerTaskSignupResult.SUCCESS, result.Status);
+            Assert.Equal(TaskResultStatus.Success, result.Status);
             Assert.Equal(1, Context.VolunteerTaskSignups.Count());
         }
 
