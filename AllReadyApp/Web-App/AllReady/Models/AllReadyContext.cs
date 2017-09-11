@@ -181,6 +181,7 @@ namespace AllReady.Models
                    .WithMany(c => c.ParticipatingOrganizations);
             builder.HasOne(s => s.Organization);
         }
+
         private void Map(EntityTypeBuilder<Campaign> builder)
         {
             builder.HasOne(c => c.ManagingOrganization).WithMany(x => x.Campaigns).HasForeignKey(x => x.ManagingOrganizationId);
@@ -203,7 +204,24 @@ namespace AllReady.Models
         private void Map(EntityTypeBuilder<ApplicationUser> builder)
         {
             builder.HasMany(u => u.AssociatedSkills).WithOne(us => us.User);
-        }
+
+            builder.HasMany(e => e.Claims)
+                .WithOne()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.HasMany(e => e.Logins)
+                .WithOne()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(e => e.Roles)
+                .WithOne()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);}
 
         private void Map(EntityTypeBuilder<UserSkill> builder)
         {

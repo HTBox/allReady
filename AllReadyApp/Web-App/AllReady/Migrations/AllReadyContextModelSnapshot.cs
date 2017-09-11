@@ -115,8 +115,6 @@ namespace AllReady.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int?>("OrganizationId");
-
                     b.Property<string>("OrganizerId");
 
                     b.Property<bool>("Published");
@@ -131,8 +129,6 @@ namespace AllReady.Migrations
                     b.HasIndex("LocationId");
 
                     b.HasIndex("ManagingOrganizationId");
-
-                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("OrganizerId");
 
@@ -443,13 +439,9 @@ namespace AllReady.Migrations
 
                     b.Property<DateTime>("DateAssigned");
 
-                    b.Property<int?>("ItineraryId1");
-
                     b.Property<int>("OrderIndex");
 
                     b.HasKey("ItineraryId", "RequestId");
-
-                    b.HasIndex("ItineraryId1");
 
                     b.HasIndex("RequestId")
                         .IsUnique();
@@ -756,8 +748,6 @@ namespace AllReady.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApplicationUserId");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -768,8 +758,6 @@ namespace AllReady.Migrations
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -803,8 +791,6 @@ namespace AllReady.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ApplicationUserId");
-
                     b.Property<string>("ClaimType");
 
                     b.Property<string>("ClaimValue");
@@ -813,8 +799,6 @@ namespace AllReady.Migrations
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("UserId");
 
@@ -881,13 +865,9 @@ namespace AllReady.Migrations
                         .HasForeignKey("LocationId");
 
                     b.HasOne("AllReady.Models.Organization", "ManagingOrganization")
-                        .WithMany()
+                        .WithMany("Campaigns")
                         .HasForeignKey("ManagingOrganizationId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AllReady.Models.Organization")
-                        .WithMany("Campaigns")
-                        .HasForeignKey("OrganizationId");
 
                     b.HasOne("AllReady.Models.ApplicationUser", "Organizer")
                         .WithMany()
@@ -1034,13 +1014,9 @@ namespace AllReady.Migrations
             modelBuilder.Entity("AllReady.Models.ItineraryRequest", b =>
                 {
                     b.HasOne("AllReady.Models.Itinerary", "Itinerary")
-                        .WithMany()
+                        .WithMany("Requests")
                         .HasForeignKey("ItineraryId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AllReady.Models.Itinerary")
-                        .WithMany("Requests")
-                        .HasForeignKey("ItineraryId1");
 
                     b.HasOne("AllReady.Models.Request", "Request")
                         .WithMany()
@@ -1157,13 +1133,6 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
-                {
-                    b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany("Roles")
-                        .HasForeignKey("ApplicationUserId");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -1176,10 +1145,6 @@ namespace AllReady.Migrations
                 {
                     b.HasOne("AllReady.Models.ApplicationUser")
                         .WithMany("Claims")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -1187,7 +1152,7 @@ namespace AllReady.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
+                        .WithMany("Logins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -1200,7 +1165,7 @@ namespace AllReady.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AllReady.Models.ApplicationUser")
-                        .WithMany()
+                        .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
