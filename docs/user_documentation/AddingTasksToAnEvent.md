@@ -9,17 +9,17 @@
 * [Terminology](#Terminology)   
 * [Notes and Comments](#Notes_and_Comments)   
  
-## <a name='Overview'/> Overview  
+## <a name='Overview'></a> Overview  
  
 This documentation will advise how to create a task for an event within a campaign in the allReady application.
  
-## <a name='Prerequisites'/>Prerequisites  
+## <a name='Prerequisites'></a> Prerequisites  
  
 User must have already created a campaign, and within that campaign, created a specific event (for which the task can be added to).
 
 User should be an administrator within the allReady application in order to see this option.
 
-## <a name='User_Walkthrough'/>User Walkthrough  
+## <a name='User_Walkthrough'></a> User Walkthrough  
  
 First, user will sign in to the allReady application with administrator account.
 Within Admin options, the user will select Campaigns.
@@ -42,11 +42,11 @@ On the Create Task screen, the user will add the information relevant to the Tas
 
 ![](images/AdminCreateTaskPage.PNG?raw=true) 
 
-## <a name='Success_Criteria'/>Success Criteria   
+## <a name='Success_Criteria'></a> Success Criteria   
  
 User will end on Event Details page, where task has either been created with Create Task option and is now visable, or no additional information if Cancel option was chosen on task creation.
  
-## <a name='Terminology'/>Terminology    
+## <a name='Terminology'></a> Terminology    
  
-## <a name='Notes_and_Comments'/>Notes and Comments    
+## <a name='Notes_and_Comments'></a> Notes and Comments    
 _____ 

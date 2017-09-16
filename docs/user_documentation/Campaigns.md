@@ -1,20 +1,25 @@
 ![](images/ALLReady.PNG?raw=true)
-# Campaigns 
-## Table of Contents  
+
+# Campaigns
+
+## Table of Contents
+
 * [Overview](#Overview)
 * [Prerequisites](#Prerequisites)
-* [User Walkthrough](#User_Walkthrough)  
+* [User Walkthrough](#User_Walkthrough)
 * [Success Criteria](#Success_Criteria)
-* [Terminology](#Terminology) 
-* [Notes and Comments](#Notes_and_Comments)  
+* [Terminology](#Terminology)
+* [Notes and Comments](#Notes_and_Comments)
 
-## <a name='Overview'/> Overview
-Campaigns, which are created for an Organization, are the base object for the other elements of the campaigns, such as events, tasks and itineraries.  The location for a campaign, may be diferent from the location for and organization.  For example, a campaign might be regional and serviced out of a regional location differnt from the busines address of the organization.  Events, which will be discussed in a separate section, can also have a location for each event that is different from both the Organization address and the campaign address.
+## <a name='Overview'></a> Overview
 
-## <a name='Prerequisites'/> Prerequisites
+Campaigns, which are created for an Organization, are the base object for the other elements of the campaigns, such as events, tasks and itineraries. The location for a campaign, may be diferent from the location for and organization. For example, a campaign might be regional and serviced out of a regional location differnt from the busines address of the organization.  Events, which will be discussed in a separate section, can also have a location for each event that is different from both the Organization address and the campaign address.
+
+## <a name='Prerequisites'></a> Prerequisites
+
 In order to use the "Copy Location" button, requires the organization and its location must be created and saved.  For efficiency, it is better to have the organizations configured before creating the campaign.
 
-## <a name='User_Walkthrough'/>User Walkthrough 
+## <a name='User_Walkthrough'></a> User Walkthrough
 To be able to add or change a campaign, you will need to have administrative access to the Allready Application.  If you nneed this functionality and do not have access, please contact your technical lead for the campaign and they will help you get the appropriate permissions.  After you receive administration prviveleges, you can log in with your credentials as shown below.
 ![](images/ARLogin.png?raw=true)
 
@@ -34,7 +39,7 @@ As you scroll down on the Campaign Edit/Entry Screen, you see the "Location" and
 Now it's time to save you work.  Click the "Create" button to save your work.  "Cancel" will irrecoverably flush your data and effort. 
 ![](images/CampaignEdit2.png?raw=true)
 
-## <a name='Success_Criteria'/>Success Criteria
+## <a name='Success_Criteria'></a> Success Criteria
 Now that you have successfully created or edited your campaign, you will be presented with a screen that displays Goals(2), Events (3), aned Reources (4).  Each of these sections contains a "Create New" buttom and links to existing campaign elements so that you can add, edit, or delete existing elements of your campaign.
 
 Goals (2) (TODO - Add link to Goals.md)   
@@ -42,9 +47,9 @@ Events (3) (TODO Add link to Events.md)
 Resources (4) (TODO - Add link to Resources.md)  
 ![](images/CampaignEdit3.png?raw=true)
 
-## <a name='Terminology'/>Terminology  
+## <a name='Terminology'></a> Terminology  
 
-## <a name='Notes_and_Comments'/>Notes and Comments  
+## <a name='Notes_and_Comments'></a> Notes and Comments  
 _____
 
 
