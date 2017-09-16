@@ -1,4 +1,4 @@
-![](images/ALLReady.PNG)  
+![](images/ALLReady.PNG)
 
 # Adding and Configuring An Event
 
@@ -10,20 +10,20 @@
 * [Success Criteria](#Success_Criteria)
 * [Terminology](#Terminology)
 * [Notes and Comments](#Notes_and_Comments)
- 
-## <a name='Overview'></a> Overview
- 
-This documentation will advise how to create and configure an event within a campaign in the allReady application.
- 
-## <a name='Prerequisites'></a> Prerequisites
- 
-User must have already created a campaign (for which the event can be added to).
 
-User should be an administrator within the allReady application in order to see this option.
+## <a name='Overview'></a> Overview
+
+This documentation will advise how to create and configure an event within a campaign in the allReady application.
+
+## <a name='Prerequisites'></a> Prerequisites
+
+The user must have already created a campaign (for which the event can be added to).
+
+The user should be an administrator within the allReady application in order to see this option.
 
 ## <a name='User_Walkthrough'></a> User Walkthrough
- 
-First, user will sign in to the allReady application with administrator account.
+
+First, the user will sign in to the allReady application with an administrator account.
 Within Admin options, the user will select Campaigns.
 
 ![](images/AdminCampaignDropdown.PNG?raw=true)
@@ -41,11 +41,11 @@ On the Create Task screen, the user will add the information relevant to the Tas
 ![](images/AdminCreateEventPage.PNG?raw=true)
 
 ## <a name='Success_Criteria'></a> Success Criteria
- 
-User will end on Campaign Details page, where event has either been created with Create Event option and is now visable, or no additional information if Cancel option was chosen on event creation.
- 
+
+The user will end on Campaign Details page, where an event has either been created with Create Event option and is now visible, or no additional information if Cancel option was chosen on event creation.
+
 ## <a name='Terminology'></a> Terminology
 
 ## <a name='Notes_and_Comments'></a> Notes and Comments
 
-_____ 
+_____
