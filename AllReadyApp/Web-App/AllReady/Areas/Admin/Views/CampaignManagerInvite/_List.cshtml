@@ -1,3 +1,4 @@
+@using AllReady.Areas.Admin.ViewModels.Campaign
 @using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
@@ -33,7 +34,10 @@
                             @invite.Status.ToString()
                         </td>
                         <td>
-                            <a asp-action="Cancel" asp-controller="CampaignManagerInvite" asp-area="@AreaNames.Admin" asp-route-inviteId="@invite.Id"><i class="glyphicon glyphicon-trash"></i></a>
+                            @if (invite.Status == CampaignDetailViewModel.CampaignManagerInviteStatus.Pending)
+                            {
+                                <a asp-action="Cancel" asp-controller="CampaignManagerInvite" asp-area="@AreaNames.Admin" asp-route-inviteId="@invite.Id"><i class="glyphicon glyphicon-trash"></i></a>
+                            }
                         </td>
                     </tr>
                 }
