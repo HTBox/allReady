@@ -2,89 +2,54 @@
 @{
     ViewData["Title"] = "Volunteer Dashboard";
 }
+
+<style>
+
+    a.buttons-collection 
+    {
+        margin-left: 1em;
+    }
+</style>
 <div class="row">
     <div class="col-md-12">
         <h2>@ViewData["Title"]</h2>
-    </div>
+    </div>   
 </div>
 <div class="row">
     <div class="col-md-6">
-
-        @if (Model.CurrentEvents.Count() > 0)
-        {
-            <div class="row myevents">
-                <div class="col-md-12">
-
-                    <h3>Current Events:</h3>
-                @foreach (var campaignEvent in Model.CurrentEvents)
-                {
-                        <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@campaignEvent.EventId">
-                            <div class="row myevents-block">                             
-                                <div class="col-md-8 col-md-push-1">                                
-                                    <h4>@campaignEvent.EventName</h4>
-                                    <h5>@string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</h5>
-                                    <h6>@campaignEvent.Tasks.Count() Tasks</h6>       
-                                    <h6>@campaignEvent.VolunteerCount Volunteers</h6>     
-                                </div>
-                            </div>
-                        </a>
-                    }
-
-                </div>
-            </div>
-        }
-        @if (Model.FutureEvents.Count() > 0)
-        {
-            <div class="row myevents">
-                <div class="col-md-12">
-                    <h3>Future Events:</h3>
-                    @foreach (var campaignEvent in Model.FutureEvents)
-                {
-                        <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@campaignEvent.EventId">
-                            <div class="row myevents-block">
-                                <div class="col-md-8 col-md-push-1">
-                                    <h4>@campaignEvent.EventName</h4>
-                                    <h5>@string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</h5>
-                                    <h6>@campaignEvent.Tasks.Count() Tasks</h6>
-                                    <h6>@campaignEvent.VolunteerCount Volunteers</h6>   
-                                </div>
-                            </div>
-                        </a>
-                    }
-                </div>
-
-
-            </div>
-        }
-        @if (Model.PastEvents.Count() > 0)
-        {
-            <div class="row myevents">
-                <div class="col-md-12">
-                    <h3>Past Events:</h3>
-                    @foreach (var campaignEvent in Model.PastEvents)
-                {
-                        <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@campaignEvent.EventId">
-                            <div class="row myevents-block">
-                                <div class="col-md-8 col-md-push-1">
-                                    <h4>@campaignEvent.EventName</h4>
-                                    <h5>@string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</h5>
-                                    <h6>@campaignEvent.Tasks.Count() Tasks</h6>
-                                    <h6>@campaignEvent.VolunteerCount Volunteers</h6>   
-                                </div>
-                            </div>
-                        </a>
-                    }
-                </div>
-            </div>
-
-        }
+        <table id="VolunteerTable" class="display">
+            <thead>
+                <tr>
+                    <th>Workflow State</th>
+                    <th>Event Name</th>
+                    <th>Event Date</th>
+                    <th>Number of Tasks</th>
+                    <th>Number of Volunteers</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
     <div class="col-md-6">
         <div id='calendar'></div>
     </div>
 </div>
+
+
 @section scripts{
 
-
-    <script src="~/js/dashboard.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.2.2/css/select.dataTables.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.3.1/css/buttons.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/select/1.2.2/js/dataTables.select.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" type="text/javascript"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/pdfmake.min.js" type="text/javascript"></script>
+<script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.27/build/vfs_fonts.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.print.min.js" type="text/javascript"></script>
+<script src="~/js/dashboard.js" type="text/javascript"></script>
 }
