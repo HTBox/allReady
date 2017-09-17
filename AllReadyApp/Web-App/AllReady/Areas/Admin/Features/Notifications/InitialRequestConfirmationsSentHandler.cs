@@ -5,6 +5,7 @@ using AllReady.Hangfire.Jobs;
 using AllReady.Models;
 using Hangfire;
 using MediatR;
+using TimeZoneConverter;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Areas.Admin.Features.Notifications
@@ -34,7 +35,7 @@ namespace AllReady.Areas.Admin.Features.Notifications
         private static DateTimeOffset SevenDaysBeforeThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
             var sevenDaysBeforeTheIntinerayDateAtNoon = itineraryDate.Date.AddDays(-7).AddHours(12);
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var timeZoneInfo = TZConvert.GetTimeZoneInfo(eventsTimeZoneId);
             var utcOffset = timeZoneInfo.GetUtcOffset(sevenDaysBeforeTheIntinerayDateAtNoon);
             return new DateTimeOffset(sevenDaysBeforeTheIntinerayDateAtNoon, utcOffset);
         }

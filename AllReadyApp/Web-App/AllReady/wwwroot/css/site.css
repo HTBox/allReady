@@ -19,6 +19,15 @@ body {
     padding-bottom: 16rem;
 }
 
+/** since .form-control isn't designed for radio buttons and checkboxes */
+input[type="checkbox"].form-control, input[type="radio"].form-control {
+    box-shadow: unset;
+    border-image: unset;
+    box-shadow: unset;
+    max-width: unset;
+    width: 20px;
+}
+
 .logo-background {
     background-color: #d58033;
     width: 100vw;
