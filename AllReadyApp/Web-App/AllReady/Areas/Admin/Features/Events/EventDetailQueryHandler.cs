@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.ViewModels.Event;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.VolunteerTask;
@@ -50,6 +50,7 @@ namespace AllReady.Areas.Admin.Features.Events
                         Name = t.Name,
                         StartDateTime = t.StartDateTime,
                         EndDateTime = t.EndDateTime,
+                        EventId = campaignEvent.Id,
                         NumberOfVolunteersRequired = t.NumberOfVolunteersRequired,
                         AssignedVolunteers = t.AssignedVolunteers?.Select(assignedVolunteer => new VolunteerViewModel
                         {
