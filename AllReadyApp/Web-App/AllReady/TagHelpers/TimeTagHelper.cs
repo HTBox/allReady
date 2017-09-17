@@ -1,4 +1,5 @@
 using System;
+using TimeZoneConverter;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace AllReady.TagHelpers
@@ -45,7 +46,7 @@ namespace AllReady.TagHelpers
                 var dateTimeToDisplay = Value.Value;
                 if (!string.IsNullOrEmpty(TargetTimeZoneId))
                 {
-                    TimeZoneInfo targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(TargetTimeZoneId);
+                    TimeZoneInfo targetTimeZone = TZConvert.GetTimeZoneInfo(TargetTimeZoneId);
                     var targetOffset = targetTimeZone.GetUtcOffset(dateTimeToDisplay);
                     dateTimeToDisplay = dateTimeToDisplay.ToOffset(targetOffset);
                 }

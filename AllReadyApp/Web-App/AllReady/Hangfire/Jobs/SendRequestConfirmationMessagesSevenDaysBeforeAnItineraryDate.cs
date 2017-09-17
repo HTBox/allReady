@@ -4,6 +4,7 @@ using System.Linq;
 using AllReady.Models;
 using AllReady.Services;
 using Hangfire;
+using TimeZoneConverter;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Hangfire.Jobs
@@ -46,7 +47,7 @@ namespace AllReady.Hangfire.Jobs
 
         private bool TodayIsSevenDaysBeforeThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var timeZoneInfo = TZConvert.GetTimeZoneInfo(eventsTimeZoneId);
             var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDate);
             var intineraryDateConvertedToEventsTimeZone = new DateTimeOffset(itineraryDate, utcOffset);
             return (intineraryDateConvertedToEventsTimeZone.Date - DateTimeUtcNow().Date).TotalDays == 7;
@@ -54,7 +55,7 @@ namespace AllReady.Hangfire.Jobs
 
         private static DateTimeOffset OneDayBeforeThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var timeZoneInfo = TZConvert.GetTimeZoneInfo(eventsTimeZoneId);
             var oneDayBeforeItineraryDateAtNoon = itineraryDate.Date.AddDays(-1).AddHours(12);
             var utcOffset = timeZoneInfo.GetUtcOffset(oneDayBeforeItineraryDateAtNoon);
             return new DateTimeOffset(oneDayBeforeItineraryDateAtNoon, utcOffset);
