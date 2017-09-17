@@ -1,0 +1,44 @@
+﻿@using System.Threading.Tasks
+@using AllReady.Constants
+@using AllReady.Security
+@model List<AllReady.Areas.Admin.ViewModels.Event.EventListerViewModel>
+
+@{
+    ViewBag.Title = "Event Lister";
+}
+
+<h1>Events</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        @foreach (var listerModel in Model)
+        {
+            <h2>@listerModel.Organization</h2>
+            <div class="row">
+                <div class="col-md-8">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Event
+                            </th>
+                            <th>
+                                Campaign
+                            </th>
+                        </tr>
+                        @foreach (var item in listerModel.Events)
+                        {
+                        <tr>
+                            <td>
+                                <a asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.EventId">@item.Name</a>
+                            </td>
+                            <td>
+                                @item.CampaignName
+                            </td>
+                        </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.Features.Site;
 using AllReady.Areas.Admin.Features.Users;
@@ -19,6 +19,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Site;
+using AllReady.Constants;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -99,7 +100,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await controller.ConfirmDeleteUser(It.IsAny<string>()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(SiteController.Index));
+            Assert.Equal(nameof(SiteController.Index), result.ActionName);
         }
 
         [Fact]
@@ -148,7 +149,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 var result = controller.EditUser(userId);
                 var model = ((ViewResult)await result).ViewData.Model as EditUserViewModel;
 
-                Assert.Equal(model.Organization, null);
+                Assert.Null(model.Organization);
                 Assert.IsType<EditUserViewModel>(model);
             }
         }
@@ -163,7 +164,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var org = new Organization { Id = orgId, Name = orgName };
             var userId = It.IsAny<string>();
 
-            user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>
+            user.Claims.Add(new Microsoft.AspNetCore.Identity.IdentityUserClaim<string>
             {
                 ClaimType = AllReady.Security.ClaimTypes.Organization,
                 ClaimValue = orgId.ToString()
@@ -273,14 +274,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             controller.SetDefaultHttpContext();
             controller.Url = GetMockUrlHelper("any");
             await controller.EditUser(model);
 
-            userManager.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Value == "OrgAdmin")), Times.Once);
+            userManager.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Value == nameof(UserType.OrgAdmin))), Times.Once);
         }
 
         [Fact]
@@ -301,10 +302,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Email = "test@testy.com"
             };
 
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
-                .ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult(IdentityResult.Success));
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             controller.SetFakeHttpRequestSchemeTo(requestScheme);
@@ -314,7 +313,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "Login" &&
-                uac.Controller == "Admin" &&
+                uac.Controller == "Account" &&
                 uac.Protocol == requestScheme)),
                 Times.Once);
         }
@@ -336,10 +335,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Email = "test@testy.com"
             };
 
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId)))
-                .ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult(IdentityResult.Success));
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             controller.SetDefaultHttpContext();
@@ -347,7 +344,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.Url = GetMockUrlHelper(expectedUrl);
             await controller.EditUser(model);
 
-            mediator.Verify(m => m.SendAsync(It.Is<SendAccountApprovalEmail>(q => q.Email == user.Email && q.CallbackUrl == expectedUrl )), Times.Once);
+            mediator.Verify(m => m.SendAsync(It.Is<SendAccountApprovalEmailCommand>(q => q.Email == user.Email && q.CallbackUrl == expectedUrl )), Times.Once);
         }
 
         [Fact]
@@ -370,8 +367,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ReturnsAsync(user);
 
             var userManager = CreateApplicationUserMock();
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult( IdentityResult.Failed(null)));
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Failed(null));
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             var result = await controller.EditUser(model);
@@ -392,12 +388,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
 
             var userManager = CreateApplicationUserMock();
-            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Success));
+            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             await controller.EditUser(model);
 
-            userManager.Verify(x => x.RemoveClaimAsync(user, It.Is<Claim>(c => c.Value == "OrgAdmin")), Times.Once);
+            userManager.Verify(x => x.RemoveClaimAsync(user, It.Is<Claim>(c => c.Value == nameof(UserType.OrgAdmin))), Times.Once);
         }
 
         [Fact]
@@ -412,7 +408,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == model.UserId))).ReturnsAsync(user);
 
             var userManager = CreateApplicationUserMock();
-            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).Returns(() => Task.FromResult(IdentityResult.Failed(null)));
+            userManager.Setup(x => x.RemoveClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Failed(null));
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             var result = await controller.EditUser(model);
@@ -472,7 +468,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediator = new Mock<IMediator>();
             var userId = "1234";
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).ReturnsAsync(null); 
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == userId))).ReturnsAsync((ApplicationUser)null); 
 
             var controller = new SiteController(null, null, mediator.Object);
             await controller.ResetPassword(userId);
@@ -525,7 +521,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "ResetPassword" &&
-                uac.Controller == "Admin" &&
+                uac.Controller == "Account" &&
                 uac.Protocol == requestScheme)),
                 Times.Once);
         }
@@ -551,7 +547,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             controller.Url = GetMockUrlHelper(url);
             await controller.ResetPassword(user.Id);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AllReady.Areas.Admin.Features.Site.SendResetPasswordEmail>(e => e.Email == user.Email && e.CallbackUrl == url)));
+            mediator.Verify(x => x.SendAsync(It.Is<AllReady.Areas.Admin.Features.Site.SendResetPasswordEmailCommand>(e => e.Email == user.Email && e.CallbackUrl == url)));
         }
 
         [Fact]
@@ -726,7 +722,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await controller.AssignSiteAdmin(user.Id);
 
             userManager.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => 
-                c.Value == UserType.SiteAdmin.ToName() && 
+                c.Value == nameof(UserType.SiteAdmin) && 
                 c.Type == AllReady.Security.ClaimTypes.UserType)), Times.Once);
         }
 
@@ -740,10 +736,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 Id = "1234"
             };
 
-            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == user.Id)))
-                .ReturnsAsync(user);
-            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>()))
-                .Returns(() => Task.FromResult(IdentityResult.Success));
+            mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == user.Id))).ReturnsAsync(user);
+            userManager.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
             var controller = new SiteController(userManager.Object, null, mediator.Object);
             var result = (RedirectToActionResult) await controller.AssignSiteAdmin(user.Id);
@@ -851,10 +845,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             {
                 Id = "1234"
             };
-            user.Claims.Add(new Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<string>
+            user.Claims.Add(new IdentityUserClaim<string>
             {
                 ClaimType = AllReady.Security.ClaimTypes.UserType,
-                ClaimValue = Enum.GetName(typeof(UserType), UserType.SiteAdmin)
+                ClaimValue = nameof(UserType.SiteAdmin)
             });
 
             mediator.Setup(x => x.SendAsync(It.Is<UserByUserIdQuery>(q => q.UserId == user.Id)))
@@ -1027,7 +1021,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await controller.AssignOrganizationAdmin(model);
 
             userManager.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c =>
-                c.Value == UserType.OrgAdmin.ToName() &&
+                c.Value == nameof(UserType.OrgAdmin) &&
                 c.Type == AllReady.Security.ClaimTypes.UserType)), Times.Once);
             userManager.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c =>
                 c.Value == model.OrganizationId.ToString() &&
@@ -1145,7 +1139,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             userManager.Verify(u => u.RemoveClaimAsync(user, It.Is<Claim>(c => 
                 c.Type == AllReady.Security.ClaimTypes.UserType 
-                && c.Value == UserType.SiteAdmin.ToName())), Times.Once);
+                && c.Value == nameof(UserType.SiteAdmin))), Times.Once);
         }
 
         [Fact]
@@ -1263,7 +1257,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var orgId = "4567";
             IList<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
+            claims.Add(new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
             claims.Add(new Claim(AllReady.Security.ClaimTypes.Organization, orgId));
             userManager.Setup(u => u.GetClaimsAsync(user)).ReturnsAsync(claims);
 
@@ -1272,7 +1266,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             userManager.Verify(u => u.RemoveClaimAsync(user, It.Is<Claim>(c =>
                 c.Type == AllReady.Security.ClaimTypes.UserType
-                && c.Value == UserType.SiteAdmin.ToName())), Times.Once);
+                && c.Value == nameof(UserType.SiteAdmin))), Times.Once);
             userManager.Verify(u => u.RemoveClaimAsync(user, It.Is<Claim>(c =>
                 c.Type == AllReady.Security.ClaimTypes.Organization
                 && c.Value == orgId)), Times.Once);
@@ -1290,7 +1284,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var orgId = "4567";
             IList<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToName()));
+            claims.Add(new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
             claims.Add(new Claim(AllReady.Security.ClaimTypes.Organization, orgId));
             userManager.Setup(u => u.GetClaimsAsync(user)).ReturnsAsync(claims);
 
@@ -1361,7 +1355,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, null);
             var attribute = controller.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(AreaNames.Admin, attribute.RouteValue);
         }
 
         [Fact]
@@ -1370,7 +1364,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var controller = new SiteController(null, null, null);
             var attribute = controller.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Policy, "SiteAdmin");
+            Assert.Equal(nameof(UserType.SiteAdmin), attribute.Policy);
         }
 
         private static Mock<UserManager<ApplicationUser>> CreateApplicationUserMock()

@@ -1,11 +1,11 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using Xunit;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
-    using Event = Models.Event;
+    using Event = AllReady.Models.Event;
 
     public class EventByEventIdQueryHandlerShould : InMemoryContextTest
     {
@@ -21,7 +21,9 @@ namespace AllReady.UnitTest.Features.Event
             {
                 context.Events.Add(new Event
                 {
-                    Id = eventId
+                    Id = eventId,
+                    Location = new Location(),
+                    Campaign = new Campaign {  ManagingOrganization = new Organization()},
                 });
                 await context.SaveChangesAsync();
             }

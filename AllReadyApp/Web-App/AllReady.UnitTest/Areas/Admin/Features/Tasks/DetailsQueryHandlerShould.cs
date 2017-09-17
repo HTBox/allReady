@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Models;
+
 using Xunit;
-using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 {
     public class DetailsQueryHandlerShould : InMemoryContextTest
     {
-        private readonly AllReadyTask task;
+        private readonly VolunteerTask task;
         private readonly DetailsQuery message;
         private readonly DetailsQueryHandler sut;
 
         public DetailsQueryHandlerShould()
         {
-            task = new AllReadyTask
+            task = new VolunteerTask
             {
                 Id = 1,
                 Name = "TaskName",
@@ -34,10 +34,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     Campaign = new Campaign { Id = 3, Name = "CampaignName", TimeZoneId = "Central Standard Time" },
                     TimeZoneId = "Central Standard Time"
                 },
-                RequiredSkills = new List<TaskSkill> { new TaskSkill { SkillId = 4, TaskId = 1 } },
-                AssignedVolunteers = new List<TaskSignup>
+                RequiredSkills = new List<VolunteerTaskSkill> { new VolunteerTaskSkill { SkillId = 4, VolunteerTaskId = 1 } },
+                AssignedVolunteers = new List<VolunteerTaskSignup>
                 {
-                    new TaskSignup
+                    new VolunteerTaskSignup
                     {
                         User = new ApplicationUser
                         {
@@ -52,10 +52,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 }
             };
 
-            Context.Tasks.Add(task);
+            Context.VolunteerTasks.Add(task);
             Context.SaveChanges();
 
-            message = new DetailsQuery { TaskId = task.Id };
+            message = new DetailsQuery { VolunteerTaskId = task.Id };
             sut = new DetailsQueryHandler(Context);
         }
 

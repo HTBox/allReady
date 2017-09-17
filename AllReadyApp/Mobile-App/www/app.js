@@ -1,9 +1,9 @@
-angular.module('allReady.controllers', ['Backend']);
+﻿angular.module('allReady.controllers', ['Backend']);
 angular.module("Backend", ['Backend']); //TODO get a better name for factory and module
 
 angular.module('allReady', ['ionic', 'allReady.controllers', 'Backend'])
     .constant('ApiEndpoint', {
-        url: 'http://localhost:8100/api/'
+        url: 'http://localhost:48408/' // TODO: Update when the site is deployed for real
     })
   .run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {

@@ -1,6 +1,8 @@
-﻿using AllReady.Features.Campaigns;
+﻿using System;
+using AllReady.Features.Campaigns;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Models;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Campaigns
@@ -8,17 +10,20 @@ namespace AllReady.UnitTest.Features.Campaigns
     public class FeaturedCampaignQueryHandlerShould : InMemoryContextTest
     {
         [Fact]
-        public async Task ReturnsSingleCampaignThatIsFeatured()
+        public async Task ReturnASingleCampaignThatIsFeaturedAndHasNotEnded()
         {
             // Arrange
-            var handler = new FeaturedCampaignQueryHandler(Context);            
+            var handler = new FeaturedCampaignQueryHandler(Context)
+            {
+                DateTimeOffsetUtcNow = () => new DateTime(2017, 01, 07)
+            };
 
             // Act
             var result = await handler.Handle(new FeaturedCampaignQuery());
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("This is featured", result.Title);            
+            Assert.Equal("This is featured", result.Title);
         }
 
         [Fact]
@@ -52,34 +57,85 @@ namespace AllReady.UnitTest.Features.Campaigns
             Assert.Null(result);
         }
 
+        [Fact]
+        public async Task ReturnNullIfFeaturedCampaignIsNotMarkedAsPublished()
+        {
+            // clear the test data of all campaigns
+            var allCampaigns = Context.Campaigns.ToList();
+            Context.RemoveRange(allCampaigns);
+            Context.SaveChanges();
+
+            var org = new Organization
+            {
+                Name = "Some Organization"
+            };
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Name = "This is featured but not published",
+                Featured = true,
+                ManagingOrganization = org,
+                Published = false,
+                EndDateTime = new DateTime(2018, 1, 1)
+            });
+            
+            // Arrange
+            var handler = new FeaturedCampaignQueryHandler(Context);
+
+            // Act
+            var result = await handler.Handle(new FeaturedCampaignQuery());
+
+            // Assert
+            Assert.Null(result);
+        }
+
         protected override void LoadTestData()
         {
-            var org = new Models.Organization
+            var org = new Organization
             {
                 Name = "Some Organization"
             };
 
             Context.Organizations.Add(org);
 
-            Context.Campaigns.Add(new Models.Campaign
+            Context.Campaigns.Add(new Campaign
             {
+                Id = 1,
+                Name = "This is featured but has ended",
+                Featured = true,
+                ManagingOrganization = org,
+                Published = true,
+                EndDateTime = new DateTime(2012, 1, 1)
+            });
+
+            Context.Campaigns.Add(new Campaign
+            {
+                Id = 2,
                 Name = "This is featured",
                 Featured = true,
-                ManagingOrganization = org                
+                ManagingOrganization = org,
+                Published = true,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
 
-            Context.Campaigns.Add(new Models.Campaign
+            Context.Campaigns.Add(new Campaign
             {
+                Id = 3,
                 Name = "This is not featured",
                 Featured = false,
-                ManagingOrganization = org
+                ManagingOrganization = org,
+                Published = true,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
 
-            Context.Campaigns.Add(new Models.Campaign
+            Context.Campaigns.Add(new Campaign
             {
+                Id = 4,
                 Name = "This is also featured",
                 Featured = true,
-                ManagingOrganization = org
+                ManagingOrganization = org,
+                Published = true,
+                EndDateTime = new DateTime(2018, 1, 1)
             });
 
             Context.SaveChanges();

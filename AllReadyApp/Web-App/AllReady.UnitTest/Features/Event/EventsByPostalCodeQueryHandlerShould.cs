@@ -16,10 +16,14 @@ namespace AllReady.UnitTest.Features.Event
         [Fact]
         public async Task HandleCallsEventsByPostalCodeWithCorrectPostalCodeAndDistance()
         {
-            // arrange
+
             var options = CreateNewContextOptions();
+
             var message = new EventsByPostalCodeQuery { PostalCode = "PostalCode", Distance = 100 };
-            using (var context = new AllReadyContext(options)) {
+
+            using (var context = new AllReadyContext(options))
+            {
+
                 context.Events.Add(new Event());
                 context.Events.Add(new Event());
                 await context.SaveChangesAsync();
@@ -30,9 +34,14 @@ namespace AllReady.UnitTest.Features.Event
 
             // act
             List<Event> events;
-            using (var context = new AllReadyContext(options)) {
-                var sut = new EventsByPostalCodeQueryHandler(context, mockFromSqlWrapper.Object);
-                events = sut.Handle(message);
+
+            using (var context = new AllReadyContext(options))
+            {
+                var sut = new EventsByPostalCodeQueryHandler(context);
+                var events = sut.Handle(message);
+
+                Assert.Equal(2, events.Count);
+
             }
 
             // Assert

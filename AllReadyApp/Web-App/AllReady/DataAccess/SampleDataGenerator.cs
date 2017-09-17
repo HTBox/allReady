@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Configuration;
 using AllReady.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -15,7 +16,7 @@ namespace AllReady.DataAccess
         private readonly SampleDataSettings _settings;
         private readonly GeneralSettings _generalSettings;
         private readonly UserManager<ApplicationUser> _userManager;
-        private TimeZoneInfo _centralTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+        private readonly TimeZoneInfo _timeZone = TimeZoneInfo.Local;
 
         public SampleDataGenerator(AllReadyContext context, IOptions<SampleDataSettings> options, IOptions<GeneralSettings> generalSettings, UserManager<ApplicationUser> userManager)
         {
@@ -30,7 +31,7 @@ namespace AllReady.DataAccess
             // Avoid polluting the database if there's already something in there.
             if (_context.Locations.Any() ||
                 _context.Organizations.Any() ||
-                _context.Tasks.Any() ||
+                _context.VolunteerTasks.Any() ||
                 _context.Campaigns.Any() ||
                 _context.Events.Any() ||
                 _context.EventSkills.Any() ||
@@ -49,14 +50,16 @@ namespace AllReady.DataAccess
             var organizationSkills = new List<Skill>();
             var locations = GetLocations();
             var users = new List<ApplicationUser>();
-            var taskSignups = new List<TaskSignup>();
+            var volunteerTaskSignups = new List<VolunteerTaskSignup>();
             var events = new List<Event>();
             var eventSkills = new List<EventSkill>();
             var campaigns = new List<Campaign>();
-            var tasks = new List<AllReadyTask>();
+            var volunteerTasks = new List<VolunteerTask>();
             var resources = new List<Resource>();
             var contacts = GetContacts();
             var skills = new List<Skill>();
+            var eventManagers = new List<EventManager>();
+            var campaignManagers = new List<CampaignManager>();
 
             #region Skills
             var medical = new Skill { Name = "Medical", Description = "specific enough, right?" };
@@ -97,32 +100,35 @@ namespace AllReady.DataAccess
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = organization,
-                TimeZoneId = "Central Standard Time",
-                StartDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(-1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(3), _centralTimeZone),
-                Location = GetRandom(locations)
+                 Resources = resources,
+                TimeZoneId = _timeZone.Id,
+                StartDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(-1), _timeZone),
+                EndDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(3), _timeZone),
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(firePreventionCampaign);
 
-            var smokeDetectorCampaignImpact = new CampaignImpact
+            var smokeDetectorCampaignGoal = new CampaignGoal
             {
-                ImpactType = ImpactType.Numeric,
-                NumericImpactGoal = 10000,
-                CurrentImpactLevel = 6722,
+                GoalType = GoalType.Numeric,
+                NumericGoal = 10000,
+                CurrentGoalLevel = 6722,
                 Display = true,
-                TextualImpactGoal = "Total number of smoke detectors installed."
+                TextualGoal = "Total number of smoke detectors installed."
             };
-            _context.CampaignImpacts.Add(smokeDetectorCampaignImpact);
+            _context.CampaignGoals.Add(smokeDetectorCampaignGoal);
 
             var smokeDetectorCampaign = new Campaign
             {
                 Name = "Working Smoke Detectors Save Lives",
                 ManagingOrganization = organization,
-                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _centralTimeZone),
-                CampaignImpact = smokeDetectorCampaignImpact,
-                TimeZoneId = "Central Standard Time",
-                Location = GetRandom(locations)
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
+                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _timeZone),
+                CampaignGoals = new List<CampaignGoal> { smokeDetectorCampaignGoal },
+                TimeZoneId = _timeZone.Id,
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(smokeDetectorCampaign);
 
@@ -130,10 +136,11 @@ namespace AllReady.DataAccess
             {
                 Name = "Everyday Financial Safety",
                 ManagingOrganization = organization,
-                TimeZoneId = "Central Standard Time",
-                StartDateTime =  AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _centralTimeZone),
-                Location = GetRandom(locations)
+                TimeZoneId = _timeZone.Id,
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
+                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _timeZone),
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(financialCampaign);
 
@@ -141,10 +148,11 @@ namespace AllReady.DataAccess
             {
                 Name = "Simple Safety Kit Building",
                 ManagingOrganization = organization,
-                TimeZoneId = "Central Standard Time",
-                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _centralTimeZone),
-                Location = GetRandom(locations)
+                TimeZoneId = _timeZone.Id,
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
+                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _timeZone),
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(safetyKitCampaign);
 
@@ -152,10 +160,11 @@ namespace AllReady.DataAccess
             {
                 Name = "Family Safety In the Car",
                 ManagingOrganization = organization,
-                TimeZoneId = "Central Standard Time",
-                StartDateTime =  AdjustToTimezone(DateTime.Today.AddMonths(-1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _centralTimeZone),
-                Location = GetRandom(locations)
+                TimeZoneId = _timeZone.Id,
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
+                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _timeZone),
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(carSafeCampaign);
 
@@ -163,10 +172,11 @@ namespace AllReady.DataAccess
             {
                 Name = "Be Ready to Get Out: Have a Home Escape Plan",
                 ManagingOrganization = organization,
-                TimeZoneId = "Central Standard Time",
-                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-6), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(6), _centralTimeZone),
-                Location = GetRandom(locations)
+                TimeZoneId = _timeZone.Id,
+                StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-6), _timeZone),
+                EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(6), _timeZone),
+                Location = GetRandom(locations),
+                Published = true
             };
             organization.Campaigns.Add(escapePlanCampaign);
 
@@ -177,176 +187,176 @@ namespace AllReady.DataAccess
             {
                 Name = "Queen Anne Fire Prevention Day",
                 Campaign = firePreventionCampaign,
-                StartDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddMonths(2), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddMonths(2), _timeZone),
                 TimeZoneId = firePreventionCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 RequiredSkills = new List<EventSkill>(),
                 EventType = EventType.Itinerary,
             };
-            queenAnne.Tasks = GetSomeTasks(queenAnne, organization);
+            queenAnne.VolunteerTasks = GetSomeVolunteerTasks(queenAnne, organization);
             var ask = new EventSkill { Skill = surgeon, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
             eventSkills.Add(ask);
             ask = new EventSkill { Skill = cprCertified, Event = queenAnne };
             queenAnne.RequiredSkills.Add(ask);
             eventSkills.Add(ask);
-            tasks.AddRange(queenAnne.Tasks);
+            volunteerTasks.AddRange(queenAnne.VolunteerTasks);
 
             var ballard = new Event
             {
                 Name = "Ballard Fire Prevention Day",
                 Campaign = firePreventionCampaign,
-                StartDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddMonths(2), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddMonths(2), _timeZone),
                 TimeZoneId = firePreventionCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            ballard.Tasks = GetSomeTasks(ballard, organization);
-            tasks.AddRange(ballard.Tasks);
+            ballard.VolunteerTasks = GetSomeVolunteerTasks(ballard, organization);
+            volunteerTasks.AddRange(ballard.VolunteerTasks);
             var madrona = new Event
             {
                 Name = "Madrona Fire Prevention Day",
                 Campaign = firePreventionCampaign,
-                StartDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddMonths(2), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(firePreventionCampaign.StartDateTime.AddMonths(2), _timeZone),
                 TimeZoneId = firePreventionCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            madrona.Tasks = GetSomeTasks(madrona, organization);
-            tasks.AddRange(madrona.Tasks);
+            madrona.VolunteerTasks = GetSomeVolunteerTasks(madrona, organization);
+            volunteerTasks.AddRange(madrona.VolunteerTasks);
             var southLoopSmoke = new Event
             {
                 Name = "Smoke Detector Installation and Testing-South Loop",
                 Campaign = smokeDetectorCampaign,
-                StartDateTime = AdjustToTimezone(smokeDetectorCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(smokeDetectorCampaign.EndDateTime, _centralTimeZone),
+                StartDateTime = AdjustToTimezone(smokeDetectorCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(smokeDetectorCampaign.EndDateTime, _timeZone),
                 TimeZoneId = smokeDetectorCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            southLoopSmoke.Tasks = GetSomeTasks(southLoopSmoke, organization);
-            tasks.AddRange(southLoopSmoke.Tasks);
+            southLoopSmoke.VolunteerTasks = GetSomeVolunteerTasks(southLoopSmoke, organization);
+            volunteerTasks.AddRange(southLoopSmoke.VolunteerTasks);
             var northLoopSmoke = new Event
             {
                 Name = "Smoke Detector Installation and Testing-Near North Side",
                 Campaign = smokeDetectorCampaign,
-                StartDateTime = AdjustToTimezone(smokeDetectorCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(smokeDetectorCampaign.EndDateTime, _centralTimeZone),
+                StartDateTime = AdjustToTimezone(smokeDetectorCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(smokeDetectorCampaign.EndDateTime, _timeZone),
                 TimeZoneId = smokeDetectorCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            northLoopSmoke.Tasks = GetSomeTasks(northLoopSmoke, organization);
-            tasks.AddRange(northLoopSmoke.Tasks);
+            northLoopSmoke.VolunteerTasks = GetSomeVolunteerTasks(northLoopSmoke, organization);
+            volunteerTasks.AddRange(northLoopSmoke.VolunteerTasks);
             var dateTimeToday = DateTime.Today;
             var rentersInsurance = new Event
             {
                 Name = "Renters Insurance Education Door to Door and a bag of chips",
                 Description = "description for the win",
                 Campaign = financialCampaign,
-                StartDateTime = AdjustToTimezone(new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 8, 0, 0), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 16, 0, 0), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 8, 0, 0), _timeZone),
+                EndDateTime = AdjustToTimezone(new DateTime(dateTimeToday.Year, dateTimeToday.Month, dateTimeToday.Day, 16, 0, 0), _timeZone),
                 TimeZoneId = financialCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Rally,
             };
-            rentersInsurance.Tasks = GetSomeTasks(rentersInsurance, organization);
-            tasks.AddRange(rentersInsurance.Tasks);
+            rentersInsurance.VolunteerTasks = GetSomeVolunteerTasks(rentersInsurance, organization);
+            volunteerTasks.AddRange(rentersInsurance.VolunteerTasks);
             var rentersInsuranceEd = new Event
             {
                 Name = "Renters Insurance Education Door to Door (woop woop)",
                 Description = "another great description",
                 Campaign = financialCampaign,
-                StartDateTime = AdjustToTimezone(financialCampaign.StartDateTime.AddMonths(1).AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(financialCampaign.EndDateTime, _centralTimeZone),
+                StartDateTime = AdjustToTimezone(financialCampaign.StartDateTime.AddMonths(1).AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(financialCampaign.EndDateTime, _timeZone),
                 TimeZoneId = financialCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            rentersInsuranceEd.Tasks = GetSomeTasks(rentersInsuranceEd, organization);
-            tasks.AddRange(rentersInsuranceEd.Tasks);
+            rentersInsuranceEd.VolunteerTasks = GetSomeVolunteerTasks(rentersInsuranceEd, organization);
+            volunteerTasks.AddRange(rentersInsuranceEd.VolunteerTasks);
             var safetyKitBuild = new Event
             {
                 Name = "Safety Kit Assembly Volunteer Day",
                 Description = "Full day of volunteers building kits",
                 Campaign = safetyKitCampaign,
-                StartDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5), _timeZone),
                 TimeZoneId = safetyKitCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            safetyKitBuild.Tasks = GetSomeTasks(safetyKitBuild, organization);
-            tasks.AddRange(safetyKitBuild.Tasks);
+            safetyKitBuild.VolunteerTasks = GetSomeVolunteerTasks(safetyKitBuild, organization);
+            volunteerTasks.AddRange(safetyKitBuild.VolunteerTasks);
 
             var safetyKitHandout = new Event
             {
                 Name = "Safety Kit Distribution Weekend",
                 Description = "Handing out kits at local fire stations",
                 Campaign = safetyKitCampaign,
-                StartDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddMonths(1).AddDays(5), _timeZone),
                 TimeZoneId = safetyKitCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            safetyKitHandout.Tasks = GetSomeTasks(safetyKitHandout, organization);
-            tasks.AddRange(safetyKitHandout.Tasks);
+            safetyKitHandout.VolunteerTasks = GetSomeVolunteerTasks(safetyKitHandout, organization);
+            volunteerTasks.AddRange(safetyKitHandout.VolunteerTasks);
             var carSeatTest1 = new Event
             {
                 Name = "Car Seat Testing-Naperville",
                 Description = "Checking car seats at local fire stations after last day of school year",
                 Campaign = carSafeCampaign,
-                StartDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5), _timeZone),
                 TimeZoneId = carSafeCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            carSeatTest1.Tasks = GetSomeTasks(carSeatTest1, organization);
-            tasks.AddRange(carSeatTest1.Tasks);
+            carSeatTest1.VolunteerTasks = GetSomeVolunteerTasks(carSeatTest1, organization);
+            volunteerTasks.AddRange(carSeatTest1.VolunteerTasks);
             var carSeatTest2 = new Event
             {
                 Name = "Car Seat and Tire Pressure Checking Volunteer Day",
                 Description = "Checking those things all day at downtown train station parking",
                 Campaign = carSafeCampaign,
-                StartDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(carSafeCampaign.StartDateTime.AddMonths(1).AddDays(5), _timeZone),
                 TimeZoneId = carSafeCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            carSeatTest2.Tasks = GetSomeTasks(carSeatTest2, organization);
-            tasks.AddRange(carSeatTest2.Tasks);
+            carSeatTest2.VolunteerTasks = GetSomeVolunteerTasks(carSeatTest2, organization);
+            volunteerTasks.AddRange(carSeatTest2.VolunteerTasks);
             var homeFestival = new Event
             {
                 Name = "Park District Home Safety Festival",
                 Description = "At downtown park district(adjacent to pool)",
                 Campaign = safetyKitCampaign,
-                StartDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddMonths(1), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(safetyKitCampaign.StartDateTime.AddMonths(1), _timeZone),
                 TimeZoneId = safetyKitCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            homeFestival.Tasks = GetSomeTasks(homeFestival, organization);
-            tasks.AddRange(homeFestival.Tasks);
+            homeFestival.VolunteerTasks = GetSomeVolunteerTasks(homeFestival, organization);
+            volunteerTasks.AddRange(homeFestival.VolunteerTasks);
             var homeEscape = new Event
             {
                 Name = "Home Escape Plan Flyer Distribution",
                 Description = "Handing out flyers door to door in several areas of town after school/ work hours.Streets / blocks will vary but number of volunteers.",
                 Campaign = escapePlanCampaign,
-                StartDateTime = AdjustToTimezone(escapePlanCampaign.StartDateTime.AddDays(1), _centralTimeZone),
-                EndDateTime = AdjustToTimezone(escapePlanCampaign.StartDateTime.AddMonths(7), _centralTimeZone),
+                StartDateTime = AdjustToTimezone(escapePlanCampaign.StartDateTime.AddDays(1), _timeZone),
+                EndDateTime = AdjustToTimezone(escapePlanCampaign.StartDateTime.AddMonths(7), _timeZone),
                 TimeZoneId = escapePlanCampaign.TimeZoneId,
                 Location = GetRandom(locations),
                 EventType = EventType.Itinerary,
             };
-            homeEscape.Tasks = GetSomeTasks(homeEscape, organization);
-            tasks.AddRange(homeEscape.Tasks);
+            homeEscape.VolunteerTasks = GetSomeVolunteerTasks(homeEscape, organization);
+            volunteerTasks.AddRange(homeEscape.VolunteerTasks);
             #endregion
 
             #region Link campaign and event
@@ -386,7 +396,8 @@ namespace AllReady.DataAccess
                 PublishDateEnd = DateTime.Today.AddDays(14),
                 MediaUrl = "",
                 ResourceUrl = "",
-                CategoryTag = "Partners"
+                CategoryTag = "Partners",
+                CampaignId = 1
             });
             resources.Add(new Resource
             {
@@ -396,7 +407,8 @@ namespace AllReady.DataAccess
                 PublishDateEnd = DateTime.Today.AddDays(-1),
                 MediaUrl = "",
                 ResourceUrl = "",
-                CategoryTag = "Partners"
+                CategoryTag = "Partners",
+                CampaignId = 1,
             });
             #endregion
 
@@ -406,7 +418,7 @@ namespace AllReady.DataAccess
             _context.EventSkills.AddRange(eventSkills);
             _context.Locations.AddRange(locations);
             _context.Organizations.AddRange(organizations);
-            _context.Tasks.AddRange(tasks);
+            _context.VolunteerTasks.AddRange(volunteerTasks);
             _context.Campaigns.AddRange(campaigns);
             _context.Events.AddRange(events);
             _context.Resources.AddRange(resources);
@@ -418,34 +430,113 @@ namespace AllReady.DataAccess
             var username2 = $"{_settings.DefaultUsername}2.com";
             var username3 = $"{_settings.DefaultUsername}3.com";
 
-            var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "111-111-1111" };
+            var user1 = new ApplicationUser
+            {
+                FirstName = "FirstName1",
+                LastName = "LastName1",
+                UserName = username1,
+                Email = username1,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "111-111-1111"
+            };
             _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user1);
 
-            var user2 = new ApplicationUser { UserName = username2, Email = username2, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "222-222-2222" };
+            var user2 = new ApplicationUser
+            {
+                FirstName = "FirstName2",
+                LastName = "LastName2",
+                UserName = username2,
+                Email = username2,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "222-222-2222"
+            };
             _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user2);
 
-            var user3 = new ApplicationUser { UserName = username3, Email = username3, EmailConfirmed = true, TimeZoneId = _generalSettings.DefaultTimeZone, PhoneNumber = "333-333-3333" };
+            var user3 = new ApplicationUser
+            {
+                FirstName = "FirstName3",
+                LastName = "LastName3",
+                UserName = username3,
+                Email = username3,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "333-333-3333"
+            };
             _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
             users.Add(user3);
             #endregion
 
+            #region Event Managers
+
+            var eventManagerUser = new ApplicationUser
+            {
+                FirstName = "Event",
+                LastName = "Manager",
+                UserName = _settings.DefaultEventManagerUsername,
+                Email = _settings.DefaultEventManagerUsername,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "333-333-3333"
+            };
+            _userManager.CreateAsync(eventManagerUser, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            users.Add(eventManagerUser);
+
+            var eventManager = new EventManager
+            {
+                Event = queenAnne,
+                User = eventManagerUser
+            };
+            eventManagers.Add(eventManager);
+
+            _context.EventManagers.AddRange(eventManagers);
+
+            #endregion
+
+            #region Campaign Managers
+
+            var campaignManagerUser = new ApplicationUser
+            {
+                FirstName = "Campaign",
+                LastName = "Manager",
+                UserName = _settings.DefaultCampaignManagerUsername,
+                Email = _settings.DefaultCampaignManagerUsername,
+                EmailConfirmed = true,
+                TimeZoneId = _timeZone.Id,
+                PhoneNumber = "333-333-3333"
+            };
+            _userManager.CreateAsync(campaignManagerUser, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            users.Add(campaignManagerUser);
+
+            var campaignManager = new CampaignManager
+            {
+                Campaign = firePreventionCampaign,
+                User = campaignManagerUser
+            };
+            campaignManagers.Add(campaignManager);
+
+            _context.CampaignManagers.AddRange(campaignManagers);
+
+            #endregion
+
             #region TaskSignups
             var i = 0;
-            foreach (var task in tasks.Where(t => t.Event == madrona))
+            foreach (var volunteerTask in volunteerTasks.Where(t => t.Event == madrona))
             {
                 for (var j = 0; j < i; j++)
                 {
-                    taskSignups.Add(new TaskSignup { Task = task, User = users[j], Status = Areas.Admin.Features.Tasks.TaskStatus.Assigned.ToString() });
+                    volunteerTaskSignups.Add(new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = users[j], Status = VolunteerTaskStatus.Assigned });
                 }
 
                 i = (i + 1) % users.Count;
             }
-            _context.TaskSignups.AddRange(taskSignups);
+            _context.VolunteerTaskSignups.AddRange(volunteerTaskSignups);
             #endregion
 
-            #region TennatContacts
+            #region OrganizationContacts
             organization.OrganizationContacts.Add(new OrganizationContact { Contact = contacts.First(), Organization = organization, ContactType = 1 /*Primary*/ });
             #endregion
 
@@ -474,23 +565,23 @@ namespace AllReady.DataAccess
             return list[rand.Next(list.Count)];
         }
 
-        private List<AllReadyTask> GetSomeTasks(Event campaignEvent, Organization organization)
+        private List<VolunteerTask> GetSomeVolunteerTasks(Event campaignEvent, Organization organization)
         {
-            var value = new List<AllReadyTask>();
+            var volunteerTasks = new List<VolunteerTask>();
             for (var i = 0; i < 5; i++)
             {
-                value.Add(new AllReadyTask
+                volunteerTasks.Add(new VolunteerTask
                 {
                     Event = campaignEvent,
-                    Description = "Description of a very important task # " + i,
+                    Description = "Description of a very important volunteerTask # " + i,
                     Name = "Task # " + i,
-                    EndDateTime = AdjustToTimezone(DateTime.Today.AddHours(17).AddDays(i), _centralTimeZone),
-                    StartDateTime = AdjustToTimezone(DateTime.Today.AddHours(9).AddDays(i - 1), _centralTimeZone),
+                    EndDateTime = AdjustToTimezone(DateTime.Today.AddHours(17).AddDays(i), _timeZone),
+                    StartDateTime = AdjustToTimezone(DateTime.Today.AddHours(9).AddDays(i - 1), _timeZone),
                     Organization = organization,
                     NumberOfVolunteersRequired = 5
                 });
             }
-            return value;
+            return volunteerTasks;
         }
 
         private static Location CreateLocation(string address1, string city, string state, string postalCode)
@@ -511,7 +602,7 @@ namespace AllReady.DataAccess
         private List<PostalCodeGeo> GetPostalCodes(IList<PostalCodeGeo> existingPostalCode)
         {
             var postalCodes = new List<PostalCodeGeo>();
-            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo { City = "Remond", State = "WA", PostalCode = "98052" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo { City = "Redmond", State = "WA", PostalCode = "98052" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98004")) postalCodes.Add(new PostalCodeGeo { City = "Bellevue", State = "WA", PostalCode = "98004" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98116")) postalCodes.Add(new PostalCodeGeo { City = "Seattle", State = "WA", PostalCode = "98116" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98117")) postalCodes.Add(new PostalCodeGeo { City = "Seattle", State = "WA", PostalCode = "98117" });
@@ -558,33 +649,39 @@ namespace AllReady.DataAccess
             {
                 user = new ApplicationUser
                 {
+                    FirstName = "FirstName4",
+                    LastName = "LastName4",
                     UserName = _settings.DefaultAdminUsername,
                     Email = _settings.DefaultAdminUsername,
-                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    TimeZoneId = _timeZone.Id,
                     EmailConfirmed = true,
                     PhoneNumber = "444-444-4444"
                 };
                 _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
-                _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, "SiteAdmin")).GetAwaiter().GetResult();
+                _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))).GetAwaiter().GetResult();
 
                 var user2 = new ApplicationUser
                 {
+                    FirstName = "FirstName5",
+                    LastName = "LastName5",
                     UserName = _settings.DefaultOrganizationUsername,
                     Email = _settings.DefaultOrganizationUsername,
-                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    TimeZoneId = _timeZone.Id,
                     EmailConfirmed = true,
                     PhoneNumber = "555-555-5555"
                 };
                 // For the sake of being able to exercise Organization-specific stuff, we need to associate a organization.
                 await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
-                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, "OrgAdmin"));
+                await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)));
                 await _userManager.AddClaimAsync(user2, new Claim(Security.ClaimTypes.Organization, _context.Organizations.First().Id.ToString()));
 
                 var user3 = new ApplicationUser
                 {
+                    FirstName = "FirstName6",
+                    LastName = "LastName6",
                     UserName = _settings.DefaultUsername,
                     Email = _settings.DefaultUsername,
-                    TimeZoneId = _generalSettings.DefaultTimeZone,
+                    TimeZoneId = _timeZone.Id,
                     EmailConfirmed = true,
                     PhoneNumber = "666-666-6666"
                 };

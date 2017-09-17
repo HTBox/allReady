@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using AllReady.Areas.Admin.Features.Tasks;
-using AllReady.Areas.Admin.ViewModels.Task;
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Features.Notifications;
 using AllReady.Models;
+
 using MediatR;
 using Moq;
 using Xunit;
@@ -52,7 +54,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             htb.Campaigns.Add(firePrev);            
             Context.Organizations.Add(htb);
             
-            var task = new AllReadyTask
+            var volunteerTask = new VolunteerTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",
@@ -60,15 +62,15 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                 EndDateTime = DateTime.Now.AddDays(1),
                 StartDateTime = DateTime.Now.AddDays(-3)
             };
-            queenAnne.Tasks.Add(task);
+            queenAnne.VolunteerTasks.Add(volunteerTask);
             Context.Events.Add(queenAnne);
 
-            var taskSignups = new List<TaskSignup>
+            var volunteerTaskSignups = new List<VolunteerTaskSignup>
             {
-                new TaskSignup { Task = task, User = user1 },
-                new TaskSignup { Task = task, User = user2 }
+                new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user1 },
+                new VolunteerTaskSignup { VolunteerTask = volunteerTask, User = user2 }
             };
-            Context.TaskSignups.AddRange(taskSignups);
+            Context.VolunteerTaskSignups.AddRange(volunteerTaskSignups);
 
             Context.SaveChanges();
         }
@@ -82,7 +84,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             {
                 Model = new MessageTaskVolunteersViewModel
                 {
-                    TaskId = 1,
+                    VolunteerTaskId = 1,
                     Message = expectedMessage,
                     Subject = expectedSubject
                 }

@@ -15,14 +15,14 @@ namespace AllReady.UnitTest.Features.Tasks
             var options = this.CreateNewContextOptions();
 
             using (var context = new AllReadyContext(options)) {
-                var sut = new AddTaskCommandHandler(context);
-                var message = new AddTaskCommand { AllReadyTask = new AllReadyTask() };
+                var sut = new AddVolunteerTaskCommandHandler(context);
+                var message = new AddVolunteerTaskCommand { VolunteerTask = new VolunteerTask() };
                 await sut.Handle(message);
             }
 
             using (var context = new AllReadyContext(options)) {
-                var tasks = context.Tasks.Count();
-                Assert.Equal(tasks, 1);
+                var volunteerTasks = context.VolunteerTasks.Count();
+                Assert.Equal(1, volunteerTasks);
             }
         }
     }

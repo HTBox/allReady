@@ -1,5 +1,4 @@
-﻿@using AllReady.ViewModels.Task
-@model IEnumerable<AllReady.ViewModels.Task.TaskViewModel>
+﻿@model IEnumerable<AllReady.ViewModels.Task.VolunteerTaskViewModel>
 
 <h1>Tasks</h1>
 
@@ -19,7 +18,7 @@
         <tr>
             <td><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@task.OrganizationId">@task.OrganizationName</a> </td>
             <td><a asp-controller="Campaign" asp-action="Details" asp-route-id="@task.CampaignId">@task.CampaignName</a></td>
-            <td><a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@task.EventId">@task.eventName</a></td>
+            <td><a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@task.EventId">@task.EventName</a></td>
             <td><a asp-controller="TaskApi" asp-action="ShowTask" asp-route-id="@task.Id">@task.Name</a></td>
             <td>@task.StartDateTime</td>
             <td>@task.EndDateTime</td>

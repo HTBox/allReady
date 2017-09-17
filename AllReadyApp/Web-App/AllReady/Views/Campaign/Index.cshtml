@@ -1,11 +1,18 @@
 ﻿@model IList<AllReady.ViewModels.Campaign.CampaignViewModel>
-@using AllReady.Security
-@using AllReady.ViewModels.Campaign
 
 @{
     ViewData["Title"] = "All Registered Campaigns";
     @addTagHelper "*, Microsoft.AspNetCore.Mvc.TagHelpers"
 }
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li>Campaigns</li>
+        </ol>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-md-12 text-center">
@@ -32,23 +39,21 @@
                 <div class="form-group">
                     <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: campaigns.showOld }, click: campaigns.showOld.toggle">
                         <i class="fa" data-bind="css: { 'fa-square-o': !campaigns.showOld(), 'fa-check-square-o': campaigns.showOld }"></i>
-                        Show Closed Campaigns
+                        Include Completed Campaigns
                     </button>
-                    <span data-bind="text: '(' + total + ')' " ></span>
+                    <span data-bind="text: '(' + total + ')' "></span>
                 </div>
+                @if (Model.Any(m => m.IsCampaignManager))
+                {
+                    <div class="form-group">
+                        <a asp-controller="Campaign" asp-action="ManageCampaign" target="_blank" class="btn btn-default btn-sm">Manage Campaign</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        @if (User.IsUserType(UserType.OrgAdmin) || User.IsUserType(UserType.SiteAdmin))
-        {
-            <p><a asp-area="Admin" asp-controller="Campaign" asp-action="Create" class="btn btn-default">Create Campaign</a></p>
-        }
-    </div>
-</div>
 
 <div class="row">
     <div class="hide text-center" data-bind="css: { hide: campaigns.filtered().length }">
@@ -73,7 +78,7 @@
                     </td>
                     <td>
                         <span data-bind="text: ManagingOrganizationName"></span>
-                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br/><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
+                        <div data-bind="visible:ManagingOrganizationLogo != '' || ManagingOrganizationLogo != null"><br /><img width="250" data-bind="attr:{src: ManagingOrganizationLogo}" /></div>
                     </td>
                     <td>
                         <span data-bind="text: Description"></span>

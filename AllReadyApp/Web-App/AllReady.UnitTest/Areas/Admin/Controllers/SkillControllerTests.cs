@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using Xunit;
 using Moq;
 using MediatR;
@@ -740,12 +740,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillListQuery(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>()))
-                .Returns(() => Task.FromResult(SummaryListItems()))
-                .Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationNameQuery>()))
-                .Returns(() => Task.FromResult(OrgName))
-                .Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>())).ReturnsAsync(SummaryListItems()).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationNameQuery>())).ReturnsAsync(OrgName).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -753,11 +749,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillCreateQuery(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>())).Returns(() => Task.FromResult(SummaryListItems()))
-                .Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQuery>()))
-                .Returns(() => Task.FromResult<IEnumerable<SelectListItem>>(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" } }))
-            .Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>())).ReturnsAsync(SummaryListItems()).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQuery>())).ReturnsAsync(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" }}).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -767,11 +760,11 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             if (model == null) model = new SkillEditViewModel { Id = 1, Name = "Name", Description = "Description" };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).Returns(() => Task.FromResult(model)).Verifiable();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>())).Returns(() => Task.FromResult(SummaryListItems()))
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).ReturnsAsync(model).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillListQuery>())).ReturnsAsync(SummaryListItems())
                 .Verifiable();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationSelectListQuery>()))
-                .Returns(() => Task.FromResult<IEnumerable<SelectListItem>>(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" } }))
+                .ReturnsAsync(new List<SelectListItem> { new SelectListItem { Text = "Item 1", Value = "1" }})
                 .Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
@@ -780,7 +773,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillEditQueryNullModel(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).Returns(() => Task.FromResult<SkillEditViewModel>(null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillEditQuery>())).ReturnsAsync((SkillEditViewModel)null).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -790,7 +783,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             if (model == null) model = new SkillDeleteViewModel {  HierarchicalName = "Name" };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>())).Returns(() => Task.FromResult(model)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>())).ReturnsAsync(model).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -798,7 +791,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         private static Mock<IMediator> MockMediatorSkillDeleteQueryNullModel(out SkillController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>())).Returns(() => Task.FromResult<SkillDeleteViewModel>(null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<SkillDeleteQuery>())).ReturnsAsync((SkillDeleteViewModel)null).Verifiable();
             controller = new SkillController(mockMediator.Object);
             return mockMediator;
         }
@@ -834,7 +827,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.OrgAdmin.ToString()),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, OrgAdminOrgId.ToString())
             }));
         }
@@ -843,7 +836,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             return new ClaimsPrincipal(new ClaimsIdentity(new[]
             {
-                new Claim(AllReady.Security.ClaimTypes.UserType, UserType.SiteAdmin.ToString())
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))
             }));
         }
 

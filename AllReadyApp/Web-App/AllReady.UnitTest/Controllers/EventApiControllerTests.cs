@@ -17,23 +17,23 @@ namespace AllReady.UnitTest.Controllers
     public class EventApiControllerTests
     {
         [Fact]
-        public void GetSendsEventsWithUnlockedCampaignsQuery()
+        public async Task GetSendsEventsWithUnlockedCampaignsQuery()
         {
             var mediator = new Mock<IMediator>();
             var sut = new EventApiController(mediator.Object);
-            sut.Get();
+            await sut.Get();
 
-            mediator.Verify(x => x.Send(It.IsAny<EventsWithUnlockedCampaignsQuery>()), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.IsAny<EventsWithUnlockedCampaignsQuery>()), Times.Once);
         }
 
         [Fact]
-        public void GetReturnsCorrectModel()
+        public async Task GetReturnsCorrectModel()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventsWithUnlockedCampaignsQuery>())).Returns(new List<EventViewModel>());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventsWithUnlockedCampaignsQuery>())).ReturnsAsync(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object);
-            var results = sut.Get();
+            var results = await sut.Get();
 
             Assert.IsType<List<EventViewModel>>(results);
         }
@@ -71,25 +71,13 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<EventViewModel>(result);
         }
 
-        //TODO: come back to these two tests until you hear back from Tony Surma about returning null instead of retruning HttpNotFound
-        //GetByIdReturnsNullWhenEventIsNotFoundById ???
-        //[Fact]
-        //public void GetByIdReturnsHttpNotFoundWhenEventIsNotFoundById()
-        //{
-        //    var controller = new EventApiController(Mock.Of<IAllReadyDataAccess>(), null)
-        //        .SetFakeUser("1");
-
-        //    var result = controller.Get(It.IsAny<int>());
-        //    Assert.IsType<NotFoundResult>(result);
-        //}
-
         [Fact]
         public void GetByIdHasHttpGetAttributeWithCorrectTemplate()
         {
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}");
+            Assert.Equal("{id}", attribute.Template);
         }
 
         [Fact]
@@ -98,8 +86,8 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Type, typeof(EventViewModel));
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal(typeof(EventViewModel), attribute.Type);
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
 
         [Fact]
@@ -108,7 +96,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{start}/{end}");
+            Assert.Equal("{start}/{end}", attribute.Template);
         }
 
         [Fact]
@@ -117,50 +105,50 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByDateRange(It.IsAny<DateTimeOffset>(), It.IsAny<DateTimeOffset>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes[0], "application/json");
-            Assert.Equal(attribute.Type, typeof(EventViewModel));
+            Assert.Equal("application/json", attribute.ContentTypes[0]);
+            Assert.Equal(typeof(EventViewModel), attribute.Type);
         }
 
         [Fact]
-        public void GetEventsByDateRangeSendsEventByDateRangeQueryWithCorrectDates()
+        public async Task GetEventsByDateRangeSendsEventByDateRangeQueryWithCorrectDates()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByDateRangeQuery>())).ReturnsAsync(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object);
-            sut.GetEventsByDateRange(may, june);
+            await sut.GetEventsByDateRange(may, june);
 
-            mediator.Verify(x => x.Send(It.Is<EventByDateRangeQuery>(y => y.StartDate == may && y.EndDate == june)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<EventByDateRangeQuery>(y => y.StartDate == may && y.EndDate == june)), Times.Once);
         }
 
 
         [Fact]
-        public void GetEventsByDateRangeReturnsNoContentWhenEventsIsNull()
+        public async Task GetEventsByDateRangeReturnsNoContentWhenEventsIsNull()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns((List<EventViewModel>)null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByDateRangeQuery>())).ReturnsAsync((List<EventViewModel>)null);
 
             var sut = new EventApiController(mediator.Object);
-            var result = sut.GetEventsByDateRange(may, june);
+            var result = await sut.GetEventsByDateRange(may, june);
 
             Assert.IsType<NoContentResult>(result);
         }
 
 
         [Fact]
-        public void GetEventsByDateRangeReturnsJsonWhenEventsIsNotNull()
+        public async Task GetEventsByDateRangeReturnsJsonWhenEventsIsNotNull()
         {
             var may = new DateTimeOffset(2016, 5, 1, 0, 0, 0, new TimeSpan());
             var june = new DateTimeOffset(2016, 6, 1, 0, 0, 0, new TimeSpan());
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.Send(It.IsAny<EventByDateRangeQuery>())).Returns(new List<EventViewModel>());
+            mediator.Setup(x => x.SendAsync(It.IsAny<EventByDateRangeQuery>())).ReturnsAsync(new List<EventViewModel>());
 
             var sut = new EventApiController(mediator.Object);
-            var result = sut.GetEventsByDateRange(may, june);
+            var result = await sut.GetEventsByDateRange(may, june);
 
             Assert.IsType<JsonResult>(result);
         }
@@ -168,16 +156,16 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetEventsByPostalCodeSendsEventsByPostalCodeQueryWithCorrectPostalCodeAndDistance()
         {
-            const string zip = "zip";
+            const string postalCode = "postalcode";
             const int miles = 100;
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByPostalCodeQuery>())).Returns(new List<Event>());
 
             var sut = new EventApiController(mediator.Object);
-            sut.GetEventsByPostalCode(zip, miles);
+            sut.GetEventsByPostalCode(postalCode, miles);
 
-            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)), Times.Once);
+            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == postalCode && y.Distance == miles)), Times.Once);
         }
 
         [Fact]
@@ -198,7 +186,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByPostalCode(It.IsAny<string>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "search");
+            Assert.Equal("search", attribute.Template);
         }
 
         [Fact]
@@ -235,17 +223,9 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetEventsByGeography(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "searchbylocation");
+            Assert.Equal("searchbylocation", attribute.Template);
         }
 
-        [Fact]
-        public void GetQrCodeHasHttpGetAttributeWithCorrectTemplate()
-        {
-            var sut = new EventApiController(null);
-            var attribute = sut.GetAttributesOn(x => x.GetQrCode(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}/qrcode");
-        }
 
         [Fact]
         public async Task GetCheckinReturnsHttpNotFoundWhenUnableToFindEventByEventId()
@@ -285,7 +265,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetCheckin(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{id}/checkin");
+            Assert.Equal("{id}/checkin", attribute.Template);
         }
 
         [Fact]
@@ -294,7 +274,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/event");
+            Assert.Equal("api/event", attribute.Template);
         }
 
         [Fact]
@@ -303,7 +283,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new EventApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
     }
 }

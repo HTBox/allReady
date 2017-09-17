@@ -1,4 +1,6 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Request.RequestSummaryViewModel
+﻿@using AllReady.Constants
+@using AllReady.Areas.Admin.ViewModels.Itinerary
+@model AllReady.Areas.Admin.ViewModels.Request.RequestSummaryViewModel
 
 <div class="row">
     <div class="col-md-12">
@@ -14,18 +16,18 @@
             @Html.DisplayFor(model => model.Address) <br />
             @Html.DisplayNameFor(model => model.City) <br />
             @Html.DisplayFor(model => model.State) <br />
-            @Html.DisplayFor(model => model.Zip) <br />
+            @Html.DisplayFor(model => ((RequestListViewModel) model).PostalCode) <br />
 
             Status: @Html.DisplayFor(model => model.Status)
         </p>
 
-        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveRequest" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-requestId="@Model.Id">
+        <form asp-area="@AreaNames.Admin" asp-controller="Itinerary" asp-action="RemoveRequest" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-requestId="@Model.Id">
             <input type="hidden" asp-for="@Model.Id" />
             <input type="hidden" asp-for="@Model.ItineraryId" />
             <input type="hidden" asp-for="@Model.UserIsOrgAdmin" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-primary">Delete</button>
-                <a asp-controller="Itinerary" asp-action="Details" asp-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
+                <a asp-controller="Itinerary" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
             </div>
         </form>
     </div>

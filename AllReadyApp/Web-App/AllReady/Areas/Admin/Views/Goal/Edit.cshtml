@@ -1,0 +1,160 @@
+﻿@using System.Threading.Tasks
+@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Goal.GoalEditViewModel
+@inject AllReady.Services.ISelectListService SelectListService
+
+
+@{
+    //TODO: Need a better way of identifying Create vs Edit. Suggest not binding directly to model class, create view model instead
+    var isEdit = Model.Id != 0;
+    string actionTitle;
+    string cancelUrl = Url.Action("Details", "Campaign", new { id = Model.CampaignId, area = AreaNames.Admin });
+    if (isEdit)
+    {
+        ViewBag.Title = $"Edit Goal";
+        actionTitle = "Save";
+    }
+    else
+    {
+        ViewBag.Title = "Create Goal";
+        actionTitle = "Create";
+    }
+}
+
+@section styles{
+    @if (isEdit)
+    {
+        <link href="~/css/Admin/Event/Edit.css" rel="stylesheet" />
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            @if (isEdit)
+            {
+                <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.TextualGoal</a></li>
+                <li>Edit</li>
+            }
+            else
+            {
+                <li>Create New Goal</li>
+            }
+
+        </ol>
+    </div>
+</div>
+
+<h2>@ViewBag.Title</h2>
+
+
+
+<form asp-controller="Goal" asp-area="@AreaNames.Admin" method="post" enctype="multipart/form-data">
+
+    <div class="form-horizontal">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-warning">
+                    <p>
+                        <strong>Define your campaign's goals in a way that will inspire people to help you reach those goals.</strong>
+                    </p>
+                    <p>
+                        If you choose <em>numeric</em> as a goal type, then a "thermometer" will be displayed on the landing page
+                        showing the current progress of the campaign as you update the current goal level.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+        <div class="row">
+            <div class="form-horizontal col-lg-6 pull-left">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                @if (isEdit)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+                <input asp-for="CampaignId" type="hidden" />
+                <input asp-for="CampaignName" type="hidden" />
+                <input asp-for="OrganizationId" type="hidden" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label class="col-md-2 control-label">Goal Type</label>
+                <div class="form-horizontal">
+                    @Html.DropDownListFor(model => model.GoalType, SelectListService.GetCampaignGoalTypes(), htmlAttributes: new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Display Goal</label>
+                <div class="form-horizontal">
+                    <input type="checkbox" asp-for="Display"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-2 control-label">Campaign Goal</label>
+                <div class="form-horizontal">
+                    <input type="text" asp-for="TextualGoal" class="form-control"/>
+                </div>
+            </div>
+            <div id="numericGoalSection">
+                <div class="form-group" id="NumericGoalFormGroup">
+                    <label class="col-md-2 control-label">Numeric Goal</label>
+                    <div class="form-horizontal">
+                        <input type="text" asp-for="NumericGoal" class="form-control" />
+                        <span class="help-block">
+                            <em>This value is the number of x to reach the goal.</em>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group" id="CurrentGoalLevelFormGroup">
+                    <label class="col-md-2 control-label">Current Goal Level</label>
+                    <div class="form-horizontal">
+                        <input type="text" asp-for="CurrentGoalLevel" class="form-control"/>
+                        <span class="help-block">
+                            <em>
+                                This value is the current number of x achieved to reach the Numeric Goal value.<br />
+                                Ideally less than or equal to Numeric Goal, but there may be certain scenarios where it's greater.
+                            </em>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <button type="submit" value="@actionTitle" class="btn btn-default submit-form" data-bind="enable: requiredSkills.isValid">@actionTitle</button>
+            <a href="@cancelUrl" class="btn btn-default">Cancel</a>
+        </div>
+    </div>
+</form>
+
+
+@section scripts {
+    <script type="text/javascript">
+
+        $(document)
+            .ready(function() {
+                $("#GoalType")
+                    .change(function() {
+                        var isText = this.value === "1";
+                        if (isText) {
+                            $("#NumericGoalFormGroup").hide();
+                            $("#CurrentGoalLevelFormGroup").hide();
+                        } else {
+                            $("#NumericGoalFormGroup").show();
+                            $("#CurrentGoalLevelFormGroup").show();
+                        }
+                    })
+                    .change();
+            });
+    </script>
+}
+

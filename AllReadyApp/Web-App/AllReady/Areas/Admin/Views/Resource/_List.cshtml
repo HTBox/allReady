@@ -1,0 +1,39 @@
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
+
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="Resource" asp-action="Create" asp-area="@AreaNames.Admin" asp-route-campaignId="@Model.Id" class="btn btn-default">Create New</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th>
+                    Title
+                </th>
+                <th>
+                    URL
+                </th>
+            </tr>
+            @foreach (var item in Model.Resources)
+            {
+                <tr>
+                    <td>
+                        <a asp-controller="Resource" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.Id">@item.Title</a>
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <br />
+                            <span class="text-muted">@item.Description</span>
+                        }
+                    </td>
+                    <td>
+                        @item.Url
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

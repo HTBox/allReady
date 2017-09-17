@@ -7,42 +7,42 @@ using Xunit;
 
 namespace AllReady.UnitTest.Controllers
 {
-    public class DetermineIfATaskIsEditableShould
+    public class DetermineIfAVolunteerTaskIsEditableShould: InMemoryContextTest
     {
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void SiteAdminsCanEditAllReadyTasks()
         {
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.SiteAdmin))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))
             }));
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, null, null);
+            var result = sut.For(claimsPrincipal, null, UserManager);
 
             Assert.True(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public void OrgAdminsCanEditAllReadyTasks()
         {
             var claimsPrincipal = new ClaimsPrincipal();
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.OrgAdmin))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin))
             }));
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, null, null);
+            var result = sut.For(claimsPrincipal, null, UserManager);
 
             Assert.True(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
-        public void AllReadyTaskThatHasInstanceOfEventAndEventHasInstanceOfOrganizerAndOrganizerIdEqualsUserIdIsEditable()
+        [Fact]
+        public void VolunteerTaskThatHasInstanceOfEventAndEventHasInstanceOfOrganizerAndOrganizerIdEqualsUserIdIsEditable()
         {
             const string userId = "1";
 
@@ -50,19 +50,19 @@ namespace AllReady.UnitTest.Controllers
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.BasicUser))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.BasicUser))
             }));
 
-            var allReadyTask = new AllReadyTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
+            var volunteerTask = new VolunteerTask { Event = new Event { Organizer = new ApplicationUser { Id = userId }}};
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, allReadyTask, null);
+            var result = sut.For(claimsPrincipal, volunteerTask, UserManager);
 
             Assert.True(result);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
-        public void AllReadyTaskThatHasInstanceOfEventAndEventHasInstanceOfCampaignAndCampaignHasInstanceOfOrganizerAndOrganizerIdEqualsUserIdIsEditable()
+        [Fact]
+        public void VolunteerTaskThatHasInstanceOfEventAndEventHasInstanceOfCampaignAndCampaignHasInstanceOfOrganizerAndOrganizerIdEqualsUserIdIsEditable()
         {
             const string userId = "1";
 
@@ -70,13 +70,13 @@ namespace AllReady.UnitTest.Controllers
             claimsPrincipal.AddIdentity(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, "1"),
-                new Claim(AllReady.Security.ClaimTypes.UserType, Enum.GetName(typeof (UserType), UserType.BasicUser))
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.BasicUser))
             }));
 
-            var allReadyTask = new AllReadyTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
+            var volunteerTask = new VolunteerTask { Event = new Event { Campaign = new Campaign { Organizer = new ApplicationUser { Id = userId }}}};
 
             var sut = new DetermineIfATaskIsEditable();
-            var result = sut.For(claimsPrincipal, allReadyTask, null);
+            var result = sut.For(claimsPrincipal, volunteerTask, UserManager);
 
             Assert.True(result);
         }

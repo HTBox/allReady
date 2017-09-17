@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using AllReady.Extensions;
+﻿using AllReady.Extensions;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using Xunit;

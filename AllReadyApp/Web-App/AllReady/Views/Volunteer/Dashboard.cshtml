@@ -16,23 +16,15 @@
                 <div class="col-md-12">
 
                     <h3>Current Events:</h3>
-                    @foreach (var campaignEvent in Model.CurrentEvents)
+                @foreach (var campaignEvent in Model.CurrentEvents)
                 {
                         <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@campaignEvent.EventId">
-                            <div class="row myevents-block">
-                                <div class="col-md-3">
-                                    <p>Event runs from @string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</p>
-                                </div>
-                                <div class="col-md-8 col-md-push-1">
-                                    <h5>@campaignEvent.Campaign by @campaignEvent.Organization</h5>
+                            <div class="row myevents-block">                             
+                                <div class="col-md-8 col-md-push-1">                                
                                     <h4>@campaignEvent.EventName</h4>
-                                    <h6>My assigned tasks:</h6>
-                                    <ul>
-                                        @foreach (var task in campaignEvent.Tasks)
-                                        {
-                                            <li>@task.Name - @task.FormattedDate</li>
-                                        }
-                                    </ul>
+                                    <h5>@string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</h5>
+                                    <h6>@campaignEvent.Tasks.Count() Tasks</h6>       
+                                    <h6>@campaignEvent.VolunteerCount Volunteers</h6>     
                                 </div>
                             </div>
                         </a>
@@ -50,19 +42,11 @@
                 {
                         <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@campaignEvent.EventId">
                             <div class="row myevents-block">
-                                <div class="col-md-3">
-                                    <p>Event runs from @string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</p>
-                                </div>
                                 <div class="col-md-8 col-md-push-1">
-                                    <h5>@campaignEvent.Campaign by @campaignEvent.Organization</h5>
                                     <h4>@campaignEvent.EventName</h4>
-                                    <h6>My assigned tasks:</h6>
-                                    <ul>
-                                        @foreach (var task in campaignEvent.Tasks)
-                                        {
-                                            <li>@task.Name - @task.FormattedDate</li>
-                                        }
-                                    </ul>
+                                    <h5>@string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</h5>
+                                    <h6>@campaignEvent.Tasks.Count() Tasks</h6>
+                                    <h6>@campaignEvent.VolunteerCount Volunteers</h6>   
                                 </div>
                             </div>
                         </a>
@@ -81,19 +65,11 @@
                 {
                         <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@campaignEvent.EventId">
                             <div class="row myevents-block">
-                                <div class="col-md-3">
-                                    <p>Event runs from @string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</p>
-                                </div>
                                 <div class="col-md-8 col-md-push-1">
-                                    <h5>@campaignEvent.Campaign by @campaignEvent.Organization</h5>
                                     <h4>@campaignEvent.EventName</h4>
-                                    <h6>My assigned tasks:</h6>
-                                    <ul>
-                                        @foreach (var task in campaignEvent.Tasks)
-                                        {
-                                            <li>@task.Name - @task.FormattedDate</li>
-                                        }
-                                    </ul>
+                                    <h5>@string.Format("{0:g}", @campaignEvent.StartDate) to @string.Format("{0:g}", @campaignEvent.EndDate) (@campaignEvent.TimeZone)</h5>
+                                    <h6>@campaignEvent.Tasks.Count() Tasks</h6>
+                                    <h6>@campaignEvent.VolunteerCount Volunteers</h6>   
                                 </div>
                             </div>
                         </a>
@@ -104,7 +80,7 @@
         }
     </div>
     <div class="col-md-6">
-        <div id='calendarr'></div>
+        <div id='calendar'></div>
     </div>
 </div>
 @section scripts{

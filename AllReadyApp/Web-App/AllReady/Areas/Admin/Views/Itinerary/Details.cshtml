@@ -1,4 +1,7 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.ItineraryDetailsViewModel
+﻿@using System.Linq
+@using AllReady.Services
+@model AllReady.Areas.Admin.ViewModels.Itinerary.ItineraryDetailsViewModel
+@inject AllReady.Services.ISelectListService SelectListService
 
 @{
     ViewData["Title"] = Model.Name;
@@ -15,12 +18,52 @@
     </div>
 </div>
 
+@if (Model.HasTeamLeadResult)
+{
+    <div class="row">
+        <div class="col-md-12">
+            @if (!Model.TeamLeadChangedSuccess.Value)
+            {
+                <div class="alert alert-danger">
+                    <strong>Failure to set team lead!</strong>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <strong>Successfully set team lead</strong>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@if (Model.OptimizeRouteStatus != null)
+{
+    <div class="row">
+        <div class="col-md-12">
+            @if (!Model.OptimizeRouteStatus.IsSuccess)
+            {
+                <div class="alert alert-danger">
+                    <strong>Failure!</strong> @Model.OptimizeRouteStatus.StatusMessage
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <strong>Success!</strong> @Model.OptimizeRouteStatus.StatusMessage
+                </div>
+            }
+        </div>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-12">
         <h2>
             @Model.Name
             <a asp-area="Admin" asp-controller="Itinerary" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
-        </h2>        
+        </h2>
         <p>Scheduled for @Model.DisplayDate</p>
     </div>
 </div>
@@ -33,63 +76,76 @@
     </div>
 </div>
 
-
-@if (Model.HasPotentialTeamMembers)
+@if (Model.TeamManagementEnabled)
 {
     <div class="row">
         <div class="col-md-12">
-            <form asp-area="Admin" asp-controller="Itinerary" asp-action="AddTeamMember" method="post">
-                <input type="hidden" asp-for="Id" />
-                Add team member:
-                <select asp-for="SelectedTeamMember"
-                        asp-items="Model.PotentialTeamMembers" required></select>
-                <button type="submit" class="btn btn-default submit-form">Add</button>
-            </form>
+            @if (Model.HasPotentialTeamMembers)
+            {
+                <div class="form-inline">
+                    <label>Add team member:</label>
+                    <form asp-action="AddTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                        <select asp-items="Model.PotentialTeamMembers" id="selectedTeamMember" name="selectedTeamMember" class="form-control" required></select>
+                        <button type="submit" class="btn btn-default submit-form">Add</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
+            }
         </div>
     </div>
 }
-else
-{
-    <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
-}
-
 <div class="row">
     <div class="col-md-8">
-        <h4>Assigned Team Members</h4>
-        @if (Model.TeamMembers.Any())
+        @if (Model.TeamManagementEnabled)
+        {
+            <h4>Assigned Team Members</h4>
+            if (Model.HasPotentialTeamLeads)
+            {
+                <div class="form-inline">
+                    <label>Select a @(@Model.HasTeamLead ? "new " : "")team lead:</label>
+                    <form asp-action="SetTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                        <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control" required></select>
+                        <button type="submit" class="btn btn-default submit-form">Set Team Lead</button>
+                    </form>
+                </div>
+            }
+            if (Model.HasTeamLead)
+            {
+                <div>
+                    <form asp-action="RemoveTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                        <button type="submit" class="btn btn-default submit-form">Remove Team Lead</button>
+                    </form>
+                </div>
+            }
+        }
+        @if (Model.TeamMembers.Count > 0)
         {
             <table class="table">
                 <tr>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                    <th>
-                        Assigned Task
-                    </th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Assigned Task</th>
                     <th></th>
                 </tr>
-                @foreach (var teamMember in Model.TeamMembers)
+                @foreach (var tm in Model.TeamMembers)
                 {
+                    string style = tm.IsTeamLead ? "font-weight:bold" : null;
                     <tr>
+                        <td style=@style>@tm.DisplayName</td>
+                        <td>@tm.VolunteerEmail</td>
+                        <td>@tm.VolunteerTaskName</td>
                         <td>
-                            <p>@teamMember.DisplayName</p>
-                        </td>
-                        <td>
-                            <p>@teamMember.VolunteerEmail</p>
-                        </td>
-                        <td>
-                            <p>@teamMember.TaskName</p>
-                        </td>
-                        <td>
-                            <a data-toggle="tooltip" data-placement="top" title="Remove from team" asp-action="ConfirmRemoveTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-taskSignupId="@teamMember.TaskSignupId" class="btn btn-danger"><span class="fa fa-remove"></span></a>
+                            @if (Model.TeamManagementEnabled)
+                            {
+                                <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" href=@("/Admin/Itinerary/" + @Model.Id + "/ConfirmRemoveTeamMember/" + @tm.VolunteerTaskSignupId)><span class="fa fa-remove"></span></a>
+                            }
                         </td>
                     </tr>
                 }
             </table>
-
         }
         else
         {
@@ -100,7 +156,7 @@ else
 
 <div class="row">
     <div class="col-md-12">
-        <h3>
+        <h3 id="requests">
             Requests
         </h3>
     </div>
@@ -110,6 +166,46 @@ else
         <a asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Add Requests</a>
     </div>
 </div>
+@if (Model.CanOptimizeAndDisplayRoute)
+{
+    <div class="row">
+        <div class="col-md-12">
+            <p>
+                <br />
+                @if (Model.UseStartAddressAsEndAddress)
+                {
+                    <text>The itinerary starts and ends at @Model.StartAddress</text>
+                }
+                else
+                {
+                    <text>The itinerary starts at @Model.StartAddress and ends at @Model.EndAddress</text>
+                }
+            </p>
+            <p>
+                <a href="#" data-toggle="modal" data-target="#optimizeRouteModal">Optimize Route</a> | <a href="@Model.BingMapUrl" target="_blank" title="View driving route in Bing Maps (opens in a new window)">View Directions</a>
+            </p>
+        </div>
+    </div>
+}
+@if (Model.Requests.Any())
+{
+    <form method="post" action="@Url.Action("Details", "Itinerary", new { area = "Admin" })#requests" class="form-horizontal">
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <label class="col-md-1 control-label">Filter:</label>
+            <div class="col-md-2">
+                <input type="text" asp-for="RequestKeywords" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <select asp-for="RequestStatus" asp-items="@SelectListService.GetRequestTypes().AddNullOptionToFront("<All>")" class="form-control"></select>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-default submit-form">Filter</button>
+            </div>
+        </div>
+    </form>
+}
+
 <div class="row">
     <div class="col-md-12">
         @if (Model.Requests.Any())
@@ -121,6 +217,7 @@ else
                     <th>City</th>
                     <th>Manage</th>
                     <th>Status</th>
+                    <th></th>
                 </tr>
                 @foreach (var request in Model.Requests)
                 {
@@ -146,10 +243,21 @@ else
                         </td>
                         <td>
                             @request.Status
+                        </td>
+                        <td>
                             @if (request.Status == RequestStatus.Assigned)
                             {
                                 <form asp-action="MarkComplete" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
                                     <button type="submit" class="btn btn-success submit-form" title="Mark this request as complete"><span class="fa fa-check"></span></button>
+                                </form>
+                            }
+                            else if (request.Status == RequestStatus.PendingConfirmation)
+                            {
+                                <form asp-action="MarkConfirmed" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                    <button type="submit" class="btn btn-success submit-form" title="Mark this request as confirmed"><span class="fa fa-thumbs-up"></span></button>
+                                </form>
+                                <form asp-action="MarkUnassigned" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id" asp-route-requestId="@request.Id" class="right-action-btn">
+                                    <button type="submit" class="btn btn-danger submit-formm" title="Mark this request as unassigned"><span class="fa fa-ban"></span></button>
                                 </form>
                             }
                             else
@@ -166,12 +274,46 @@ else
         else
         {
             <br />
-            <p>There are currently no assigned requests for this itinerary</p>
+            <p>No requests to show</p>
         }
     </div>
 </div>
 
 <div id="myMap" style="position:relative;width:100%;height:500px;"></div>
+
+<!-- Optimize Route Modal -->
+<div class="modal fade" id="optimizeRouteModal" tabindex="-1" role="dialog" aria-labelledby="optimizeRouteLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="optimizeRouteLabel">Optimize Route</h4>
+                <p>
+                    The requests will be re-ordered for the most optimal driving route using the itinerary's start/end address information.
+                </p>
+                <p>
+                    @if (Model.UseStartAddressAsEndAddress)
+                    {
+                        <text><strong>Start/End Address</strong>: @Model.StartAddress</text>
+                    }
+                    else
+                    {
+                        <text><strong>Start Address</strong>: @Model.StartAddress
+                        <br />
+                        <strong>End Address</strong>: @Model.EndAddress</text>
+                    }
+                </p>
+            </div>
+            <form asp-area="Admin" asp-controller="Itinerary" asp-action="OptimizeRoute" asp-route-itineraryId="@Model.Id" method="post">
+                <input asp-for="Id" type="hidden" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" id="optimizeRoute" class="btn btn-primary">Optimize</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script type='text/javascript'
@@ -190,17 +332,24 @@ else
                 if (request.Status == RequestStatus.Completed)
                 {
                     @:reqData.color = 'green';
-                            }
+                                                                                                                                                                                    }
 
                 if (request.Status == RequestStatus.Canceled)
                 {
                     @:reqData.color = 'red';
-                }
+                                                                                                                                                                                    }
 
-                @:requestData.push(reqData)
-                        }
+                @:requestData.push(reqData);
+                                                                                                                                                                                }
             return requestData;
         }
-    </script>
-}
 
+        var modelData = @Json.Serialize(new
+                        {
+                            itineraryId = Model.Id,
+                            assignedTeamMembers = Model.TeamMembers,
+                            potentialTeamMembers = Model.PotentialTeamMembers
+                        });
+    </script>
+    <script type="text/javascript" src="~/js/itineraryDetail.js"></script>
+}

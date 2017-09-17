@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Features.Events;
 using AllReady.Models;
 using MediatR;
@@ -58,6 +58,13 @@ namespace AllReady.Controllers
             }
 
             return View("EventWithTasks", viewModel);
+        }
+
+        [HttpGet]
+        [Route("~/Events/Dashboard")]
+        public IActionResult Dashboard()
+        {
+            return View("Dashboard");
         }
     }
 }

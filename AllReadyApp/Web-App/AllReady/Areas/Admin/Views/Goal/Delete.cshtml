@@ -1,0 +1,20 @@
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Goal.GoalDeleteViewModel
+<div class="row">
+    <div class="col-md-12">
+        <h3>Are you sure you want to delete @Model.GoalType Goal @Model.TextualGoal @if (Model.GoalType==GoalType.Numeric){@Model.NumericGoal} ?</h3>       
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            <input asp-for="Id" type="hidden" />
+            <div class="form-actions no-color">
+                <button type="submit" class="btn btn-default">Delete</button>
+                <a class="btn btn-default" asp-area="@AreaNames.Admin" asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId">Back to Campaign</a>
+            </div>
+        }
+    </div>
+</div>

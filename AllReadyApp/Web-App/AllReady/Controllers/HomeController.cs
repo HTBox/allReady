@@ -1,9 +1,9 @@
-﻿using AllReady.Features.Campaigns;
+using AllReady.Features.Campaigns;
+using AllReady.Features.Home;
+using AllReady.ViewModels.Home;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using AllReady.Features.Home;
-using AllReady.ViewModels.Home;
 
 namespace AllReady.Controllers
 {
@@ -21,8 +21,13 @@ namespace AllReady.Controllers
             var model = new IndexViewModel
             {
                 FeaturedCampaign = await mediator.SendAsync(new FeaturedCampaignQuery()),
-                ActiveOrUpcomingCampaigns = await mediator.SendAsync(new ActiveOrUpcomingCampaignsQuery())
+                ActiveOrUpcomingEvents = await mediator.SendAsync(new ActiveOrUpcomingEventsQuery())
             };
+
+            if ((bool?) TempData["NewAccount"] ?? false)
+            {
+                model.IsNewAccount = true;
+            }
 
             return View(model);
         }
@@ -46,7 +51,7 @@ namespace AllReady.Controllers
         {
             return View("~/Views/Shared/AccessDenied.cshtml");
         }
-
+        [Route("Home/PrivacyPolicy")]
         public IActionResult PrivacyPolicy()
         {
             return View(nameof(PrivacyPolicy));

@@ -15,80 +15,108 @@ using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Area(AreaNames.Admin)]
+    [Authorize]
     public class EventController : Controller
     {
+        public Func<DateTime> DateTimeTodayDate = () => DateTime.Today.Date;
+
         private readonly IImageService _imageService;
         private readonly IMediator _mediator;
         private readonly IValidateEventEditViewModels _eventEditViewModelValidator;
+        private readonly IUserAuthorizationService _userAuthorizationService;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator)
+        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator, IUserAuthorizationService userAuthorizationService)
         {
             _imageService = imageService;
             _mediator = mediator;
             _eventEditViewModelValidator = eventEditViewModelValidator;
+            _userAuthorizationService = userAuthorizationService;
         }
 
-        // GET: Event/Details/5
+        [HttpGet]
+        [Route("Admin/Event/ListAll")]
+        public async Task<IActionResult> Lister()
+        {
+            var viewModel = await _mediator.SendAsync(new EventListerQuery { UserId = _userAuthorizationService.AssociatedUserId });
+
+            return View(viewModel);
+        }
+
         [HttpGet]
         [Route("Admin/Event/Details/{id}")]
         public async Task<IActionResult> Details(int id)
         {
             var viewModel = await _mediator.SendAsync(new EventDetailQuery { EventId = id });
+
             if (viewModel == null)
             {
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
+
+            if (!await authorizableEvent.UserCanView())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
-            var url = Url.Action("Details", "Itinerary", new { Area = "Admin", id = 0 }).TrimEnd('0');
-            viewModel.ItinerariesDetailsUrl = string.Concat(url, "{id}");
+            // todo - check if the user can duplicate (e.g. create events) against the campaign as well - depends on having an authorizable campaign class first
+            
+            if (await authorizableEvent.UserCanDelete())
+            {
+                viewModel.ShowDeleteButton = true;
+            }
+
+            if (await authorizableEvent.UserCanManageChildObjects())
+            {
+                viewModel.ShowCreateChildObjectButtons = true;
+            }
 
             return View(viewModel);
         }
 
-        // GET: Event/Create
+        [HttpGet]
         [Route("Admin/Event/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id, campaign.OrganizationId));
+            if (!await authorizableCampaign.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
-            var campaignEvent = new EventEditViewModel
+            var viewModel = new EventEditViewModel
             {
                 CampaignId = campaign.Id,
                 CampaignName = campaign.Name,
                 TimeZoneId = campaign.TimeZoneId,
                 OrganizationId = campaign.OrganizationId,
                 OrganizationName = campaign.OrganizationName,
-                StartDateTime = DateTime.Today.Date,
-                EndDateTime = DateTime.Today.Date
+                StartDateTime = DateTimeTodayDate(),
+                EndDateTime = DateTimeTodayDate()
             };
 
-            return View("Edit", campaignEvent);
+            return View("Edit", viewModel);
         }
 
-        // POST: Event/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Admin/Event/Create/{campaignId}")]
         public async Task<IActionResult> Create(int campaignId, EventEditViewModel eventEditViewModel, IFormFile fileUpload)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = campaignId });
-            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id, campaign.OrganizationId));
+            if (!await authorizableCampaign.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var errors = _eventEditViewModelValidator.Validate(eventEditViewModel, campaign);
@@ -104,7 +132,7 @@ namespace AllReady.Areas.Admin.Controllers
                 {
                     if (!fileUpload.IsAcceptableImageContentType())
                     {
-                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        ModelState.AddModelError(nameof(eventEditViewModel.ImageUrl), "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View("Edit", eventEditViewModel);
                     }
                 }
@@ -120,13 +148,13 @@ namespace AllReady.Areas.Admin.Controllers
                     await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
                 }
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id = id });
             }
 
             return View("Edit", eventEditViewModel);
         }
 
-        // GET: Event/Edit/5
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var campaignEvent = await _mediator.SendAsync(new EventEditQuery { EventId = id });
@@ -135,15 +163,16 @@ namespace AllReady.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id, campaignEvent.CampaignId, campaignEvent.OrganizationId));
+
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             return View(campaignEvent);
         }
 
-        // POST: Event/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EventEditViewModel eventEditViewModel, IFormFile fileUpload)
@@ -152,11 +181,12 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return BadRequest();
             }
+            
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(eventEditViewModel.Id));
 
-            var organizationId = await _mediator.SendAsync(new ManagingOrganizationIdByEventIdQuery { EventId = eventEditViewModel.Id });
-            if (!User.IsOrganizationAdmin(organizationId))
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = eventEditViewModel.CampaignId });
@@ -171,11 +201,11 @@ namespace AllReady.Areas.Admin.Controllers
                     if (fileUpload.IsAcceptableImageContentType())
                     {
                         var existingImageUrl = eventEditViewModel.ImageUrl;
-                        var newImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
+                        var newImageUrl = await _imageService.UploadEventImageAsync(campaign.OrganizationId, eventEditViewModel.Id, fileUpload);
                         if (!string.IsNullOrEmpty(newImageUrl))
                         {
                             eventEditViewModel.ImageUrl = newImageUrl;
-                            if (existingImageUrl != null)
+                            if (existingImageUrl != null && existingImageUrl != newImageUrl)
                             {
                                 await _imageService.DeleteImageAsync(existingImageUrl);
                             }
@@ -183,14 +213,14 @@ namespace AllReady.Areas.Admin.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                        ModelState.AddModelError(nameof(eventEditViewModel.ImageUrl), "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View(eventEditViewModel);
                     }
                 }
 
                 var id = await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id = id });
             }
 
             return View(eventEditViewModel);
@@ -241,43 +271,77 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _mediator.SendAsync(new DuplicateEventCommand { DuplicateEventModel = viewModel });
-                return RedirectToAction(nameof(Details), new { area = "Admin", id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id });
             }
 
             return View(viewModel);
         }
 
-        // GET: Event/Delete/5
-        [ActionName("Delete")]
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var viewModel = await _mediator.SendAsync(new DeleteQuery { EventId = id });
-            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+
+            if (viewModel == null)
             {
-                return Unauthorized();
+                return NotFound();
             }
 
-            viewModel.UserIsOrgAdmin = true;
-            viewModel.Title = $"Delete event {viewModel.Name}";
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.Id, viewModel.CampaignId, viewModel.OrganizationId));
+
+            if (!await authorizableEvent.UserCanDelete())
+            {
+                return new ForbidResult();
+            }
+
+            ViewData["Title"] = $"Delete event {viewModel.Name}";
 
             return View(viewModel);
         }
 
-        // POST: Event/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!viewModel.UserIsOrgAdmin)
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id));
+
+            if (!await authorizableEvent.UserCanDelete())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
-            await _mediator.SendAsync(new DeleteEventCommand { EventId = viewModel.Id });
+            await _mediator.SendAsync(new DeleteEventCommand { EventId = id });
 
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = AreaNames.Admin, id = authorizableEvent.CampaignId });
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> DeleteEventImage(int eventId)
+        {
+            var campaignEvent = await _mediator.SendAsync(new EventEditQuery { EventId = eventId });
+            if (campaignEvent == null)
+            {
+                return Json(new { status = "NotFound" });
+            }
+
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(campaignEvent.Id, campaignEvent.CampaignId, campaignEvent.OrganizationId));
+            if (!await authorizableEvent.UserCanEdit())
+            {
+                return Json(new { status = "Unauthorized" });
+            }
+
+            if (campaignEvent.ImageUrl != null)
+            {
+                await _imageService.DeleteImageAsync(campaignEvent.ImageUrl);
+                campaignEvent.ImageUrl = null;
+                await _mediator.SendAsync(new EditEventCommand { Event = campaignEvent });
+                return Json(new { status = "Success" });
+            }
+
+            return Json(new { status = "NothingToDelete" });
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> MessageAllVolunteers(MessageEventVolunteersViewModel viewModel)
@@ -287,10 +351,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest(ModelState);
             }
 
-            var eventsOrganizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = viewModel.EventId });
-            if (!User.IsOrganizationAdmin(eventsOrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(viewModel.EventId));
+            if (!await authorizableEvent.UserCanEdit())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             await _mediator.SendAsync(new MessageEventVolunteersCommand { ViewModel = viewModel });
@@ -303,21 +367,21 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> PostEventFile(int id, IFormFile file)
         {
             var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
-            var imageUrl = await _imageService.UploadEventImageAsync(id, organizationId, file);
+            var imageUrl = await _imageService.UploadEventImageAsync(organizationId, id, file);
 
             await _mediator.SendAsync(new UpdateEventImageUrl { EventId = id, ImageUrl = imageUrl });
 
-            return RedirectToRoute(new { controller = "Event", Area = "Admin", action = nameof(Edit), id });
+            return RedirectToRoute(new { controller = "Event", area = AreaNames.Admin, action = nameof(Edit), id });
         }
 
         [HttpGet]
         [Route("Admin/Event/[action]/{id}/{status?}")]
         public async Task<IActionResult> Requests(int id, string status)
         {
-            var organizationId = await _mediator.SendAsync(new OrganizationIdByEventIdQuery { EventId = id });
-            if (!User.IsOrganizationAdmin(organizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(id));
+            if (!await authorizableEvent.UserCanView())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var criteria = new RequestSearchCriteria { EventId = id };
@@ -325,7 +389,7 @@ namespace AllReady.Areas.Admin.Controllers
             var currentPage = "All";
 
             if (!string.IsNullOrEmpty(status))
-            { 
+            {
                 RequestStatus requestStatus;
                 if (Enum.TryParse(status, out requestStatus))
                 {
@@ -335,7 +399,7 @@ namespace AllReady.Areas.Admin.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(nameof(Requests), new {id});
+                    return RedirectToAction(nameof(Requests), new { id });
                 }
             }
 
@@ -344,7 +408,7 @@ namespace AllReady.Areas.Admin.Controllers
             viewModel.CurrentPage = currentPage;
 
             viewModel.Requests = await _mediator.SendAsync(new RequestListItemsQuery { Criteria = criteria });
- 
+
             return View(viewModel);
         }
 

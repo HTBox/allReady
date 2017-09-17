@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.SelectItineraryRequestsViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Itinerary.SelectItineraryRequestsViewModel
 
 @{
     ViewData["Title"] = "Select Requests";
@@ -7,15 +8,15 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
-            <li><a asp-action="Details" asp-controller="Itinerary" asp-area="Admin">@Model.ItineraryName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
+            <li><a asp-action="Details" asp-controller="Itinerary" asp-area="@AreaNames.Admin">@Model.ItineraryName</a></li>
             <li>Select Requests</li>
         </ol>
     </div>
 </div>
-<div class="row">
+<div id="selectRequestsView" class="row">
     <div class="col-xs-12 col-md-6">
         <div>
             <h2>Select Requests</h2>
@@ -24,17 +25,17 @@
         <div class="request-filter-section">
             <h3>Filter results</h3>
             <p>Please enter a keyword on which to filter the requests.</p>
-            <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin">
+            <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="@AreaNames.Admin">
                 <input asp-for="KeywordsFilter" />
                 <button type="submit" class="btn btn-default submit-form">Filter</button>
             </form>
         </div>
         <div>
-            <form asp-area="Admin" asp-controller="Itinerary" asp-action="AddRequests">
+            <form asp-area="@AreaNames.Admin" asp-controller="Itinerary" asp-action="AddRequests">
                 <div class="row">
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-primary submit-form">Add Selected Requests</button>
-                        <a asp-action="Details" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Cancel</a>
+                        <a asp-action="Details" asp-controller="Itinerary" asp-area="@AreaNames.Admin" class="btn btn-default">Cancel</a>
                     </div>
                 </div>
 
@@ -43,27 +44,26 @@
                         @if (Model.Requests.Count > 0)
                         {
                             <table class="table">
-                                <tr>
-                                    <th></th>
-                                    <th>Request Name</th>
-                                    <th>Address</th>
-                                    <th>City</th>
-                                    <th>Postcode</th>
-                                    <th>Date Added</th>
-                                </tr>
-                                @foreach (var req in Model.Requests)
-                                {
+                                <thead>
                                     <tr>
-                                        <td>
-                                            <input type="checkbox" name="selectedRequests" value="@req.Id" @Html.Raw(req.IsSelected) ? "checked" : "" ) />
-                                        </td>
-                                        <td>@req.Name</td>
-                                        <td>@req.Address</td>
-                                        <td>@req.City</td>
-                                        <td>@req.Postcode</td>
-                                        <td>@req.DateAdded</td>
+                                        <th></th>
+                                        <th>Request Name</th>
+                                        <th>Address</th>
+                                        <th>City</th>
+                                        <th>Postcode</th>
+                                        <th>Date Added</th>
                                     </tr>
-                                }
+                                </thead>
+                                <tbody data-bind="foreach: requests">
+                                    <tr>
+                                        <td><input type="checkbox" name="selectedRequests" data-bind="value: Id, checked: selected" /></td>
+                                        <td data-bind="text: Name"></td>
+                                        <td data-bind="text: Address"></td>
+                                        <td data-bind="text: City"></td>
+                                        <td data-bind="text: Postcode"></td>
+                                        <td data-bind="text: DateAddedString"></td>
+                                    </tr>
+                                </tbody>
                             </table>
                         }
                         else
@@ -79,28 +79,22 @@
     <div class="col-xs-12 col-md-6">
         <h3>Map</h3>
         <div id="bingMap"></div>
+        <div data-bind="visible: spacialMathReady && drawingToolsReady" style="display: none;">
+            <button type="button" class="btn btn-default" data-bind="click: doLasso, visible: canLasso">Draw Selection</button>
+            <button type="button" class="btn btn-primary" data-bind="click: completeLasso, visible: isDrawing">Done</button>
+            <button type="button" class="btn btn-danger" data-bind="click: cancelLasso, visible: isDrawing">Cancel</button>
+            <div class="alert alert-info" data-bind="visible: isDrawing">
+                Click on the map to select points to surround your route.  Double-click to complete the shape.
+                You can move selected points after completing the shape.  Select "Done" to make the selection.
+            </div>
+        </div>
     </div>
 </div>
 
 @section scripts {
-    <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
     <script type="text/javascript">
-        ///<reference path="~/wwwroot/js/site.js" />
-        $(document).ready(function () {
-            setBingMapHeight();
-            renderBingMap("bingMap", getLocationsFromModelRequests());
-        });
-
-        function setBingMapHeight(){
-            $("#bingMap").height(($(window).height() * 0.6));
-        }
-
-        function getLocationsFromModelRequests() {
-            var locations = [];
-            @foreach (var request in Model.Requests){
-                @:locations.push({ latitude: @request.Latitude, longitude: @request.Longitude });
-            }
-            return locations;
-        }
+        var modelData = @Json.Serialize(new {requests = Model.Requests});
     </script>
+    <script src="~/js/itinerarySelectRequests.js"></script>
+    <script type='text/javascript' src='http://www.bing.com/api/maps/mapcontrol?branch=release&callback=initializeMap'></script>
 }

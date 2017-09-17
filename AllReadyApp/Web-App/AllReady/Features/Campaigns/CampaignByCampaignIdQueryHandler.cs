@@ -18,12 +18,12 @@ namespace AllReady.Features.Campaigns
         {
             return await _context.Campaigns
                 .Include(x => x.ManagingOrganization)
-                .Include(x => x.CampaignImpact)
+                .Include(x => x.CampaignGoals)
                 .Include(x => x.Events)
                 .ThenInclude(a => a.Location)
                 .Include(x => x.Location)
                 .Include(x => x.ParticipatingOrganizations)
-                .SingleOrDefaultAsync(x => x.Id == message.CampaignId);
+                .SingleOrDefaultAsync(x => x.Published && x.Id == message.CampaignId);
         }
     }
 }

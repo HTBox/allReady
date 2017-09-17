@@ -1,0 +1,20 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboards";
+}
+
+@if (User.Identity.IsAuthenticated)
+{
+        <ul>
+            <li>
+                <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Volunteer Dashboard">
+                    Volunteer Dashboard
+                </a>
+            </li>    
+            <li>
+                <a asp-area="" asp-controller="Event" asp-action="Dashboard" title="Event Dashboard">
+                    Event Dashboard
+                </a>
+            </li>    
+        </ul>  
+}

@@ -1,5 +1,5 @@
-@using System.Threading.Tasks
-@using AllReady.Security
+﻿@using System.Threading.Tasks
+@using AllReady.Constants
 
 @model AllReady.Areas.Admin.ViewModels.Event.EventRequestsViewModel
 
@@ -10,9 +10,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-area="@AreaNames.Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
             <li>Requests</li>
         </ol>
     </div>
@@ -33,6 +33,8 @@
                 <a asp-action="Requests" asp-route-status="" class="@(@Model.CurrentPage == "All" ? "current" : "")">All Requests</a>
                 <a asp-action="Requests" asp-route-status="Unassigned" class="@(@Model.CurrentPage == "Unassigned" ? "current" : "")">Unassigned Requests</a>
                 <a asp-action="Requests" asp-route-status="Assigned" class="@(@Model.CurrentPage == "Assigned" ? "current" : "")">Assigned Requests</a>
+                <a asp-action="Requests" asp-route-status="PendingConfirmation" class="@(@Model.CurrentPage == "PendingConfirmation" ? "current" : "")">Pending Confirmation Requests</a>
+                <a asp-action="Requests" asp-route-status="Confirmed" class="@(@Model.CurrentPage == "Confirmed" ? "current" : "")">Confirmed Requests</a>
                 <a asp-action="Requests" asp-route-status="Completed" class="@(@Model.CurrentPage == "Completed" ? "current" : "")">Completed Requests</a>
                 <a asp-action="Requests" asp-route-status="Canceled" class="@(@Model.CurrentPage == "Canceled" ? "current" : "")">Canceled Requests</a>
             </nav>
@@ -58,7 +60,7 @@
                         <td><a asp-action="Edit" asp-controller="Request" asp-route-id="@req.Id">@req.Name</a></td>
                         <td>@req.Address</td>
                         <td>@req.City</td>
-                        <td>@req.Postcode</td>
+                        <td>@req.PostalCode</td>
                         <td>@req.DateAdded</td>
                     </tr>
                 }

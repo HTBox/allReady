@@ -7,19 +7,8 @@
             asp-fallback-src="~/lib/jquery-validation/jquery.validate.js"
             asp-fallback-test="window.jquery && window.jquery.validator">
     </script>
-    <script src="//ajax.aspnetcdn.com/ajax/mvc/5.2.3/jquery.validate.unobtrusive.min.js"
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.2/jquery.validate.unobtrusive.min.js"
             asp-fallback-src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
             asp-fallback-test="window.jquery && window.jquery.validator && window.jquery.validator.unobtrusive">
     </script>
 </environment>
-
-<script>
-
-    // decorate the email validation rule to trim spaces in the view value before validation 
-    var originalRule = $.validator.methods.email;
-    $.validator.methods.email = function (value, element) {
-        value = value.trim();
-        element.value = value;
-        return originalRule(value, element);
-    };
-</script>

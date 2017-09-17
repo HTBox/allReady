@@ -1,4 +1,5 @@
-﻿@using AllReady.Security
+@using AllReady.Security
+@using Microsoft.AspNetCore.Mvc.Rendering
 @model AllReady.ViewModels.Event.EventViewModel
 
 @{
@@ -9,6 +10,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
+            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li><a asp-controller="Organization" asp-action="Index">Organizations</a></li>
+            <li><a asp-controller="Organization" asp-action="ShowOrganization">@Model.OrganizationName</a></li>
             <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId">@Model.CampaignName</a></li>
             <li>@Model.Title</li>
@@ -95,7 +99,7 @@
             {
                 @*User Tasks*@
                 <div class="row">
-                    <div data-bind="visible: filteredUserTasks().filtered().length > 0">
+                    <div>
                         <div class="col-sm-12">
                             <h3>My Assigned Tasks</h3>
                         </div>
@@ -113,7 +117,6 @@
                             </div>
                             <br />
                         </div>
-
 
                         @*User Tasks Accordion*@
                         <div class="col-sm-12">
@@ -139,33 +142,32 @@
                                                         <span class="label label-danger" data-bind="visible: AssignedVolunteers[0].Status === 'CanNotComplete', tooltip: { title: 'Unable to complete (' + AssignedVolunteers[0].StatusDescription + ')' }"><span class="fa fa-times"></span></span>
                                                         <br />
                                                     </div>
-                                                    <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
-                                                </div>
 
-                                                <div class="btn-group" data-bind="visible: currentStatus !== 'Completed' && currentStatus !== 'CanNotComplete'">
-                                                    <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Accepted', click: $root.changeTaskStatus.bind($data, 'Completed', '')">Mark Complete</button>
-                                                    <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Assigned', click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Mark Complete</button>
-                                                    <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                                                        <span class="caret"></span>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li data-bind="visible: currentStatus === 'Assigned'">
-                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Rejected', '')">Reject</a>
-                                                        </li>
-                                                        <li data-bind="visible: currentStatus === 'Accepted'">
-                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmCannotComplete">Mark Unable to Complete</a>
-                                                            @*<a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unable to Complete</a>*@
-                                                        </li>
-                                                        <li data-bind="visible: currentStatus === 'Accepted'">
-                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unenroll</a>
-                                                        </li>
-                                                        <li data-bind="visible: currentStatus === 'Completed'">
-                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Complete</a>
-                                                        </li>
-                                                        <li data-bind="visible: currentStatus === 'CanNotComplete'">
-                                                            <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Cannot Complete</a>
-                                                        </li>
-                                                    </ul>
+                                                    <div class="btn-group" data-bind="visible: currentStatus !== 'Completed' && currentStatus !== 'CanNotComplete'">
+                                                        <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Accepted', click: $root.changeTaskStatus.bind($data, 'Completed', '')">Mark Complete</button>
+                                                        <button type="button" class="btn btn-default btn-sm" data-bind="visible: currentStatus === 'Assigned', click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Mark Complete</button>
+                                                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li data-bind="visible: currentStatus === 'Assigned'">
+                                                                <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Rejected', '')">Reject</a>
+                                                            </li>
+                                                            <li data-bind="visible: currentStatus === 'Accepted'">
+                                                                <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmCannotComplete">Mark Unable to Complete</a>
+                                                                <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.confirmUnenrollFromTask">Unenroll</a>
+                                                            </li>
+                                                            <li data-bind="visible: currentStatus === 'Completed'">
+                                                                <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Complete</a>
+                                                            </li>
+                                                            <li data-bind="visible: currentStatus === 'CanNotComplete'">
+                                                                <a href="#" class="btn btn-default btn-sm" data-bind="click: $root.changeTaskStatus.bind($data, 'Accepted', '')">Undo Mark Cannot Complete</a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <br>
+                                                    <span class="task-datetime" data-bind="html: DisplayDateTime"></span><br />
                                                 </div>
 
                                                 <div class="btn-group" data-bind="visible: currentStatus === 'Completed'">
@@ -216,6 +218,14 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group" data-bind="dateTimePicker: tasks.dateInRange, dateTimePickerOptions: { format: 'L', showClear: true }">
+                                <input type="text" class="form-control" placeholder="On date" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
                         </div>
                         <div class="form-group">
                             <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">

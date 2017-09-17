@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using AllReady.Configuration;
 using AllReady.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,17 +22,17 @@ namespace AllReady.Features.Notifications
 
         public async Task Handle(ItineraryVolunteerListUpdated notification)
         {
-            var taskSignup = await _context.TaskSignups
+            var volunteerTaskSignup = await _context.VolunteerTaskSignups
                 .AsNoTracking()
                 .Include(x => x.User)
-                .SingleAsync(ts => ts.Id == notification.TaskSignupId);
+                .SingleAsync(ts => ts.Id == notification.VolunteerTaskSignupId);
 
             var itinerary = await _context.Itineraries
                 .AsNoTracking()
                 .SingleAsync(x => x.Id == notification.ItineraryId);
 
-            var emailAddress = taskSignup.User.Email;
-            var phoneNumber = taskSignup.User.PhoneNumber;
+            var emailAddress = volunteerTaskSignup.User.Email;
+            var phoneNumber = volunteerTaskSignup.User.PhoneNumber;
             var itineraryDate = itinerary.Date;
             var volunteerDashboardLink = $"{_generalSettings.Value.SiteBaseUrl}v";
 

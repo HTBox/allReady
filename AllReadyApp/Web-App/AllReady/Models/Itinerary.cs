@@ -72,6 +72,53 @@ namespace AllReady.Models
         public Event Event { get; set; }
 
         public ICollection<ItineraryRequest> Requests { get; set; }
-        public ICollection<TaskSignup> TeamMembers { get; set; }
+        public ICollection<VolunteerTaskSignup> TeamMembers { get; set; }
+
+        /// <summary>
+        /// Gets the start address for the <see cref="Itinerary"/> if one has been set. If the <see cref="Itinerary"/> has been 
+        /// loaded from the database without including the Start Location this will always be null.
+        /// </summary>
+        public string StartAddress
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(StartLocation?.FullAddress))
+                {
+                    return StartLocation.FullAddress;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the end address for the <see cref="Itinerary"/> if one has been set. If the <see cref="Itinerary"/> has been 
+        /// loaded from the database without including the Start and End Locations this will always be null.
+        /// </summary>
+        public string EndAddress
+        {
+            get
+            {
+                var endAddress = EndLocation?.FullAddress;
+
+                if (UseStartAddressAsEndAddress)
+                {
+                    endAddress = StartAddress;
+                }
+
+                return endAddress;
+            }
+        }
+
+        /// <summary>
+        /// Indicates if the itinerary has values set for both the start and end addresses
+        /// </summary>
+        public bool HasAddresses
+        {
+            get
+            {
+                return (!string.IsNullOrWhiteSpace(StartAddress) && !string.IsNullOrWhiteSpace(EndAddress));
+            }
+        }
     }
 }

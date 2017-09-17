@@ -1,4 +1,4 @@
-﻿using AllReady.TagHelpers;
+using AllReady.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using System;
 using System.Collections.Generic;
@@ -6,8 +6,6 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Xunit;
 using System.Text.Encodings.Web;
-using AllReady.Providers;
-using Moq;
 
 namespace AllReady.UnitTest.TagHelpers
 {
@@ -32,25 +30,31 @@ namespace AllReady.UnitTest.TagHelpers
         [Fact]
         public void ValueShouldBeFormattedUsingDefaultFormat()
         {
-            System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.GetCultureInfo("en-US");
-            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");
+            CultureInfo.CurrentUICulture = new CultureInfo("en-US");
+            CultureInfo.CurrentCulture = new CultureInfo("en-US");
 
-            TimeTagHelper tagHelper = new TimeTagHelper();
-            tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
+            var value = new DateTime(2014, 12, 25, 13, 21, 0);
+
+            TimeTagHelper tagHelper = new TimeTagHelper
+            {
+                Value = new DateTimeOffset(value, TimeSpan.FromHours(0))
+            };
 
             var output = GetOutput();
             tagHelper.Process(GetContext(), output);
 
             Assert.Null(output.TagName);
-            Assert.Equal("12/25/2014 1:21 PM", output.Content.GetContent());
+            Assert.Equal(value.ToString("g"), output.Content.GetContent());
         }
 
         [Fact]
         public void ValueShouldBeFormattedUsingSpecifiedFormat()
         {
-            TimeTagHelper tagHelper = new TimeTagHelper();
-            tagHelper.Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0));
-            tagHelper.Format = "yyyy-MM-dd";
+            TimeTagHelper tagHelper = new TimeTagHelper
+            {
+                Value = new DateTimeOffset(2014, 12, 25, 13, 21, 0, TimeSpan.FromHours(0)),
+                Format = "yyyy-MM-dd"
+            };
 
             var output = GetOutput();
             tagHelper.Process(GetContext(), output);

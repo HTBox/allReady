@@ -1,3 +1,4 @@
+﻿@using AllReady.Constants
 @model IEnumerable<AllReady.Areas.Admin.ViewModels.Campaign.IndexViewModel>
 @{ ViewData["Title"] = "Campaigns - Admin"; }
 
@@ -9,7 +10,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-sm row-btn-margin">
-            <a data-toggle="tooltip" data-placement="top" id="CreateNew" title="Create New" asp-controller="Campaign" asp-action="Create" asp-area="Admin" class="btn btn-default"><span class="fa fa-plus"></span>&nbsp; Create Campaign</a>
+            <a data-toggle="tooltip" data-placement="top" id="CreateNew" title="Create New" asp-controller="Campaign" asp-action="Create" asp-area="@AreaNames.Admin" class="btn btn-default"><span class="fa fa-plus"></span>&nbsp; Create Campaign</a>
         </div>
     </div>
 </div>
@@ -29,15 +30,22 @@
                     Dates
                 </th>
             </tr>
-            @foreach (var item in Model) {
+            @foreach (var item in Model)
+            {
                 <tr>
                     <td>
                         <div class="btn-group btn-group-sm row-btn-margin">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-controller="Campaign" asp-action="Edit" asp-area="Admin" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-controller="Campaign" asp-action="Edit" asp-area="@AreaNames.Admin" asp-route-id="@item.Id" class="btn btn-success"><span class="fa fa-edit"></span></a>
                         </div>
+                        @if (!item.Published)
+                        {
+                            <div class="btn-group btn-group-sm row-btn-margin">
+                                <a data-toggle="tooltip" data-placement="top" title="Publish" asp-controller="Campaign" asp-action="Publish" asp-area="@AreaNames.Admin" asp-route-id="@item.Id" class="btn btn-primary"><span class="fa fa-upload"></span></a>
+                            </div>
+                        }
                     </td>
                     <td>
-                        <a asp-controller="Campaign" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        <a asp-controller="Campaign" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.Id">@item.Name</a>
                         @if (item.Featured)
                         {
                             <i class="fa fa-star star-highlight" aria-hidden="true"></i>
@@ -48,7 +56,7 @@
                         }
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
-                            <br/><span class="text-muted">@item.Description</span>
+                            <br /><span class="text-muted">@item.Description</span>
                         }
                     </td>
                     <td>
@@ -66,8 +74,8 @@
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip({container:'body'});
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
         });
     </script>
 }

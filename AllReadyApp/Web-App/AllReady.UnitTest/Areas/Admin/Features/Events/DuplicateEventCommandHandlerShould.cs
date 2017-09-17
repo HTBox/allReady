@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -47,8 +47,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Assert.Equal(new DateTimeOffset(2016, 1, 31, 0, 0, 0, new TimeSpan()), sut.EndDateTime);
             Assert.Equal("Organizer", sut.Organizer.Id);
             Assert.Equal("ImageUrl", sut.ImageUrl);
-            Assert.Equal(false, sut.IsLimitVolunteers);
-            Assert.Equal(true, sut.IsAllowWaitList);
+            Assert.False(sut.IsLimitVolunteers);
+            Assert.True(sut.IsAllowWaitList);
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var eventId = await DuplicateEvent(new DuplicateEventViewModel { Id = EventToDuplicateId });
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.Id).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.Id).ToList();
 
             Assert.Equal(2, sut.Count());
             Assert.Equal(3, sut[0].Id);
@@ -103,7 +103,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var eventId = await DuplicateEvent(duplicateEventModel);
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(new DateTimeOffset(2016, 2, 1, 9, 0, 0, new TimeSpan()), sut[0].StartDateTime);
             Assert.Equal(new DateTimeOffset(2016, 2, 2, 10, 0, 0, new TimeSpan()), sut[1].StartDateTime);
@@ -123,7 +123,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var eventId = await DuplicateEvent(duplicateEventModel);
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(new TimeSpan(8, 0, 0), sut[0].EndDateTime - sut[0].StartDateTime);
             Assert.Equal(new TimeSpan(6, 0, 0), sut[1].EndDateTime - sut[1].StartDateTime);
@@ -143,10 +143,10 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var eventId = await DuplicateEvent(duplicateEventModel);
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
-            Assert.Equal(0, sut[0].AssignedVolunteers.Count());
-            Assert.Equal(0, sut[1].AssignedVolunteers.Count());
+            Assert.Empty(sut[0].AssignedVolunteers);
+            Assert.Empty(sut[1].AssignedVolunteers);
         }
 
         [Fact]
@@ -154,12 +154,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
         {
             var eventId = await DuplicateEvent(new DuplicateEventViewModel { Id = EventToDuplicateId });
             var @event = await GetEvent(eventId);
-            var sut = @event.Tasks.OrderBy(t => t.StartDateTime).ToList();
+            var sut = @event.VolunteerTasks.OrderBy(t => t.StartDateTime).ToList();
 
             Assert.Equal(2, sut[0].RequiredSkills.Count());
             Assert.Equal("Skill One", sut[0].RequiredSkills.OrderBy(ts => ts.Skill.Name).ToList()[0].Skill.Name);
             Assert.Equal("Skill Two", sut[0].RequiredSkills.OrderBy(ts => ts.Skill.Name).ToList()[1].Skill.Name);
-            Assert.Equal(0, sut[1].RequiredSkills.Count());
+            Assert.Empty(sut[1].RequiredSkills);
         }
 
         [Fact]
@@ -180,7 +180,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 .AsNoTracking()
                 .Include(e => e.Campaign)
                 .Include(e => e.Location)
-                .Include(e => e.Tasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
+                .Include(e => e.VolunteerTasks).ThenInclude(t => t.RequiredSkills).ThenInclude(ts => ts.Skill)
                 .Include(e => e.Organizer)
                 .Include(e => e.RequiredSkills).ThenInclude(es => es.Skill)
                 .SingleAsync(e => e.Id == eventId);
@@ -219,31 +219,31 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                     PhoneNumber = "PhoneNumber",
                     Country = "Country"
                 },
-                Tasks = new List<AllReadyTask>
+                VolunteerTasks = new List<VolunteerTask>
                 {
-                    new AllReadyTask
+                    new VolunteerTask
                     {
                         StartDateTime = new DateTimeOffset(2016, 1, 1, 9, 0, 0, new TimeSpan()),
                         EndDateTime = new DateTimeOffset(2016, 1, 1, 17, 0, 0, new TimeSpan()),
-                        AssignedVolunteers = new List<TaskSignup>
+                        AssignedVolunteers = new List<VolunteerTaskSignup>
                         {
-                            new TaskSignup(),
-                            new TaskSignup()
+                            new VolunteerTaskSignup(),
+                            new VolunteerTaskSignup()
                         },
-                        RequiredSkills = new List<TaskSkill>
+                        RequiredSkills = new List<VolunteerTaskSkill>
                         {
-                            new TaskSkill { Skill = skillOne },
-                            new TaskSkill { Skill = skillTwo },
+                            new VolunteerTaskSkill { Skill = skillOne },
+                            new VolunteerTaskSkill { Skill = skillTwo },
                         },
                     },
-                    new AllReadyTask
+                    new VolunteerTask
                     {
                         StartDateTime = new DateTimeOffset(2016, 1, 2, 10, 0, 0, new TimeSpan()),
                         EndDateTime = new DateTimeOffset(2016, 1, 2, 16, 0, 0, new TimeSpan()),
-                        AssignedVolunteers = new List<TaskSignup>
+                        AssignedVolunteers = new List<VolunteerTaskSignup>
                         {
-                            new TaskSignup(),
-                            new TaskSignup()
+                            new VolunteerTaskSignup(),
+                            new VolunteerTaskSignup()
                         }
                     },
                 },

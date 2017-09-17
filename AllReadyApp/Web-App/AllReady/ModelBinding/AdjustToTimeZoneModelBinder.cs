@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System;
@@ -37,7 +37,7 @@ namespace AllReady.ModelBinding
                 bindingContext.Result = ModelBindingResult.Success(adjustedDateTimeOffset);
             }
 
-            return TaskCache.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 }

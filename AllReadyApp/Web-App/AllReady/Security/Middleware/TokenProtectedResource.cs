@@ -1,17 +1,17 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace AllReady.Security.Middleware
 {
     public static class TokenProtectedResourceExtensions
     {
         // extension method for easy wiring of middleware
-        public static IApplicationBuilder UseTokenProtection(
-            this IApplicationBuilder builder, TokenProtectedResourceOptions options)
+        public static IApplicationBuilder UseTokenProtection(this IApplicationBuilder builder, TokenProtectedResourceOptions options)
         {
             return builder.UseMiddleware<TokenProtectedResource>(options);
         }
@@ -35,7 +35,7 @@ namespace AllReady.Security.Middleware
                 var headers = httpContext.Request.Headers;
                 if (!(headers.ContainsKey("ApiUser") && headers.ContainsKey("ApiToken")))
                 {
-                    await httpContext.Authentication.ChallengeAsync();
+                    await httpContext.ChallengeAsync();
                     return;
                 }
 
@@ -43,17 +43,16 @@ namespace AllReady.Security.Middleware
                 var token = headers.FirstOrDefault(h => h.Key == "ApiToken").Value;
 
                 var user = await manager.FindByNameAsync(apiUser);
-                var authorized = await manager.VerifyUserTokenAsync(user, "Default", "api-request-injest", token);
+                var authorized = await manager.VerifyUserTokenAsync(user, "Default", TokenTypes.ApiKey, token);
 
                 if (!authorized)
                 {
-                    await httpContext.Authentication.ChallengeAsync();
+                    await httpContext.ChallengeAsync();
                     return;
                 }
             }
 
             await _next(httpContext);
         }
-
     }
 }

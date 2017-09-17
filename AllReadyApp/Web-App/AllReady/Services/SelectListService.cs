@@ -62,11 +62,24 @@ namespace AllReady.Services
                 .OrderBy(s => s.Name);
         }
 
-        public IEnumerable<SelectListItem> GetCampaignImpactTypes()
+        public IEnumerable<SelectListItem> GetCampaignGoalTypes()
         {
             return new List<SelectListItem> {
-                new SelectListItem { Value = ((int)ImpactType.Text).ToString(), Text = ImpactType.Text.GetDisplayName() },
-                new SelectListItem { Value = ((int)ImpactType.Numeric).ToString(), Text = ImpactType.Numeric.GetDisplayName() }
+                new SelectListItem { Value = ((int)GoalType.Text).ToString(), Text = GoalType.Text.GetDisplayName() },
+                new SelectListItem { Value = ((int)GoalType.Numeric).ToString(), Text = GoalType.Numeric.GetDisplayName() }
+            };
+        }
+
+        public IEnumerable<SelectListItem> GetRequestTypes()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem {Text = RequestStatus.Assigned.GetDisplayName(), Value = ((int)RequestStatus.Assigned).ToString()},
+                new SelectListItem {Text = RequestStatus.Canceled.GetDisplayName(), Value = ((int)RequestStatus.Canceled).ToString()},
+                new SelectListItem {Text = RequestStatus.Completed.GetDisplayName(), Value = ((int)RequestStatus.Completed).ToString()},
+                new SelectListItem {Text = RequestStatus.Confirmed.GetDisplayName(), Value = ((int)RequestStatus.Confirmed).ToString()},
+                new SelectListItem {Text = RequestStatus.PendingConfirmation.GetDisplayName(), Value = ((int)RequestStatus.PendingConfirmation).ToString()},
+                new SelectListItem {Text = RequestStatus.Requested.GetDisplayName(), Value = ((int)RequestStatus.Requested).ToString()},
             };
         }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using AllReady.Models;
@@ -9,6 +9,8 @@ using AllReady.Features.Events;
 
 namespace AllReady.UnitTest.Features.Event
 {
+    using Event = AllReady.Models.Event;
+
     // Can't use this.Context because we're updating data and we can't have two items in Entity Framework's change tracking, see https://docs.efproject.net/en/latest/miscellaneous/testing.html#writing-tests
     public class ShowEventQueryHandlerShould : InMemoryContextTest
     {
@@ -79,7 +81,7 @@ namespace AllReady.UnitTest.Features.Event
 
             using (var context = new AllReadyContext(options))
             {
-                context.Events.Add(new Models.Event
+                context.Events.Add(new Event
                 {
                     Id = eventId,
                     Campaign = new Campaign { Locked = true }
@@ -174,7 +176,7 @@ namespace AllReady.UnitTest.Features.Event
                 var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
-                Assert.Equal(allReadyEvent.Tasks.Where(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))).Count(),
+                Assert.Equal(allReadyEvent.VolunteerTasks.Count(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))),
                     eventViewModel.UserTasks.Count);
                 var previousDateTime = DateTimeOffset.MinValue;
                 foreach (var userTask in eventViewModel.UserTasks)
@@ -209,7 +211,7 @@ namespace AllReady.UnitTest.Features.Event
                 var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
-                Assert.Equal(allReadyEvent.Tasks.Where(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))).Count(),
+                Assert.Equal(allReadyEvent.VolunteerTasks.Count(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))),
                     eventViewModel.Tasks.Count);
                 var previousDateTime = DateTimeOffset.MinValue;
                 foreach (var userTask in eventViewModel.Tasks)
@@ -220,20 +222,21 @@ namespace AllReady.UnitTest.Features.Event
             }
         }
 
-        private static Models.Event CreateAllReadyEventWithTasks(int eventId, ApplicationUser appUser)
+        private static Event CreateAllReadyEventWithTasks(int eventId, ApplicationUser appUser)
         {
-            return new Models.Event
+            return new Event
             {
                 Id = eventId,
-                Campaign = new Campaign { Locked = false },
-                Tasks = new List<AllReadyTask>
+                Campaign = new Campaign { Locked = false, ManagingOrganization = new Organization() },
+                Location = new Location(),
+                VolunteerTasks = new List<VolunteerTask>
                 {
-                    new AllReadyTask { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = appUser } } },
-                    new AllReadyTask { StartDateTime = new DateTimeOffset(2016, 7, 31, 1, 15, 28, new TimeSpan()), AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = appUser } }},
-                    new AllReadyTask { StartDateTime = new DateTimeOffset(2014, 2, 1, 5, 18, 27, new TimeSpan()), AssignedVolunteers = new List<TaskSignup> { new TaskSignup { User = appUser } }},
-                    new AllReadyTask { StartDateTime = new DateTimeOffset(2014, 12, 15, 17, 2, 18, new TimeSpan())},
-                    new AllReadyTask { StartDateTime = new DateTimeOffset(2016, 12, 15, 17, 2, 18, new TimeSpan())},
-                    new AllReadyTask { StartDateTime = new DateTimeOffset(2013, 12, 15, 17, 2, 18, new TimeSpan())},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } } },
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2016, 7, 31, 1, 15, 28, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } }},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2014, 2, 1, 5, 18, 27, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } }},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2014, 12, 15, 17, 2, 18, new TimeSpan())},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2016, 12, 15, 17, 2, 18, new TimeSpan())},
+                    new VolunteerTask { StartDateTime = new DateTimeOffset(2013, 12, 15, 17, 2, 18, new TimeSpan())},
                 }
             };
         }

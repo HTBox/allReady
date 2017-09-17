@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using AllReady.Controllers;
 using AllReady.Features.Organizations;
 using MediatR;
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new OrganizationController(null);
             var routeAttribute = sut.GetAttributesOn(x => x.Index()).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Organizations/");
+            Assert.Equal("Organizations/", routeAttribute.Template);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new OrganizationController(null);
             var routeAttribute = (RouteAttribute)sut.GetAttributesOn(x => x.ShowOrganization(It.IsAny<int>())).SingleOrDefault(x => x.GetType() == typeof(RouteAttribute));
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Organization/{id}/");
+            Assert.Equal("Organization/{id}/", routeAttribute.Template);
         }
 
         [Fact]
@@ -153,14 +153,14 @@ namespace AllReady.UnitTest.Controllers
                 model = new OrganizationViewModel { Id = 1, Name = "Org 1" };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).Returns(() => Task.FromResult(model)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).ReturnsAsync(model).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
         private static void MockMediatorOrganizationDetailsQueryNullResult(out OrganizationController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).Returns(() => Task.FromResult((OrganizationViewModel)null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationDetailsQuery>())).ReturnsAsync((OrganizationViewModel)null).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
@@ -169,14 +169,14 @@ namespace AllReady.UnitTest.Controllers
             if (model == null) model = new OrganizationPrivacyPolicyViewModel { OrganizationName = "Org 1", Content = null };
 
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).Returns(() => Task.FromResult(model)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).ReturnsAsync(model).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 
         private static void MockMediatorOrganizationPrivacyPolicyQueryNullResult(out OrganizationController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).Returns(() => Task.FromResult((OrganizationPrivacyPolicyViewModel)null)).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationPrivacyPolicyQuery>())).ReturnsAsync((OrganizationPrivacyPolicyViewModel)null).Verifiable();
             controller = new OrganizationController(mockMediator.Object);
         }
 

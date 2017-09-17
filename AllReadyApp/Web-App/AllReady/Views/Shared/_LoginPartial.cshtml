@@ -1,31 +1,39 @@
-﻿@using System.Security.Claims
-@using System.Threading.Tasks
+﻿@using System.Threading.Tasks
 @using AllReady.Security
 @inject UserManager<ApplicationUser> userManager
 
 @if (User.Identity.IsAuthenticated)
 {
+    var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
+    var controllerName = descriptor.ControllerName;
     <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post">
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
-                <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
-                    Dashboard
+                <a asp-area="" asp-controller="DashboardHub" asp-action="DashboardHub" title="Dashboard Hub">
+                    Dashboard Hub
                 </a>
             </li>
-            <li>
-                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">
-                    Hello @User.GetDisplayName(userManager)
+            <li class="dropdown">
+                <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage" class="dropdown-toggle dropdown-account" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     @if (User.IsUserProfileIncomplete())
                     {
                         <i class="fa fa-exclamation-circle user-profile-warning" title="Click here to add more details to your profile"></i>
                     }
+                    Hello @User.GetDisplayName(userManager)
+                    <span class="caret"></span>
                 </a>
-            </li>
-            <li>
-                <button type="submit" class="btn btn-link navbar-btn log-out">
-                    <i class="fa fa-sign-out"></i>
-                    Log off
-                </button>
+                <ul class="dropdown-menu">
+                    <li @(controllerName == "Manage" ? " class=active" : "")>
+                        <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">
+                            My Account
+                        </a>
+                    </li>
+                    <li>
+                        <button type="submit" class="btn btn-link log-out dropdown-menu-item-button">
+                            Log off
+                        </button>
+                    </li>
+                </ul>
             </li>
         </ul>
     </form>
@@ -34,5 +42,6 @@ else
 {
     <ul class="nav navbar-nav navbar-right login-status">
         <li><a asp-area="" asp-controller="Account" asp-action="Login" class="log-in">Log in</a></li>
+        <li><a asp-area="" asp-controller="Account" asp-action="Register" class="log-in">Register</a></li>
     </ul>
 }

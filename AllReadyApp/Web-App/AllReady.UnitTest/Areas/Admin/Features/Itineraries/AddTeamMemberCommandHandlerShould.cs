@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Itineraries;
@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
 using Xunit;
+using System.Linq;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
 {
@@ -51,10 +52,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Date = new DateTime(2016, 07, 01)
             };
 
+            var volunteerTaskSignUp = new VolunteerTaskSignup { Id = 1, ItineraryId = 2, VolunteerTaskId = 1 };
+
             Context.Organizations.Add(htb);
             Context.Campaigns.Add(firePrev);
             Context.Events.Add(queenAnne);
             Context.Itineraries.Add(itinerary);
+            Context.VolunteerTaskSignups.Add(volunteerTaskSignUp);
 
             Context.SaveChanges();
         }
@@ -65,13 +69,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 0,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var handler = new AddTeamMemberCommandHandler(Context, null);
             var result = await handler.Handle(query);
 
-            Assert.Equal(false, result);
+            Assert.False(result);
         }
 
         [Fact]
@@ -80,13 +84,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 1,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var handler = new AddTeamMemberCommandHandler(Context, Mock.Of<IMediator>());
             var result = await handler.Handle(query);
 
-            Assert.Equal(true, result);
+            Assert.True(result);
         }
 
         [Fact]
@@ -95,7 +99,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 1,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var mockMediator = new Mock<IMediator>();
@@ -106,13 +110,13 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             mockMediator.Verify(x => x.SendAsync(It.Is<PotentialItineraryTeamMembersQuery>(y => y.EventId == 1)), Times.Once);
         }
 
-        [Fact(Skip = "RTM Broken Tests")]
+        [Fact]
         public async Task AddTeamMemberCommandHandlerPublishesItineraryVolunteerListUpdatedWhenMatchedOnTaskSignupId()
         {
             var query = new AddTeamMemberCommand
             {
                 ItineraryId = 1,
-                TaskSignupId = 1
+                VolunteerTaskSignupId = 1
             };
 
             var potentialTaskSignups = new List<SelectListItem>
@@ -120,17 +124,20 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 new SelectListItem
                 {
                     Text = "user@domain.tld : Test TaskName",
-                    Value = query.TaskSignupId.ToString()
+                    Value = query.VolunteerTaskSignupId.ToString()
                 }
             };
 
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<PotentialItineraryTeamMembersQuery>())).ReturnsAsync(potentialTaskSignups);
 
+            var volunteerTaskSignUp = Context.VolunteerTaskSignups.Single(t => t.Id == 1);
+            Context.Entry(volunteerTaskSignUp).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+
             var handler = new AddTeamMemberCommandHandler(Context, mockMediator.Object);
             await handler.Handle(query);
 
-            mockMediator.Verify(x => x.PublishAsync(It.Is<ItineraryVolunteerListUpdated>(y => y.TaskSignupId == query.TaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
+            mockMediator.Verify(x => x.PublishAsync(It.Is<ItineraryVolunteerListUpdated>(y => y.VolunteerTaskSignupId == query.VolunteerTaskSignupId && y.ItineraryId == query.ItineraryId && y.UpdateType == UpdateType.VolunteerAssigned)), Times.Once);
         }
     }
 }

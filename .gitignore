@@ -5,6 +5,10 @@
 *.min.js
 *.min.css
 
+#ignore map files
+*.js.map
+*.css.map
+
 #Ignore any leftover PrepOpsApp files
 PrepOpsApp
 
@@ -129,6 +133,8 @@ _TeamCity*
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml
+*.ncrunchproject
+*.ncrunchsolution
 
 # MightyMoose
 *.mm.*
@@ -230,3 +236,8 @@ FakesAssemblies/
 config.development.json
 *.orig
 bower_components
+/smoke-alarm-requests-sample-data_SINGLE_ROW.csv
+/smoke-alarm-requests-sample-data-INVALID.csv
+/smoke-alarm-requests-sample-data-EMPTY.csv
+/smoke-alarm-requests-sample-data-DUPLICATE.csv
+/AllReadyApp/Web-App/AllReady/wwwroot/upload

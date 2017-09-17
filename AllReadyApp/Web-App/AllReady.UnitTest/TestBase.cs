@@ -1,12 +1,12 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.UnitTest
 {
@@ -26,7 +26,11 @@ namespace AllReady.UnitTest
                 // set up empty in-memory test db
                 services
                   .AddEntityFrameworkInMemoryDatabase()
-                  .AddDbContext<AllReadyContext>(options => options.UseInMemoryDatabase().UseInternalServiceProvider(services.BuildServiceProvider()));
+                  .AddDbContext<AllReadyContext>(options =>
+                    {
+                        options.UseInMemoryDatabase("InMemory").UseInternalServiceProvider(services.BuildServiceProvider());
+                        options.EnableSensitiveDataLogging();
+                    });
 
                 // add identity service
                 services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -59,7 +63,7 @@ namespace AllReady.UnitTest
             // Create a new options instance telling the context to use an
             // InMemory database and the new service provider.
             var builder = new DbContextOptionsBuilder<AllReadyContext>();
-            builder.UseInMemoryDatabase()
+            builder.UseInMemoryDatabase("InMemory")
                    .UseInternalServiceProvider(serviceProvider);
 
             return builder.Options;

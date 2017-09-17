@@ -15,8 +15,8 @@ namespace AllReady.Areas.Admin.Features.Events
         public DuplicateEventCommandHandler(AllReadyContext context)
         {
             _context = context;
-
         }
+
         public async Task<int> Handle(DuplicateEventCommand message)
         {
             var @event = await GetEvent(message.DuplicateEventModel.Id);
@@ -28,9 +28,9 @@ namespace AllReady.Areas.Admin.Features.Events
             return newEvent.Id;
         }
 
-        Event CloneEvent(Event @event)
+        private Event CloneEvent(Event @event)
         {
-            var newEvent = new Event()
+            var newEvent = new Event
             {
                 CampaignId = @event.CampaignId,
                 Name = @event.Name,
@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Features.Events
                 TimeZoneId = @event.TimeZoneId,
                 EndDateTime = @event.EndDateTime,
                 Location = CloneLocation(@event.Location),
-                Tasks = CloneTasks(@event.Tasks).ToList(),
+                VolunteerTasks = CloneVolunteerTasks(@event.VolunteerTasks).ToList(),
                 Organizer = @event.Organizer,
                 ImageUrl = @event.ImageUrl,
                 RequiredSkills = CloneEventRequiredSkills(@event).ToList(),
@@ -50,9 +50,9 @@ namespace AllReady.Areas.Admin.Features.Events
             return newEvent;
         }
 
-        Location CloneLocation(Location location)
+        private static Location CloneLocation(Location location)
         {
-            return new Location()
+            return new Location
             {
                 Address1 = location.Address1,
                 Address2 = location.Address2,
@@ -65,59 +65,61 @@ namespace AllReady.Areas.Admin.Features.Events
             };
         }
 
-        IEnumerable<AllReadyTask> CloneTasks(IEnumerable<AllReadyTask> tasks)
+        private IEnumerable<VolunteerTask> CloneVolunteerTasks(IEnumerable<VolunteerTask> volunteerTasks)
         {
-            if (tasks == null || !tasks.Any())
-                return Enumerable.Empty<AllReadyTask>();
-
-            return tasks.Select(task => CloneTask(task));
-        }
-
-        static IEnumerable<EventSkill> CloneEventRequiredSkills(Event @event)
-        {
-            return @event.RequiredSkills.Select(eventSkill => new EventSkill() { SkillId = eventSkill.SkillId });
-        }
-
-        AllReadyTask CloneTask(AllReadyTask task)
-        {
-            return new AllReadyTask()
+            if (volunteerTasks == null || !volunteerTasks.Any())
             {
-                Name = task.Name,
-                Description = task.Description,
-                Organization = task.Organization,
-                NumberOfVolunteersRequired = task.NumberOfVolunteersRequired,
-                StartDateTime = task.StartDateTime,
-                EndDateTime = task.EndDateTime,
-                RequiredSkills = CloneTaskRequiredSkills(task).ToList(),
-                IsLimitVolunteers = task.IsLimitVolunteers,
-                IsAllowWaitList = task.IsAllowWaitList
+                return Enumerable.Empty<VolunteerTask>();
+            }
+            
+            return volunteerTasks.Select(volunteerTask => CloneVolunteerTask(volunteerTask));
+        }
+
+        private static IEnumerable<EventSkill> CloneEventRequiredSkills(Event @event)
+        {
+            return @event.RequiredSkills.Select(eventSkill => new EventSkill { SkillId = eventSkill.SkillId });
+        }
+
+        private static VolunteerTask CloneVolunteerTask(VolunteerTask volunteerTask)
+        {
+            return new VolunteerTask
+            {
+                Name = volunteerTask.Name,
+                Description = volunteerTask.Description,
+                Organization = volunteerTask.Organization,
+                NumberOfVolunteersRequired = volunteerTask.NumberOfVolunteersRequired,
+                StartDateTime = volunteerTask.StartDateTime,
+                EndDateTime = volunteerTask.EndDateTime,
+                RequiredSkills = CloneVolunteerTaskRequiredSkills(volunteerTask).ToList(),
+                IsLimitVolunteers = volunteerTask.IsLimitVolunteers,
+                IsAllowWaitList = volunteerTask.IsAllowWaitList
             };
         }
 
-        static IEnumerable<TaskSkill> CloneTaskRequiredSkills(AllReadyTask task)
+        private static IEnumerable<VolunteerTaskSkill> CloneVolunteerTaskRequiredSkills(VolunteerTask volunteerTask)
         {
-            return task.RequiredSkills.Select(taskSkill => new TaskSkill { SkillId = taskSkill.SkillId });
+            return volunteerTask.RequiredSkills.Select(taskSkill => new VolunteerTaskSkill { SkillId = taskSkill.SkillId });
         }
 
-        void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
+        private void ApplyUpdates(Event @event, DuplicateEventViewModel updateModel)
         {
-            UpdateTasks(@event, updateModel);
+            UpdateVolunteerTasks(@event, updateModel);
             UpdateEvent(@event, updateModel);
         }
 
-        void UpdateTasks(Event @event, DuplicateEventViewModel updateModel)
+        static void UpdateVolunteerTasks(Event @event, DuplicateEventViewModel updateModel)
         {
-            foreach (var task in @event.Tasks)
+            foreach (var volunteerTask in @event.VolunteerTasks)
             {
-                var existingStartDateTime = task.StartDateTime;
-                var existingEndDateTime = task.EndDateTime;
+                var existingStartDateTime = volunteerTask.StartDateTime;
+                var existingEndDateTime = volunteerTask.EndDateTime;
 
-                task.StartDateTime = updateModel.StartDateTime - (@event.StartDateTime - task.StartDateTime);
-                task.EndDateTime = task.StartDateTime + (existingEndDateTime - existingStartDateTime);
+                volunteerTask.StartDateTime = updateModel.StartDateTime - (@event.StartDateTime - volunteerTask.StartDateTime);
+                volunteerTask.EndDateTime = volunteerTask.StartDateTime + (existingEndDateTime - existingStartDateTime);
             }
         }
 
-        void UpdateEvent(Event newEvent, DuplicateEventViewModel model)
+        static void UpdateEvent(Event newEvent, DuplicateEventViewModel model)
         {
             newEvent.Name = model.Name;
             newEvent.Description = model.Description;
@@ -125,12 +127,12 @@ namespace AllReady.Areas.Admin.Features.Events
             newEvent.EndDateTime = model.EndDateTime;
         }
 
-        async Task<Event> GetEvent(int eventId)
+        private async Task<Event> GetEvent(int eventId)
         {
             return await _context.Events
                 .AsNoTracking()
                 .Include(e => e.Location)
-                .Include(e => e.Tasks).ThenInclude(t => t.RequiredSkills)
+                .Include(e => e.VolunteerTasks).ThenInclude(t => t.RequiredSkills)
                 .Include(e => e.Organizer)
                 .Include(e => e.RequiredSkills)
                 .SingleAsync(e => e.Id == eventId);

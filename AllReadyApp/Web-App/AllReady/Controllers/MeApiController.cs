@@ -4,13 +4,9 @@ using AllReady.Models;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using UserType = AllReady.Models.UserType;
-using System.Net.Http;
-using System.Net;
-using System.Web.Http;
 using AllReady.Attributes;
 
 namespace AllReady.Controllers
@@ -35,12 +31,13 @@ namespace AllReady.Controllers
         [ExternalEndpoint]
         [HttpPost]
         [Route("login")]
-        public async Task<string> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest) { ReasonPhrase = "Unable to valid login information" });
+                return BadRequest("Unable to valid login information");
             }
+
             // Require admin users to have a confirmed email before they can log on.
             var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = model.Email });
             if (user != null)
@@ -50,8 +47,7 @@ namespace AllReady.Controllers
                 {
                     //TODO: Showing the error page here makes for a bad experience for the user.
                     //It would be better if we redirected to a specific page prompting the user to check their email for a confirmation email and providing an option to resend the confirmation email.
-                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "You must have a confirmed email to log on." });
-
+                    return Unauthorized();
                 }
             }
 
@@ -60,24 +56,22 @@ namespace AllReady.Controllers
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                return Request.Cookies[".AspNet.ApplicationCookie"];
+                return Content(Request.Cookies[".AspNet.ApplicationCookie"]);
             }
 
             if (result.RequiresTwoFactor)
             {
-                //return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, model.RememberMe });
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError) { ReasonPhrase = "2 factor not supported yet!" });
+                return BadRequest("2 factor not supported yet!");
 
             }
 
             if (result.IsLockedOut)
             {
                 //return View("Lockout");
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Account is locked out.  Please try again later" });
-
+                return BadRequest("Account is locked out.  Please try again later");
             }
 
-            throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized) { ReasonPhrase = "Login Failed" });
+            return Unauthorized();
         }
     }
 }

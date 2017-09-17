@@ -12,12 +12,11 @@ namespace AllReady.Areas.Admin.Features.Campaigns
         public LockUnlockCampaignCommandHandler(AllReadyContext context)
         {
             _context = context;
-
         }
+
         protected override async Task HandleCore(LockUnlockCampaignCommand message)
         {
-            var campaign = await _context.Campaigns
-                .SingleOrDefaultAsync(c => c.Id == message.CampaignId);
+            var campaign = await _context.Campaigns.SingleOrDefaultAsync(c => c.Id == message.CampaignId);
 
             if (campaign != null)
             {

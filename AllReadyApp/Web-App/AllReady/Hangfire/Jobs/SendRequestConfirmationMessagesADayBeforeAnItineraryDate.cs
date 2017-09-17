@@ -30,7 +30,7 @@ namespace AllReady.Hangfire.Jobs
             {
                 var itinerary = context.Itineraries.Include(i => i.Event).Single(x => x.Id == itineraryId);
 
-                //don't send out messages if today is not 1 day before from the Itinerary.Date. This sceanrio can happen if:
+                //don't send out messages if today is not 1 day before from the DayOfThe.Date. This sceanrio can happen if:
                 //1. a request is added to an itinereary less than 1 day away from the itinerary's date
                 //2. if the Hangfire server is offline for the period where it would have tried to process this job. Hangfire processes jobs in the "past" by default
                 if (TodayIsOneDayBeforeThe(itinerary.Date, itinerary.Event.TimeZoneId))
@@ -39,9 +39,8 @@ namespace AllReady.Hangfire.Jobs
                         $@"Your request has been scheduled by allReady for {itinerary.Date.Date}. Please response with ""Y"" to confirm this request or ""N"" to cancel this request.");
                 }
 
-                //schedule job for day of Itinerary.Date
-                //TODO: do we want to send out the "day of" message at 12 noon, or ealier in the morning to let people know who never got back to us that we're not coming?
-                backgroundJob.Schedule<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), Itinerary(itinerary.Date, itinerary.Event.TimeZoneId));
+                //schedule job for day of the Intinerary Date
+                backgroundJob.Schedule<ISendRequestConfirmationMessagesTheDayOfAnItineraryDate>(x => x.SendSms(requestIds, itinerary.Id), DayOfThe(itinerary.Date, itinerary.Event.TimeZoneId));
             }
         }
 
@@ -53,12 +52,12 @@ namespace AllReady.Hangfire.Jobs
             return (intineraryDateConvertedToEventsTimeZone.Date - DateTimeUtcNow().Date).TotalDays == 1;
         }
 
-        private static DateTimeOffset Itinerary(DateTime itineraryDate, string eventsTimeZoneId)
+        private static DateTimeOffset DayOfThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
             var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
-            var itineraryDateAtNoon = itineraryDate.Date.AddHours(12);
-            var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDateAtNoon);
-            return new DateTimeOffset(itineraryDateAtNoon, utcOffset);
+            var itineraryDateAt9Am = itineraryDate.Date.AddHours(9);
+            var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDateAt9Am);
+            return new DateTimeOffset(itineraryDateAt9Am, utcOffset);
         }
     }
 

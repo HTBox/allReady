@@ -45,16 +45,16 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void GetCampaignsByPostalCodeSendsEventsByPostalCodeQueryWithCorrectPostalCodeAndDistance()
         {
-            const string zip = "zip";
+            const string postalCode = "postecode";
             const int miles = 1;
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.Send(It.IsAny<EventsByPostalCodeQuery>())).Returns(new List<Event>());
 
             var sut = new CampaignApiController(mediator.Object);
-            sut.GetCampaignsByPostalCode(zip, miles);
+            sut.GetCampaignsByPostalCode(postalCode, miles);
 
-            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == zip && y.Distance == miles)));
+            mediator.Verify(x => x.Send(It.Is<EventsByPostalCodeQuery>(y => y.PostalCode == postalCode && y.Distance == miles)));
         }
         
         [Fact]
@@ -75,7 +75,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignApiController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/campaign");
+            Assert.Equal("api/campaign", attribute.Template);
         }
 
         [Fact]
@@ -84,7 +84,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
     }
 }

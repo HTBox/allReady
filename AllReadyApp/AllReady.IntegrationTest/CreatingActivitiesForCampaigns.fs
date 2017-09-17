@@ -6,7 +6,7 @@ open System
 open Pages
 
 let All baseUrl =
-    
+
 
     context "Organization Admin Activities"
 
@@ -16,7 +16,7 @@ let All baseUrl =
 
     "The Org Admin can navigate to the admin campaigns page" &&& fun _ ->
         TopMenu.SelectAdminCampaigns()
-        
+
         on AdminCampaigns.RelativeUrl
         "h2" == "Campaigns - Admin"
         title() |> is "Campaigns - Admin - allReady"
@@ -24,11 +24,11 @@ let All baseUrl =
     "The Org Admin can create a campaign" &&& fun _ ->
         let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Org Admin"
         AdminCampaigns.SelectCreateNew()
-        AdminCampaignCreate.PopulateCampaignDetails 
-            {AdminCampaignCreate.DefaultCampaignDetails with 
-                Name = testCampaignName; 
-                Description = "test"; 
-                FullDescription = "Full Description"; 
+        AdminCampaignCreate.PopulateCampaignDetails
+            {AdminCampaignCreate.DefaultCampaignDetails with
+                Name = testCampaignName;
+                Description = "test";
+                FullDescription = "Full Description";
                 OrganizationName = "Humanitarian Toolbox"}
         AdminCampaignCreate.Submit()
 
@@ -38,19 +38,7 @@ let All baseUrl =
         TopMenu.SelectCampaigns()
         "td a" *= testCampaignName
 
-    "The Org Admin can create a campaign from public campaign page" &&& fun _ ->
-        let testCampaignName = Utils.GetScenarioTestName "Test Campaign for Org Admin From Public Page"
-        Campaigns.SelectCreateNew()
-        AdminCampaignCreate.PopulateCampaignDetails 
-            {AdminCampaignCreate.DefaultCampaignDetails with 
-                Name = testCampaignName; 
-                Description = "test"; 
-                FullDescription = "Full Description"; 
-                OrganizationName = "Humanitarian Toolbox" }
-        AdminCampaignCreate.Submit()
-
-        on AdminCampaignDetails.RelativeUrl
-        "h2" == testCampaignName
+        navigate(back)
 
 // Reference for eventNameSelector: http://www.jeremybellows.com/blog/Writing-Quality-Css-Selectors-for-Canopy-UI-Automation
     "The Org Admin can create events" &&& fun _ ->
@@ -60,20 +48,20 @@ let All baseUrl =
         AdminCampaignDetails.CreateNewEvent()
         AdminEventCreate.PopulateEventdetails
             {AdminEventCreate.DefaultEventDetails with
-                Name = eventName               
+                Name = eventName
             }
         AdminEventCreate.Create()
 
         on AdminEventDetails.RelativeUrl
-        
+
         let eventNameValue = read <| element eventNameSelector
-        eventNameValue |> contains eventName        
+        eventNameValue |> contains eventName
 
     "The Org Admin can create task" &&& fun _ ->
         let taskName = Utils.GetScenarioTestName "First Test Task"
         AdminEventDetails.CreateNewTask()
-        AdminTaskCreate.PopulateTaskDetails 
-            {AdminTaskCreate.DefaultTaskDetails with 
+        AdminTaskCreate.PopulateTaskDetails
+            {AdminTaskCreate.DefaultTaskDetails with
                 Name = taskName
             }
 
@@ -83,5 +71,7 @@ let All baseUrl =
         "td a" *= taskName
 
     "The Org Admin can logout" &&& fun _ ->
+        hover ".dropdown-account"
+        sleep 1
         click ".log-out"
 

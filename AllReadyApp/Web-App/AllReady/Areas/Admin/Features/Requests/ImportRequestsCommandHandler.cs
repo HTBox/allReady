@@ -1,50 +1,72 @@
-﻿using AllReady.Models;
-using Geocoding;
+﻿using System;
+using AllReady.Models;
 using MediatR;
-using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using AllReady.Services.Mapping;
+using AllReady.Services.Mapping.GeoCoding;
 
 namespace AllReady.Areas.Admin.Features.Requests
 {
-    public class ImportRequestsCommandHandler : IRequestHandler<ImportRequestsCommand, IEnumerable<ImportRequestError>>
+    public class ImportRequestsCommandHandler : AsyncRequestHandler<ImportRequestsCommand>
     {
-        private readonly AllReadyContext _context;
-        private readonly IGeocoder _geocoder;
+        private readonly AllReadyContext context;
+        private readonly IGeocodeService geocoder;
+        public Func<Guid> NewRequestId = () => Guid.NewGuid();
+        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public ImportRequestsCommandHandler(AllReadyContext context, IGeocoder geocoder)
+        public ImportRequestsCommandHandler(AllReadyContext context, IGeocodeService geocoder)
         {
-            _context = context;
-            _geocoder = geocoder;
+            this.context = context;
+            this.geocoder = geocoder;
         }
 
-        public IEnumerable<ImportRequestError> Handle(ImportRequestsCommand message)
+        protected override async Task HandleCore(ImportRequestsCommand message)
         {
-            var errors = new List<ImportRequestError>();
+            var orgId = await context.Events.AsNoTracking()
+                .Include(rec => rec.Campaign)
+                .Where(rec => rec.Id == message.EventId)
+                .Select(rec => rec.Campaign.ManagingOrganizationId)
+                .FirstOrDefaultAsync();
 
-            foreach (var request in message.Requests)
+            if (orgId > 0)
             {
-                request.Source = RequestSource.Csv;
-
-                // todo: do basic data validation
-                if (!_context.Requests.Any(r => r.ProviderId == request.ProviderId))
+                var requests = message.ImportRequestViewModels.Select(viewModel => new Request
                 {
-                    //If lat/long not provided, use geocoding API to get them
+                    OrganizationId = orgId,
+                    RequestId = NewRequestId(),
+                    ProviderRequestId = viewModel.Id,
+                    EventId = message.EventId,
+                    ProviderData = viewModel.ProviderData,
+                    Address = viewModel.Address,
+                    City = viewModel.City,
+                    DateAdded = DateTimeUtcNow(),
+                    Email = viewModel.Email,
+                    Name = viewModel.Name,
+                    Phone = viewModel.Phone,
+                    State = viewModel.State,
+                    PostalCode = viewModel.PostalCode,
+                    Status = RequestStatus.Unassigned,
+                    Source = RequestSource.Csv
+                }).ToList();
+
+                context.Requests.AddRange(requests);
+
+                //TODO mgmccarthy: eventually move IGeocoder invocations to async using azure. Issue #1626 and #1639
+                foreach (var request in requests)
+                {
                     if (request.Latitude == 0 && request.Longitude == 0)
                     {
-                        //Assume the first returned address is correct
-                        var address = _geocoder.Geocode(request.Address, request.City, request.State, request.Zip, string.Empty)
-                            .FirstOrDefault();
-                        request.Latitude = address?.Coordinates.Latitude ?? 0;
-                        request.Longitude = address?.Coordinates.Longitude ?? 0;
+                        var coordinates = await geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.PostalCode, string.Empty);
+
+                        request.Latitude = coordinates?.Latitude ?? 0;
+                        request.Longitude = coordinates?.Longitude ?? 0;
                     }
-
-                    _context.Requests.Add(request);
                 }
+
+                await context.SaveChangesAsync();
             }
-            _context.SaveChanges();
-
-            return errors;
         }
-
     }
 }

@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Tasks
     {
         protected override void LoadTestData()
         {
-            var htb = new Organization()
+            var htb = new Organization
             {
                 Name = "Humanitarian Toolbox",
                 LogoUrl = "http://www.htbox.org/upload/home/ht-hero.png",
@@ -23,13 +23,13 @@ namespace AllReady.UnitTest.Tasks
                 Campaigns = new List<Campaign>()
             };
 
-            var firePrev = new Campaign()
+            var firePrev = new Campaign
             {
                 Name = "Neighborhood Fire Prevention Days",
                 ManagingOrganization = htb
             };
 
-            var queenAnne = new Event()
+            var queenAnne = new Event
             {
                 Id = 1,
                 Name = "Queen Anne Fire Prevention Day",
@@ -41,7 +41,7 @@ namespace AllReady.UnitTest.Tasks
                 RequiredSkills = new List<EventSkill>(),
             };
 
-            var username1 = $"blah@1.com";
+            const string username1 = "blah@1.com";
 
             var user1 = new ApplicationUser { UserName = username1, Email = username1, EmailConfirmed = true };
             Context.Users.Add(user1);
@@ -50,7 +50,7 @@ namespace AllReady.UnitTest.Tasks
             Context.Organizations.Add(htb);
             Context.Events.Add(queenAnne);
 
-            var newTask = new AllReadyTask()
+            var newTask = new VolunteerTask
             {
                 Event = queenAnne,
                 Description = "Description of a very important task",
@@ -60,13 +60,13 @@ namespace AllReady.UnitTest.Tasks
                 Organization = htb
             };
 
-            newTask.AssignedVolunteers.Add(new TaskSignup()
+            newTask.AssignedVolunteers.Add(new VolunteerTaskSignup
             {
-                Task = newTask,
+                VolunteerTask = newTask,
                 User = user1
             });
 
-            Context.Tasks.Add(newTask);
+            Context.VolunteerTasks.Add(newTask);
 
             Context.SaveChanges();
         }
@@ -76,19 +76,19 @@ namespace AllReady.UnitTest.Tasks
         {
             var mediator = new Mock<IMediator>();
 
-            var task = Context.Tasks.First();
+            var volunteerTask = Context.VolunteerTasks.First();
             var user = Context.Users.First();
-            var command = new TaskStatusChangeCommand
+            var command = new ChangeVolunteerTaskStatusCommand
             {
-                TaskId = task.Id,
+                VolunteerTaskId = volunteerTask.Id,
                 UserId = user.Id,
-                TaskStatus = AllReady.Areas.Admin.Features.Tasks.TaskStatus.Accepted
+                VolunteerTaskStatus = VolunteerTaskStatus.Accepted
             };
-            var handler = new TaskStatusChangeHandler(Context, mediator.Object);
+            var handler = new ChangeVolunteerTaskStatusCommandHandler(Context, mediator.Object);
             await handler.Handle(command);
 
-            var taskSignup = Context.TaskSignups.First();
-            mediator.Verify(b => b.PublishAsync(It.Is<TaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == taskSignup.Id)), Times.Once());
+            var volunteerTaskSignup = Context.VolunteerTaskSignups.First();
+            mediator.Verify(b => b.PublishAsync(It.Is<VolunteerTaskSignupStatusChanged>(notifyCommand => notifyCommand.SignupId == volunteerTaskSignup.Id)), Times.Once());
         }
     }
 }

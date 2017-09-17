@@ -1,6 +1,8 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
+using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
@@ -8,6 +10,7 @@ using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -47,8 +50,10 @@ namespace AllReady.Controllers
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Login(string returnUrl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -82,12 +87,12 @@ namespace AllReady.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
+                    return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
                 }
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, model.RememberMe });
+                    return RedirectToAction(nameof(AdminController.SendCode), AreaNames.Admin, new { ReturnUrl = returnUrl, model.RememberMe });
                 }
 
                 if (result.IsLockedOut)
@@ -150,6 +155,8 @@ namespace AllReady.Controllers
 
                     await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                     await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    TempData["NewAccount"] = true;
 
                     return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
@@ -310,10 +317,13 @@ namespace AllReady.Controllers
 
             if (externalLoginSignInAsyncResult.Succeeded)
             {
+                if (string.IsNullOrEmpty(externalUserInformation.Email))
+                   return View("Error");
+
                 var user = await _mediator.SendAsync(new ApplicationUserQuery { UserName = externalUserInformation.Email });
-                return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
+                return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
             }
-            
+
             // If the user does not have an account, then ask the user to create an account.
             return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel
             {
@@ -384,7 +394,7 @@ namespace AllReady.Controllers
                         await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.ProfileIncomplete, "NewUser"));
                         await _signInManager.SignInAsync(user, isPersistent: false);
 
-                        return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user, Url);
+                        return _redirectAccountControllerRequests.RedirectToLocal(returnUrl, user);
                     }
                 }
 
@@ -406,26 +416,33 @@ namespace AllReady.Controllers
 
     public interface IRedirectAccountControllerRequests
     {
-        IActionResult RedirectToLocal(string returnUrl, ApplicationUser user, IUrlHelper urlHelper);
+        IActionResult RedirectToLocal(string returnUrl, ApplicationUser user);
     }
 
     public class RedirectAccountControllerRequests : IRedirectAccountControllerRequests
     {
-        public IActionResult RedirectToLocal(string returnUrl, ApplicationUser user, IUrlHelper urlHelper)
+        private readonly IUrlHelper _urlHelper;
+
+        public RedirectAccountControllerRequests(IUrlHelper urlHelper)
         {
-            if (urlHelper.IsLocalUrl(returnUrl))
+            _urlHelper = urlHelper;
+        }
+
+        public IActionResult RedirectToLocal(string returnUrl, ApplicationUser user)
+        {
+            if (_urlHelper.IsLocalUrl(returnUrl))
             {
                 return new RedirectResult(returnUrl);
             }
 
             if (user.IsUserType(UserType.SiteAdmin))
             {
-                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = AreaNames.Admin });
             }
 
             if (user.IsUserType(UserType.OrgAdmin))
             {
-                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = AreaNames.Admin });
             }
 
             return new RedirectToActionResult(nameof(HomeController.Index), "Home", null);

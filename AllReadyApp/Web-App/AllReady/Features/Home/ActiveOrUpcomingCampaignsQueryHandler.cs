@@ -12,6 +12,7 @@ namespace AllReady.Features.Home
     public class ActiveOrUpcomingCampaignsQueryHandler : IAsyncRequestHandler<ActiveOrUpcomingCampaignsQuery, List<ActiveOrUpcomingCampaign>>
     {
         private readonly AllReadyContext _context;
+        public Func<DateTimeOffset> DateTimeOffsetUtcNow = () => DateTimeOffset.UtcNow;
 
         public ActiveOrUpcomingCampaignsQueryHandler(AllReadyContext context)
         {
@@ -22,7 +23,7 @@ namespace AllReady.Features.Home
         {
             return await _context.Campaigns
                 .AsNoTracking()
-                .Where(campaign => campaign.EndDateTime.UtcDateTime.Date > DateTime.UtcNow.Date && !campaign.Locked)
+                .Where(campaign => campaign.EndDateTime.Date >= DateTimeOffsetUtcNow().Date && !campaign.Locked && campaign.Published)
                 .Select(campaign => new ActiveOrUpcomingCampaign
                 {
                     Id = campaign.Id,

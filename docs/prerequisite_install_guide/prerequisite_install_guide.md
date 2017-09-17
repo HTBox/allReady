@@ -52,12 +52,12 @@ This guide will walk you through all of the software that needs to be installed 
 
 ### Windows Showing File Extensions
 
-By default Windows is set to not show file extensions for known files which causes files such as .gitconfig and .npmrc to show up as just a period with no file extension.  To fix this we need to turn set Windows Explorer to show file extensions.
+By default Windows is set to not show file extensions for known files which causes files such as .gitconfig and .npmrc to show up as just a period with no file extension.  To fix this we need to set Windows Explorer to show file extensions.
 
 1. Open Windows Explorer
 1. Click on the View Tab and select Options
 
-    <img src="images/windows-explorer-ribbon.png" style="height:147px;width:759px;margin-left: 10px">
+    ![Explorer Ribbon](images/windows-explorer-ribbon.png)
 
 Once the "Folder Options" dialog is open: 
 
@@ -65,7 +65,7 @@ Once the "Folder Options" dialog is open:
 1. Uncheck the "Hide extensions for known file types"
 1. Click Ok
 
-    <img src="images/windows-explorer-view-options.png" style="height:475px;width:382px;margin-left: 10px">
+    ![Folder Options](images/windows-explorer-view-options.png)
 
 ### Git
 
@@ -73,32 +73,33 @@ Once the "Folder Options" dialog is open:
 1. Run the installer. 
 1. Click Next 
 
-    <img src="images/git-setup-screen-1.png" style="height:490px;width:598px;margin-left: 10px;">
+    ![Git Setup 1](images/git-setup-screen-1.png)
 
 1. Check all except for the last checkbox and click Next
 
-    <img src="images/git-setup-screen-2.png" style="height:490px;width:598px;margin-left: 10px;">
+    ![Git Setup 2](images/git-setup-screen-2.png)
 
-1. Select the "Use Git from the Windows Command Prompt" and click Next
+1. Select "Use Git from the Windows Command Prompt" and click Next
 
-    <img src="images/git-setup-screen-3.png" style="height:484px;width:598px;margin-left: 10px;">
+    ![Git Setup 3](images/git-setup-screen-3.png)
 
-1. Select the "Checkout Windows-style, commit Unix-style line endings" and Click Next
+1. Select "Use the OpenSSL library" and click Next
 
-    <img src="images/git-setup-screen-4.png" style="height:484px;width:598px;margin-left: 10px;">
+    ![Git Setup 4](images/git-setup-screen-4.png)
 
-1. Select the "Use MinTTY (the default terminal of MSYS2)    
+1. Select "Checkout Windows-style, commit Unix-style line endings" and Click Next
 
-    <img src="images/git-setup-screen-5.png" style="height:484px;width:598px;margin-left: 10px;">
+    ![Git Setup 5](images/git-setup-screen-5.png)
+
+1. Select "Use MinTTY (the default terminal of MSYS2)  
+
+    ![Git Setup 6](images/git-setup-screen-6.png)
 
 1. Check "Enable File system caching" and "Enable Git Credential Manager" then click Install
 
-    <img src="images/git-setup-screen-6.png" style="height:484px;width:598px;margin-left: 10px;">
+    ![Git Setup 7](images/git-setup-screen-7.png)
 
-1. After the install has completed run `git --version` in a command propt or command prompt to verify your install.
-
-The last item we need to do is to setup your Git profile. In the command prompt execute the following sets of commands. 
-
+1. After the install has completed run `git --version` in a command prompt or command prompt to verify your install.   As of this writing, latest version is 2.13.1.2
 
 ### Configuring Git
 
@@ -161,7 +162,7 @@ http.proxy=[Your Proxy Server and Port]
 ```
 
 Behind the scenes these will commands created entries in the .gitconfig file that is located in
-your user profile directory.  On Windows this would be c:\users\[your idsid]. 
+your user profile directory.  On Windows this would be c:\users\\[your idsid]. 
 
  The file will look similar to:
 
@@ -183,12 +184,12 @@ your user profile directory.  On Windows this would be c:\users\[your idsid].
 
 ### Node.js
 
-1.	Download the latest stable version (LTS) of [NodeJS](https://nodejs.org/en/download/) which as of this writing is 4.6.0.
+1.	Download the latest stable version (LTS) of [NodeJS](https://nodejs.org/en/download/) which as of this writing is 6.11.0.
 
-    ![Download NodeJS](images/nodejs-download.png)
+    ![Download NodeJS](images/nodejs6.11.0-download.png)
 
 1.	Once you download the installer, run it and accept all defaults.
-1.	When the install is completed, launch a command prompt and execute `node -v` to validate the version installed.  It should return 4.6.0 as of this writing.
+1.	When the install is completed, launch a command prompt and execute `node -v` to validate the version installed.  It should return 6.11.0 as of this writing.
 
 ### Proxy Settings
 
@@ -206,7 +207,7 @@ setx http_proxy [Your Proxy Server and Port]
 setx https_proxy [Your Proxy Server and Port]
 ```
 
-#### NPM
+#### NPM proxy
 
 1.	In a command prompt execute the following commands to configure Node:
 
@@ -216,9 +217,14 @@ npm config set proxy [Your Proxy Server and Port]
 npm config set https-proxy [Your Proxy Server and Port]
 ```
 
-### Updating to Npm 3
+### NPM 3
 
-For Windows users, it is suggested that you install npm 3.x to avoid issues with file path lengths.  Npm 3.x is works much better on Windows than the 2.x version that comes with Node 4.x.  To upgrade Npm to the 3.x version, we are going to use the Npm package, [npm-windows-upgrade](https://www.npmjs.com/package/npm-windows-upgrade).
+Launch a command prompt and execute `npm -v` to verify the version installed.  
+**If you have followed this install guide and have Npm 3.x or later, you can skip to next section on [Bower](#bower).**
+
+For Windows users, it is suggested that you install npm 3.x to avoid issues with file path lengths.  Npm 3.x works much better on Windows than the 2.x version that came with Node 4.x.  
+
+To upgrade Npm to the 3.x version, we are going to use the Npm package, [npm-windows-upgrade](https://www.npmjs.com/package/npm-windows-upgrade).
 
 First, ensure that you can execute powershell scripts on your system by running the following command from an **elevated PowerShell** by clicking Start, search for PowerShell, right-click PowerShell and select Run as Administrator.
 
@@ -251,7 +257,8 @@ Open a non-administrative command prompt and execute the command:
 npm install -g bower
 ```
 
-To verify that bower was installed, run the command `bower -v`.  As of this writing the version returned was 1.7.9.
+You may get a warning message about Bower being deprecated but can ignore the warning.
+To verify that Bower was installed, run the command `bower -v`.  As of this writing the version returned was 1.8.0
 
 ### Gulp
 
@@ -261,48 +268,50 @@ Open a non-administrative command prompt and execute the command:
 npm install -g gulp-cli
 ```
 
-To verify that the gulp-cli was installed, run the command `gulp -v`.  As of this writing the version returned is "CLI version 1.2.2"
+To verify that the gulp-cli was installed, run the command `gulp -v`.  As of this writing the version returned is "CLI version 1.3.0"
 
 ### Visual Studio
 
-allReady uses Visual Studio 2015 along with .NET Core.  This guide will be using the free Visual Studio 2015 Community Edition but any version of Visual Studio 2015 will work and the steps are the same for all versions.  
+allReady uses Visual Studio 2017 along with .NET Core 2.0.  This guide will be using the free Visual Studio 2017 Community Edition but any edition of Visual Studio 2017 will work and the steps are the same for all versions.  
 
-1. Download Visual Studio 2015 Community Edition from [https://www.visualstudio.com/downloads/](https://www.visualstudio.com/downloads/)
+***Note**: we recommend using a minimum version number of Visual Studio 15.3.1 to have all the latest tools and facilities.*
+
+1. Download Visual Studio 2017 Community Edition from [https://www.visualstudio.com/downloads/](https://www.visualstudio.com/downloads/)
 
     ![VS Download Button](images/vs-download.png)
 
 1. Launch the download installer
-1. If the "Open File - Security Warning" dialog comes up asking if you should run the executable, click on the Run button.
+1. If the "User Account Control" dialog comes up asking if you want to allow this app to make changes to your device, click on the Yes button.
 
-    ![Open File Security Warning](images/vs-install-1-run.png)
+    ![User Account Control](images/vs-install-1-UAC.png)
 
-1. This will download another file and may prompt you with the "Open File - Security Warning" dialog again.  Click the run button.
+1. The bootstrapper will extract files and then may open a prompt with a link the Microsoft Privacy Statement and License Terms.  Click Continue to confirm agreement.
 
-    ![Open File Security Warning](images/vs-install-2-run.png)
+    ![Accept Terms](images/vs-install-2-accept-terms.png)
 
-1. The next step will open up the Visual Studio Community 2015 installer and download the setup feed  It may take a few minutes for this to complete.
+1. It may take a few minutes for the Installer page to open.  Here will select components to install.   
+Scroll down to "Web & Cloud" section and check the box for "ASP.NET and web development" (highlighted in red).  
+"Azure development" tools also can be useful, if you will be deploying apps to Azure. (optional - highlighted in grey)
 
-    ![Feed Configuration](images/vs-install-3-feed.png)
+    ![Select Components](images/vs-install-3-select-components.png)  
 
-1. Next it will ask you for the installation location and the type of installation.  We will be using the already defined install location but we need to select the "Custom" install type and then click on Next
+1. Next switch to "Individual Components" tab at top of page.   Then scroll down to "Development Activities" section.  
+Check the box for "F# Language Support".
 
-    ![Custom Install Type](images/vs-install-4-custom.png)
+    ![Select Components Fsharp](images/vs-install-4-select-components.png)
 
-1. Ensure that Visual F# and Microsoft Web Developer Tools are checked.  Then click on next.
+1. After you have selected all the components for installation, verify your install location for Visual Studio.  
+We are using default location shown highlighted in red at bottom left.  
+Next click on Install at bottom right. 
 
-    ![Select Visual Studio F# and Microsoft Web Developer Tools Features](images/vs-install-5-weboptions.png)
+    ![Start Install](images/vs-install-5-start-install.png)   
 
-1. Confirm that F# and Microsoft Web Developer Tools are listed as the features and then click Next
+1. Installation will begin and will take awhile to complete depending on connection speed as it has to download the different components.
 
-    ![Confirm Features](images/vs-install-6-confirm-software.png)
+    ![Install Progress](images/vs-install-6-installing.png)
 
-1. If the User Access Control pops up, click the Yes button
-
-    ![User Access Control Confirmation](images/vs-install-7-uac.png)
-
-1. It will take awhile for the install to complete as it has to download the different components.
-
-    ![Install Progress](images/vs-install-8-installing.png)
+1. After installation is complete, launch Visual Studio.   Can then optionally sign in to your account to use your prior settings or sign up for an account and make settings and theme selections.  
+_Note: You can add or remove components from your Visual Studio Installation anytime.  Type "Visual Studio Installer' from the Start Menu to run._
          
 ### Configure Visual Studio External Web Tools
 
@@ -311,45 +320,17 @@ We now need to tell Visual Studio to put our PATH environment variable higher in
 1. Open Visual Studio
 1. Click on the Tools Menu and Select Options
 
-    ![Open Options Dialog](images/vs-install-11-options.png)
+    ![Open Options Dialog](images/vs-install-7-options.png)
 
-1. Expand the "Projects and Solutions" section, select the "External Web Tools", in the list of "Locations of external tools:" click on the $(PATH), click the Up arrow until $(PATH) is at the top and click the OK button 
+1. Expand the "Projects and Solutions" section, then expand "Web Package Management" and select the "External Web Tools".  In the list of "Locations of external tools:" click on the $(PATH), click the Up arrow in top right corner until $(PATH) is at the top and click the OK button 
 
-    ![External Web Tools](images/vs-install-12-external-web-tools.png)
+    ![External Web Tools](images/vs-install-8-external-web-tools.png)
 
-### Installing Microsoft ASP.NET and Web Tools
+1. Select Tools for Apache Cordova
 
-allReady uses ASP.NET Core and we need to install the tooling for .NET Core.  
+1. Uncheck "Use a sandboxed version of NodeJs"
 
-1. Open Visual Studio
-1. Click on the Tools Menu and Select "Extensions and Updates" 
-
-    ![Extensions and Updates](images/vs-install-13-extensions-updates.png)
-
-1. Expand the Updates section, select "Visual Studio Gallery", and if you see the "Microsoft ASP.NET and Web Tools" click the Update button. 
-
-    ![Microsoft ASP.NET and Web Tools Update](images/dotnet-core-install-1-aspnet-update.png)
-
-1. This will launch you default browser and download the update.  Once the update has been downloaded close Visual Studio and launch the exe.
-1. If a "Open File - Security Warning" dialog comes up, click the Run button
-
-    ![Open File Security Warning](images/dotnet-core-install-2-open-file-warning.png)
-
-1.  Accept the license Terms and Click the Install Button
-
-    ![Accept license terms](images/dotnet-core-install-3-license-terms.png)
-
-1. If the User Access Control prompt comes up, click Yes
-
-    ![UAC Prompt](images/dotnet-core-install-4-uac.png)
-
-1. The install will take a few minutes
-
-    ![Installing](images/dotnet-core-install-5-installing.png)
-
-1. When the install is done click the Close button
-
-    ![Install Finished.  Click Close](images/dotnet-core-install-6-close.png)
+    ![Tools for Apache Cordova](https://cloud.githubusercontent.com/assets/708423/19606157/50fbc792-9775-11e6-9b3c-c998a1fd1f07.png)
 
 You have now finished installing all of the required software to start working on the Web Solution.  
 
@@ -401,7 +382,7 @@ There are 2 Visual Studio solutions in the allReady\AllReadyApp directory.
 1. AllReadyWebonly.sln -> This file will open just the web project files and does not include the mobile application.  Use this solution if you are not going to be working on the mobile application. 
 1. AllReadyApp.sln -> This file will open all of the allReady projects including the mobile application.  Use this file if you are going to be working on the mobile application.
 
-The first time that you open up the solution in Visual Studio, it will install the npm and bower dependencies.  This can take several minutes depending on your internet connection.  Once all of the npm and bower dependencies have been installed, you need to build the solution.  Building the solution the first time will download all of the nuget packages.  
+The first time that you open up the solution in Visual Studio, it will install the npm and Bower dependencies.  This can take several minutes depending on your internet connection.  Once all of the npm and Bower dependencies have been installed, you need to build the solution.  Building the solution the first time will download all of the nuget packages.  
 
 If you are building the mobile application it will take several minutes to download additional dependencies that Visual Studio needs.  
 
@@ -437,13 +418,9 @@ In the allReadyApp directory are 2 solution files.  You will want to open the **
 ![AllReadyWebOnly.sln file](images/web-1-sln-file.png)
 
 1. Double-click on the "AllReadyWebOnly.sln" file in Windows Explorer
-1. If you are prompted to say how you want to open the sln file, click the More apps 
+1. If you are prompted to say how you want to open the sln file, click the More apps.  Scroll down until you see Visual Studio 2017.  Can optionally check box to "Always use this app to open .sln files" and click Ok
 
     ![How do you want to open this file dialog](images/web-2-how-to-open-sln.png)
-
-1. Scroll down until you see Visual Studio 2015, click the "Always use this app to open .sln files" and click Ok
-
-    ![Select Visual Studio 2015](images/web-3-open-with-vs2015.png)
 
 1. The first time that you open the solution is will restore the package dependencies for the unit test and web projects.
 
@@ -535,7 +512,7 @@ To run the test you will use the Visual Studio Test Explorer.
 
 ### UI Tests
 
-There is also a suite of UI test in the  Test\AllReady.ScenarioTest project.  The test use  [Canopy](http://lefthandedgoat.github.io/canopy/index.html)which is an F# library that makes it easier to work with the Selenium Web Driver to automated web site UI tests.   
+There is also a suite of UI test in the  Test\AllReady.ScenarioTest project.  The test use  [Canopy](http://lefthandedgoat.github.io/canopy/index.html) which is an F# library that makes it easier to work with the Selenium Web Driver to automated web site UI tests.   
 
 > In order to run the Canopy test, you need to have Chrome installed.  You can download Chrome at [https://www.google.com/chrome/browser/desktop/index.html](https://www.google.com/chrome/browser/desktop/index.html)
 
@@ -562,10 +539,11 @@ To run the UI test, you first need to start up the web site.
 
 You are now ready to start working on the allReady web site and unit test.  Please read through the [Git guide](../git/gitprocess.md) for the process of contributing to the allReady repository.
 
-> **If you are planning on working on the mobile application, continue with the rest of this guide.**  
-
+> **If you are planning on working on the mobile application, continue with the rest of this guide.**
  
 ## Mobile Solution
+
+> **NOTE The Mobile App is in process of being updated to Visual Studio 2017**
 
 ###  Installing Mobile Tools
 
@@ -761,7 +739,17 @@ To install the Tools for Apache Cordova, we need to add additional features to t
 
 1. Once the install is completed, you may be asked to restart.  When you are ready to restart the computer click on the restart button
 
-    ![intall done need to restart](images/taco-11-restart.png)    
+    ![intall done need to restart](images/taco-11-restart.png)
+    
+1. You will also need to add the Android SDK tools directories to your system path environment variable.  Open the Environment Variables dialog, find and click PATH under the System Variables section and click Edit...
+
+    ![edit path environment variable](images/taco-12-edit-path.png)
+    
+1. In the Edit environment variable dialog, click the New button to add a new entry to the list of path values.  In the new box that appears after the last existing entry, type **C:\Program Files (x86)\android\android-sdk\tools** and hit Enter.  
+
+    ![add paths](images/taco-13-add-paths.png)
+    
+   Repeat this step to also add **C:\Program Files (x86)\android\android-sdk\platform-tools** to the path.  Once done, click OK.  Click OK in the Environment Variables dialog to save the changes.
 
 #### NPM Task Runner
 
@@ -804,7 +792,7 @@ In the allReadyApp directory are 2 solution files.  You will want to open the **
 
 ### Compiling Mobile Solution
 
-Now that the npm and bower package dependencies are restored you are ready to build the solution.
+Now that the npm and Bower package dependencies are restored you are ready to build the solution.
 
 ![Build Menu Build Solution Option](images/web-6-build-solution.png)
 

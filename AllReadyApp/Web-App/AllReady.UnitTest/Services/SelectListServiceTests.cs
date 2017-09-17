@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Services
         [Fact]
         public void GetOrganizationsForAdminUserReturnsAllOrganizations()
         {
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, "SiteAdmin") }));
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)) }));
 
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations( principal ).ToList();
@@ -30,14 +30,14 @@ namespace AllReady.UnitTest.Services
         public void GetOrganizationsForOrgAdminUserReturnsOnlyAuthorizedOrganization()
         {
             var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin"),
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin)),
                 new Claim(AllReady.Security.ClaimTypes.Organization, _organizationId1.ToString())
             }));
 
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(1, organizations.Count);
+            Assert.Single(organizations);
             Assert.Equal(_organizationId1.ToString(), organizations.First().Value);
             Assert.Equal(_organizationName1, organizations.First().Text);
         }
@@ -46,13 +46,13 @@ namespace AllReady.UnitTest.Services
         public void GetOrganizationsForOrgAdminUserWithNoAssociatedOrgReturnsNoOrganizations()
         {
             var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] {
-                new Claim(AllReady.Security.ClaimTypes.UserType, "OrgAdmin")
+                new Claim(AllReady.Security.ClaimTypes.UserType, nameof(UserType.OrgAdmin))
             }));
 
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(0, organizations.Count);
+            Assert.Empty(organizations);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace AllReady.UnitTest.Services
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(0, organizations.Count);
+            Assert.Empty(organizations);
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace AllReady.UnitTest.Services
             var service = new SelectListService(Context);
             var organizations = service.GetOrganizations(principal).ToList();
 
-            Assert.Equal(0, organizations.Count);
+            Assert.Empty(organizations);
         }
 
         [Fact]
@@ -113,8 +113,8 @@ namespace AllReady.UnitTest.Services
                 if (x == null | y == null)
                     return false;
                 return x.Id == y.Id 
-                    && x.Name.Equals(y.Name, StringComparison.InvariantCulture)
-                    && x.Description.Equals(y.Description, StringComparison.InvariantCulture);
+                    && x.Name.Equals(y.Name, StringComparison.Ordinal)
+                    && x.Description.Equals(y.Description, StringComparison.Ordinal);
             }
 
             public int GetHashCode(Skill obj)

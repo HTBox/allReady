@@ -24,7 +24,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
 
             var campaign = await _context.Campaigns
                 .AsNoTracking()
-                .Include(ci => ci.CampaignImpact)
+                .Include(ci => ci.CampaignGoals)
                 .Include(mt => mt.ManagingOrganization)
                 .Include(l => l.Location)
                 .Include(c => c.CampaignContacts).ThenInclude(tc => tc.Contact)
@@ -38,6 +38,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     Name = campaign.Name,
                     Description = campaign.Description,
                     Featured = campaign.Featured,
+                    Published = campaign.Published,
                     FullDescription = campaign.FullDescription,
                     ExternalUrl = campaign.ExternalUrl,
                     ExternalUrlText = campaign.ExternalUrlText,
@@ -48,7 +49,6 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                     StartDate = campaign.StartDateTime,
                     EndDate = campaign.EndDateTime,
                     Location = campaign.Location.ToEditModel(),
-                    CampaignImpact = campaign.CampaignImpact ?? new CampaignImpact(),
                     Headline = campaign.Headline
                 };
 

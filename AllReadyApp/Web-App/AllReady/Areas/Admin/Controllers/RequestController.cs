@@ -1,17 +1,18 @@
-﻿using System;
-using System.Threading.Tasks;
-using AllReady.Areas.Admin.Features.Events;
+﻿using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Requests;
-using AllReady.Security;
+using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Features.Sms;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Areas.Admin.ViewModels.Request;
+using System;
+using System.Threading.Tasks;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Area(AreaNames.Admin)]
+    [Authorize]
     [Route("Admin/Requests")]
     public class RequestController : Controller
     {
@@ -45,9 +46,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return BadRequest("Invalid event id");
             }
 
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
+            var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(campaignEvent.Id));
+            if (!await authorizableEvent.UserCanManageChildObjects())
             {
-                return Unauthorized();
+                return new ForbidResult();
             }
 
             var model = new EditRequestViewModel
@@ -57,7 +59,7 @@ namespace AllReady.Areas.Admin.Controllers
                 CampaignId = campaignEvent.CampaignId,
                 CampaignName = campaignEvent.CampaignName,
                 EventId = campaignEvent.Id,
-                EventName = campaignEvent.Name,
+                EventName = campaignEvent.Name
             };
 
             ViewBag.Title = CreateRequestTitle;
@@ -73,14 +75,16 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var model = await _mediator.SendAsync(new EditRequestQuery() { Id = id });
-
+            var model = await _mediator.SendAsync(new EditRequestQuery { Id = id });
             if (model == null)
-                return NotFound();
-
-            if (!User.IsOrganizationAdmin(model.OrganizationId))
             {
-                return Unauthorized();
+                return NotFound();
+            }
+
+            var authorizableRequest = await _mediator.SendAsync(new AuthorizableRequestQuery(model.Id));
+            if (!await authorizableRequest.UserCanView())
+            {
+                return new ForbidResult();
             }
 
             ViewData["Title"] = "Edit " + model.Name;
@@ -98,26 +102,44 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditRequestViewModel model)
         {
-            var campaignEvent = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
-
-            if (campaignEvent == null)
-            {
-                return BadRequest("Invalid event id");
-            }
-
-            if (!User.IsOrganizationAdmin(campaignEvent.OrganizationId))
-            {
-                return Unauthorized();
-            }
-
             if (!ModelState.IsValid)
             {
                 return View("Edit", model);
             }
 
+            var @event = await _mediator.SendAsync(new EventSummaryQuery { EventId = model.EventId });
+            if (@event == null)
+            {
+                return BadRequest("Invalid event id");
+            }
+
+            if (model.Id == Guid.Empty)
+            {
+                var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(model.EventId));
+                if (!await authorizableEvent.UserCanManageChildObjects())
+                {
+                    return new ForbidResult();
+                }
+            }
+            else
+            {
+                var authorizableRequest = await _mediator.SendAsync(new AuthorizableRequestQuery(model.Id));
+                if (!await authorizableRequest.UserCanEdit())
+                {
+                    return new ForbidResult();
+                }
+            }
+
+            var validatePhoneNumberResult = await _mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = model.Phone, ValidateType = true });
+            if (!validatePhoneNumberResult.IsValid)
+            {
+                ModelState.AddModelError(nameof(model.Phone), "Unable to validate phone number");
+                return View("Edit", model);
+            }
+
             await _mediator.SendAsync(new EditRequestCommand { RequestModel = model });
 
-            return RedirectToAction("Requests", "Event", new { id = model.EventId });
+            return RedirectToAction(nameof(EventController.Requests), "Event", new { id = model.EventId });
         }
     }
 }

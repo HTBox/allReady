@@ -10,16 +10,17 @@ namespace AllReady.UnitTest.Extensions
 
         public CultureContext(CultureInfo contextualCulture)
         {
-            _uiCulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-            _culture = System.Threading.Thread.CurrentThread.CurrentCulture;
-            System.Threading.Thread.CurrentThread.CurrentUICulture = contextualCulture;
-            System.Threading.Thread.CurrentThread.CurrentCulture= contextualCulture;
+            _uiCulture = CultureInfo.CurrentUICulture;
+            _culture = CultureInfo.CurrentCulture;
+
+            CultureInfo.CurrentUICulture = contextualCulture;
+            CultureInfo.CurrentCulture = contextualCulture;
         }
 
         public void Dispose()
         {
-            System.Threading.Thread.CurrentThread.CurrentUICulture = _uiCulture;
-            System.Threading.Thread.CurrentThread.CurrentCulture = _culture;
+            CultureInfo.CurrentUICulture = _uiCulture;
+            CultureInfo.CurrentCulture = _culture;
         }
     }
 }

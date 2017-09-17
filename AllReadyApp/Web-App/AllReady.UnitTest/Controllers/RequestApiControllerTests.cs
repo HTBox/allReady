@@ -1,84 +1,108 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Controllers;
 using AllReady.Features.Requests;
+using AllReady.Hangfire.Jobs;
+using AllReady.UnitTest.Extensions;
 using AllReady.ViewModels.Requests;
+using Hangfire;
+using Hangfire.Common;
+using Hangfire.States;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
+using AllReady.Features.Sms;
+using System.Linq;
 
 namespace AllReady.UnitTest.Controllers
 {
     public class RequestApiControllerTests
     {
         [Fact]
-        public async Task PostReturnsBadRequest_WhenProviderIdIsNull()
+        public void ControllerHasRouteAttributeWithTheCorrectTemplate()
         {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {ProviderId = null});
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            var sut = new RequestApiController(null, null);
+            var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
+            Assert.Equal("api/request", attribute.Template);
         }
 
         [Fact]
-        public async Task PostReturnsBadRequest_WhenRequestIdIsNull()
+        public async Task PostReturnsBadRequest_WhenModelStateIsInvalid()
         {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {RequestId = null});
+            var sut = new RequestApiController(Mock.Of<IMediator>(), null);
+            sut.AddModelStateError();
+            var result = await sut.Post(new RequestApiViewModel());
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public async Task PostReturnsBadRequest_WhenRequestIdIsEmpty()
+        public async Task PostReturnsBadRequest_WhenStatusIsNotNew()
         {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {RequestId = string.Empty});
+            var sut = new RequestApiController(Mock.Of<IMediator>(), null);
+            var result = await sut.Post(new RequestApiViewModel { Status = "NotNew" });
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsType<BadRequestResult>(result);
         }
 
         [Fact]
-        public async Task PostReturnsBadRequest_WhenRequestIdIsNotAGuid()
+        public async Task PostSendsRequestExistsByProviderIdQueryWithCorrectProviderRequestId()
         {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {RequestId = "NotAGuid"});
+            const string providerRequestId = "ProviderRequestId";
 
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task PostReturnsBadRequest_WhenIncomingStatusCannotBeMappedToRequestStatus()
-        {
-            var sut = new RequestApiController(Mock.Of<IMediator>());
-            var result = await sut.Post(new RequestViewModel {Status = "NotMappable"});
-
-            Assert.IsType<BadRequestObjectResult>(result);
-        }
-
-        [Fact]
-        public async Task PostSendsAddRequestCommandWithTheCorrectParameters()
-        {
             var mediator = new Mock<IMediator>();
-            var viewModel = new RequestViewModel {ProviderId = "ProviderId", RequestId = Guid.NewGuid().ToString()};
+            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
 
-            var sut = new RequestApiController(mediator.Object);
+            var sut = new RequestApiController(mediator.Object, Mock.Of<IBackgroundJobClient>());
+            await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
+
+            mediator.Verify(x => x.SendAsync(It.Is<RequestExistsByProviderIdQuery>(y => y.ProviderRequestId == providerRequestId)), Times.Once);
+        }
+
+        [Fact]
+        public async Task PostReturnsBadRequest_WhenRequestAlreadyExists()
+        {
+            const string providerRequestId = "ProviderRequestId";
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<RequestExistsByProviderIdQuery>())).ReturnsAsync(true);
+
+            var sut = new RequestApiController(mediator.Object, null);
+            var result = await sut.Post(new RequestApiViewModel { Status = "new", ProviderRequestId = providerRequestId });
+
+            Assert.IsType<BadRequestResult>(result);
+        }
+
+        [Fact]
+        public async Task PostEnqueuesProcessApiRequestsJobWithCorrectViewModel()
+        {
+            var viewModel = new RequestApiViewModel { Status = "new" };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
+
+            var backgroundJobClient = new Mock<IBackgroundJobClient>();
+
+            var sut = new RequestApiController(mediator.Object, backgroundJobClient.Object);
             await sut.Post(viewModel);
 
-            mediator.Verify(x => x.SendAsync(It.Is<AddApiRequestCommand>((y => y.RequestViewModel == viewModel))));
+            backgroundJobClient.Verify(x => x.Create(It.Is<Job>(job => 
+                job.Method.Name == nameof(ProcessApiRequests.Process) && 
+                job.Args[0] == viewModel), It.IsAny<EnqueuedState>()), Times.Once);
         }
 
         [Fact]
-        public async Task PostReturnsCreatedResult()
+        public async Task PostReturns202StatusCode()
         {
             var mediator = new Mock<IMediator>();
-            var viewModel = new RequestViewModel {ProviderId = "ProviderId", RequestId = Guid.NewGuid().ToString()};
+            mediator.Setup(x => x.SendAsync(It.IsAny<ValidatePhoneNumberRequestCommand>())).ReturnsAsync(new ValidatePhoneNumberResult { IsValid = true, PhoneNumberE164 = "0000" });
 
-            var sut = new RequestApiController(mediator.Object);
-            var result = await sut.Post(viewModel);
+            var sut = new RequestApiController(mediator.Object, Mock.Of<IBackgroundJobClient>());
+            var result = await sut.Post(new RequestApiViewModel { Status = "new" }) as StatusCodeResult;
 
-            Assert.IsType<CreatedResult>(result);
+            Assert.IsType<StatusCodeResult>(result);
+            Assert.Equal(202, result.StatusCode);
         }
     }
 }

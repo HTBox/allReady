@@ -1,0 +1,48 @@
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Resource.ResourceDeleteViewModel
+
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Resource" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
+            <li>Delete</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Are you sure you want to delete this?</h3>
+        <h4>@Model.Name</h4>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt>
+                @Html.DisplayFor(model => model.ResourceUrl)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.ResourceUrl)
+            </dd>
+        </dl>
+
+        <form asp-controller="Resource" asp-action="Delete">
+            <div class="form-actions no-color">
+                <button type="submit" class="btn btn-default">Delete</button>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="UserIsOrgAdmin" />
+                <input type="hidden" asp-for="CampaignId" />
+                <a class="btn btn-default" asp-controller="Resource" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

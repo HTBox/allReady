@@ -19,20 +19,21 @@ namespace AllReady.Areas.Admin.Features.Itineraries
 
         public async Task<bool> Handle(RemoveTeamMemberCommand message)
         {
-            var taskSignup = await _context.TaskSignups
-                .FirstOrDefaultAsync(x => x.Id == message.TaskSignupId);
+            var volunteerTaskSignup = await _context.VolunteerTaskSignups
+                .FirstOrDefaultAsync(x => x.Id == message.VolunteerTaskSignupId);
 
-            if (taskSignup == null)
+            if (volunteerTaskSignup == null)
             {
                 return false;
             }
 
-            var itineraryId = taskSignup.ItineraryId;
-            taskSignup.ItineraryId = null;
+            var itineraryId = volunteerTaskSignup.ItineraryId;
+            volunteerTaskSignup.ItineraryId = null;
+            volunteerTaskSignup.IsTeamLead = false;
             await _context.SaveChangesAsync();
 
             await _mediator
-                .PublishAsync(new ItineraryVolunteerListUpdated { TaskSignupId = message.TaskSignupId, ItineraryId = itineraryId.Value, UpdateType = UpdateType.VolnteerUnassigned });
+                .PublishAsync(new ItineraryVolunteerListUpdated { VolunteerTaskSignupId = message.VolunteerTaskSignupId, ItineraryId = itineraryId.Value, UpdateType = UpdateType.VolnteerUnassigned });
 
             return true;
         }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using AllReady.Areas.Admin.ViewModels.OrganizationApi;
+using AllReady.Constants;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
@@ -53,8 +54,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributesOn(x => x.GetContact(It.IsAny<int>())).OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Type, typeof (ContactInformationViewModel));
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal(typeof(ContactInformationViewModel), attribute.Type);
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
 
         [Fact]
@@ -63,7 +64,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "admin/api/organization");
+            Assert.Equal("admin/api/organization", attribute.Template);
         }
 
         [Fact]
@@ -72,7 +73,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<ProducesAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.ContentTypes.Select(x => x).First(), "application/json");
+            Assert.Equal("application/json", attribute.ContentTypes.Select(x => x).First());
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(AreaNames.Admin, attribute.RouteValue);
         }
 
         [Fact]
@@ -90,7 +91,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new OrganizationApiController(null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Policy, "OrgAdmin");
+            Assert.Equal("OrgAdmin", attribute.Policy);
         }
     }
 }

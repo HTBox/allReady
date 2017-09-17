@@ -1,11 +1,46 @@
-﻿@{
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Import.IndexViewModel
+
+@{
     ViewData["Title"] = "Import Data";
 }
 
-@if (ViewBag.ImportSuccess == true)
+@if (Model.ImportSuccess)
 {
     <div class="alert alert-success">
         <strong>Success!</strong> Your file has been uploaded.
+    </div>
+}
+
+@if (Model.ImportErrors.Count > 0)
+{
+    <div class="alert alert-danger">
+        There were errors encountered during the import.
+        <p></p>
+
+        @foreach (var importError in Model.ImportErrors)
+        {
+            <div>- @importError</div>
+        }
+    </div>
+}
+
+@if (Model.ValidationErrors.Count > 0)
+{
+    <div class="alert alert-danger">
+        There were validation errors encountered during the import. Please fix the errors in the csv you're trying upload, and try again.
+        <ul>
+        @foreach (var validationError in Model.ValidationErrors)
+        {
+            <li>@string.Format($"row : {validationError.ProviderRequestId}")</li>
+            <ul>
+                @foreach (var error in validationError.Errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        }
+        </ul>
     </div>
 }
 
@@ -25,14 +60,27 @@
 </p>
 
 <pre>
-    "id","name","address","city","state","zip","phone","email","date created","region","latitude","longitude"
+    "id","name","address","city","state","postalcode","phone","email","date created","region","latitude","longitude"
 </pre>
 
-<form method="post" asp-action="Index" asp-controller="Import" asp-area="Admin" enctype="multipart/form-data">
+<form method="post" asp-action="Index" asp-controller="Import" asp-area="@AreaNames.Admin" enctype="multipart/form-data">
+    @for (var i = 0; i < Model.Events.Count; i++)
+    {
+        @Html.HiddenFor(model => model.Events[i].Value)
+        @Html.HiddenFor(model => model.Events[i].Text)
+    }
+
+    Select an Event: 
+    <select asp-for="EventId" asp-items="@Model.Events" class="form-control">
+        <option value="0">-- Select --</option>
+    </select>
+
+    <p></p>
+
     <label class="btn btn-default btn-file">
         Browse <input type="file" name="file" style="display: none;" onchange="$('#upload-file-info').html($(this).val());">
     </label>
     <span class='label label-info label-lg' id="upload-file-info"></span>
-     
-    <p><input class="btn btn-success" type="submit" value="Upload" /></p>
+    <p></p>
+    <input class="btn btn-success" type="submit" value="Upload"/>
 </form>

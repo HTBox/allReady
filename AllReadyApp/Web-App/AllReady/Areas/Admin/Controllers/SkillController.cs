@@ -9,11 +9,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    [Authorize("OrgAdmin")]
+    [Area(AreaNames.Admin)]
+    [Authorize(nameof(UserType.OrgAdmin))]
     public class SkillController : Controller
     {
         private readonly IMediator _mediator;
@@ -92,7 +93,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 await _mediator.SendAsync(new SkillEditCommand { Skill = model });
 
-                return RedirectToAction(nameof(Index), new { area = "Admin" });
+                return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
             }
 
             if (User.IsUserType(UserType.SiteAdmin))
@@ -158,7 +159,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _mediator.SendAsync(new SkillEditCommand { Skill = model });
-                return RedirectToAction(nameof(Index), new { area = "Admin" });
+                return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
             }
 
             if (User.IsUserType(UserType.SiteAdmin))
@@ -222,7 +223,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new SkillDeleteCommand { Id = viewModel.SkillId });
 
-            return RedirectToAction(nameof(Index), new { area = "Admin" });
+            return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
         }
     }
 }

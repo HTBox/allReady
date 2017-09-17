@@ -2,7 +2,6 @@
 using AllReady.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
 using AllReady.ViewModels.Event;
@@ -15,7 +14,6 @@ namespace AllReady.Controllers
     public class EventApiController : Controller
     {
         private readonly IMediator _mediator;
-        public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
         public EventApiController(IMediator mediator)
         {
@@ -24,9 +22,9 @@ namespace AllReady.Controllers
 
         // GET: api/values
         [HttpGet]
-        public IEnumerable<EventViewModel> Get()
+        public async Task<IEnumerable<EventViewModel>> Get()
         {
-            return _mediator.Send(new EventsWithUnlockedCampaignsQuery());
+            return await _mediator.SendAsync(new EventsWithUnlockedCampaignsQuery());
         }
 
         //orginial code
@@ -48,9 +46,9 @@ namespace AllReady.Controllers
         //orginial code
         [HttpGet("{start}/{end}")]
         [Produces("application/json", Type = typeof(EventViewModel))]
-        public ActionResult GetEventsByDateRange(DateTimeOffset start, DateTimeOffset end)
+        public async Task<IActionResult> GetEventsByDateRange(DateTimeOffset start, DateTimeOffset end)
         {
-            var events = _mediator.Send(new EventByDateRangeQuery { EndDate = end, StartDate = start });
+            var events = await _mediator.SendAsync(new EventByDateRangeQuery { EndDate = end, StartDate = start });
             if (events == null)
             {
                 return NoContent();
@@ -59,11 +57,11 @@ namespace AllReady.Controllers
         }
 
         [Route("search")]
-        public IEnumerable<EventViewModel> GetEventsByPostalCode(string zip, int miles)
+        public IEnumerable<EventViewModel> GetEventsByPostalCode(string postalCode, int miles)
         {
             var model = new List<EventViewModel>();
 
-            var campaignEvents = _mediator.Send(new EventsByPostalCodeQuery { PostalCode = zip, Distance = miles });
+            var campaignEvents = _mediator.Send(new EventsByPostalCodeQuery { PostalCode = postalCode, Distance = miles });
             campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
             return model;
@@ -78,27 +76,6 @@ namespace AllReady.Controllers
             campaignEvents.ForEach(campaignEvent => model.Add(new EventViewModel(campaignEvent)));
 
             return model;
-        }
-
-        [HttpGet("{id}/qrcode")]
-        public ActionResult GetQrCode(int id)
-        {
-            var barcodeWriter = new ZXing.BarcodeWriter
-            {
-                Format = ZXing.BarcodeFormat.QR_CODE,
-                Options = { Width = 200, Height = 200 }
-            };
-
-            // The QR code should point users to /api/event/{id}/checkin
-            var path = Request.Path.ToString();
-            var checkinPath = path.Substring(0, path.Length - "qrcode".Length) + "checkin";
-
-            var bitmap = barcodeWriter.Write($"https://{Request.Host}/{checkinPath}");
-            using (var stream = new MemoryStream())
-            {
-                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-                return File(stream.ToArray(), "image/png");
-            }
         }
 
         [HttpGet("{id}/checkin")]

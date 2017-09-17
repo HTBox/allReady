@@ -26,7 +26,10 @@
 
         self.tasks = ko.observableArray(tasks);
         self.filteredTasks = ko.computed(function() {
-            return self.tasks.filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+            return self.tasks
+                .filterBeforeDate("EndDateTime")
+                .textFilter(["Name", "Description"])
+                .filterOnDateRange("StartDateTime", "EndDateTime");
         });
 
         self.userTasks = ko.observableArray(userTasks.map(function(task) {
@@ -34,7 +37,10 @@
             return task;
         }));
         self.filteredUserTasks = ko.computed(function() {
-            return self.userTasks.filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+            return self.userTasks
+                .filterBeforeDate("EndDateTime")
+                .textFilter(["Name", "Description"])
+                .filterOnDateRange("StartDateTime", "EndDateTime");
         });
 
         self.tasks().forEach(function(task) {
@@ -159,7 +165,7 @@
                     self.changeTaskStatus("CanNotComplete", viewModel.NotCompleteReason, taskSave);
                 });
         };
-        
+
         self.confirmGoToLogin = function () {
             hideAlert();
             var title = "Confirm";
@@ -201,7 +207,7 @@
         self.validationErrors = ko.observableArray([]);
 
         if (task) {
-            self.TaskId = task.Id;
+            self.VolunteerTaskId = task.Id;
             self.Task = task;
         }
 
@@ -245,6 +251,7 @@
                 }
             }).fail(function(fail) {
                 self.isSubmitting(false);
+                self.validationErrors([fail.statusText]);
                 console.log(fail);
             });
         }
@@ -264,7 +271,7 @@
             clearTimeout(alertVm.timer);
         }
     }
- 
+
    CannotCompleteViewModel = function (task) {
         var self = this;
         self.Name = task.Name;
@@ -293,9 +300,9 @@
         }
     }
 
-    TaskStatusChangeViewModel = function(taskId, userId, status, statusDescription) {
+    TaskStatusChangeViewModel = function(volunteerTaskId, userId, status, statusDescription) {
         var self = this;
-        self.TaskId = taskId;
+        self.VolunteerTaskId = volunteerTaskId;
         self.UserId = userId;
         self.Status = status;
         self.StatusDescription = statusDescription;

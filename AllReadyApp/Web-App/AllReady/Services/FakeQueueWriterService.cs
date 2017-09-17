@@ -15,7 +15,7 @@ namespace AllReady.Services
         public Task SendMessageAsync(string queueName, string message)
         {
             _logger.LogInformation("Message to {queueName} queue: {message}", queueName, message);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

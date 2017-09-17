@@ -31,13 +31,15 @@ namespace AllReady.ViewModels.Campaign
             StartDate = campaign.StartDateTime;
             EndDate = campaign.EndDateTime;            
             Events = campaign.Events != null ? campaign.Events.ToViewModel() : Enumerable.Empty<EventViewModel>();
-            CampaignImpact = campaign.CampaignImpact;
+            CampaignGoals = campaign.CampaignGoals;
             ImageUrl = campaign.ImageUrl;
             HasPrivacyPolicy = !string.IsNullOrEmpty(campaign.ManagingOrganization?.PrivacyPolicy);
             PrivacyPolicyUrl = campaign.ManagingOrganization?.PrivacyPolicyUrl;
             Location = campaign.Location;
             Featured = campaign.Featured;
             Headline = campaign.Headline;
+            Published = campaign.Published;
+
         }
 
         public int Id { get; set; }
@@ -77,7 +79,7 @@ namespace AllReady.ViewModels.Campaign
 
         public string ManagingOrganizationLogo { get; set; }
 
-        public CampaignImpact CampaignImpact { get; set; }
+        public List<CampaignGoal> CampaignGoals { get; set; }
 
         public List<CampaignSponsors> ParticipatingOrganizations { get; set; }
 
@@ -97,6 +99,8 @@ namespace AllReady.ViewModels.Campaign
 
         public string Headline { get; set; }
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
+        public bool Published { get; set; }
+        public bool IsCampaignManager { get; set; }
     }
 
     public static class CampaignViewModelExtensions

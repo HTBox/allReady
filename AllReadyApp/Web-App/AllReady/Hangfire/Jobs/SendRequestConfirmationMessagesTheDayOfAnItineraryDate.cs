@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AllReady.Hangfire.MediatR;
+using AllReady.Features.Requests;
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
@@ -37,7 +37,7 @@ namespace AllReady.Hangfire.Jobs
                     smsSender.SendSmsAsync(requests.Select(x => x.Phone).ToList(), "sorry you couldn't make it, we will reschedule.");
                 }
 
-                mediator.Send(new SetRequestsToUnassignedCommand { RequestIds = requests.Select(x => x.RequestId).ToList() });
+                mediator.Publish(new DayOfRequestConfirmationsSent { RequestIds = requests.Select(x => x.RequestId).ToList() });
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Constants;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
@@ -17,8 +18,8 @@ namespace AllReady.UnitTest.Controllers
             const string returnUrl = "ReturnUrl";
             var urlHelper = new Mock<IUrlHelper>();
 
-            var sut = new RedirectAccountControllerRequests();
-            sut.RedirectToLocal(returnUrl, null, urlHelper.Object);
+            var sut = new RedirectAccountControllerRequests(urlHelper.Object);
+            sut.RedirectToLocal(returnUrl, null);
 
             urlHelper.Verify(x => x.IsLocalUrl(returnUrl), Times.Once);
         }
@@ -31,8 +32,8 @@ namespace AllReady.UnitTest.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(true);
 
-            var sut = new RedirectAccountControllerRequests();
-            var result = sut.RedirectToLocal(returnUrl, null, urlHelper.Object) as RedirectResult;
+            var sut = new RedirectAccountControllerRequests(urlHelper.Object);
+            var result = sut.RedirectToLocal(returnUrl, null) as RedirectResult;
 
             Assert.Equal(result.Url, returnUrl);
         }
@@ -42,25 +43,20 @@ namespace AllReady.UnitTest.Controllers
         {
             var applicationUser = new ApplicationUser();
             applicationUser.MakeSiteAdmin();
-            //applicationUser.Claims.Add(new IdentityUserClaim<string>
-            //{
-            //    ClaimType = AllReady.Security.ClaimTypes.UserType,
-            //    ClaimValue = Enum.GetName(typeof(UserType), UserType.SiteAdmin)
-            //});
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var routeValueDictionary = new RouteValueDictionary
             {
-                ["area"] = "Admin"
+                ["area"] = AreaNames.Admin
             };
 
-            var sut = new RedirectAccountControllerRequests();
-            var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser, urlHelper.Object) as RedirectToActionResult;
+            var sut = new RedirectAccountControllerRequests(urlHelper.Object);
+            var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(SiteController.Index));
-            Assert.Equal(result.ControllerName, "Site");
+            Assert.Equal(nameof(SiteController.Index), result.ActionName);
+            Assert.Equal("Site", result.ControllerName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
@@ -69,25 +65,20 @@ namespace AllReady.UnitTest.Controllers
         {
             var applicationUser = new ApplicationUser();
             applicationUser.MakeOrgAdmin();
-            //applicationUser.Claims.Add(new IdentityUserClaim<string>
-            //{
-            //    ClaimType = AllReady.Security.ClaimTypes.UserType,
-            //    ClaimValue = Enum.GetName(typeof(UserType), UserType.OrgAdmin)
-            //});
 
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var routeValueDictionary = new RouteValueDictionary
             {
-                ["area"] = "Admin"
+                ["area"] = AreaNames.Admin
             };
 
-            var sut = new RedirectAccountControllerRequests();
-            var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser, urlHelper.Object) as RedirectToActionResult;
+            var sut = new RedirectAccountControllerRequests(urlHelper.Object);
+            var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(AllReady.Areas.Admin.Controllers.CampaignController.Index));
-            Assert.Equal(result.ControllerName, "Campaign");
+            Assert.Equal(nameof(AllReady.Areas.Admin.Controllers.CampaignController.Index), result.ActionName);
+            Assert.Equal("Campaign", result.ControllerName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
@@ -97,12 +88,12 @@ namespace AllReady.UnitTest.Controllers
             var urlHelper = new Mock<IUrlHelper>();
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
-            var sut = new RedirectAccountControllerRequests();
-            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser(), urlHelper.Object) as RedirectToActionResult;
+            var sut = new RedirectAccountControllerRequests(urlHelper.Object);
+            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(HomeController.Index));
-            Assert.Equal(result.ControllerName, "Home");
-            Assert.Equal(result.RouteValues, null);
+            Assert.Equal(nameof(HomeController.Index), result.ActionName);
+            Assert.Equal("Home", result.ControllerName);
+            Assert.Null(result.RouteValues);
         }
     }
 }

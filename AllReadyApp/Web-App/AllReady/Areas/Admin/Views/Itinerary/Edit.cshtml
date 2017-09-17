@@ -1,13 +1,14 @@
-@using System.Threading.Tasks
+﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Itinerary.ItineraryEditViewModel
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
-            <li><a asp-controller="Itinerary" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Itinerary" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
             <li>Edit</li>
         </ol>
     </div>
@@ -21,7 +22,7 @@
 
 <div class="row">
     <div class="col-12">
-        <form asp-controller="Itinerary" asp-action="Edit" asp-area="Admin" method="post">
+        <form asp-controller="Itinerary" asp-action="Edit" asp-area="@AreaNames.Admin" method="post">
 
             <div class="form-horizontal row">
                 <hr />
@@ -40,11 +41,11 @@
             </div>
 
             <h3>Route Optimization</h3>
-            <p>Supply a start / end address for the itinerary so that requests can be organized by an optimal route and direction informaiton can be generated.</p>
+            <p>Supply a start / end address for the itinerary so that requests can be organized by an optimal route and direction information can be generated.</p>
             <hr/>
             <h4>Start Address</h4>
             <div class="form-horizontal row">
-                <div class="form-horizontal col-lg-6 pull-left">
+                <div class="form-horizontal col-lg-7 pull-left">
                     <div class="form-group">
                         <label asp-for="StartAddress1" class="control-label col-md-2"></label>
                         <div class="col-md-10">
@@ -55,7 +56,6 @@
                         <label asp-for="StartAddress2" class="control-label col-md-2"></label>
                         <div class="col-md-10">
                             <input asp-for="StartAddress2" class="form-control" />
-
                         </div>
                     </div>
                     <div class="form-group">
@@ -85,14 +85,12 @@
                 </div>
             </div>
             <h4>End Address</h4>
-            <div class="form-group">
-                <label asp-for="UseStartAddressAsEndAddress" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="UseStartAddressAsEndAddress" class="form-control" />
-                </div>
+            <div class="checkbox">
+                <label asp-for="UseStartAddressAsEndAddress" class="control-label"></label>
+                <input asp-for="UseStartAddressAsEndAddress" class="same-start-and-end" />
             </div>
-            <div class="form-horizontal row">
-                <div class="form-horizontal col-lg-6 pull-left">
+            <div class="form-horizontal row" id="end-address">
+                <div class="form-horizontal col-lg-7 pull-left">
                     <div class="form-group">
                         <label asp-for="EndAddress1" class="control-label col-md-2"></label>
                         <div class="col-md-10">
@@ -142,3 +140,15 @@
         </form>
     </div>
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        var endAddress = document.getElementById('end-address');
+        var checkBox = document.getElementsByClassName('same-start-and-end');
+
+        checkBox[0].onchange = function () {
+            endAddress.style.display = this.checked ? 'none' : 'block';
+        };
+        checkBox[0].onchange();
+    </script>
+}

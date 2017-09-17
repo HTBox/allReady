@@ -1,9 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
+
+using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using AllReady.Models;
+
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using AllReady.Areas.Admin.ViewModels.Task;
 
 namespace AllReady.Areas.Admin.Features.Tasks
 {
@@ -18,9 +20,10 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<DeleteViewModel> Handle(DeleteQuery message)
         {
-            return await _context.Tasks
+            return await _context.VolunteerTasks
                 .AsNoTracking()
                 .Include(t => t.Event.Campaign)
+                .Include(t => t.Attachments)
                 .Select(task => new DeleteViewModel
                 {
                     Id = task.Id,
@@ -32,8 +35,15 @@ namespace AllReady.Areas.Admin.Features.Tasks
                     Name = task.Name,
                     StartDateTime = task.StartDateTime,
                     EndDateTime = task.EndDateTime,
+                    Attachments = task.Attachments.Select(a => new FileAttachment
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Description = a.Description,
+                        Url = a.Url,
+                    }).ToList(),
                 })
-                .SingleAsync(t => t.Id == message.TaskId);
+                .SingleAsync(t => t.Id == message.VolunteerTaskId);
         }
     }
 }

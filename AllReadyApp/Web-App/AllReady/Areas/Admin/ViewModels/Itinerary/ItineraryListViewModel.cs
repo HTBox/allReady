@@ -10,6 +10,6 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public int TeamSize { get; set; }
         public int RequestCount { get; set; }
 
-        public string DisplayDate => Date.ToLongDateString();
+        public string DisplayDate => Date.ToString("D");
     }
 }

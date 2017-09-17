@@ -1,5 +1,4 @@
 ﻿using AllReady.Models;
-using Moq;
 using Xunit;
 using System.Threading.Tasks;
 using AllReady.Features.Events;
@@ -31,8 +30,11 @@ namespace AllReady.UnitTest.Features.Event
             // act
             List<Event> events;
             using (var context = new AllReadyContext(options)) {
-                var sut = new EventsByGeographyQueryHandler(context, mockFromSqlWrapper.Object);
-                events = sut.Handle(message);
+
+                var sut = new EventsByGeographyQueryHandler(context);
+                var events = sut.Handle(message);
+
+                Assert.Equal(2, events.Count);
             }
 
             // assert

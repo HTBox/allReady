@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace AllReady.Models
 {
     public class Event
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
 
         [Display(Name = "Campaign")]
         public int CampaignId { get; set; }
@@ -34,7 +34,7 @@ namespace AllReady.Models
 
         public Location Location { get; set; }
 
-        public List<AllReadyTask> Tasks { get; set; } = new List<AllReadyTask>();
+        public List<VolunteerTask> VolunteerTasks { get; set; } = new List<VolunteerTask>();
 
         public ApplicationUser Organizer { get; set; }
 
@@ -54,13 +54,23 @@ namespace AllReady.Models
         [MaxLength(150)]
         public string Headline { get; set; }
         
-        public bool IsUserInAnyTask(string userId)
+        public bool IsUserInAnyVolunteerTask(string userId)
         {
-            return Tasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
+            return VolunteerTasks.Any(task => task.AssignedVolunteers.Any(av => av.User.Id == userId));
         }
 
         public ICollection<Request> Requests { get; set; }
         public ICollection<Itinerary> Itineraries { get; set; }
+
+        /// <summary>
+        /// Navigation to users who can manage this event
+        /// </summary>
+        public List<EventManager> EventManagers { get; set; }
+
+        /// <summary>
+        /// Navigation property to an invited event managers
+        /// </summary>
+        public List<EventManagerInvite> ManagementInvites { get; set; }
     }
 
     public static class EventExtensions

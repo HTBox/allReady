@@ -34,7 +34,8 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 StartDate = c.StartDateTime,
                 EndDate = c.EndDateTime,
                 Locked = c.Locked,
-                Featured = c.Featured
+                Featured = c.Featured,
+                Published = c.Published
             });
 
             return await viewModel.ToListAsync();

@@ -1,11 +1,12 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.Features.Events.DeleteViewModel
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
     </div>
@@ -13,9 +14,8 @@
 
 <div class="row">
     <div class="col-md-12">
-        <h3>Are you sure you want to delete this?</h3>
-        <h4>@Model.Title</h4>
-
+        <h3>Delete event @Model.Name</h3>
+        <p>Are you sure you want to delete this?</p>
     </div>
 </div>
 <div class="row">
@@ -42,13 +42,11 @@
         </dl>
 
         <form asp-controller="Event" asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-default">Delete</button>
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="UserIsOrgAdmin" />
-                <input type="hidden" asp-for="CampaignId" />
-                <a class="btn btn-default" asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@Model.Id">Cancel</a>
+                <a class="btn btn-default" asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id">Cancel</a>
             </div>
         </form>
-</div>
+    </div>
 </div>

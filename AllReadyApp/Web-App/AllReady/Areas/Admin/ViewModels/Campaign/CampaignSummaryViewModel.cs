@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
-using AllReady.Models;
 using AllReady.ModelBinding;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
@@ -25,7 +24,6 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         [Display(Name = "External Link Text")]
         public string ExternalUrlText { get; set; }
-
 
         [Display(Name = "Organization")]
         public int OrganizationId { get; set; }
@@ -53,8 +51,6 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
         public DateTimeOffset EndDate { get; set; }
 
-        public CampaignImpact CampaignImpact { get; set; } = new CampaignImpact();
-
         [UIHint("Location")]
         public LocationEditViewModel Location { get; set; }
 
@@ -79,12 +75,13 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
 
         public bool Featured { get; set; }
 
+        public bool Published { get; set; }
+
         private const int EVENT_DAYS_STD = 30;
 
         // At some point an enumeration could be added to allow an admin to determine the priority
         // of the campaign which could affect this value that would translate to the initial value for
         // an event's End Date
         public int DefaultEventDays => EVENT_DAYS_STD;
-
     }
 }

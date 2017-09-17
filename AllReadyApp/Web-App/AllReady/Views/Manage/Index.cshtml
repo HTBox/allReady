@@ -1,4 +1,5 @@
-﻿@using AllReady.Security;
+﻿@using AllReady.Constants
+@using AllReady.Security;
 @using AllReady.ViewModels.Manage
 @inject AllReady.Services.ISelectListService SelectListService
 
@@ -142,7 +143,7 @@
                         <label class="control-label col-md-2">Approve users</label>
                         <div class="col-md-10">
                             <p class="form-control-static">
-                                <a asp-controller="Site" asp-action="Index" asp-area="Admin">Find</a>
+                                <a asp-controller="Site" asp-action="Index" asp-area="@AreaNames.Admin">Find</a>
                             </p>
                         </div>
                     </div>
@@ -151,7 +152,7 @@
             else
             {
                 <div class="form-group">
-                    <label class="control-label col-md-2">External logins</label>
+                    <label class="control-label col-md-2">Social media logins</label>
                     <div class="col-md-10">
                         <p class="form-control-static">
                             @Model.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
@@ -202,7 +203,8 @@
             </div>
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
-                    <button type="submit" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
+                    <button type="submit" name="button" value="Save" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
+                    <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
                     <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
                 </div>
             </div>

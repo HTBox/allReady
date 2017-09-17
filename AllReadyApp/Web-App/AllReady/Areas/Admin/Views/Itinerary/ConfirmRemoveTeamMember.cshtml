@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.TaskSignupSummaryViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Itinerary.VolunteerTaskSignupSummaryViewModel
 
 <div class="row">
     <div class="col-md-12">
@@ -18,13 +19,13 @@
             </dd>
         </dl>
 
-        <form asp-area="Admin" asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.TaskSignupId">
-            <input type="hidden" asp-for="@Model.TaskSignupId" />
+        <form asp-area="@AreaNames.Admin" asp-controller="Itinerary" asp-action="RemoveTeamMember" asp-route-itineraryId="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" asp-route-taskSignupId="@Model.VolunteerTaskSignupId">
+            <input type="hidden" asp-for="@Model.VolunteerTaskSignupId" />
             <input type="hidden" asp-for="@Model.ItineraryId" />
             <input type="hidden" asp-for="@Model.UserIsOrgAdmin" />
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-primary">Delete</button>
-                <a asp-controller="Itinerary" asp-action="Details" asp-area="Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
+                <a asp-controller="Itinerary" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@ViewContext.RouteData.Values["itineraryId"]?.ToString()" class="btn btn-default">Cancel</a>
             </div>
         </form>
     </div>

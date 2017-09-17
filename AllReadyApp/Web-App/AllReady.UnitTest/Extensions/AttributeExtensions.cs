@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace AllReady.UnitTest.Extensions
 {
@@ -10,18 +10,21 @@ namespace AllReady.UnitTest.Extensions
         public static IEnumerable<Attribute> GetAttributes<T>(this T obj)
         {
             var type = typeof(T);
-            return Enumerable.Cast<Attribute>(type.GetCustomAttributes(true));
+            return type.GetTypeInfo().GetCustomAttributes();
         }
 
         public static IEnumerable<Attribute> GetAttributesOn<T>(this T obj, Expression<Func<T, object>> expression)
         {
             IEnumerable<Attribute> attributes = new List<Attribute>();
 
-            if (expression.Body is MethodCallExpression)
-                attributes = Enumerable.Cast<Attribute>(((MethodCallExpression)expression.Body).Method.GetCustomAttributes(true));
+            var callExpression = expression.Body as MethodCallExpression;
+            if (callExpression != null)
+                attributes = callExpression.Method.GetCustomAttributes();
 
-            if (expression.Body is UnaryExpression && ((UnaryExpression)expression.Body).Operand is MemberExpression)
-                attributes = Enumerable.Cast<Attribute>((((UnaryExpression)expression.Body).Operand as MemberExpression).Member.GetCustomAttributes(true));
+            var body = expression.Body as UnaryExpression;
+            var memberExpression = body?.Operand as MemberExpression;
+            if (memberExpression != null)
+                attributes = memberExpression.Member.GetCustomAttributes();
 
             return attributes;
         }

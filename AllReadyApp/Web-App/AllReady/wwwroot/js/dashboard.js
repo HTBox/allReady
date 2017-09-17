@@ -1,6 +1,6 @@
 ﻿///<reference path="../lib/jquery/dist/jquery.js" />
 (function ($) {
-    $('#calendarr').fullCalendar({
+    $('#calendar').fullCalendar({
         header: {
             left: 'prev,next today',
             center: 'title',

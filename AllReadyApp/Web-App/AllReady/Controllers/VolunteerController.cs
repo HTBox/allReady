@@ -25,14 +25,14 @@ namespace AllReady.Controllers
     [Route("~/v")]
     public IActionResult DashboardShortUrl()
     {
-      return RedirectToAction("Dashboard");
+      return RedirectToAction(nameof(Dashboard));
     }
 
     [HttpGet]
     [Route("~/Volunteers/Dashboard")]
     public async Task<IActionResult> Dashboard()
     {
-      var viewModel = await _mediator.SendAsync(new GetMyEventsQuery { UserId = _userManager.GetUserId(User) });
+      var viewModel = await _mediator.SendAsync(new GetVolunteerEventsQuery { UserId = _userManager.GetUserId(User) });
 
       return View("Dashboard", viewModel);
     }

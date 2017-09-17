@@ -1,79 +1,63 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AllReady.Attributes;
 using Microsoft.AspNetCore.Mvc;
-using AllReady.Models;
 using MediatR;
 using AllReady.Features.Requests;
+using AllReady.Hangfire.Jobs;
 using AllReady.ViewModels.Requests;
+using Hangfire;
+using AllReady.Features.Sms;
 
 namespace AllReady.Controllers
 {
-    [Route("api/requestapi")]
+    [Route("api/request")]
     [Produces("application/json")]
     public class RequestApiController : Controller
     {
-        private readonly IMediator _mediator;
+        private readonly IMediator mediator;
+        private readonly IBackgroundJobClient backgroundjobClient;
 
-        public RequestApiController(IMediator mediator)
+        public RequestApiController(IMediator mediator, IBackgroundJobClient backgroundjobClient)
         {
-            _mediator = mediator;
+            this.backgroundjobClient = backgroundjobClient;
+            this.mediator = mediator;
         }
 
-        //TODO mgmccarthy: why do we need a strongly typed error to return to the caller?  Is there a requirement for this? I didn't touch the AddRequestError b/c it was there in the original PR #1111
         [HttpPost]
         [ExternalEndpoint]
-        public async Task<IActionResult> Post([FromBody]RequestViewModel viewModel)
+        public async Task<IActionResult> Post([FromBody]RequestApiViewModel viewModel)
         {
-            //validate before sending command
-            if (viewModel.ProviderId == null)
+            if (!ModelState.IsValid)
             {
-                return MapError(new AddRequestError { ProviderId = "", Reason = "No ProviderId" });
+                return BadRequest();
             }
 
-            if (!string.IsNullOrEmpty(viewModel.RequestId))
+            //we can only accept the requests with the status of "new" from getasmokealarm
+            if (viewModel.Status != "new")
             {
-                Guid requestId;
-                if (!Guid.TryParse(viewModel.RequestId, out requestId))
-                {
-                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "RequestId must be convertable to a Guid." });
-                }
+                return BadRequest();
+            }
+            
+            //if we get here, the incoming request is already in our database with a matching ProviderId ("serial" field for getasmokealarm) and the request was sent with a status of "new"
+            if (await mediator.SendAsync(new RequestExistsByProviderIdQuery { ProviderRequestId = viewModel.ProviderRequestId }))
+            {
+                return BadRequest();
             }
 
-            //TODO mgmccarthy: making the assumption here that we'll receive an empty Status for a new Request. There might be a specific status we get from the incoming request
-            if (!string.IsNullOrEmpty(viewModel.Status))
+            // todo - stevejgordon - add code for converting country to country code
+            var validatePhoneNumberResult = await mediator.SendAsync(new ValidatePhoneNumberRequestCommand { PhoneNumber = viewModel.Phone, ValidateType = true });
+            if (!validatePhoneNumberResult.IsValid)
             {
-                if (!StatusCanBeMappedToRequestStatusEnum(viewModel.Status))
-                {
-                    return MapError(new AddRequestError { ProviderId = viewModel.ProviderId, Reason = "enum string provided cannot be mapped to Request enum type." });
-                }
+                return BadRequest();
             }
 
-            var result = await _mediator.SendAsync(new AddApiRequestCommand { RequestViewModel = viewModel });
+            viewModel.Phone = validatePhoneNumberResult.PhoneNumberE164;
 
-            //TODO mgmccarthy: I'm not too sure why we have to return the entire result. I'd rather just return a 200 OK Http status or return the RequestId so the requestor can correlate a request back to our system when sending us updates
-            return Created(string.Empty, result);
-        }
+            //this returns control to the caller immediately so the client is not left locked while we figure out if we can service the request
+            backgroundjobClient.Enqueue<IProcessApiRequests>(x => x.Process(viewModel));
 
-        private static bool StatusCanBeMappedToRequestStatusEnum(string stringStatus)
-        {
-            RequestStatus enumStatus;
-            if (Enum.TryParse(stringStatus, out enumStatus))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private IActionResult MapError(AddRequestError error)
-        {
-            //TODO mgmccarthy: I don't where .IsInternal is set set, so I commented it out
-            //if (error.IsInternal)
-            //{
-            //    return StatusCode(500, error);
-            //}
-            return BadRequest(error);
+            //https://httpstatuses.com/202
+            return StatusCode(202);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace AllReady.Areas.Admin.Features.Requests
     {
         private readonly AllReadyContext _context;
 
-        public RequestListItemsQueryHandler(AllReadyContext context, IMediator mediator)
+        public RequestListItemsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
@@ -42,18 +42,28 @@ namespace AllReady.Areas.Admin.Features.Requests
                 results = results.Where(r => r.EventId == message.Criteria.EventId.Value);
             }
 
+            if (message.Criteria.ItineraryId.HasValue)
+            {
+                results = results.Where(r => r.ItineraryId == message.Criteria.ItineraryId.Value);
+            }
+
             if (message.Criteria.Status.HasValue)
             {
-                results = results.Where(r => r.Status == message.Criteria.Status); ;
+                results = results.Where(r => r.Status == message.Criteria.Status);
             }
 
             if (!string.IsNullOrEmpty(message.Criteria.Keywords))
             {
                 results = results.Where(r => 
-                            r.Zip.Contains(message.Criteria.Keywords) || 
+                            r.PostalCode.Contains(message.Criteria.Keywords) || 
                             r.Address.Contains(message.Criteria.Keywords) ||
                             r.City.Contains(message.Criteria.Keywords) || 
                             r.Name.Contains(message.Criteria.Keywords));
+            }
+
+            if (message.Criteria.OrganizationId.HasValue)
+            {
+                results = results.Where(r => r.OrganizationId == message.Criteria.OrganizationId);
             }
 
             // todo: sgordon: date added filtering
@@ -66,9 +76,9 @@ namespace AllReady.Areas.Admin.Features.Requests
                 Latitude = r.Latitude,
                 Longitude = r.Longitude,
                 City = r.City,
-                Postcode = r.Zip,
+                PostalCode = r.PostalCode,
                 Status = r.Status,
-                DateAdded = r.DateAdded
+                DateAdded = r.DateAdded,
             }).ToListAsync();
         }
     }

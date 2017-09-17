@@ -1,44 +1,35 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AllReady.Services.Twitter;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace AllReady.Providers.ExternalUserInformationProviders.Providers
 {
     public class TwitterExternalUserInformationProvider : IProvideExternalUserInformation
     {
-        private readonly ITwitterRepository twitterRepository;
+        private readonly ILogger _logger;
 
-        public TwitterExternalUserInformationProvider(ITwitterRepository twitterRepository)
+        public TwitterExternalUserInformationProvider(ILogger<TwitterExternalUserInformationProvider> logger)
         {
-            this.twitterRepository = twitterRepository;
+            _logger = logger;
         }
 
-        public async Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
+        public Task<ExternalUserInformation> GetExternalUserInformation(ExternalLoginInfo externalLoginInfo)
         {
             var externalUserInformation = new ExternalUserInformation();
 
-            var userId = externalLoginInfo.Principal.FindFirstValue("urn:twitter:userid");
             var screenName = externalLoginInfo.Principal.FindFirstValue("urn:twitter:screenname");
+            var email = externalLoginInfo.Principal.FindFirstValue(@"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
 
-            var twitterAccount = await twitterRepository.GetTwitterAccount(userId, screenName);
-
-            if (twitterAccount != null && twitterAccount.User != null)
+            if (string.IsNullOrEmpty(email))
             {
-                var twitterUser = twitterAccount.User;
-                externalUserInformation.Email = twitterUser.Email;
-
-                if (!string.IsNullOrEmpty(twitterUser.Name))
-                {
-                    var array = twitterUser.Name.Split(' ');
-                    if (array.Length > 1)
-                    {
-                        externalUserInformation.FirstName = array[0];
-                        externalUserInformation.LastName = array[1];
-                    }
-                }
+                _logger.LogError($"Failed to retrieve user email address for user {screenName} from Twitter, this could be due to either the setup of the app (ensure the app requests email address permissions) or this user has a blank/unverified email in Twitter");
+                return Task.FromResult(externalUserInformation);
             }
 
-            return externalUserInformation;
+            externalUserInformation.Email = email;
+            return Task.FromResult(externalUserInformation);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿@using AllReady.ViewModels.Account
+﻿@using AllReady.Constants
+@using AllReady.ViewModels.Account
 @model AllReady.ViewModels.Account.SendCodeViewModel
 @{
     ViewData["Title"] = "Send Verification Code";
@@ -6,7 +7,7 @@
 
 <h2>@ViewData["Title"].</h2>
 
-<form asp-controller="Admin" asp-action="SendCode" asp-route-returnurl="@Model.ReturnUrl" method="post" class="form-horizontal" role="form">
+<form asp-controller="@ControllerNames.Admin" asp-action="SendCode" asp-route-returnurl="@Model.ReturnUrl" method="post" class="form-horizontal" role="form">
     <input asp-for="RememberMe" type="hidden" />
     <div class="row">
         <div class="col-md-8">

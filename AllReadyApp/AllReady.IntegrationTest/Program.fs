@@ -2,6 +2,8 @@
 open runner
 open System
 
+Threading.Thread.CurrentThread.CurrentCulture <- Globalization.CultureInfo "en-US"
+
 Console.WriteLine("Launching Scenario Tests")
 
 CreatingOrgsAndCampaigns.All Constants.UrlLocalHost
@@ -9,7 +11,9 @@ CreatingActivitiesForCampaigns.All Constants.UrlLocalHost
 
 //Chrome Driver: https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver
 canopy.configuration.chromeDir <- System.AppDomain.CurrentDomain.BaseDirectory
-start chrome
+let chromeOptions = OpenQA.Selenium.Chrome.ChromeOptions()
+chromeOptions.AddArgument("--disable-extensions")
+start <| ChromeWithOptions chromeOptions
 pin Left
 resize (1024, 768)
 Console.WriteLine("Launched Chrome")
