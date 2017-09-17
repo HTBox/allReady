@@ -459,5 +459,59 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
         #endregion
 
+        #region CancelInvice tests
+        [Fact]
+        public async Task CancelReturnsUnauthorizedResult_WhenUserIsNotOrgAdminForCampaign()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var campaign = new CampaignManagerInviteDetailsViewModel() { CampaignId = campaignId, OrganizationId = 1, Id = 5};
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignManagerInviteDetailQuery>())).ReturnsAsync(campaign);
+
+            var sut = new CampaignManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+            sut.MakeUserNotAnOrgAdmin();
+
+            // Act
+            var result = await sut.Cancel(5);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task CancelReturnsNotFoundResult_WhenInviteIsMissing()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new CampaignManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+            sut.MakeUserAnOrgAdmin("1");
+
+            // Act
+            var result = await sut.Cancel(5);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task CancelReturnsRedirectResult_WhenInviteIsOk()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var campaign = new CampaignManagerInviteDetailsViewModel() { CampaignId = campaignId, OrganizationId = 1, Id = 5 };
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignManagerInviteDetailQuery>())).ReturnsAsync(campaign);
+
+            var sut = new CampaignManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+            sut.MakeUserAnOrgAdmin("1");
+
+            // Act
+            var result = await sut.Cancel(5);
+
+            // Assert
+            Assert.IsType<RedirectToActionResult>(result);
+        }
+
+        #endregion
     }
 }

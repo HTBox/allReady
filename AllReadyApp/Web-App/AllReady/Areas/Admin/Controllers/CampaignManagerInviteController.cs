@@ -1,5 +1,4 @@
 using AllReady.Areas.Admin.Features.CampaignManagerInvites;
-using AllReady.Areas.Admin.Features.Notifications;
 using AllReady.Areas.Admin.ViewModels.ManagerInvite;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Constants;
-using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -110,6 +108,28 @@ namespace AllReady.Areas.Admin.Controllers
 
             return View(viewModel);
         }
+
+        [Route("[area]/[controller]/[action]/{inviteId:int}")]
+        public async Task<IActionResult> Cancel(int inviteId)
+        {
+            var query = new CampaignManagerInviteDetailQuery {CampaignManagerInviteId = inviteId};
+            var viewModel = await _mediator.SendAsync(query);
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            if (!User.IsOrganizationAdmin(viewModel.OrganizationId))
+            {
+                return Unauthorized();
+            }
+
+            var cmd = new RemoveCampaignManagerInviteCommand {InviteId = inviteId};
+            await _mediator.SendAsync(cmd);
+
+            return RedirectToAction("Details", "Campaign", new { area = AreaNames.Admin, id = viewModel.CampaignId });
+        }
+
 
         [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteAcceptRoute")]
         public async Task<IActionResult> Accept(int inviteId)
