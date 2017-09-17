@@ -1,4 +1,5 @@
 using System;
+using TimeZoneConverter;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace AllReady.TagHelpers
@@ -14,7 +15,7 @@ namespace AllReady.TagHelpers
             if (TimeZoneId == null) return;
 
             output.TagName = "span";
-            var timeZoneDisplayName = FormatTimeZoneDisplayName(TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).DisplayName);
+            var timeZoneDisplayName = FormatTimeZoneDisplayName(TZConvert.GetTimeZoneInfo(TimeZoneId).DisplayName);
             output.Content.SetContent(timeZoneDisplayName);
         }
 
@@ -25,7 +26,7 @@ namespace AllReady.TagHelpers
         /// <returns>Time zone display text that was previously nested in parenthetical text.</returns>
         public string FormatTimeZoneDisplayName(string unformatted)
         {
-            // 
+            //
             int begin = 0;
             int end = unformatted.Length;
             bool firstParen = true;
