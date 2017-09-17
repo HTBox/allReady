@@ -5,6 +5,7 @@ using AllReady.Features.Requests;
 using AllReady.Models;
 using AllReady.Services;
 using MediatR;
+using TimeZoneConverter;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllReady.Hangfire.Jobs
@@ -43,7 +44,7 @@ namespace AllReady.Hangfire.Jobs
 
         private bool TodayIsTheDayOfThe(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var timeZoneInfo = TZConvert.GetTimeZoneInfo(eventsTimeZoneId);
             var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDate);
             var intineraryDateConvertedToEventsTimeZone = new DateTimeOffset(itineraryDate, utcOffset);
             return (intineraryDateConvertedToEventsTimeZone.Date - DateTimeUtcNow().Date).TotalDays == 0;
