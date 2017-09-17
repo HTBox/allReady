@@ -41,6 +41,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             await _emailSender.SendEmailAsync(user.Email,
                 "Removed from a volunteer task",
                 $"The administrator has removed you from task '{task.Name}'.");
+
         }
     }
 }
