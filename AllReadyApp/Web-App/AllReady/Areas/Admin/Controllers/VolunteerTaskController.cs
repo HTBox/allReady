@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Validators.VolunteerTask;
 using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 
@@ -150,6 +150,20 @@ namespace AllReady.Areas.Admin.Controllers
             await _mediator.SendAsync(new DeleteVolunteerTaskCommand { VolunteerTaskId = viewModel.Id });
 
             return RedirectToAction(nameof(EventController.Details), "Event", new { id = viewModel.EventId });
+        }
+
+        [HttpPost, ActionName("RemoveVolunteer")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveVolunteer(RemoveVolunteerViewModel viewModel)
+        {
+            await _mediator.SendAsync(new RemoveVolunteerFromTaskCommand
+            {
+                TaskId = viewModel.TaskId,
+                UserId = viewModel.UserId,
+                NotifyUser = viewModel.Notify
+            });
+
+            return RedirectToAction(nameof(Details), new { id = viewModel.TaskId});
         }
 
         [HttpPost]
