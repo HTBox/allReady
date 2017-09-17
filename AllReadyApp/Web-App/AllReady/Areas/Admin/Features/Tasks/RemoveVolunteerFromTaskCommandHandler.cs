@@ -40,7 +40,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
             var task = await _context.VolunteerTasks.FirstAsync(x => x.Id == message.TaskId);
             await _emailSender.SendEmailAsync(user.Email,
                 "Removed from a volunteer task",
-                $"The administrator have removed you from task '{task.Name}'.");
+                $"The administrator has removed you from task '{task.Name}'.");
         }
     }
 }
