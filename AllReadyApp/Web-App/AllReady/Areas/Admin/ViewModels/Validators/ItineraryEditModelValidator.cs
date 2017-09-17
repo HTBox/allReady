@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
+using TimeZoneConverter;
 
 namespace AllReady.Areas.Admin.ViewModels.Validators
 {
@@ -28,7 +29,7 @@ namespace AllReady.Areas.Admin.ViewModels.Validators
 
         private static DateTimeOffset ConvertIntineraryDateToEventsTimeZone(DateTime itineraryDate, string eventsTimeZoneId)
         {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(eventsTimeZoneId);
+            var timeZoneInfo = TZConvert.GetTimeZoneInfo(eventsTimeZoneId);
             var utcOffset = timeZoneInfo.GetUtcOffset(itineraryDate);
             return new DateTimeOffset(itineraryDate, utcOffset);
         }

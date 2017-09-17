@@ -192,6 +192,7 @@ namespace AllReady.UnitTest.Security
       var principal = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(AllReady.Security.ClaimTypes.TimeZoneId, timeZoneId) }));
       var result = principal.GetTimeZoneInfo();
       //b/c TimeZoneInfo.FindSystemTimeZoneById gets it's information from the registry, we'll check for non-null here
+      //NB: on Linux it actually gets it from /usr/share/zoneinfo
       Assert.NotNull(result);
     }
 
