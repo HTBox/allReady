@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Areas.Admin.Features.Tasks;
+using AllReady.Areas.Admin.Features.Users;
 using AllReady.Extensions;
 using AllReady.Models;
 using AllReady.Security;
@@ -16,6 +18,9 @@ using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Constants;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
+using DeleteQuery = AllReady.Areas.Admin.Features.Events.DeleteQuery;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -183,7 +188,6 @@ namespace AllReady.Areas.Admin.Controllers
             }
             
             var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(eventEditViewModel.Id));
-
             if (!await authorizableEvent.UserCanEdit())
             {
                 return new ForbidResult();

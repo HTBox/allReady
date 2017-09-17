@@ -5,11 +5,17 @@ using AllReady.Areas.Admin.ViewModels.VolunteerTask;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Users;
+using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Constants;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
+using DeleteQuery = AllReady.Areas.Admin.Features.Tasks.DeleteQuery;
+using DeleteViewModel = AllReady.Areas.Admin.ViewModels.VolunteerTask.DeleteViewModel;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -181,6 +187,59 @@ namespace AllReady.Areas.Admin.Controllers
 
             return RedirectToRoute(new { controller = "VolunteerTask", area = AreaNames.Admin, action = nameof(Details), id });
         }
+
+        [Route("Admin/Event/{eventId}/Task/{taskId}/candidates")]
+        public async Task<IActionResult> VolunteerCandidates(int eventId, int taskId)
+        {
+            var viewModel = await _mediator.SendAsync(new DetailsQuery() { VolunteerTaskId = taskId });
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(taskId));
+            if (!await authorizableTask.UserCanEdit())
+                return new ForbidResult();
+
+            var eventInfo = await _mediator.SendAsync(new EventDetailQuery() { EventId = eventId });
+
+            var query = new ListPossibleVolunteersForTaskQuery
+            {
+                OrganizationId = eventInfo.OrganizationId,
+                TaskId = taskId
+            };
+            var users = await _mediator.SendAsync(query);
+
+            var model = new VolunteerCandidatesViewModel
+            {
+                MaxSelectableCount = viewModel.NumberOfVolunteersRequired - viewModel.AssignedVolunteers.Count,
+                Volunteers = users
+                    .Select(x => new SelectListItem { Value = x.UserId, Text = $"{x.Name} ({x.TaskCount} assigned tasks)" })
+                    .ToList(),
+            };
+
+            return Json(model);
+        }
+
+        [HttpPost]
+        [Route("Admin/Task/Assign/Volunteer")]
+        public async Task<IActionResult> AssignChosenVolunteers(AssignVolunteersViewModel viewModel)
+        {
+            var authorizableTask = await _mediator.SendAsync(new AuthorizableTaskQuery(viewModel.TaskId));
+            if (!await authorizableTask.UserCanEdit())
+                return new ForbidResult();
+
+
+            foreach (var userId in viewModel.UserId)
+            {
+                var cmd = new AssignVolunteerToTaskCommand
+                {
+                    UserId = userId,
+                    VolunteerTaskId = viewModel.TaskId,
+                    NotifyUser = viewModel.NotifyUsers
+                };
+                await _mediator.SendAsync(cmd);
+            }
+
+            var task = await _mediator.SendAsync(new DetailsQuery() { VolunteerTaskId = viewModel.TaskId });
+            return RedirectToAction("Details", "Event", new { id = task.EventId });
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

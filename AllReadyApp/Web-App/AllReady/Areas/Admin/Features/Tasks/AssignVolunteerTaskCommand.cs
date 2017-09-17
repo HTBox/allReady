@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using MediatR;
 
 namespace AllReady.Areas.Admin.Features.Tasks
@@ -7,5 +7,5 @@ namespace AllReady.Areas.Admin.Features.Tasks
     {
         public int VolunteerTaskId { get; set; }
         public List<string> UserIds { get; set; }
-    } 
+    }
 }
