@@ -1,4 +1,4 @@
-using AllReady.Models;
+﻿using AllReady.Models;
 using AllReady.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,22 +9,21 @@ using System.Threading.Tasks;
 
 namespace AllReady.Features.Volunteers
 {
-    public class GetMyEventsQueryHandler : IAsyncRequestHandler<GetMyEventsQuery, MyEventsListerViewModel>
+    public class GetVolunteerEventsQueryHandler : IAsyncRequestHandler<GetVolunteerEventsQuery, MyEventsListerViewModel>
     {
         private AllReadyContext _context;
         public Func<DateTime> DateTimeUtcNow = () => DateTime.UtcNow;
 
-        public GetMyEventsQueryHandler(AllReadyContext context)
+        public GetVolunteerEventsQueryHandler(AllReadyContext context)
         {
             _context = context;
         }
         
-        public async Task<MyEventsListerViewModel> Handle(GetMyEventsQuery message)
+        public async Task<MyEventsListerViewModel> Handle(GetVolunteerEventsQuery message)
         {
             var volunteerTaskSignups = await _context.VolunteerTaskSignups.AsNoTracking()
                 .Include(rec => rec.VolunteerTask).ThenInclude(rec => rec.Event).ThenInclude(rec => rec.Campaign).ThenInclude(rec => rec.ManagingOrganization)
                 .Include(rec => rec.User)
-                .Where(rec => rec.User.Id == message.UserId)
                 .Select(rec => new
                 {
                     EventId = rec.VolunteerTask.Event.Id,
@@ -36,7 +35,8 @@ namespace AllReady.Features.Volunteers
                     TaskStartDate = rec.VolunteerTask.StartDateTime,
                     TaskEndDate = rec.VolunteerTask.EndDateTime,
                     CampaignName = rec.VolunteerTask.Event.Campaign.Name,
-                    OrganizationName = rec.VolunteerTask.Event.Campaign.ManagingOrganization.Name      
+                    OrganizationName = rec.VolunteerTask.Event.Campaign.ManagingOrganization.Name      ,
+                    VolunteerCount = rec.VolunteerTask.AssignedVolunteers.Count
                 })
                 .ToListAsync();
 
@@ -52,7 +52,8 @@ namespace AllReady.Features.Volunteers
                     EndDate = rec.FirstOrDefault().EventEndDate,
                     TimeZone = rec.FirstOrDefault().TimeZone,
                     Campaign = rec.FirstOrDefault().CampaignName,
-                    Organization = rec.FirstOrDefault().OrganizationName
+                    Organization = rec.FirstOrDefault().OrganizationName,
+                    VolunteerCount = rec.FirstOrDefault().VolunteerCount
                 };
 
                 results.Add(eventItem);

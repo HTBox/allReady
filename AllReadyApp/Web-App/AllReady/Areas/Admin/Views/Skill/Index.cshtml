@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.Skill.SkillSummaryViewModel>
+@using AllReady.Constants
 @using AllReady.Security;
 
 <div class="row">
@@ -9,7 +10,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="btn-group btn-group-sm row-btn-margin">
-            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-area="Admin" asp-controller="Skill" asp-action="Create" class="btn btn-default"><span class="fa fa-plus"></span>&nbsp; Create Skill</a>
+            <a data-toggle="tooltip" data-placement="top" title="Create New" asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Create" class="btn btn-default"><span class="fa fa-plus"></span>&nbsp; Create Skill</a>
         </div>
     </div>
 </div>
@@ -37,8 +38,8 @@
                 <tr>
                     <td>
                         <div class="btn-toolbar">
-                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-area="Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-success"><span class="fa fa-edit"></span></a>
-                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-area="Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"><span class="fa fa-remove"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Edit" asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-success"><span class="fa fa-edit"></span></a>
+                            <a data-toggle="tooltip" data-placement="top" title="Delete" asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"><span class="fa fa-remove"></span></a>
                         </div>
                     </td>
                     <td>

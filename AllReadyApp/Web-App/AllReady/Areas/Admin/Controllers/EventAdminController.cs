@@ -15,10 +15,11 @@ using Microsoft.AspNetCore.Mvc;
 using AllReady.Areas.Admin.ViewModels.Event;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Areas.Admin.ViewModels.Request;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize]
     public class EventController : Controller
     {
@@ -147,7 +148,7 @@ namespace AllReady.Areas.Admin.Controllers
                     await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
                 }
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id = id });
             }
 
             return View("Edit", eventEditViewModel);
@@ -219,7 +220,7 @@ namespace AllReady.Areas.Admin.Controllers
 
                 var id = await _mediator.SendAsync(new EditEventCommand { Event = eventEditViewModel });
 
-                return RedirectToAction(nameof(Details), new { area = "Admin", id = id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id = id });
             }
 
             return View(eventEditViewModel);
@@ -270,7 +271,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _mediator.SendAsync(new DuplicateEventCommand { DuplicateEventModel = viewModel });
-                return RedirectToAction(nameof(Details), new { area = "Admin", id });
+                return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id });
             }
 
             return View(viewModel);
@@ -311,7 +312,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new DeleteEventCommand { EventId = id });
 
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = authorizableEvent.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = AreaNames.Admin, id = authorizableEvent.CampaignId });
         }
 
         [HttpPost]
@@ -370,7 +371,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new UpdateEventImageUrl { EventId = id, ImageUrl = imageUrl });
 
-            return RedirectToRoute(new { controller = "Event", Area = "Admin", action = nameof(Edit), id });
+            return RedirectToRoute(new { controller = "Event", area = AreaNames.Admin, action = nameof(Edit), id });
         }
 
         [HttpGet]

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -180,7 +180,7 @@ namespace AllReady.UnitTest.Controllers
             
             var result = await controller.Index();
             
-            Assert.IsType(typeof(ViewResult),result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -251,7 +251,7 @@ namespace AllReady.UnitTest.Controllers
             
             var result = await controller.Index(invalidVm);
           
-            Assert.IsType(typeof(ViewResult), result);
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
@@ -450,12 +450,12 @@ namespace AllReady.UnitTest.Controllers
 
             var urlcontext = new UrlActionContext
             {
-                Action = nameof(controller.ConfirmNewEmail),
+                Action = nameof(AccountController.ConfirmEmail),
                 Controller = "Account",
                 Values = new { userId = user.Id, code }
             };
 
-            urlMock.Verify(a => a.Action(It.Is<UrlActionContext>(i => i.Action == urlcontext.Action && i.Controller == urlcontext.Controller && i.Values.ToString() == $"{{ userId = {user.Id}, code = token }}" && i.Protocol == controller.HttpContext.Request
+            urlMock.Verify(a => a.Action(It.Is<UrlActionContext>(i => i.Action == urlcontext.Action && i.Controller == urlcontext.Controller && i.Values.ToString() == $"{{ userId = {user.Id}, token = token }}" && i.Protocol == controller.HttpContext.Request
             .Scheme)),Times.Once);
         }
 
@@ -500,7 +500,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = (RedirectToActionResult)await controller.ResendEmailConfirmation();
 
-            Assert.Equal(result.ActionName, nameof(controller.EmailConfirmationSent));
+            Assert.Equal(nameof(controller.EmailConfirmationSent), result.ActionName);
         }
 
         [Fact]
@@ -665,7 +665,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = (RedirectToActionResult)await controller.EnableTwoFactorAuthentication();
 
-            Assert.Equal(result.ActionName, nameof(controller.Index));
+            Assert.Equal(nameof(controller.Index), result.ActionName);
         }
 
         [Fact]
@@ -773,7 +773,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = (RedirectToActionResult)await controller.DisableTwoFactorAuthentication();
 
-            Assert.Equal(result.ActionName, nameof(controller.Index));
+            Assert.Equal(nameof(controller.Index), result.ActionName);
         }
 
         [Fact]

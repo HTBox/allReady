@@ -6,6 +6,7 @@ using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Resource;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Areas.Admin.ViewModels.Resource;
+using AllReady.Constants;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using MediatR;
@@ -88,7 +89,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = ResourceControllerWithNoInjectedDependencies();
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Resource/Create/{campaignId}");
+            Assert.Equal("Admin/Resource/Create/{campaignId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -175,7 +176,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             result.ShouldBeOfType<RedirectToActionResult>();
             result.ActionName.ShouldBe(nameof(CampaignController.Details));
             result.ControllerName.ShouldBe(nameof(Campaign));
-            result.RouteValues["area"].ShouldBe("Admin");
+            result.RouteValues["area"].ShouldBe(AreaNames.Admin);
             result.RouteValues["id"].ShouldBe(resourceEditViewModel.CampaignId);
         }
 
@@ -185,7 +186,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = ResourceControllerWithNoInjectedDependencies();
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<ResourceEditViewModel>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Resource/Create/{campaignId}");
+            Assert.Equal("Admin/Resource/Create/{campaignId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -237,7 +238,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = ResourceControllerWithNoInjectedDependencies();
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Resource/Details/{resourceId}");
+            Assert.Equal("Admin/Resource/Details/{resourceId}", routeAttribute.Template);
         }
 
         [Fact]
@@ -412,7 +413,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             result.ShouldNotBeNull();
             result.ActionName.ShouldBe(nameof(CampaignController.Details));
             result.ControllerName.ShouldBe("Campaign");
-            result.RouteValues["area"].ShouldBe("Admin");
+            result.RouteValues["area"].ShouldBe(AreaNames.Admin);
             result.RouteValues["id"].ShouldBe(deleteResourceQuery.CampaignId);
         }
 
@@ -422,7 +423,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = ResourceControllerWithNoInjectedDependencies();
             var actionNameAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<ResourceDeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(actionNameAttribute);
-            Assert.Equal(actionNameAttribute.Name, "Delete");
+            Assert.Equal("Delete", actionNameAttribute.Name);
         }
 
         private static ResourceController ResourceControllerWithNoInjectedDependencies()
@@ -512,7 +513,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = ResourceControllerWithNoInjectedDependencies();
             var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "Admin/Resource/Edit/{id}");
+            Assert.Equal("Admin/Resource/Edit/{id}", routeAttribute.Template);
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿/*Helpers*/
+/*Helpers*/
 
 .margin-1 {
     margin-bottom: 10px;
@@ -13,9 +13,19 @@
 body {
     margin: 0;
     padding: 0;
+    padding-top: 50px;
     font-family: sans-serif;
     position: relative;
     padding-bottom: 16rem;
+}
+
+/** since .form-control isn't designed for radio buttons and checkboxes */
+input[type="checkbox"].form-control, input[type="radio"].form-control {
+    box-shadow: unset;
+    border-image: unset;
+    box-shadow: unset;
+    max-width: unset;
+    width: 20px;
 }
 
 .logo-background {
@@ -129,6 +139,7 @@ footer {
 }
 
 .navbar {
+    
     background-color:#d58033;
     border-radius: 0;
     margin-bottom:0;

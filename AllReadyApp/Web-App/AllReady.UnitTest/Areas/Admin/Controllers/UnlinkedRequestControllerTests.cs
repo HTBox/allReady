@@ -95,7 +95,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await sut.AddRequests(model);
             Assert.IsType<ViewResult>(result);
             Assert.IsType<UnlinkedRequestViewModel>(((ViewResult) result).ViewData.Model);
-            Assert.Equal(((ViewResult) result).ViewName, nameof(sut.List));
+            Assert.Equal(nameof(sut.List), ((ViewResult) result).ViewName);
         }
 
         [Fact]
@@ -113,7 +113,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.MakeUserAnOrgAdmin(orgId);
 
             var result = await sut.AddRequests(model);
-            Assert.Equal(((ViewResult) result).ViewName, nameof(sut.List));
+            Assert.Equal(nameof(sut.List), ((ViewResult) result).ViewName);
         }
 
         [Fact]
@@ -210,7 +210,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await sut.AddRequests(model);
             Assert.IsType<RedirectToActionResult>(result);
-            Assert.Equal(((RedirectToActionResult)result).ActionName, nameof(sut.List));
+            Assert.Equal(nameof(sut.List), ((RedirectToActionResult)result).ActionName);
         }
 
         [Fact]

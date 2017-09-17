@@ -1,20 +1,21 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @using AllReady.Areas.Admin.Controllers
 @model AllReady.Areas.Admin.ViewModels.Request.EditRequestViewModel
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-route-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-route-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-route-area="@AreaNames.Admin">@Model.EventName</a></li>
             @if (Model.Id == Guid.Empty)
             {
                 <li>Create New Request</li>
             }
             else
             {
-                <li><a asp-controller="Event" asp-action="Requests" asp-route-id="@Model.EventId" asp-area="Admin">Requests</a></li>
+                <li><a asp-controller="Event" asp-action="Requests" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">Requests</a></li>
                 <li>Edit @Model.Name</li>
             }
         </ol>
@@ -28,7 +29,7 @@
     </div>
 </div>
 
-<form asp-route="@RequestController.EditRequestPostRouteName" asp-area="Admin">
+<form asp-route="@RequestController.EditRequestPostRouteName" asp-area="@AreaNames.Admin">
     <div class="row">
         <div class="col-md-6">
             <div class="form-horizontal">

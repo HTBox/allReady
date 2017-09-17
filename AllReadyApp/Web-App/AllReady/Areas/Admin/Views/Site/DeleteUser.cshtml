@@ -1,5 +1,6 @@
 ﻿@inject AllReady.Services.ISelectListService SelectListService
 
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Site.DeleteUserViewModel
 @{
     ViewData["Title"] = $"Delete User - {Model.UserName}";
@@ -88,7 +89,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-danger"><span class="fa fa-remove"></span> Delete @Model.UserName</button>
-                <a asp-area="Admin" asp-controller="Site" asp-action="Index" class="btn btn-success">Back to List</a>
+                <a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index" class="btn btn-success">Back to List</a>
             </div>
         </div>
     </div>

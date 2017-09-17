@@ -1,10 +1,11 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Resource.ResourceDeleteViewModel
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Resource" asp-action="Details" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Resource" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
     </div>
@@ -40,7 +41,7 @@
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="UserIsOrgAdmin" />
                 <input type="hidden" asp-for="CampaignId" />
-                <a class="btn btn-default" asp-controller="Resource" asp-action="Details" asp-area="Admin" asp-route-id="@Model.Id">Cancel</a>
+                <a class="btn btn-default" asp-controller="Resource" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id">Cancel</a>
             </div>
         </form>
     </div>

@@ -37,7 +37,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
 
             var volunteerTaskSignup = Context.VolunteerTasks.Single(x => x.Id == volunteerTask.Id).AssignedVolunteers.Single();
             Assert.Equal(volunteerTaskSignup.User.Id, newVolunteer.Id);
-            Assert.Equal(volunteerTaskSignup.Status, VolunteerTaskStatus.Assigned);
+            Assert.Equal(VolunteerTaskStatus.Assigned, volunteerTaskSignup.Status);
             Assert.Equal(volunteerTaskSignup.StatusDateTimeUtc, dateTimeUtcNow);
         }
 
@@ -59,7 +59,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
             var message = new AssignVolunteerTaskCommand { VolunteerTaskId = volunteerTask.Id, UserIds = new List<string> { "user2" } };
             await sut.Handle(message);
 
-            Assert.True(Context.VolunteerTasks.Single(x => x.Id == volunteerTask.Id).AssignedVolunteers.Any(x => x.User.Id != previouslySignedupUser.Id ));
+            Assert.Contains(Context.VolunteerTasks.Single(x => x.Id == volunteerTask.Id).AssignedVolunteers, x => x.User.Id != previouslySignedupUser.Id);
         }
 
         [Fact]

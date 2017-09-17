@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Goals;
 using AllReady.Models;
 using Xunit;
@@ -12,6 +12,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Goals
 
         protected override void LoadTestData()
         {
+            var org = new Organization { Id = OrgId };
+            Context.Organizations.Add(org);
+
             Context.CampaignGoals.Add(new CampaignGoal
             {
                 Id = 4,
@@ -21,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Goals
                 Display = true,
                 CurrentGoalLevel = 25,
                 CampaignId = CampaignId,
-                Campaign = new Campaign {Id = CampaignId, Name = "Campaign name", ManagingOrganizationId = OrgId}
+                Campaign = new Campaign {Id = CampaignId, Name = "Campaign name", ManagingOrganizationId = OrgId, ManagingOrganization = org }
             });
             Context.SaveChanges();
         }
@@ -36,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Goals
             Assert.Equal(4, result.Id);
             Assert.Equal(GoalType.Numeric, result.GoalType);
             Assert.Equal("Goal 4", result.TextualGoal);
-            Assert.Equal(true, result.Display);
+            Assert.True(result.Display);
             Assert.Equal(100, result.NumericGoal);
             Assert.Equal(25, result.CurrentGoalLevel);
             Assert.Equal(CampaignId, result.CampaignId);

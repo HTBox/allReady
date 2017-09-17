@@ -1,4 +1,5 @@
-﻿@model AllReady.Areas.Admin.ViewModels.Itinerary.SelectItineraryRequestsViewModel
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Itinerary.SelectItineraryRequestsViewModel
 
 @{
     ViewData["Title"] = "Select Requests";
@@ -7,10 +8,10 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-area="Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
-            <li><a asp-action="Details" asp-controller="Itinerary" asp-area="Admin">@Model.ItineraryName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@Model.EventId">@Model.EventName</a></li>
+            <li><a asp-action="Details" asp-controller="Itinerary" asp-area="@AreaNames.Admin">@Model.ItineraryName</a></li>
             <li>Select Requests</li>
         </ol>
     </div>
@@ -24,17 +25,17 @@
         <div class="request-filter-section">
             <h3>Filter results</h3>
             <p>Please enter a keyword on which to filter the requests.</p>
-            <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="Admin">
+            <form asp-action="SelectRequests" asp-controller="Itinerary" asp-area="@AreaNames.Admin">
                 <input asp-for="KeywordsFilter" />
                 <button type="submit" class="btn btn-default submit-form">Filter</button>
             </form>
         </div>
         <div>
-            <form asp-area="Admin" asp-controller="Itinerary" asp-action="AddRequests">
+            <form asp-area="@AreaNames.Admin" asp-controller="Itinerary" asp-action="AddRequests">
                 <div class="row">
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-primary submit-form">Add Selected Requests</button>
-                        <a asp-action="Details" asp-controller="Itinerary" asp-area="Admin" class="btn btn-default">Cancel</a>
+                        <a asp-action="Details" asp-controller="Itinerary" asp-area="@AreaNames.Admin" class="btn btn-default">Cancel</a>
                     </div>
                 </div>
 

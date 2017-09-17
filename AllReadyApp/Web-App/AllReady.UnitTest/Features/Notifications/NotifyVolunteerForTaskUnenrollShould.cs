@@ -1,4 +1,4 @@
-﻿using AllReady.Features.Notifications;
+using AllReady.Features.Notifications;
 using AllReady.Models;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -35,7 +35,7 @@ namespace AllReady.UnitTest.Features.Notifications
         public async Task NotSendNotifyVolunteersCommand_WhenTaskDetailForNotificationModelIsNull()
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>())).ReturnsAsync(null);
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<VolunteerTaskDetailForNotificationQuery>())).ReturnsAsync((VolunteerTaskDetailForNotificationModel)null);
 
             var handler = new NotifyVolunteerForVolunteerTaskUnenrollHandler(mockMediator.Object, null);
             await handler.Handle(new UserUnenrolled());

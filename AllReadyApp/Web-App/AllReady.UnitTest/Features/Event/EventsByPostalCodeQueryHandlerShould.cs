@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Features.Event
                 var sut = new EventsByPostalCodeQueryHandler(context);
                 var events = sut.Handle(message);
 
-                Assert.Equal(events.Count, 2);
+                Assert.Equal(2, events.Count);
             }
         }
     }

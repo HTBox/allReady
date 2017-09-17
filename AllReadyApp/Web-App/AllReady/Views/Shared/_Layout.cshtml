@@ -1,4 +1,5 @@
-﻿@using Microsoft.ApplicationInsights.AspNetCore
+@using AllReady.Constants
+@using Microsoft.ApplicationInsights.AspNetCore
 @using Microsoft.AspNetCore.Mvc.Rendering
 
 <!DOCTYPE html>
@@ -7,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - allReady</title>
-    <link href='https://fonts.googleapis.com/css?family=Roboto:300,100' rel='stylesheet' type='text/css' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,100" rel="stylesheet" type="text/css" />
     <environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/lib/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css" />
@@ -29,8 +30,6 @@
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
 
-    @Html.Raw(JavaScriptSnippet.FullScript)
-
     @RenderSection("styles", required: false)
 
     <script type="text/javascript">
@@ -42,7 +41,7 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-default">
+        <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -57,7 +56,7 @@
                         var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
                         var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
                         var controllerName = descriptor.ControllerName;
-                        var isUser = areaName != "Admin";
+                        var isUser = areaName != AreaNames.Admin;
                     }
                     <ul class="nav navbar-nav">
                         <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>

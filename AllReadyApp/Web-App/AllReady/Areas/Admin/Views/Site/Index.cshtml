@@ -1,3 +1,4 @@
+﻿@using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Site.IndexViewModel
 @{
@@ -22,7 +23,7 @@
                 {
                     <tr>
                         <td>
-                            <a asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id">@user.UserName</a>
+                            <a asp-action="EditUser" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id">@user.UserName</a>
                             @if (user.UserName == User.Identity.Name)
                             {
                                 <span class="label label-info"><span class="fa fa-user"></span> (You)</span>
@@ -55,28 +56,28 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-xs-12 btn-group-vertical">
-                                                        <a data-toggle="tooltip" data-placement="top" title="Manage Skills" asp-action="EditUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Manage Skills</a>
-                                                        <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Reset Password</a>
+                                                        <a data-toggle="tooltip" data-placement="top" title="Manage Skills" asp-action="EditUser" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Manage Skills</a>
+                                                        <a data-toggle="tooltip" data-placement="top" title="Reset Password" asp-action="ResetPassword" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Reset Password</a>
                                                         @if (!user.IsUserType(UserType.SiteAdmin) && !user.IsUserType(UserType.OrgAdmin))
                                                         {
-                                                            <a data-toggle="tooltip" data-placement="top" title="Make Site Admin" asp-action="AssignSiteAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Make Site Admin</a>
-                                                            <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Make Org Admin</a>
+                                                            <a data-toggle="tooltip" data-placement="top" title="Make Site Admin" asp-action="AssignSiteAdmin" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Make Site Admin</a>
+                                                            <a data-toggle="tooltip" data-placement="top" title="Make Org Admin" asp-action="AssignOrganizationAdmin" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Make Org Admin</a>
                                                         }
                                                         else if (user.IsUserType(UserType.SiteAdmin))
                                                         {
-                                                            <a data-toggle="tooltip" data-placement="top" title="Revoke Site Admin" asp-action="RevokeSiteAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Revoke Site Admin</a>
+                                                            <a data-toggle="tooltip" data-placement="top" title="Revoke Site Admin" asp-action="RevokeSiteAdmin" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Revoke Site Admin</a>
                                                         }
                                                         else if (user.IsUserType(UserType.OrgAdmin))
                                                         {
-                                                            <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Revoke Org Admin</a>
+                                                            <a data-toggle="tooltip" data-placement="top" title="Revoke Org Admin" asp-action="RevokeOrganizationAdmin" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Revoke Org Admin</a>
                                                         }
                                                         @if (!user.IsUserType(UserType.ApiAccess))
                                                         {
-                                                            <a data-toggle="tooltip" data-placement="top" title="Allow API Access" asp-action="AssignApiAccessRole" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-success">Allow API Access</a>
+                                                            <a data-toggle="tooltip" data-placement="top" title="Allow API Access" asp-action="AssignApiAccessRole" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-success">Allow API Access</a>
                                                         }
                                                         else
                                                         {
-                                                            <a data-toggle="tooltip" data-placement="top" title="Manage Keys" asp-action="ManageApiKeys" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-warning">Manage Keys</a>
+                                                            <a data-toggle="tooltip" data-placement="top" title="Manage Keys" asp-action="ManageApiKeys" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-warning">Manage Keys</a>
                                                         }
                                                     </div>
                                                 </div>
@@ -87,7 +88,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <a data-toggle="tooltip" data-placement="top" title="Delete" asp-action="DeleteUser" asp-controller="Site" asp-area="Admin" asp-route-userId="@user.Id" class="btn btn-danger">Delete</a>
+                                <a data-toggle="tooltip" data-placement="top" title="Delete" asp-action="DeleteUser" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-danger">Delete</a>
                             </div>
                         </td>
                     </tr>

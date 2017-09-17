@@ -2,6 +2,7 @@
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Resource;
 using AllReady.Areas.Admin.ViewModels.Resource;
+using AllReady.Constants;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -12,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
     public class ResourceController : Controller
     {
@@ -60,7 +61,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             var id = await _mediator.SendAsync(new CreateOrEditResourceCommand { Resource = viewModel });
 
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = AreaNames.Admin, id = viewModel.CampaignId });
         }
 
         [HttpGet]
@@ -104,7 +105,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new DeleteResourceCommand { ResourceId = viewModel.Id });
 
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = "Admin", id = viewModel.CampaignId });
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new { area = AreaNames.Admin, id = viewModel.CampaignId });
         }
 
         // Get: Resouce/Edit

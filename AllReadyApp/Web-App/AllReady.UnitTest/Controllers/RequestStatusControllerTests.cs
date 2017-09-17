@@ -1,10 +1,8 @@
-﻿using AllReady.Controllers;
+using AllReady.Controllers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,8 +20,7 @@ namespace AllReady.UnitTest.Controllers
             var actionResult = await sut.Index(new Guid());
 
             //  Assert
-            Assert.IsType(typeof(NotFoundResult),actionResult);
+            Assert.IsType<NotFoundResult>(actionResult);
         }
-
     }
 }

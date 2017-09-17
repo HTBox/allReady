@@ -79,6 +79,7 @@ namespace AllReady.Services
                 new SelectListItem {Text = RequestStatus.Completed.GetDisplayName(), Value = ((int)RequestStatus.Completed).ToString()},
                 new SelectListItem {Text = RequestStatus.Confirmed.GetDisplayName(), Value = ((int)RequestStatus.Confirmed).ToString()},
                 new SelectListItem {Text = RequestStatus.PendingConfirmation.GetDisplayName(), Value = ((int)RequestStatus.PendingConfirmation).ToString()},
+                new SelectListItem {Text = RequestStatus.Requested.GetDisplayName(), Value = ((int)RequestStatus.Requested).ToString()},
             };
         }
 

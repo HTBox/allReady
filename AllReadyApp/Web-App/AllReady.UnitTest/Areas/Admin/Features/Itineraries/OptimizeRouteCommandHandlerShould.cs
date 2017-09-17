@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Itineraries;
+using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Models;
 using Moq;
 using System;
@@ -113,11 +113,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 OrderIndex = 2
             };
 
-            Context.Add(location);
-            Context.Add(itinerary1);
-            Context.Add(itinerary2);
-            Context.Add(request1);
-            Context.Add(request2);
+            Context.Locations.Add(location);
+            Context.Itineraries.Add(itinerary1);
+            Context.Itineraries.Add(itinerary2);
+            Context.Itineraries.Add(itinerary3);
+            Context.Requests.Add(request1);
+            Context.Requests.Add(request2);
+            Context.Requests.Add(request3);
+            Context.Requests.Add(request4);
+
+            Context.SaveChanges();
+
             Context.Add(itineraryRequest1);
             Context.Add(itineraryRequest2);
             Context.Add(itineraryRequest3);

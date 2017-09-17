@@ -273,7 +273,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(null, null, null);
             var routeAttribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "api/[controller]");
+            Assert.Equal("api/[controller]", routeAttribute.Template);
         }
 
         [Fact]
@@ -290,7 +290,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Index()).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "~/[controller]");
+            Assert.Equal("~/[controller]", routeAttribute.Template);
         }
 
         [Fact]
@@ -323,7 +323,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "~/[controller]/{id}");
+            Assert.Equal("~/[controller]/{id}", routeAttribute.Template);
         }
 
         [Fact]
@@ -340,7 +340,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.LocationMap(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "~/[controller]/map/{id}");
+            Assert.Equal("~/[controller]/map/{id}", routeAttribute.Template);
         }
 
         [Fact]
@@ -357,7 +357,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(null, null, null);
             var httpGetAttribute = sut.GetAttributesOn(x => x.Get(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(httpGetAttribute);
-            Assert.Equal(httpGetAttribute.Template, "{id}");
+            Assert.Equal("{id}", httpGetAttribute.Template);
         }
 
         [Fact]
@@ -374,7 +374,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new CampaignController(null, null, null);
             var routeAttribute = sut.GetAttributesOn(x => x.ManageCampaign()).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
-            Assert.Equal(routeAttribute.Template, "~/[controller]/ManageCampaign");
+            Assert.Equal("~/[controller]/ManageCampaign", routeAttribute.Template);
         }
 
         [Fact]

@@ -1,5 +1,6 @@
 ﻿@inject AllReady.Services.ISelectListService SelectListService
 
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Site.EditUserViewModel
 @{
     ViewData["Title"] = $"Edit User - {Model.UserName}";
@@ -62,7 +63,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-default" data-bind="enable: associatedSkills.isValid">Save</button>
-                <a asp-area="Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Back to List</a>
+                <a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Back to List</a>
             </div>
         </div>
     </div>

@@ -51,7 +51,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ClosestLocationsController(null);
             var attribute = sut.GetAttributesOn(x => x.Get(It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int>(), It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "{lat}/{lon}/{distance}/{count}");
+            Assert.Equal("{lat}/{lon}/{distance}/{count}", attribute.Template);
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new ClosestLocationsController(null);
             var attribute = sut.GetAttributes().OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "api/closest");
+            Assert.Equal("api/closest", attribute.Template);
         }
     }
 }

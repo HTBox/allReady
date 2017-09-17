@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Tasks;
 using AllReady.Areas.Admin.ViewModels.Validators.VolunteerTask;
 using AllReady.Areas.Admin.ViewModels.VolunteerTask;
+using AllReady.Constants;
 using AllReady.Extensions;
 using AllReady.UnitTest.Extensions;
 
@@ -49,6 +49,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
             var sut = new VolunteerTaskController(mediator.Object, null);
+
             sut.SetDefaultHttpContext();
 
             var result = await sut.Create(It.IsAny<int>());
@@ -158,7 +159,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await sut.Create(It.IsAny<int>()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "Edit");
+            Assert.Equal("Edit", result.ViewName);
         }
 
         [Fact]
@@ -175,7 +176,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/VolunteerTask/Create/{eventId}");
+            Assert.Equal("Admin/VolunteerTask/Create/{eventId}", attribute.Template);
         }
 
         [Fact]
@@ -286,7 +287,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/VolunteerTask/Edit/{id}");
+            Assert.Equal("Admin/VolunteerTask/Edit/{id}", attribute.Template);
         }
 
         [Fact]
@@ -407,8 +408,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var routeValues = new Dictionary<string, object> { ["id"] = model.EventId };
 
-            Assert.Equal(result.ControllerName, "Event");
-            Assert.Equal(result.ActionName, nameof(EventController.Details));
+            Assert.Equal("Event", result.ControllerName);
+            Assert.Equal(nameof(EventController.Details), result.ActionName);
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -430,8 +431,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var routeValues = new Dictionary<string, object> { ["id"] = model.Id };
 
-            Assert.Equal(result.ControllerName, "VolunteerTask");
-            Assert.Equal(result.ActionName, nameof(VolunteerTaskController.Details));
+            Assert.Equal("VolunteerTask", result.ControllerName);
+            Assert.Equal(nameof(VolunteerTaskController.Details), result.ActionName);
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -514,6 +515,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailsReturnsHttpNotFoundResultWhenTaskIsNull()
         {
             var sut = new VolunteerTaskController(Mock.Of<IMediator>(), null);
+
             var result = await sut.Details(It.IsAny<int>());
             Assert.IsType<NotFoundResult>(result);
         }
@@ -550,7 +552,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Template, "Admin/VolunteerTask/Details/{id}");
+            Assert.Equal("Admin/VolunteerTask/Details/{id}", attribute.Template);
         }
 
         [Fact]
@@ -593,8 +595,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var routeValues = new Dictionary<string, object> { ["id"] = deleteViewModel.EventId };
 
-            Assert.Equal(result.ActionName, nameof(EventController.Details));
-            Assert.Equal(result.ControllerName, "Event");
+            Assert.Equal(nameof(EventController.Details), result.ActionName);
+            Assert.Equal("Event", result.ControllerName);
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -606,12 +608,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attribute);
         }
 
+        [Fact]
         public void DeleteConfirmedHasActionNameAttributeWithCorrectActionName()
         {
             var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Name, "Delete");
+            Assert.Equal("Delete", attribute.Name);
         }
 
         [Fact]
@@ -681,9 +684,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = await sut.Assign(volunteerTaskId, null) as RedirectToRouteResult;
 
-            Assert.Equal(result.RouteValues["controller"], "VolunteerTask");
-            Assert.Equal(result.RouteValues["Area"], "Admin");
-            Assert.Equal(result.RouteValues["action"], nameof(VolunteerTaskController.Details));
+            Assert.Equal("VolunteerTask", result.RouteValues["controller"]);
+            Assert.Equal("Admin", result.RouteValues["Area"]);
+            Assert.Equal(nameof(VolunteerTaskController.Details), result.RouteValues["action"]);
             Assert.Equal(result.RouteValues["id"], volunteerTaskId);
         }
 
@@ -792,7 +795,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             sut.SetDefaultHttpContext();
             var attribute = sut.GetAttributes().OfType<AreaAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.RouteValue, "Admin");
+            Assert.Equal(AreaNames.Admin, attribute.RouteValue);
         }
 
         [Fact]
@@ -801,7 +804,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = new VolunteerTaskController(null, null);
             var attribute = sut.GetAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Policy, null);
+            Assert.Null(attribute.Policy);
         }
     }
 }

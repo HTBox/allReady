@@ -1,4 +1,5 @@
-﻿@using AllReady.Security;
+﻿@using AllReady.Constants
+@using AllReady.Security;
 @using AllReady.ViewModels.Manage
 @inject AllReady.Services.ISelectListService SelectListService
 
@@ -142,7 +143,7 @@
                         <label class="control-label col-md-2">Approve users</label>
                         <div class="col-md-10">
                             <p class="form-control-static">
-                                <a asp-controller="Site" asp-action="Index" asp-area="Admin">Find</a>
+                                <a asp-controller="Site" asp-action="Index" asp-area="@AreaNames.Admin">Find</a>
                             </p>
                         </div>
                     </div>

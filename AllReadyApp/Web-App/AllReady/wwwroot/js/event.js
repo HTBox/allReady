@@ -26,7 +26,10 @@
 
         self.tasks = ko.observableArray(tasks);
         self.filteredTasks = ko.computed(function() {
-            return self.tasks.filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+            return self.tasks
+                .filterBeforeDate("EndDateTime")
+                .textFilter(["Name", "Description"])
+                .filterOnDateRange("StartDateTime", "EndDateTime");
         });
 
         self.userTasks = ko.observableArray(userTasks.map(function(task) {
@@ -34,7 +37,10 @@
             return task;
         }));
         self.filteredUserTasks = ko.computed(function() {
-            return self.userTasks.filterBeforeDate("EndDateTime").textFilter(["Name", "Description"]);
+            return self.userTasks
+                .filterBeforeDate("EndDateTime")
+                .textFilter(["Name", "Description"])
+                .filterOnDateRange("StartDateTime", "EndDateTime");
         });
 
         self.tasks().forEach(function(task) {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using AllReady.Models;
@@ -176,7 +176,7 @@ namespace AllReady.UnitTest.Features.Event
                 var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
-                Assert.Equal(allReadyEvent.VolunteerTasks.Where(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))).Count(),
+                Assert.Equal(allReadyEvent.VolunteerTasks.Count(x => x.AssignedVolunteers.Any(y => y.User.Id.Equals(appUser.Id))),
                     eventViewModel.UserTasks.Count);
                 var previousDateTime = DateTimeOffset.MinValue;
                 foreach (var userTask in eventViewModel.UserTasks)
@@ -211,7 +211,7 @@ namespace AllReady.UnitTest.Features.Event
                 var sut = new ShowEventQueryHandler(context);
                 var eventViewModel = await sut.Handle(message);
 
-                Assert.Equal(allReadyEvent.VolunteerTasks.Where(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))).Count(),
+                Assert.Equal(allReadyEvent.VolunteerTasks.Count(x => !x.AssignedVolunteers.Any(v => v.User.Id.Equals(appUser.Id))),
                     eventViewModel.Tasks.Count);
                 var previousDateTime = DateTimeOffset.MinValue;
                 foreach (var userTask in eventViewModel.Tasks)
@@ -227,7 +227,8 @@ namespace AllReady.UnitTest.Features.Event
             return new Event
             {
                 Id = eventId,
-                Campaign = new Campaign { Locked = false },
+                Campaign = new Campaign { Locked = false, ManagingOrganization = new Organization() },
+                Location = new Location(),
                 VolunteerTasks = new List<VolunteerTask>
                 {
                     new VolunteerTask { StartDateTime = new DateTimeOffset(2015, 8, 6, 12, 58, 05, new TimeSpan()), AssignedVolunteers = new List<VolunteerTaskSignup> { new VolunteerTaskSignup { User = appUser } } },

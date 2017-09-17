@@ -18,13 +18,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using AllReady.Constants;
 using AllReady.Features.Campaigns;
 using AllReady.Features.Events;
 using AllReady.Features.Tasks;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.SiteAdmin))]
     public class SiteController : Controller
     {
