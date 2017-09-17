@@ -314,7 +314,7 @@ Next click on Install at bottom right.
 
 _Note: You can add or remove components from your Visual Studio Installation anytime.  Type "Visual Studio Installer' from the Start Menu to run._
 
-### Install .NET Core 2
+### Install .NET Core 2 SDK
 
 allReady is currently using .NET Core 2 as a way to be future-proof but more importantly to enable any developer to contribute to the project. Independent on OS that a developer has choosen.
 (in this guide, the screenshots and examples will show Windows)
@@ -326,6 +326,8 @@ To install the .NET Core 2 SDK, download the appropriate installer for your OS f
 Launch the installer and follow the steps given. There's no extra settings that need to be done.
 
 **Important:** Before you can build the allReady project, you have to close Visual Studio for it to be able to find the recently installed SDK.
+
+> There's been some reported instances where after installing the .NET Core 2 SDK the project would not show the webpage, even though building the project works. This requires a computer reboot to resolve the issue.
 
 ### Configure Visual Studio External Web Tools
 
