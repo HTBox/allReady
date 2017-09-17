@@ -21,7 +21,7 @@ The user that sends the message has to be an administrator within the allReady a
 
 ## <a name='User_Walkthrough'></a> User Walkthrough
 
-First, user will sign in to the allReady application with an administrator account.
+First, a user has to sign into the allReady application with an administrator account.
 Within Admin options, the user will select Campaigns.
 
 ![](images/AdminCampaignDropdown.PNG?raw=true)
