@@ -1,4 +1,4 @@
-﻿@using System.Threading.Tasks
+@using System.Threading.Tasks
 @using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Event.EventDetailViewModel
@@ -28,11 +28,11 @@
     <div class="col-md-10">
         <h2>
             <span data-event-title>@Model.Name</span>
-            <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default" title="Edit This Event" aria-label="Edit This Event"><i class="fa fa-edit"></i></a>
             @if (Model.ShowDeleteButton)
             {
                 <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
-                <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" aria-label="Delete This Event" title="Delete This Event"><i class="fa fa-trash"></i></a>
             }
         </h2>
         <p>@Model.Description</p>
