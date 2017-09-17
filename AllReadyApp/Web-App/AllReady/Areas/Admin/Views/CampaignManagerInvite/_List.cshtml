@@ -1,4 +1,5 @@
-﻿@using AllReady.Constants
+@using AllReady.Areas.Admin.ViewModels.Campaign
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
 <div class="row">
@@ -19,6 +20,9 @@
                     <th>
                         Status
                     </th>
+                    <th>
+                        &nbsp;
+                    </th>
                 </tr>
                 @foreach (var invite in Model.CampaignManagerInvites)
                 {
@@ -28,6 +32,12 @@
                         </td>
                         <td>
                             @invite.Status.ToString()
+                        </td>
+                        <td>
+                            @if (invite.Status == CampaignDetailViewModel.CampaignManagerInviteStatus.Pending)
+                            {
+                                <a asp-action="Cancel" asp-controller="CampaignManagerInvite" asp-area="@AreaNames.Admin" asp-route-inviteId="@invite.Id"><i class="glyphicon glyphicon-trash"></i></a>
+                            }
                         </td>
                     </tr>
                 }
