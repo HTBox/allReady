@@ -576,7 +576,7 @@ namespace AllReady.DataAccess
                     Description = "Description of a very important volunteerTask # " + i,
                     Name = "Task # " + i,
                     EndDateTime = AdjustToTimezone(DateTime.Today.AddHours(17).AddDays(i), _timeZone),
-                    StartDateTime = AdjustToTimezone(DateTime.Today.AddHours(9).AddDays(i - 1), _timeZone),
+                    StartDateTime = AdjustToTimezone(DateTime.Today.AddHours(9).AddDays(campaignEvent.EventType == EventType.Itinerary ? i : i - 1), _timeZone),
                     Organization = organization,
                     NumberOfVolunteersRequired = 5
                 });
