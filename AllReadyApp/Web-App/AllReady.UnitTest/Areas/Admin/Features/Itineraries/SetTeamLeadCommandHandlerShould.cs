@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Models;
 using Xunit;
 using System.Linq;
+using MediatR;
+using Moq;
 using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
@@ -23,11 +25,21 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Name = "Test Task"
             };
 
+            var volunteerTaskUser1 = new ApplicationUser()
+            {
+                Id = "B8C2A338-837E-4157-B9F2-B3D5A072917B",
+                Email = "volunteer1@example.com",
+                PhoneNumber = "+1 (999) 999-9999",
+                FirstName = "FirstName100",
+                LastName = "LastName100"
+            };
+
             var taskSignup1 = new VolunteerTaskSignup
             {
                 Id = 1,
                 VolunteerTask = task1,
-                Itinerary = itinerary1
+                Itinerary = itinerary1,
+                User = volunteerTaskUser1
             };
 
             var itinerary2= new Itinerary
@@ -42,19 +54,39 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
                 Name = "Test Task"
             };
 
+            var volunteerTaskUser2 = new ApplicationUser()
+            {
+                Id = "B8C2A338-837E-4157-B9F2-B3D5A072917B",
+                Email = "volunteer2@example.com",
+                PhoneNumber = "+1 (999) 999-9999",
+                FirstName = "FirstName200",
+                LastName = "LastName200"
+            };
+
             var taskSignup2 = new VolunteerTaskSignup
             {
                 Id = 2,
                 VolunteerTask = task2,
                 Itinerary = itinerary2,
+                User = volunteerTaskUser2,
                 IsTeamLead = true
             };
-            
+
+            var volunteerTaskUser3 = new ApplicationUser()
+            {
+                Id = "65DBF162-074D-4E11-8258-6E12BC6B06B8",
+                Email = "volunteer3@example.com",
+                PhoneNumber = "+1 (999) 999-9999",
+                FirstName = "FirstName300",
+                LastName = "LastName300"
+            };
+
             var taskSignup3 = new VolunteerTaskSignup
             {
                 Id = 3,
                 VolunteerTask = task2,
                 Itinerary = itinerary2,
+                User = volunteerTaskUser3
             };
 
             Context.Add(itinerary1);
@@ -72,7 +104,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         [Fact]
         public async Task SetsTeamLead_WhenNoPriorTeamLead()
         {
-            var sut = new SetTeamLeadCommandHandler(Context);
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
 
             await sut.Handle(new SetTeamLeadCommand(1, 1));
 
@@ -82,7 +116,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         [Fact]
         public async Task ReturnsSuccessResult_WhenTeamLeadChanged()
         {
-            var sut = new SetTeamLeadCommandHandler(Context);
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
 
             var result = await sut.Handle(new SetTeamLeadCommand(1, 1));
 
@@ -92,7 +128,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         [Fact]
         public async Task ReplacesTeamLead_WhenPriorTeamLead()
         {
-            var sut = new SetTeamLeadCommandHandler(Context);
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
 
             await sut.Handle(new SetTeamLeadCommand(2, 3));
 
@@ -106,7 +144,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
         [Fact]
         public async Task ReturnsFailureResult_WhenVolunteerTaskIdNotFound()
         {
-            var sut = new SetTeamLeadCommandHandler(Context);
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
 
             var result = await sut.Handle(new SetTeamLeadCommand(1, 400));
 

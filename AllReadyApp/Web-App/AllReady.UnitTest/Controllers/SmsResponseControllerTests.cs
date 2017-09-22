@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Attributes;
 using AllReady.Controllers;
 using AllReady.Features.Requests;
@@ -159,7 +159,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, LowercaseConfirm);
 
-            smsSender.Verify(x => x.SendSmsAsync(GoodPhoneNumber, "Thank you for confirming you availability."), Times.Once);
+            smsSender.Verify(x => x.SendSmsAsync(GoodPhoneNumber, "Thank you for confirming your availability."), Times.Once);
         }
 
         [Fact]
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new SmsResponseController(mediatr.Object, smsSender.Object);
             await sut.Index(GoodPhoneNumber, UppercaseConfirm);
 
-            smsSender.Verify(x => x.SendSmsAsync(GoodPhoneNumber, "Thank you for confirming you availability."), Times.Once);
+            smsSender.Verify(x => x.SendSmsAsync(GoodPhoneNumber, "Thank you for confirming your availability."), Times.Once);
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
@@ -444,6 +444,8 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{itineraryId}/[Action]")]
         public async Task<IActionResult> SetTeamLead(int itineraryId, [FromForm] int volunteerTaskSignupId)
         {
+            // Issue 1820 [Message Newly Assigned Team Lead ] to be implemnented somewhere in here
+            
             var authorizableItinerary = await _mediator.SendAsync(new AuthorizableItineraryQuery(itineraryId));
             if (!await authorizableItinerary.UserCanManageTeamMembers())
             {
