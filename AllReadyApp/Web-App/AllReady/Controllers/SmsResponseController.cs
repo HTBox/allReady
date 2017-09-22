@@ -48,7 +48,7 @@ namespace AllReady.Controllers
                     {
                         case (AcceptedResponse):
                             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Confirmed });
-                            await _smsSender.SendSmsAsync(from, "Thank you for confirming you availability.");
+                            await _smsSender.SendSmsAsync(from, "Thank you for confirming your availability.");
                             break;
 
                         case (DeclinedResponse):
