@@ -39,12 +39,18 @@ namespace AllReady.Areas.Admin.Features.Notifications
 
         private string BuildPlainTextMessage(IteneraryTeamLeadAssigned notification)
         {
-            return $@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""";
+            var sb = new StringBuilder();
+            sb.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""");
+            sb.AppendLine($"To view the itinerary go to the following Url: {notification.IteneraryUrl}");
+            return sb.ToString();
         }
 
         private string BuildHtmlMessage(IteneraryTeamLeadAssigned notification)
         {
-            return $@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""";
+            var sb = new StringBuilder();
+            sb.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""");
+            sb.AppendLine($"To view the itinerary go to the following Url: {notification.IteneraryUrl}");
+            return sb.ToString();
         }
 
         private string BuildSmsMessage(IteneraryTeamLeadAssigned notification)

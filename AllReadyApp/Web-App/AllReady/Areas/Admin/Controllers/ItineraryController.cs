@@ -452,7 +452,10 @@ namespace AllReady.Areas.Admin.Controllers
                 return new ForbidResult();
             }
 
-            var result = await _mediator.SendAsync(new SetTeamLeadCommand(itineraryId, volunteerTaskSignupId));
+            var itinUrl = Url.Action(nameof(this.Details), "Itinerary", new { area = AreaNames.Admin, id = itineraryId },
+                HttpContext.Request.Scheme);
+
+            var result = await _mediator.SendAsync(new SetTeamLeadCommand(itineraryId, volunteerTaskSignupId, itinUrl));
 
             // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
 

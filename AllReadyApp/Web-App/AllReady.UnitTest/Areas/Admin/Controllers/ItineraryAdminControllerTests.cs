@@ -24,6 +24,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Constants;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -1793,16 +1794,22 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task SetTeamLead_SendsSetTeamLeadCommand_Once_WhenUserIsAuthorized()
         {
+            const string itineraryUrl = "https://example.com";
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
+            var urlHelper = new Mock<IUrlHelper>();
+            //urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns(It.IsAny<string>());
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns("https://example.com");
+
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object) {Url = urlHelper.Object};
+            sut.GetMockHttpContext();
 
             await sut.SetTeamLead(1, 2);
-            mediator.Verify(x => x.SendAsync(It.Is<SetTeamLeadCommand>(y => y.ItineraryId == 1 && y.VolunteerTaskId == 2)), Times.Once);
+            mediator.Verify(x => x.SendAsync(It.Is<SetTeamLeadCommand>(y => y.ItineraryId == 1 && y.VolunteerTaskId == 2 && y.ItineraryUrl == itineraryUrl)), Times.Once);
         }
 
         [Fact]
@@ -1811,11 +1818,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<SetTeamLeadCommand>())).ReturnsAsync(SetTeamLeadResult.Success);
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns("https://example.com");
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object) { Url = urlHelper.Object };
+            sut.GetMockHttpContext();
 
             var result = await sut.SetTeamLead(1, 2) as RedirectToActionResult;
 
@@ -1829,11 +1839,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableItineraryQuery>())).ReturnsAsync(new FakeAuthorizableItinerary(false, true, false, false, false, true));
             mediator.Setup(x => x.SendAsync(It.IsAny<SetTeamLeadCommand>())).ReturnsAsync(SetTeamLeadResult.SaveChangesFailed);
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.Setup(x => x.Action(It.IsAny<UrlActionContext>())).Returns("https://example.com");
 
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new ApplicationUser());
 
-            var sut = new ItineraryController(mediator.Object, null, userManager.Object);
+            var sut = new ItineraryController(mediator.Object, null, userManager.Object) { Url = urlHelper.Object };
+            sut.GetMockHttpContext();
 
             var result = await sut.SetTeamLead(1, 2) as RedirectToActionResult;
 

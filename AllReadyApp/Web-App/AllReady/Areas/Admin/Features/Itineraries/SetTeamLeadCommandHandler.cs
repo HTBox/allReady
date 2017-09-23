@@ -51,7 +51,8 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             {
                 AssigneePhone = newTeamLead.User.PhoneNumber,
                 AssigneeEmail = newTeamLead.User.Email,
-                ItineraryName = newTeamLead.Itinerary.Name
+                ItineraryName = newTeamLead.Itinerary.Name,
+                IteneraryUrl = message.ItineraryUrl
             });
             return SetTeamLeadResult.Success;
         }
