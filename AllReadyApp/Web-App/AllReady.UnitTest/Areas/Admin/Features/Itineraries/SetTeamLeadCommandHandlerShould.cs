@@ -107,8 +107,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var mockMediator = new Mock<IMediator>();
 
             var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
+            var itineraryUrl = "https://localhost/Admin/Itinerary/Details/1";
 
-            await sut.Handle(new SetTeamLeadCommand(1, 1));
+            await sut.Handle(new SetTeamLeadCommand(1, 1, itineraryUrl));
 
             Context.VolunteerTaskSignups.Any(x => x.IsTeamLead && x.ItineraryId == 1).ShouldBeTrue();
         }
@@ -119,8 +120,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var mockMediator = new Mock<IMediator>();
 
             var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
+            var itineraryUrl = "https://localhost/Admin/Itinerary/Details/1";
 
-            var result = await sut.Handle(new SetTeamLeadCommand(1, 1));
+            var result = await sut.Handle(new SetTeamLeadCommand(1, 1, itineraryUrl));
 
             result.ShouldBe(SetTeamLeadResult.Success);
         }
@@ -131,8 +133,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var mockMediator = new Mock<IMediator>();
 
             var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
+            var itineraryUrl = "https://localhost/Admin/Itinerary/Details/2";
 
-            await sut.Handle(new SetTeamLeadCommand(2, 3));
+            await sut.Handle(new SetTeamLeadCommand(2, 3, itineraryUrl));
 
             Context.VolunteerTaskSignups.Count(x => x.IsTeamLead && x.ItineraryId == 2).ShouldBe(1);
 
@@ -147,8 +150,9 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Itineraries
             var mockMediator = new Mock<IMediator>();
 
             var sut = new SetTeamLeadCommandHandler(Context, mockMediator.Object);
+            var itineraryUrl = "https://localhost/Admin/Itinerary/Details/1";
 
-            var result = await sut.Handle(new SetTeamLeadCommand(1, 400));
+            var result = await sut.Handle(new SetTeamLeadCommand(1, 400, itineraryUrl));
 
             result.ShouldBe(SetTeamLeadResult.VolunteerTaskSignupNotFound);
         }
