@@ -444,8 +444,7 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{itineraryId}/[Action]")]
         public async Task<IActionResult> SetTeamLead(int itineraryId, [FromForm] int volunteerTaskSignupId)
         {
-            // Issue 1820 [Message Newly Assigned Team Lead ] to be implemnented somewhere in here
-            
+           
             var authorizableItinerary = await _mediator.SendAsync(new AuthorizableItineraryQuery(itineraryId));
             if (!await authorizableItinerary.UserCanManageTeamMembers())
             {
@@ -478,8 +477,6 @@ namespace AllReady.Areas.Admin.Controllers
             var result = await _mediator.SendAsync(new RemoveTeamLeadCommand(itineraryId));
 
             // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
-
-            //var isSuccess = result == SetTeamLeadResult.Success;
 
             return RedirectToAction(nameof(Details), new { id = itineraryId });
         }
