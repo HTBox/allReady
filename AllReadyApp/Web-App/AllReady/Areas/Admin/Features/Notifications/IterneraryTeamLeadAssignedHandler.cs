@@ -40,24 +40,24 @@ namespace AllReady.Areas.Admin.Features.Notifications
         private string BuildPlainTextMessage(IteneraryTeamLeadAssigned notification)
         {
             var plainTextMessage = new StringBuilder();
-            plainTextMessage.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""");
+            plainTextMessage.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}"".");
             plainTextMessage.AppendLine();
-            plainTextMessage.AppendLine($"To view the itinerary go to the following Url: {notification.IteneraryUrl}");
+            plainTextMessage.AppendLine($"To view the itinerary go to the following Url: \"{notification.ItineraryUrl}\".");
             return plainTextMessage.ToString();
         }
 
         private string BuildHtmlMessage(IteneraryTeamLeadAssigned notification)
         {
             var htmlTextMessage = new StringBuilder();
-            htmlTextMessage.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""");
+            htmlTextMessage.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}"".");
             htmlTextMessage.AppendLine();
-            htmlTextMessage.AppendLine($"To view the itinerary <a href=\"{notification.IteneraryUrl}\">click here</a>.");
+            htmlTextMessage.AppendLine($"To view the itinerary <a href=\"{notification.ItineraryUrl}\">click here</a>.");
             return htmlTextMessage.ToString();
         }
 
         private string BuildSmsMessage(IteneraryTeamLeadAssigned notification)
         {
-            return $@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}""";
+            return $@"You have been assigned as the Team Lead on the following itenerary: ""{notification.ItineraryName ?? "an itenerary"}"".";
         }
     }
 }
