@@ -16,7 +16,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
         private const string assigneePhone = "+1 (999) 999-9999";
         private const string itineraryUrl = "https://example.com";
         private const string subject = @"You have been assigned as the Team Lead on an itinerary";
-        private string smsMessage = $@"You have been assigned as the Team Lead on the following itenerary: ""{itineraryName}""";
+        private string smsMessage = $@"You have been assigned as the Team Lead on the following itenerary: ""{itineraryName}"".";
 
         [Fact]
         public async Task SendTeamLeadAssignmentMessageToVolunteer()
@@ -29,14 +29,19 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Notifications
                 AssigneePhone = assigneePhone,
                 AssigneeEmail = assigneeEmail,
                 ItineraryName = itineraryName,
-                IteneraryUrl = itineraryUrl
+                ItineraryUrl = itineraryUrl
             });
 
-            var sb = new StringBuilder();
-            sb.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{itineraryName}""");
-            sb.AppendLine($"To view the itinerary go to the following Url: {itineraryUrl}");
-            var plainTextMessage = sb.ToString();
-            var htmlMessage = sb.ToString();
+            var plaintextMsg = new StringBuilder();
+            plaintextMsg.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{itineraryName}"".");
+            plaintextMsg.AppendLine();
+            plaintextMsg.AppendLine($"To view the itinerary go to the following Url: \"{itineraryUrl}\".");
+            var plainTextMessage = plaintextMsg.ToString();
+            var htmlMsg = new StringBuilder();
+            htmlMsg.AppendLine($@"You have been assigned as the Team Lead on the following itenerary: ""{itineraryName}"".");
+            htmlMsg.AppendLine();
+            htmlMsg.AppendLine($"To view the itinerary <a href=\"{itineraryUrl}\">click here</a>.");
+            var htmlMessage = htmlMsg.ToString();
 
             mockMediator.Verify(x => x.SendAsync(It.Is<NotifyVolunteersCommand>(cmd =>
                 cmd.ViewModel != null &&
