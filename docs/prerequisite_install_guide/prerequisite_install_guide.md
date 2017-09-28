@@ -7,6 +7,7 @@ This guide will walk you through all of the software that needs to be installed 
 **Table Of Contents**
 
 - [General Install Steps](#general-install-steps)
+  - [MacOSX Installation Instructions](https://github.com/HTBox/allReady/wiki/Running-on-Mac-OS-X)
   - [Windows Showing File Extensions](#windows-showing-file-extensions)
   - [Git](#git)
   - [Configuring Git](#configuring-git)
