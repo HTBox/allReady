@@ -40,19 +40,20 @@ input[type="checkbox"].form-control, input[type="radio"].form-control {
     margin-left: -50px;
 }
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
-input,
-select,
-textarea {
-    max-width: 380px;
-}
+@media (min-width: 768px) {
+    /* On larger screens set widths on the form inputs since otherwise they're 100% wide */
+    input,
+    select,
+    textarea {
+        max-width: 380px;
+    }
 
     input.wide,
     select.wide,
     textarea.wide {
         max-width: inherit;
     }
-
+}
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
