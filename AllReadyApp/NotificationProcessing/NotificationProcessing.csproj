@@ -3,7 +3,15 @@
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
   <ItemGroup>    
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.SendGrid" Version="2.0.0" />    
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Twilio" Version="1.0.0" />    
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.0" />    
+    <PackageReference Include="Sendgrid" Version="8.0.5" />    
+    <PackageReference Include="Twilio" Version="4.7.2" />    
+    <PackageReference Include="WindowsAzure.Storage" Version="7.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AllReady.Core\AllReady.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
