@@ -12,7 +12,7 @@
         <ol class="breadcrumb">
             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
             <li><a asp-controller="Organization" asp-action="Index">Organizations</a></li>
-            <li><a asp-controller="Organization" asp-action="ShowOrganization">@Model.OrganizationName</a></li>
+            <li><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.OrganizationId">@Model.OrganizationName</a></li>
             <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId">@Model.CampaignName</a></li>
             <li>@Model.Title</li>
