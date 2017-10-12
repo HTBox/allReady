@@ -148,7 +148,15 @@
                 <div class="form-group">
                     <label asp-for="OrganizationId" class="col-md-2 control-label"></label>
                     <div class="col-md-10">
-                        @Html.DropDownListFor(model => model.OrganizationId, SelectListService.GetOrganizations(User), htmlAttributes: new { @class = "form-control" })
+                        @if (User.IsUserType(UserType.SiteAdmin) || User.IsUserType(UserType.OrgAdmin))
+                        {
+                            @Html.DropDownListFor(model => model.OrganizationId, SelectListService.GetOrganizations(User), htmlAttributes: new { @class = "form-control" })
+                        }
+                        else
+                        {
+                            <input type="hidden" asp-for="OrganizationId" value="@Model.OrganizationId" />
+                            <p class="form-control-static">@Model.OrganizationName</p>
+                        }
                     </div>
                 </div>
                 <div class="form-group">
