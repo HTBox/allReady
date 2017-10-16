@@ -1,4 +1,4 @@
-﻿// knockout binding for jquery.maskedinput plugin
+// knockout binding for jquery.maskedinput plugin
 ko.bindingHandlers.masked = {
     init: function (element, valueAccessor) {
         var value = valueAccessor(),
@@ -13,7 +13,7 @@ ko.bindingHandlers.accordion = {
         var options = ko.utils.unwrapObservable(value()) || {},
             toggleClass = "[data-toggle-accordion]",
             contentClass = ".collapse",
-            openItem = ko.utils.unwrapObservable(options.openItem) || false,
+            openItem = parseInt(ko.utils.unwrapObservable(options.openItem)),
             itemClass = "." + (ko.utils.unwrapObservable(options.item) || "panel-group"),
             accordionDirectionIconClass = "." + (ko.utils.unwrapObservable(options.itemIconDirection) || "accordion-icon-direction"),
             items = $(elem).find(contentClass);
@@ -42,7 +42,7 @@ ko.bindingHandlers.accordion = {
         });
 
         // if initial open item specified, expand it
-        if (openItem) {
+        if (openItem > -1) {
             items.eq(openItem).collapse("show");
         };
 
