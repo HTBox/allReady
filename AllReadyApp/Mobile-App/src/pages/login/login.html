@@ -1,0 +1,36 @@
+<ion-header [elasticHeader]="Login">
+    <ion-navbar>
+        <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+        <ion-title>Login</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding fullscreen #Login>
+
+    <div class="login-box">
+        <form (ngSubmit)="login()" #registerForm="ngForm">
+            <ion-row>
+                <ion-col>
+                    <ion-list>
+                        <ion-item>
+                            <ion-label>Username:</ion-label>
+                            <ion-input type="text" placeholdr="Username" [(ngModel)]="Credentials.Email" name="Email" required></ion-input>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label>Password:</ion-label>
+                            <ion-input type="password" placeholder="Password" [(ngModel)]="Credentials.Password" name="Password" required></ion-input>
+                        </ion-item>
+                    </ion-list>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col class="signup-col">
+                    <button ion-button full type="submit" [disabled]="!registerForm.form.valid">Login</button>
+                </ion-col>
+            </ion-row>
+        </form>
+    </div>
+
+</ion-content>

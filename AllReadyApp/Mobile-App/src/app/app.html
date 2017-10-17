@@ -1,0 +1,20 @@
+<div class="light">
+    <ion-menu [content]="content" id="menu-material">
+        <ion-content class="sidemenu">
+            <ion-header class="menu-header">
+                <!--<img class="user-avatar round" [src]=this.pictureUrl />
+                <p class="name">FirstName LastName</p>
+                <p class="e-mail">user@email.com</p>-->
+            </ion-header>
+            <ion-list id="sideMenuPagesList" no-lines>
+                <button menuClose="left" ion-item detail-none [hidden]="!p.show" (click)="openPage(p)" *ngFor="let p of sideMenu.GetSideMenuItems()">
+                    <ion-icon [name]="p.icon" item-left></ion-icon>
+                    {{p.title}}                    
+                </button>
+            </ion-list>
+        </ion-content>
+    </ion-menu>
+
+    <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+    <ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+</div>

@@ -2,14 +2,14 @@
 
 angular
     .module("Backend") //TODO get a better name for factory and module
-    .factory("Backend", ["$http", "$q", "CacheManager", "ApiEndpoint", function ($http, $q, CacheManager, ApiEndpoint) {
+    .factory("Backend", ["$http", "$q", "CacheManager", "ApiEndpoint", function($http, $q, CacheManager, ApiEndpoint) {
         var svc = {};
         //var protocol = "http://";
         //var domainUrl = "localhost:48408"; // TODO: Update when the site is deployed for real
         //var baseUrl = protocol + domainUrl + "/";
         var baseUrl = ApiEndpoint.url;
 
-        svc.getEvents = function (forceWebQuery) {
+        svc.getEvents = function(forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
 
             if (!forceWebQuery) {
@@ -21,8 +21,8 @@ angular
             }
 
             return $http.get(baseUrl + "api/event")
-                .then(function (result) {
-                    result.data.forEach(function (event) {
+                .then(function(result) {
+                    result.data.forEach(function(event) {
                         event.location = event.location || "Not Set";
                     });
 
@@ -31,7 +31,7 @@ angular
                 });
         };
 
-        svc.getEvent = function (id, forceWebQuery) {
+        svc.getEvent = function(id, forceWebQuery) {
             forceWebQuery = typeof forceWebQuery !== "undefined" ? forceWebQuery : false;
 
             if (!forceWebQuery) {
@@ -44,13 +44,13 @@ angular
 
             // TODO Use the real API URL
             return $http.get(baseUrl + "api/event/" + id)
-                .then(function (result) {
+                .then(function(result) {
                     CacheManager.saveEvent(result.data);
                     return result.data;
                 });
         };
 
-        svc.checkinEvent = function (checkinCode) {
+        svc.checkinEvent = function(checkinCode) {
             var regex = new RegExp("^https?://" + domainUrl + "/api/event/[0-9]+/checkin$");
             if (checkinCode.match(regex)) {
                 return $http.put(checkinCode);
@@ -60,51 +60,49 @@ angular
             }
         };
 
-        svc.signUpAndCheckIn = function (checkinCode) {
+        svc.signUpAndCheckIn = function(checkinCode) {
             var signupCode = checkinCode.replace("checkin", "signup");
             return $http.post(signupCode)
-                .then(function () {
+                .then(function() {
                     $http.put(checkinCode);
                 });
         };
 
-        svc.doLogin = function (username, password) {
-            return $http.post(baseUrl + "api/me/login",
-                {
-                    "Email": username,
-                    "Password": password,
-                    "RememberMe": "true"
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json; charset=UTF-8'
+        svc.doLogin = function(username, password) {
+            return $http.post(baseUrl + "api/me/login", {
+                "Email": username,
+                "Password": password,
+                "RememberMe": "true"
+            }, {
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
                         //'Content-Type': 'application/x-www-form-urlencoded'
-                    }
                 }
-            ).then(function () {
+            }).then(function() {
                 console.log("Logged in");
             });
-        //var deferred = $q.defer();
-        //var done = false;
+            //var deferred = $q.defer();
+            //var done = false;
 
-        //var ref = cordova.InAppBrowser.open(baseUrl + "api/me", "_blank", "location=no");
-        //ref.addEventListener("loadstop", function (e) {
-        //    if (e.url.toLowerCase().indexOf("api/me") != -1) {
-        //        if (!done) {
-        //            ref.close();
-        //            done = true;
-        //            deferred.resolve();
-        //        }
-        //    }
-        //});
+            //var ref = cordova.InAppBrowser.open(baseUrl + "api/me", "_blank", "location=no");
+            //ref.addEventListener("loadstop", function (e) {
+            //    if (e.url.toLowerCase().indexOf("api/me") != -1) {
+            //        if (!done) {
+            //            ref.close();
+            //            done = true;
+            //            deferred.resolve();
+            //        }
+            //    }
+            //});
 
-        //ref.addEventListener("loaderror", function () {
-        //    if (!done) {
-        //        done = true;
-        //        deferred.reject();
-        //    }
-        //});
-        //return deferred.promise;
-    };
+            //ref.addEventListener("loaderror", function () {
+            //    if (!done) {
+            //        done = true;
+            //        deferred.reject();
+            //    }
+            //});
+            //return deferred.promise;
+        };
 
-return svc;
-}]);
+        return svc;
+    }]);

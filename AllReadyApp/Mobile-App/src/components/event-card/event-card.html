@@ -1,0 +1,66 @@
+﻿<ion-card>
+    <ion-card-content>
+        <ion-card-title>{{ event.Title }}</ion-card-title>
+        <span [hidden]="(event.Location == null)">Location: 
+            <span class="CampaignLabel">
+                {{event.Location ? event.Location.City : ''}}, 
+                {{event.Location ? event.Location.State : ''}}, 
+            </span>
+        </span>
+
+        <p>{{ formattedStartDateTime }}</p>
+
+        <ion-grid>
+            <ion-row>
+                <ion-col id="EventImageColumn" col-2 [hidden]="!event.ImageUrl">
+                    <img class="eventImage" [src]="event.ImageUrl ? event.ImageUrl : ''" />
+                </ion-col>
+                <ion-col>
+                    <p class="CampaignLabel Description">{{ event.Description ? event.Description : 'No Description'}}</p>
+                </ion-col>
+            </ion-row>
+            <ion-row>
+                <ion-col>
+                    <p>Campaign: <span class="CampaignLabel">{{ event.CampaignName }}</span></p>
+                    <p>Organizer: <span class="CampaignLabel">{{ event.OrganizationName }}</span></p>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+        <hr/>
+        <ion-grid>
+            <ion-row>
+                <ion-col>
+                    <button ion-button class="LearnMoreButton" (click)="showEventDetails(event)">
+                        <span>Learn More</span>
+                    </button>
+                </ion-col>
+                <ion-col>
+                    <button ion-button class="VolunteerButton" (click)="showEventDetails(event)">
+                        <span>Volunteer</span>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+
+        <!--<hr/>
+        <div class="item" [hidden]="!event.Location">
+            <h2>Location</h2>
+            <a href="geo:37.786971,-122.399677">
+                <div class="map" style="background-image: url('http://dev.virtualearth.net/REST/V1/Imagery/Map/Road/Bellevue%20Washington?mapLayer=TrafficFlow&key=[key here]&mapSize=500,300');"></div>
+            </a>
+            <h2>Event location</h2>
+            <p>{{ event.Location.Address1 }}</p>
+            <p>{{ event.Location.Address2 }}</p>
+            <p>{{ event.Location.City }}, {{ event.Location.State }}</p>
+            <p>{{ event.Location.PostalCode }}</p>
+        </div>
+        <hr/>
+        <div class="item item-avatar">
+            <img class="eventImage" [src]="event.ImageUrl ? event.ImageUrl : 'img/.png'" />
+            <h2>Event Organizer</h2>
+            <p>{{ event.OrganizationName }}</p>
+            <p><a href="tel:{{ event.TenantName }}">{{ event.TenantName }}</a></p>
+            <p><a href="mailto:{{ event.TenantName }}">E-mail</a></p>
+        </div>-->
+    </ion-card-content>
+</ion-card>

@@ -1,0 +1,25 @@
+page-eventdetails {
+    task {
+        padding: .5em;
+        display: block;
+    }
+    .item {
+        padding: 1em !important;
+    }
+    .eventTitle {
+        font-size: 1.5em;
+        display: block;
+        color: #D58033;
+        margin: 0 0px 10px 0px;
+    }
+    .eventLocation {
+        display: block;
+    }
+    .eventDescription {
+        color: darkslategray;
+        margin: 10px;
+        padding: 10px;
+        font-style: italic;
+        font-size: 15px;
+    }
+}
