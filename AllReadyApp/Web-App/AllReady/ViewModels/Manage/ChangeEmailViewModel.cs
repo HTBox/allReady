@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.ViewModels.Manage
 {
@@ -21,6 +21,7 @@ namespace AllReady.ViewModels.Manage
         /// </summary>
         [Required]
         [Display(Name = "New email address")]
+        [EmailAddress]
         public string NewEmail { get; set; }
     }
 }
