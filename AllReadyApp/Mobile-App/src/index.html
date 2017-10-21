@@ -1,27 +1,24 @@
 ﻿<!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
-    <meta charset="utf-8">
-    <title>AllReady</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="msapplication-tap-highlight" content="no">
-    <link href='https://fonts.googleapis.com/css?family=Graduate' rel='stylesheet'>
-    <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4e8ef7">
+  <meta charset="UTF-8">
+  <title>All Ready</title>
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="msapplication-tap-highlight" content="no">
 
-    <!-- compiled css output -->
-    <!--<link href="css/ionic.app.css" rel="stylesheet">-->
+  <link rel="icon" type="image/x-icon" href="assets/icon/favicon.ico">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4e8ef7">
+  
+  <!-- add to homescreen for ios -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-    <!-- ionic/angularjs js -->
-    <!--<script src="lib/ionic/js/ionic.bundle.js"></script>-->
-    <!--<script type="text/javascript" src="lib/moment/min/moment.min.js"></script>-->
-    <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+  <!-- cordova.js required for cordova apps -->
+  <script src="cordova.js"></script>
 
-    <!-- un-comment this code to enable service worker
+  <!-- un-comment this code to enable service worker
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
@@ -30,37 +27,23 @@
     }
   </script>-->
 
-    <link href="build/main.css" rel="stylesheet">
+  <link href="build/main.css" rel="stylesheet">
+
 </head>
-
-<body ng-app="allReady">
-    <!--<ion-nav-view></ion-nav-view><p/>-->
-
-
+<body>
+  
     <!-- Ionic's root component and where the app will load -->
     <ion-app></ion-app>
-
+  
     <!-- The polyfills js is generated during the build process -->
     <script src="build/polyfills.js"></script>
-
+  
     <!-- The vendor js is generated during the build process
-      and contains all code in `node_modules` -->
+         It contains all of the dependencies in node_modules -->
     <script src="build/vendor.js"></script>
-
-    <!-- The bundle js is generated during the build process -->
+  
+    <!-- The main bundle js is generated during the build process -->
     <script src="build/main.js"></script>
-
-    <!-- your app's js -->
-    <!--<script type="text/javascript" src="app.js"></script>
-  <script type="text/javascript" src="menu/menu.controller.js"></script>
-  <script type="text/javascript" src="event/event-details.controller.js"></script>
-  <script type="text/javascript" src="event/event-list.controller.js"></script>
-  <script type="text/javascript" src="checkin/checkin.controller.js"></script>
-  <script type="text/javascript" src="hours/hours.controller.js"></script>
-  <script type="text/javascript" src="services/cache-manager.service.js"></script>
-  <script type="text/javascript" src="services/backend.service.js"></script>
-  <script type="text/javascript" src="services/hours.service.js"></script>-->
-
-</body>
-
+  
+  </body>
 </html>
