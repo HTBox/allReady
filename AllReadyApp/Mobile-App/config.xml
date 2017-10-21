@@ -61,16 +61,14 @@
     </platform>
     <vs:toolsetVersion xmlns:vs="http://schemas.microsoft.com/appx/2014/htmlapps">6.3.1</vs:toolsetVersion>
     <preference name="windows-target-version" value="10.0" />
-    <engine name="android" spec="6.3.0" />
-    <engine name="ios" spec="4.5.1" />
-    <engine name="windows" spec="5.0.0" />
-    <plugin name="cordova-plugin-compat" spec="1.2.0" />
-    <plugin name="cordova-plugin-console" spec="1.1.0" />
-    <plugin name="cordova-plugin-device" spec="1.1.6" />
-    <plugin name="cordova-plugin-inappbrowser" spec="1.7.1" />
-    <plugin name="cordova-plugin-splashscreen" spec="4.0.3" />
-    <plugin name="cordova-plugin-statusbar" spec="2.2.3" />
-    <plugin name="cordova-plugin-whitelist" spec="1.3.2" />
-    <plugin name="ionic-plugin-keyboard" spec="2.2.1" />
-    <plugin name="phonegap-plugin-barcodescanner" spec="6.0.8" />
+    <allow-navigation href="http://192.168.56.1:8100" />
+    <allow-navigation href="http://192.168.1.100:8100" />
+    <engine name="android" spec="^6.3.0" />
+    <engine name="ios" spec="^4.5.2" />
+    <engine name="windows" spec="^5.0.0" />
+    <plugin name="ionic-plugin-keyboard" spec="^2.2.1" />
+    <plugin name="cordova-plugin-device" spec="^1.1.6" />
+    <plugin name="cordova-plugin-splashscreen" spec="^4.0.3" />
+    <plugin name="cordova-plugin-ionic-webview" spec="^1.1.15" />
+    <plugin name="cordova-plugin-whitelist" spec="^1.3.2" />
 </widget>
