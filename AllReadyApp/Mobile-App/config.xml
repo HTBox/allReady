@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.ionicframework.allreadymobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>allReady2</name>
+    <name>allReady</name>
     <description>allReady brings together community members, volunteers, humanitarian and community organizations to make our communities more resilient to the effects of disasters by making preparedness activities more visible and effective to the communities they serve and the volunteers who support them.</description>
     <author email="contact@htbox.org" href="http://htbox.org">Humanitarian Toolbox</author>
     <content src="index.html" />
