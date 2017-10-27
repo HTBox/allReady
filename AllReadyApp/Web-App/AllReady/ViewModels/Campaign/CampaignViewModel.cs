@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
@@ -103,7 +103,6 @@ namespace AllReady.ViewModels.Campaign
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
         public bool Published { get; set; }
         public bool IsCampaignManager { get; set; }
-        public KeywordCollection Keywords { get; set; }
 
         public TagCollection Tags { get; set; }
     }
