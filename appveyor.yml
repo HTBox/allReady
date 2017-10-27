@@ -13,7 +13,6 @@ cache:
   - '%APPDATA%\npm-cache'             # npm cache
   
 install:
- - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
  - choco install firefox
  
 before_build:
