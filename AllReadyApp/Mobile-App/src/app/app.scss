@@ -1,0 +1,92 @@
+// http://ionicframework.com/docs/v2/theming/
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+ion-content {
+    background-color: white !important;
+}
+
+.toolbar-background {
+    background-color: #D58033 !important;
+}
+
+.toolbar * {
+    color: #ffffff !important;
+}
+
+.sidemenu,
+.menu-header,
+#sideMenuPagesList {
+    background-color: white !important;
+}
+
+#sideMenuPagesList>button:nth-child(1)>ion-icon {
+    font-size: 1.9em;
+    color: #2c3e50 !important;
+}
+
+#sideMenuPagesList>button:nth-child(2)>ion-icon {
+    color: #D58033 !important;
+}
+
+#sideMenuPagesList>button:nth-child(3)>ion-icon {
+    color: #3498db !important;
+}
+
+#sideMenuPagesList>button:nth-child(4)>ion-icon {
+    color: #1abc9c !important;
+}
+
+#sideMenuPagesList>button:nth-child(5)>ion-icon {
+    color: #c0392b !important;
+}
+
+#sideMenuPagesList>button:nth-child(6)>ion-icon {
+    color: gray !important;
+}
+
+.round {
+    border-radius: 50%;
+}
+
+// Material Design Sidemenu
+#menu-material {
+    #sideMenuPagesList {
+        position: relative !important;
+        margin-top: 50%;
+    }
+    .menu-header {
+        min-height: 9em;
+        padding: 0px 15px;
+        background-image: url('../assets/img/misc/material-design-background.jpg');
+        background-size: cover;
+        color: white;
+        .name {
+            margin-top: 10px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .e-mail {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+    }
+    .user-avatar {
+        border: solid 0px green !important;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        margin-top: .85em;
+        height: 5em;
+    }
+}

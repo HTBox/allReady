@@ -1,0 +1,19 @@
+page-events {
+    .noevents {
+        text-align: center;
+        background-color: white;
+        margin: 50% 1em 1em 1em;
+        padding: 1em;
+        border: solid .5px rgb(235, 138, 138);
+    }
+    .LearnMoreButton {
+        width: 95%;
+        background-color: #3498db !important;
+        float: left;
+    }
+    .VolunteerButton {
+        width: 95%;
+        background-color: #27ae60 !important;
+        float: right;
+    }
+}

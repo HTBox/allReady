@@ -1,0 +1,15 @@
+<ion-header [elasticHeader]="Hours">
+    <ion-navbar>
+        <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+        <ion-title>Hours</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding fullscreen #Hours>
+
+    <button ion-button block large [color]="this.stopped ? 'secondary' : 'danger'" (click)="this.startstop()">{{this.stopped ? 'Start' : 'Stop'}}</button>
+
+    <div id="startstops" name="startstops" #startstops>
+
+    </div>
+
+</ion-content>
