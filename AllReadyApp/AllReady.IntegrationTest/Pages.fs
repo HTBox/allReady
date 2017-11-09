@@ -1,4 +1,4 @@
-﻿module Pages
+module Pages
 open canopy
 
 module TopMenu =
@@ -42,6 +42,7 @@ module AdminCampaignCreate =
     type CampaignDetails = {
         Name:string
         Description:string
+        Headline:string
         FullDescription:string
         OrganizationName:string
         Address1:string
@@ -55,6 +56,7 @@ module AdminCampaignCreate =
         Name = ""
         Description = ""
         FullDescription = ""
+        Headline = ""
         OrganizationName = ""
         Address1="1 Microsoft Way"
         City="Redmond"
@@ -70,16 +72,17 @@ module AdminCampaignCreate =
     let PopulateCampaignDetails details =
         "#Name" << details.Name
         "#Description" << details.Description
+        "#Headline" << details.Headline
         press tab
         let insertFullDescriptionScript = sprintf "tinyMCE.activeEditor.setContent('%s')" details.FullDescription
         js(insertFullDescriptionScript) |> ignore
         "#OrganizationId" << details.OrganizationName
+        check "#Published"
         "#Location_Address1" << details.Address1
         "#Location_City" << details.City
         "#Location_State" << details.State
         "#Location_PostalCode" << details.PostalCode.ToString()
         "#Location_Country" << details.Country
-        check "#Published"
 
 module AdminCampaignDetails =
     let RelativeUrl = "Admin/Campaign/Details"
@@ -211,4 +214,3 @@ module AdminTaskDetails =
     let RelativeUrl = "Admin/Task/Details"
 
 
-    
