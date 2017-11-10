@@ -180,11 +180,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.Equal("Admin/Event/Details/{id}", routeAttribute.Template);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CreateGetSendsCampaignSummaryQueryWithCorrectCampaignId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int campaignId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
+
+            var sut = new EventController(null, mediator.Object, null, Mock.Of<IUserAuthorizationService>());
+
+            await sut.Create(campaignId);
+
+            mediator.Verify(x => x.SendAsync(It.Is<CampaignSummaryQuery>(a => a.CampaignId == campaignId)), Times.Once);
         }
 
         [Fact]
