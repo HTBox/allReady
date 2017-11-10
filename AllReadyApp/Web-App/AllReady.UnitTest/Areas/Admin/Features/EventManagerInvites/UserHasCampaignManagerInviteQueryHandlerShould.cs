@@ -39,7 +39,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
         [Fact]
         public async Task ReturnFalse_WhenInviteDoesNotExist()
         {
-            var handler = new UserHasCampaignManagerInviteQueryHandler(Context);
+            var handler = new UserHasEventManagerInviteQueryHandler(Context);
             bool result = await handler.Handle(new UserHasEventManagerInviteQuery { InviteeEmail = "invalid@email.com", EventId = 2 });
             result.ShouldBeFalse();
         }
@@ -47,7 +47,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.EventManagerInvites
         [Fact]
         public async Task ReturnTrue_WhenInviteExists()
         {
-            var handler = new UserHasCampaignManagerInviteQueryHandler(Context);
+            var handler = new UserHasEventManagerInviteQueryHandler(Context);
             bool result = await handler.Handle(new UserHasEventManagerInviteQuery { InviteeEmail = "test@test.com", EventId = 2 });
             result.ShouldBeTrue();
         }

@@ -300,13 +300,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignByCampaignIdQuery>())).ReturnsAsync(campaign);
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<UserHasCampaignManagerInviteQuery>())).ReturnsAsync(false);
 
-            var mockUserManger = UserManagerMockHelper.CreateUserManagerMock();
-            mockUserManger.Setup(mock => mock.FindByEmailAsync(It.Is<string>(e => e == "test@test.com"))).ReturnsAsync(new ApplicationUser
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.FindByEmailAsync(It.Is<string>(e => e == "test@test.com"))).ReturnsAsync(new ApplicationUser
             {
                 ManagedCampaigns = new List<CampaignManager> { new CampaignManager() { CampaignId = 1 } },
             });
 
-            var sut = new CampaignManagerInviteController(mockMediator.Object, mockUserManger.Object);
+            var sut = new CampaignManagerInviteController(mockMediator.Object, mockUserManager.Object);
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new CampaignManagerInviteViewModel
             {

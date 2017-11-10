@@ -340,13 +340,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<EventByEventIdQuery>())).ReturnsAsync(@event);
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<UserHasEventManagerInviteQuery>())).ReturnsAsync(false);
 
-            var mockUserManger = UserManagerMockHelper.CreateUserManagerMock();
-            mockUserManger.Setup(mock => mock.FindByEmailAsync(It.Is<string>(e => e == "test@test.com"))).ReturnsAsync(new ApplicationUser
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.FindByEmailAsync(It.Is<string>(e => e == "test@test.com"))).ReturnsAsync(new ApplicationUser
             {
                 ManagedEvents = new List<EventManager> { new EventManager() { EventId = 1 } },
             });
 
-            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManger.Object);
+            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManager.Object);
             sut.MakeUserAnOrgAdmin(organizationId: "1");
             var invite = new EventManagerInviteViewModel
             {
@@ -499,6 +499,290 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             ViewResult view = result as ViewResult;
             var model = Assert.IsType<EventManagerInviteDetailsViewModel>(view.ViewData.Model);
             Assert.Equal(inviteId, model.Id);
+        }
+
+        #endregion
+
+        #region AcceptInvite Tests
+
+        [Fact]
+        public async Task AcceptSendsAcceptDeclineEventManagerInviteDetailQueryWithCorrectInviteId()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            await sut.Accept(inviteId);
+
+            // Assert
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<AcceptDeclineEventManagerInviteDetailQuery>(q => q.EventManagerInviteId == inviteId)));
+        }
+
+        [Fact]
+        public async Task AcceptReturnsNotFoundIfNoInviteExistsForId()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            var result = await sut.Accept(inviteId);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task AcceptReturnsUnAuthorisedIfUserDoesNotMatchInvitedUser()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<AcceptDeclineEventManagerInviteDetailQuery>()))
+                .ReturnsAsync(new AcceptDeclineEventManagerInviteViewModel { InviteId = inviteId, InviteeEmailAddress = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            var result = await sut.Accept(inviteId);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task AcceptReturnsViewWhenCorrectUserAndInviteIdSupplied()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<AcceptDeclineEventManagerInviteDetailQuery>()))
+                .ReturnsAsync(new AcceptDeclineEventManagerInviteViewModel
+                {
+                    InviteId = inviteId,
+                    InviteeEmailAddress = "test@test.com",
+                    CampaignName = "My campaign",
+                    EventName = "My event",
+                    EventId = 200
+                });
+
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new ApplicationUser { Email = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManager.Object);
+
+            // Act
+            var result = await sut.Accept(inviteId);
+
+            // Assert
+            ViewResult view = result as ViewResult;
+            var model = Assert.IsType<AcceptDeclineEventManagerInviteViewModel>(view.ViewData.Model);
+            Assert.Equal(inviteId, model.InviteId);
+            Assert.Equal("test@test.com", model.InviteeEmailAddress);
+            Assert.Equal("My campaign", model.CampaignName);
+            Assert.Equal("My event", model.EventName);
+            Assert.Equal(200, model.EventId);
+        }
+
+        #endregion
+
+        #region InviteAccepted Tests
+
+        [Fact]
+        public async Task InviteAcceptedReturnsUnAuthorisedIfUserDoesNotMatchInvitedUser()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            var result = await sut.InviteAccepted(new AcceptDeclineEventManagerInviteViewModel() { InviteeEmailAddress = "test@test.com" });
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task InviteAcceptedCallsAcceptEventManagerInviteCommand()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new ApplicationUser { Email = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManager.Object);
+            var viewModel = new AcceptDeclineEventManagerInviteViewModel
+            {
+                EventId = eventId,
+                CampaignName = "My campaign",
+                InviteeEmailAddress = "test@test.com",
+                InviteId = inviteId
+            };
+
+            // Act
+            var result = await sut.InviteAccepted(viewModel);
+
+            // Assert
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<AcceptEventManagerInviteCommand>()), Times.Once);
+
+        }
+        [Fact]
+        public async Task InviteAcceptedCallsCreateEventManagerCommand()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new ApplicationUser { Email = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManager.Object);
+            var viewModel = new AcceptDeclineEventManagerInviteViewModel
+            {
+                EventId = eventId,
+                CampaignName = "My campaign",
+                InviteeEmailAddress = "test@test.com",
+                InviteId = inviteId
+            };
+
+            // Act
+            var result = await sut.InviteAccepted(viewModel);
+
+            // Assert
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<CreateEventManagerCommand>()), Times.Once);
+
+        }
+
+        #endregion
+
+        #region DeclineInvite Tests
+
+        [Fact]
+        public async Task DeclineSendsAcceptDeclineEventManagerInviteDetailQueryWithCorrectInviteId()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            await sut.Decline(inviteId);
+
+            // Assert
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<AcceptDeclineEventManagerInviteDetailQuery>(q => q.EventManagerInviteId == inviteId)));
+        }
+
+        [Fact]
+        public async Task DeclineReturnsNotFoundIfNoInviteExistsForId()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            var result = await sut.Decline(inviteId);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task DeclineReturnsUnAuthorisedIfUserDoesNotMatchInvitedUser()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<AcceptDeclineEventManagerInviteDetailQuery>()))
+                .ReturnsAsync(new AcceptDeclineEventManagerInviteViewModel { InviteId = inviteId, InviteeEmailAddress = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            var result = await sut.Decline(inviteId);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task DeclineReturnsViewWhenCorrectUserAndInviteIdSupplied()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<AcceptDeclineEventManagerInviteDetailQuery>()))
+                .ReturnsAsync(new AcceptDeclineEventManagerInviteViewModel
+                {
+                    InviteId = inviteId,
+                    InviteeEmailAddress = "test@test.com",
+                    CampaignName = "My campaign",
+                    EventName = "My event",
+                    EventId = 200
+                });
+
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new ApplicationUser { Email = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManager.Object);
+
+            // Act
+            var result = await sut.Decline(inviteId);
+
+            // Assert
+            ViewResult view = result as ViewResult;
+            var model = Assert.IsType<AcceptDeclineEventManagerInviteViewModel>(view.ViewData.Model);
+            Assert.Equal(inviteId, model.InviteId);
+            Assert.Equal("test@test.com", model.InviteeEmailAddress);
+            Assert.Equal("My campaign", model.CampaignName);
+            Assert.Equal("My event", model.EventName);
+            Assert.Equal(200, model.EventId);
+        }
+
+        #endregion
+
+        #region InviteDeclined Tests
+
+        [Fact]
+        public async Task InviteDeclinedReturnsUnAuthorisedIfUserDoesNotMatchInvitedUser()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+
+            var sut = new EventManagerInviteController(mockMediator.Object, UserManagerMockHelper.CreateUserManagerMock().Object);
+
+            // Act
+            var result = await sut.InviteDeclined(new AcceptDeclineEventManagerInviteViewModel() { InviteeEmailAddress = "test@test.com" });
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public async Task InviteDeclinedCallsDeclineEventManagerInviteCommand()
+        {
+            // Arrange
+            var mockMediator = new Mock<IMediator>();
+
+            var mockUserManager = UserManagerMockHelper.CreateUserManagerMock();
+            mockUserManager.Setup(mock => mock.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new ApplicationUser { Email = "test@test.com" });
+
+            var sut = new EventManagerInviteController(mockMediator.Object, mockUserManager.Object);
+            var viewModel = new AcceptDeclineEventManagerInviteViewModel
+            {
+                EventId = eventId,
+                CampaignName = "My campaign",
+                InviteeEmailAddress = "test@test.com",
+                InviteId = inviteId
+            };
+
+            // Act
+            var result = await sut.InviteDeclined(viewModel);
+
+            // Assert
+            mockMediator.Verify(x => x.SendAsync(It.IsAny<DeclineEventManagerInviteCommand>()), Times.Once);
+
         }
 
         #endregion
