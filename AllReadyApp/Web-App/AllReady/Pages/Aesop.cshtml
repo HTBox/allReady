@@ -1,14 +1,15 @@
-﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@page
 @{
-    ViewData["Title"] = "Story";
+    ViewData["Title"] = "A Story by Aesop";
 }
 
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-12">
         <ol class="breadcrumb">
             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-            <li><a asp-controller="Home" asp-action="About">About</a></li>
+            <li><a asp-page="/About">About</a></li>
             <li>Aesop</li>
+            
         </ol>
     </div>
 </div>
