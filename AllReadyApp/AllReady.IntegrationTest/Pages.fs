@@ -159,8 +159,8 @@ module AdminEventCreate =
 
     let PopulateEventdetails details =
         "#Name" << details.Name
-        "#StartDateTime" << details.StartDate.ToString()
-        "#EndDateTime" << details.EndDate.ToString()
+        "#StartDateTime" << details.StartDate.ToString("MM/dd/yyyy")
+        "#EndDateTime" << details.EndDate.ToString("MM/dd/yyyy")
         "#EventType" << details.EventType.ToString()
         "#Location_City" << details.City
         "#Location_State" << details.State
@@ -187,15 +187,15 @@ module AdminTaskCreate =
         Description = ""
         VolunteersRequired = 1
         StartDate = System.DateTime.Now.AddDays(1.0)
-        EndDate = System.DateTime.Now.AddDays(5.0)
+        EndDate = System.DateTime.Now.AddDays(4.0)
     }
 
     let PopulateTaskDetails details =
         "#Name" << details.Name
         "#Description" << details.Description
         "#NumberOfVolunteersRequired" << details.VolunteersRequired.ToString()
-        "#StartDateTime" << details.StartDate.ToString()
-        "#EndDateTime" << details.EndDate.ToString()
+        "#StartDateTime" << details.StartDate.ToString("MM/dd/yyyy h:mm tt")
+        "#EndDateTime" << details.EndDate.ToString("MM/dd/yyyy h:mm tt")
 
     let private createBtn = "Save"
 
