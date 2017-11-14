@@ -757,48 +757,107 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .GetValue(result.Value)
                 .ShouldBe("NothingToDelete");
         }
-
-
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
+        
+        [Fact]
+        public async Task MessageAllVolunteers_ReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string error = "error";
+
+            var sut = new EventController(
+                Mock.Of<IImageService>(),
+                Mock.Of<IMediator>(),
+                Mock.Of<IValidateEventEditViewModels>(),
+                Mock.Of<IUserAuthorizationService>());
+
+            sut.ModelState.AddModelError(error, "error msg");
+
+            var result = await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel());
+
+            var value = result.ShouldBeOfType<BadRequestObjectResult>().Value.ShouldBeOfType<SerializableError>();
+
+            value.Count.ShouldBe(1);
+            value.First().Key.ShouldBe(error);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsEventDetailQueryWithCorrectEventId()
+        [Fact]
+        public async Task MessageAllVolunteers_SendsAuthorizableEventQuery_WithCorrectEventId()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const int eventId = 1;
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(true, true, true, true));
+
+            var sut = new EventController(
+                Mock.Of<IImageService>(),
+                mediator.Object,
+                Mock.Of<IValidateEventEditViewModels>(),
+                Mock.Of<IUserAuthorizationService>());
+
+            await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel{ EventId = eventId });
+
+            mediator.Verify(x => x.SendAsync(It.Is<AuthorizableEventQuery>(e => e.EventId == eventId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsHttpNotFoundResult_WhenEventIsNull()
+        [Fact]
+        public async Task MessageAllVolunteers_ReturnsForbidResult_WhenUserCannotEditEvent()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(true, false, true, true));
+
+            var sut = new EventController(
+                Mock.Of<IImageService>(),
+                mediator.Object,
+                Mock.Of<IValidateEventEditViewModels>(),
+                Mock.Of<IUserAuthorizationService>());
+
+            var result = await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel());
+
+            result.ShouldBeOfType<ForbidResult>();
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsHttpUnauthorizedResult_WhenUserIsNotOrgAdmin()
+        [Fact]
+        public async Task MessageAllVolunteers_SendsMessageEventVolunteersCommandWithCorrectViewModel_WhenAuthorized()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var model = new MessageEventVolunteersViewModel
+            {
+                EventId = 1,
+                Message = "Hello",
+                Subject = "A Subject"
+            };
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(true, true, true, true));
+
+            var sut = new EventController(
+                Mock.Of<IImageService>(),
+                mediator.Object,
+                Mock.Of<IValidateEventEditViewModels>(),
+                Mock.Of<IUserAuthorizationService>());
+
+            await sut.MessageAllVolunteers(model);
+
+            mediator.Verify(x => x.SendAsync(It.Is<MessageEventVolunteersCommand>(c => c.ViewModel.Subject == model.Subject)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersSendsMessageEventVolunteersCommandWithCorrectData()
+        [Fact]
+        public async Task MessageAllVolunteers_ReturnsHttpOkResult_WhenAuthorized()
         {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
-        }
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>()))
+                .ReturnsAsync(new FakeAuthorizableEvent(true, true, true, true));
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task MessageAllVolunteersReturnsHttpOkResult()
-        {
-            // delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var sut = new EventController(
+                Mock.Of<IImageService>(),
+                mediator.Object,
+                Mock.Of<IValidateEventEditViewModels>(),
+                Mock.Of<IUserAuthorizationService>());
+
+            var result = await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel());
+
+            result.ShouldBeOfType<OkResult>();
         }
 
         [Fact]
