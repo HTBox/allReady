@@ -1,4 +1,4 @@
-﻿module CreatingActivitiesForCampaigns
+module CreatingActivitiesForCampaigns
 
 open canopy
 open runner
@@ -28,6 +28,7 @@ let All baseUrl =
             {AdminCampaignCreate.DefaultCampaignDetails with
                 Name = testCampaignName;
                 Description = "test";
+                Headline = "test";
                 FullDescription = "Full Description";
                 OrganizationName = "Humanitarian Toolbox"}
         AdminCampaignCreate.Submit()
