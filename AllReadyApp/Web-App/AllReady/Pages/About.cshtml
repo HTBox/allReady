@@ -1,9 +1,10 @@
-﻿@{
+@page
+@{
     ViewData["Title"] = "About";
 }
 
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-12">
         <ol class="breadcrumb">
             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
             <li>About</li>
@@ -55,6 +56,6 @@
         <p>The better prepared families and communities are the less disasters will be able to impact our lives. allReady allows community members and organizations to track progress toward preparedness, to learn about events in other neighborhoods and to know where to dedicate additional focus to build community resiliency together.</p>
 
         <h3>What's with the Logo?</h3>
-        <a asp-controller="Home" asp-action="Aesop">A Story by Aesop</a>
+        <a asp-page="/Aesop">A Story by Aesop</a>
     </div>
 </div>

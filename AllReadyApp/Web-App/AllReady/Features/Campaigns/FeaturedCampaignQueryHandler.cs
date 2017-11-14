@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AllReady.Models;
 using MediatR;
 using System.Linq;
@@ -18,9 +18,9 @@ namespace AllReady.Features.Campaigns
             _context = dataAccess;
         }
 
-        public async Task<CampaignSummaryViewModel> Handle(FeaturedCampaignQuery message)
+        public Task<CampaignSummaryViewModel> Handle(FeaturedCampaignQuery message)
         {
-            return await _context.Campaigns.AsNoTracking()
+            return _context.Campaigns.AsNoTracking()
                 .Where(c => c.EndDateTime.Date >= DateTimeOffsetUtcNow().Date && c.Featured && c.Published)
                 .Include(c => c.ManagingOrganization)
                 .Select(c => new CampaignSummaryViewModel

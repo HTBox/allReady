@@ -1,0 +1,114 @@
+@page
+@using AllReady.Extensions
+@model AllReady.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row logo-background">
+    <div class="container">
+        <div class="center"><img src="~/images/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block" /></div>
+        <h4 class="text-center sub-title">Get connected. Work together. Be prepared.</h4>
+    </div>
+</div>
+
+<div class="row">
+    <div class="container">
+        <h2>Active/Upcoming Events</h2>
+    </div>
+</div>
+
+@if (Model.HasFeaturedCampaign)
+{
+    <div class="row">
+        <div class="container">
+            <div class="jumbotron">
+                <h2>
+                    <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+                    Featured
+                </h2>
+                <div class="row">
+                    <div class="@(string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl) ? "col-md-12" : "col-md-9")">
+                        <h3>
+                            <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
+                                @Model.FeaturedCampaign.Title
+                            </a>
+                        </h3>
+                        @if(!string.IsNullOrEmpty(Model.FeaturedCampaign.Headline))
+                        {
+                            <p><strong>@Model.FeaturedCampaign.Headline</strong></p>
+                        }
+                        <h4>Managed by @Model.FeaturedCampaign.OrganizationName</h4>
+                        <p>@Model.FeaturedCampaign.Description</p>
+                        <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id" class="btn btn-primary btn-lg">
+                            View
+                        </a>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.FeaturedCampaign.ImageUrl))
+                    {
+                        <div class="col-md-3 hidden-xs hidden-sm">
+                            <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.FeaturedCampaign.Id">
+                                <img src="@Model.FeaturedCampaign.ImageUrl" class="img-responsive" />
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="container">
+        @if (!Model.ActiveOrUpcomingEvents.Any())
+        {
+            <div class="text-center">
+                <div class="alert alert-warning" role="alert">
+                    <strong>No matching campaigns...</strong>
+                </div>
+            </div>
+        }
+        else
+        {
+            foreach(var group in Model.ActiveOrUpcomingEvents.GroupInto(2))
+            {
+                <div class="row">
+                    @foreach(var ev in group)
+                    {
+                        <div class="col-md-6">
+                            <div class="panel panel-lister">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="@(string.IsNullOrEmpty(ev.ImageUrl) ? "col-md-12" : "col-md-9")">
+                                            <h4>
+                                                <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id">
+                                                    @ev.Name
+                                                </a>
+                                            </h4>
+                                            <p><b>Campaign :</b> @ev.CampaignName</p>
+                                            <p><b>Organiser :</b> @ev.CampaignManagedOrganizerName</p>
+                                            <p>
+                                                <time value=@ev.StartDate format="dddd, MMMM d yyyy"></time> - <time value=@ev.EndDate format="dddd, MMMM d yyyy"></time>
+                                            </p>
+                                            <p>@ev.Description</p>
+                                            <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id" class="btn btn-primary">
+                                                View
+                                            </a>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(ev.ImageUrl))
+                                        {
+                                            <div class="col-md-3 hidden-xs hidden-sm text-center">
+                                                <a asp-controller="Event" asp-action="ShowEvent" asp-route-id="@ev.Id">
+                                                    <img src="@ev.ImageUrl" class="img-responsive"/>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>

@@ -49,19 +49,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
+                    <a asp-page="/Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
                 </div>
                 <div class="navbar-collapse collapse">
-                    @{
-                        var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
-                        var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
-                        var controllerName = descriptor.ControllerName;
-                        var isUser = areaName != AreaNames.Admin;
-                    }
                     <ul class="nav navbar-nav">
-                        <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
-                        <li @(isUser && controllerName == "Organization" ? " class=active" : "")><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
-                        <li @(isUser && controllerName == "Home" && descriptor.ActionName == "About" ? " class=active" : "")><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+                        <li><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
+                        <li><a asp-page="/About">About</a></li>
                         @await Html.PartialAsync("_AdminNavigationPartial")
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")

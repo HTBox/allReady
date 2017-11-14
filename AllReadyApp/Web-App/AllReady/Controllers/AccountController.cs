@@ -157,8 +157,8 @@ namespace AllReady.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     TempData["NewAccount"] = true;
-
-                    return RedirectToAction(nameof(HomeController.Index), "Home");
+                    
+                    return RedirectToPage("/Index");
                 }
 
                 AddErrorsToModelState(result);
@@ -174,7 +174,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToPage("/Index");
         }
 
         // GET: /Account/ConfirmEmail
@@ -445,7 +445,7 @@ namespace AllReady.Controllers
                 return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = AreaNames.Admin });
             }
 
-            return new RedirectToActionResult(nameof(HomeController.Index), "Home", null);
+            return new RedirectToPageResult("/Index");
         }
     }
 }
