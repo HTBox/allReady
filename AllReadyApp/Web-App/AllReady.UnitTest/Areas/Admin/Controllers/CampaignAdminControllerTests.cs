@@ -16,7 +16,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using AllReady.Constants;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -739,57 +738,60 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ShouldBe("NothingToDelete");
         }
 
-         [Fact]
+        [Fact]
         public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
         {
-            var viewModel = new DeleteViewModel { Id = 1, OrganizationId = 1 };
-
+            int id = 1;
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = id, OrganizationId = 100});
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false, 1));
             var sut = new CampaignController(mediator.Object, null);
-            await sut.DeleteConfirmed(viewModel);
+            await sut.DeleteConfirmed(id);
 
-            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == id)), Times.Once);
         }
 
         [Fact]
         public async Task DetailConfirmedReturnsForbidResultWhenUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = 1, OrganizationId = 100});
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
 
             var sut = new CampaignController(mediator.Object, null);
-            Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
+            Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(1));
         }
 
         [Fact]
         public async Task DetailConfirmedSendsDeleteCampaignCommandWithCorrectCampaignIdWhenUserIsAuthorized()
         {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
+            int id = 100;
 
-            var viewModel = new DeleteViewModel { Id = 100, UserIsOrgAdmin = true };
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mockMediator.Object, null);
 
-            await sut.DeleteConfirmed(viewModel);
+            await sut.DeleteConfirmed(id);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == id)), Times.Once);
         }
 
         [Fact]
         public async Task DetailConfirmedRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsAuthorized()
         {
-            var viewModel = new DeleteViewModel { Id = 100, UserIsOrgAdmin = true };
+            int id = 100;
 
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mediator.Object, null);
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
-            var result = await sut.DeleteConfirmed(viewModel) as RedirectToActionResult;
+            var result = await sut.DeleteConfirmed(id) as RedirectToActionResult;
             Assert.Equal(nameof(CampaignController.Index), result.ActionName);
             Assert.Equal(result.RouteValues, routeValues);
         }
@@ -798,7 +800,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasHttpPostAttribute()
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -806,7 +808,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal("Delete", attribute.Name);
         }
@@ -815,7 +817,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
