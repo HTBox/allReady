@@ -87,5 +87,6 @@ namespace AllReady.Models
         /// Navigation property to an invited campaign managers
         /// </summary>
         public List<CampaignManagerInvite> ManagementInvites { get; set; }
+        public string Tags { get; set; }
     }
 }

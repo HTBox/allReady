@@ -1,8 +1,4 @@
-﻿@using System
-@using AllReady.Areas.Admin.ViewModels.Site
-@using AllReady.ViewModels.Campaign
-@using AllReady.ViewModels.Organization
-@model AllReady.ViewModels.Campaign.CampaignViewModel
+﻿@model AllReady.ViewModels.Campaign.CampaignViewModel
 
 @{
     ViewData["Title"] = Model.Name;
@@ -24,27 +20,29 @@
         <div class="col-md-9">
             <h2>
                 @if (Model.Featured)
-            {<i class="fa fa-star star-highlight" aria-hidden="true"></i>} @Model.Name
-        </h2>
+                {
+                    <i class="fa fa-star star-highlight" aria-hidden="true"></i>
+                } @Model.Name
+            </h2>
+        </div>
+        <div class="col-md-3 share-buttons">
+            <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
+                <img src="~/images/share-email.png">
+            </a>
+            <a href="http://twitter.com/intent/tweet?url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
+                <img src="~/images/share-twitter.png" alt="Share via Twitter" />
+            </a>
+            <a href="http://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
+                <img src="~/images/share-fb.png" alt="Share via Facebook" />
+            </a>
+        </div>
     </div>
-    <div class="col-md-3 share-buttons">
-        <a href="mailto:?subject=Check out @Model.Name&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
-            <img src="~/images/share-email.png">
-        </a>
-        <a href="http://twitter.com/intent/tweet?url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
-            <img src="~/images/share-twitter.png" alt="Share via Twitter" />
-        </a>
-        <a href="http://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
-            <img src="~/images/share-fb.png" alt="Share via Facebook" />
-        </a>
-    </div>
-</div>
 </div>
 
 <div class="row">
     <div class="col-md-12">
         @if (Model.HasHeadline)
-            {
+        {
             <h3>@Model.Headline</h3>
         }
         <p class="date-address">
@@ -52,6 +50,7 @@
             <em><time-zone-name time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
         <p>@Model.LocationSummary</p>
+        @Html.DisplayFor(model => model.Tags)
     </div>
 </div>
 

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Event;
+using AllReady.ViewModels.Shared;
 
 namespace AllReady.ViewModels.Campaign
 {
@@ -39,6 +40,7 @@ namespace AllReady.ViewModels.Campaign
             Featured = campaign.Featured;
             Headline = campaign.Headline;
             Published = campaign.Published;
+            Tags = new TagCollection(campaign.Tags);
 
         }
 
@@ -101,6 +103,8 @@ namespace AllReady.ViewModels.Campaign
         public bool HasHeadline => !string.IsNullOrEmpty(Headline);
         public bool Published { get; set; }
         public bool IsCampaignManager { get; set; }
+
+        public TagCollection Tags { get; set; }
     }
 
     public static class CampaignViewModelExtensions

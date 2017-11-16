@@ -105,7 +105,8 @@ namespace AllReady.DataAccess
                 StartDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTimeOffset.Now.AddMonths(3), _timeZone),
                 Location = GetRandom(locations),
-                Published = true
+                Published = true,
+                Tags = "Lorem|Ipsum|Dolor"
             };
             organization.Campaigns.Add(firePreventionCampaign);
 
@@ -128,7 +129,8 @@ namespace AllReady.DataAccess
                 CampaignGoals = new List<CampaignGoal> { smokeDetectorCampaignGoal },
                 TimeZoneId = _timeZone.Id,
                 Location = GetRandom(locations),
-                Published = true
+                Published = true,
+                Tags = "Lorem|Dolor"
             };
             organization.Campaigns.Add(smokeDetectorCampaign);
 
@@ -140,7 +142,8 @@ namespace AllReady.DataAccess
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(1), _timeZone),
                 Location = GetRandom(locations),
-                Published = true
+                Published = true,
+                Tags = "Lorem|Ipsum"
             };
             organization.Campaigns.Add(financialCampaign);
 
@@ -152,7 +155,8 @@ namespace AllReady.DataAccess
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _timeZone),
                 Location = GetRandom(locations),
-                Published = true
+                Published = true,
+                Tags = "Lorem|Ipsum|Dolor"
             };
             organization.Campaigns.Add(safetyKitCampaign);
 
@@ -164,7 +168,8 @@ namespace AllReady.DataAccess
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-1), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(2), _timeZone),
                 Location = GetRandom(locations),
-                Published = true
+                Published = true,
+                Tags = "Ipsum|Dolor"
             };
             organization.Campaigns.Add(carSafeCampaign);
 
@@ -176,7 +181,8 @@ namespace AllReady.DataAccess
                 StartDateTime = AdjustToTimezone(DateTime.Today.AddMonths(-6), _timeZone),
                 EndDateTime = AdjustToTimezone(DateTime.Today.AddMonths(6), _timeZone),
                 Location = GetRandom(locations),
-                Published = true
+                Published = true,
+                Tags = "Lorem|Ipsum|Dolor|Sit|Amet"
             };
             organization.Campaigns.Add(escapePlanCampaign);
 
