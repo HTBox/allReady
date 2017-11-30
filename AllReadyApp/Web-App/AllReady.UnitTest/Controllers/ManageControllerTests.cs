@@ -404,12 +404,26 @@ namespace AllReady.UnitTest.Controllers
             signInManagerMock.Verify(s=>s.RefreshSignInAsync(It.Is<ApplicationUser>(u=>u == user)),Times.AtLeastOnce);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendEmailConfirmationInvokesGetUserAsyncWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            ApplicationUser user = new ApplicationUser { Id = "MyUserID" };
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+
+            var mediator = new Mock<IMediator>();
+
+            ManageController controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            controller.SetFakeIUrlHelper();
+            controller.SetFakeUser(user.Id);
+
+            await controller.ResendEmailConfirmation();
+
+            userManagerMock.Verify(u => u.GetUserAsync(controller.User), Times.Once);
+
         }
+
         [Fact]
         public async Task ResendEmailConfirmationInvokesGenerateEmailConfirmationTokenAsyncWithCorrectUser()
         {
