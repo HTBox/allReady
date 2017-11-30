@@ -585,11 +585,27 @@ namespace AllReady.UnitTest.Controllers
             userManagerMock.Verify(u => u.RemoveLoginAsync(user, loginProvider, providerKey));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveLoginInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndRemoveLoginSucceeds()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string unusedLoginProvider = "loginProvider";
+            const string unusedProviderKey = "providerKey";
+
+            var user = new ApplicationUser();
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.RemoveLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+            
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
+
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediatorMock.Object);
+
+            await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
+
+            signInManagerMock.Verify(s => s.SignInAsync(user, false, It.IsAny<string>()));
         }
 
         [Fact(Skip = "NotImplemented")]
