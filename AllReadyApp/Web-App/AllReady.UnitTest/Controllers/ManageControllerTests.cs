@@ -547,11 +547,21 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<ViewResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveLoginSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string UserId = "userID";
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(UserId);
+            userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<UserLoginInfo>());
+
+            var mediator = new Mock<IMediator>();
+            
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+
+            await controller.RemoveLogin();
+
+            mediator.Verify(m => m.SendAsync(It.Is<UserByUserIdQuery>(u => u.UserId == UserId)));
         }
 
         [Fact(Skip = "NotImplemented")]
