@@ -928,11 +928,24 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostReturnsSameViewAndModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string oldPassword = "password";
+
+            var controller = new ManageController(null, null, null);
+            controller.ModelState.AddModelError("error", "error msg");
+            
+            var changePasswordViewModel = new ChangePasswordViewModel{OldPassword = oldPassword};
+
+            var result = await controller.ChangePassword(changePasswordViewModel);
+
+            var viewResult = result as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            var resultChangePasswordViewModel = resultViewModel as ChangePasswordViewModel;
+            Assert.NotNull(resultChangePasswordViewModel);
+            Assert.Equal(oldPassword, resultChangePasswordViewModel.OldPassword);
         }
 
         [Fact]
