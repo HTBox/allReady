@@ -654,8 +654,22 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task RemoveLoginRedirectsToCorrectActionWithErrorMessageRouteValueWhenUserIsNotNullAndRemoveLoginFails()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string unusedLoginProvider = "loginProvider";
+            const string unusedProviderKey = "providerKey";
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.RemoveLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Failed());
+
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
+
+            var result = (RedirectToActionResult)await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
+
+            Assert.NotNull(result);
+            Assert.Equal(nameof(controller.ManageLogins), result.ActionName);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
         }
 
         [Fact]
