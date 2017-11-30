@@ -555,20 +555,34 @@ namespace AllReady.UnitTest.Controllers
             userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(UserId);
             userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<UserLoginInfo>());
 
-            var mediator = new Mock<IMediator>();
+            var mediatorMock = new Mock<IMediator>();
             
-            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
 
             await controller.RemoveLogin();
 
-            mediator.Verify(m => m.SendAsync(It.Is<UserByUserIdQuery>(u => u.UserId == UserId)));
+            mediatorMock.Verify(m => m.SendAsync(It.Is<UserByUserIdQuery>(u => u.UserId == UserId)),Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task RemoveLoginInvokesRemoveLoginAsyncWithCorrectParametersWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string loginProvider = "loginProvider";
+            const string providerKey = "providerKey";
+
+            var user = new ApplicationUser ();
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.RemoveLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
+
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
+
+            await controller.RemoveLogin(loginProvider, providerKey);
+
+            userManagerMock.Verify(u => u.RemoveLoginAsync(user, loginProvider, providerKey));
         }
 
         [Fact(Skip = "NotImplemented")]
