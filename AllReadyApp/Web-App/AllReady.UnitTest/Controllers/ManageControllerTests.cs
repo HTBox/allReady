@@ -1088,11 +1088,20 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(changePasswordViewModel, resultChangePasswordViewModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+
+            var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
+
+            var result = (RedirectToActionResult)await controller.ChangePassword(new ChangePasswordViewModel());
+            Assert.NotNull(result);
+            Assert.Equal(nameof(ManageController.Index), result.ActionName);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
         }
 
         [Fact(Skip = "NotImplemented")]
