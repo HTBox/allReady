@@ -1398,11 +1398,22 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CancelChangeEmailSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+
+            await controller.CancelChangeEmail();
+
+            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
