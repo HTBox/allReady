@@ -1407,11 +1407,24 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SetPasswordPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newPassword = "password";
+
+            var controller = new ManageController(null, null, null);
+            controller.ModelState.AddModelError("error", "error msg");
+
+            var setPasswordViewModel = new SetPasswordViewModel { NewPassword = newPassword };
+
+            var result = await controller.SetPassword(setPasswordViewModel);
+
+            var viewResult = result as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            var resultSetPasswordViewModel = resultViewModel as SetPasswordViewModel;
+            Assert.NotNull(resultSetPasswordViewModel);
+            Assert.Equal(newPassword, resultSetPasswordViewModel.NewPassword);
         }
 
         [Fact(Skip = "NotImplemented")]
