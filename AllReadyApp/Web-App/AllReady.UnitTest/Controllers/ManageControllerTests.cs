@@ -1015,18 +1015,35 @@ namespace AllReady.UnitTest.Controllers
             var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
 
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
-            //controller.SetFakeUser("userID");
 
             await controller.ChangePassword(validVm);
 
             signInManagerMock.Verify(s => s.SignInAsync(user, false, It.IsAny<string>()), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "userID";
+            ApplicationUser user = new ApplicationUser { Id = userId };
+
+            var validVm = new ChangePasswordViewModel { OldPassword = "oldPassword", NewPassword = "newPassword" };
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManagerMock.Setup(u => u.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
+
+            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
+
+            var result = (RedirectToActionResult) await controller.ChangePassword(validVm);
+            Assert.NotNull(result);
+            Assert.Equal(nameof(controller.Index), result.ActionName);
+            Assert.Equal(ManageMessageId.ChangePasswordSuccess, result.RouteValues["Message"]);
         }
 
         [Fact(Skip = "NotImplemented")]
