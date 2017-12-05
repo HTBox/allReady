@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -997,16 +998,12 @@ namespace AllReady.UnitTest.Controllers
             userManagerMock.Verify(u => u.ChangePasswordAsync(It.Is<ApplicationUser>(usr => usr == user), validVm.OldPassword, validVm.NewPassword));
         }
 
-        [Fact]
-        public async Task ChangePasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
+        private static async Task<(Mock<SignInManager<ApplicationUser>> SignInManagerMock, IActionResult Result)> ChangePasswordSuccessfully(ApplicationUser user)
         {
-            const string userId = "userID";
-            ApplicationUser user = new ApplicationUser { Id = userId };
-
             var validVm = new ChangePasswordViewModel { OldPassword = "oldPassword", NewPassword = "newPassword" };
 
             var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(user.Id);
             userManagerMock.Setup(u => u.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
 
             var mediator = new Mock<IMediator>();
@@ -1016,9 +1013,19 @@ namespace AllReady.UnitTest.Controllers
 
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
 
-            await controller.ChangePassword(validVm);
+            var result = await controller.ChangePassword(validVm);
+            return (signInManagerMock, result);
+        }
 
-            signInManagerMock.Verify(s => s.SignInAsync(user, false, It.IsAny<string>()), Times.Once);
+        [Fact]
+        public async Task ChangePasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordWasChangedSuccessfully()
+        {
+            const string userId = "userID";
+            ApplicationUser user = new ApplicationUser { Id = userId };
+
+            var changePasswordResult = await ChangePasswordSuccessfully(user);
+
+            changePasswordResult.SignInManagerMock.Verify(s => s.SignInAsync(user, false, It.IsAny<string>()), Times.Once);
         }
 
         [Fact]
@@ -1027,22 +1034,11 @@ namespace AllReady.UnitTest.Controllers
             const string userId = "userID";
             ApplicationUser user = new ApplicationUser { Id = userId };
 
-            var validVm = new ChangePasswordViewModel { OldPassword = "oldPassword", NewPassword = "newPassword" };
+            var changePasswordResult = await ChangePasswordSuccessfully(user);
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-            userManagerMock.Setup(u => u.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
-
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
-
-            var signInManagerMock = SignInManagerMockHelper.CreateSignInManagerMock(userManagerMock);
-
-            var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
-
-            var result = (RedirectToActionResult) await controller.ChangePassword(validVm);
+            var result = (RedirectToActionResult)changePasswordResult.Result;
             Assert.NotNull(result);
-            Assert.Equal(nameof(controller.Index), result.ActionName);
+            Assert.Equal(nameof(ManageController.Index), result.ActionName);
             Assert.Equal(ManageMessageId.ChangePasswordSuccess, result.RouteValues["Message"]);
         }
 
