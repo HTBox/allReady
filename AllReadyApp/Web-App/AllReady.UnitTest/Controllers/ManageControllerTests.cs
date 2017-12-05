@@ -1043,11 +1043,9 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(ManageMessageId.ChangePasswordSuccess, result.RouteValues["Message"]);
         }
 
-        [Fact]
-        public async Task ChangePasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
+        private static async Task<(ManageController Controller, IActionResult Result)> ChangePasswordUnsuccessfully(IdentityResult identityResult, ChangePasswordViewModel changePasswordViewModel)
         {
             ApplicationUser user = new ApplicationUser { Id = "userID" };
-            var identityResult = IdentityResult.Failed(new IdentityError { Description = "ChangePasswordFailureDescription" });
 
             var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(user.Id);
@@ -1058,18 +1056,36 @@ namespace AllReady.UnitTest.Controllers
 
             var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
 
-            await controller.ChangePassword(new ChangePasswordViewModel());
+            var result = await controller.ChangePassword(changePasswordViewModel);
+            return (controller, result);
+        }
+
+        [Fact]
+        public async Task ChangePasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
+        {
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "ChangePasswordFailureDescription" });
+            ChangePasswordViewModel changePasswordViewModel = new ChangePasswordViewModel();
+
+            ManageController controller = (await ChangePasswordUnsuccessfully(identityResult, changePasswordViewModel)).Controller;
 
             var errorMessages = controller.ModelState.GetErrorMessages();
             Assert.Equal(1, errorMessages.Count);
             Assert.Equal(identityResult.Errors.Select(x => x.Description).Single(), errorMessages.Single());
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostReturnsCorrectViewModelWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "ChangePasswordFailureDescription" });
+            ChangePasswordViewModel changePasswordViewModel = new ChangePasswordViewModel();
+
+            IActionResult result = (await ChangePasswordUnsuccessfully(identityResult, changePasswordViewModel)).Result;
+            var viewResult = result as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            var resultChangePasswordViewModel = resultViewModel as ChangePasswordViewModel;
+            Assert.NotNull(resultChangePasswordViewModel);
+            Assert.Equal(changePasswordViewModel, resultChangePasswordViewModel);
         }
 
         [Fact(Skip = "NotImplemented")]
