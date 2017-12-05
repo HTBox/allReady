@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 using AllReady.Controllers;
@@ -186,12 +188,8 @@ namespace AllReady.UnitTest.Controllers
 
         [Fact]
         public void IndexGetHasHttpGetAttribute()
-        {           
-            var controller = new ManageController(null, null, null);
-            
-            var attribute = controller.GetAttributesOn(x => x.Index(It.IsAny<ManageMessageId>())).OfType<HttpGetAttribute>().SingleOrDefault();
-            
-            Assert.NotNull(attribute);
+        {
+            CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.Index), new [] {typeof(ManageMessageId) });
         }
 
         [Fact]
@@ -321,23 +319,15 @@ namespace AllReady.UnitTest.Controllers
         //TODO: come back to finsih these stubs... there is a lot going on in Index Post
 
         [Fact]
-        public void IndexPostHasHttpPostAttrbiute()
-        {           
-            var controller = new ManageController(null, null, null);
-            
-            var attribute = controller.GetAttributesOn(x => x.Index(It.IsAny<IndexViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
-            
-            Assert.NotNull(attribute);
+        public void IndexPostHasHttpPostAttribute()
+        {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.Index), new [] {typeof(IndexViewModel) });
         }
 
         [Fact]
         public void IndexPostHasValidateAntiForgeryTokenAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.Index(It.IsAny<IndexViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.Index), new[] { typeof(IndexViewModel) });
         }
         [Fact]
         public async Task IndexPostSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
@@ -521,21 +511,13 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ResendEmailConfirmationHasHttpPostAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.ResendEmailConfirmation()).OfType<HttpPostAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.ResendEmailConfirmation), new Type[] { });
         }
 
         [Fact]
         public void ResendEmailConfirmationHasHttpValidateAntiForgeryTokenAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.ResendEmailConfirmation()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.ResendEmailConfirmation), new Type[] { });
         }
 
         [Fact]
@@ -679,22 +661,13 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void RemoveLoginHasHttpPostAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.RemoveLogin("","")).OfType<HttpPostAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.RemoveLogin), new [] { typeof(string), typeof(string)});
         }
 
         [Fact]
         public void RemoveLoginHasValidateAntiForgeryTokenAttribute()
         {
-            
-            var controller = new ManageController(null, null, null);
-            
-            var attribute = controller.GetAttributesOn(x => x.RemoveLogin("", "")).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-            
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.RemoveLogin), new[] { typeof(string), typeof(string) });
         }
 
         [Fact]
@@ -786,21 +759,13 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EnbaleTwoFactorAuthenticationHasHttpPostAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.EnableTwoFactorAuthentication()).OfType<HttpPostAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.EnableTwoFactorAuthentication), new Type[] { });
         }
 
         [Fact]
         public void EnableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
-            var controller = new ManageController(null, null, null);
-            
-            var attribute = controller.GetAttributesOn(x => x.EnableTwoFactorAuthentication()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-            
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.EnableTwoFactorAuthentication), new Type[] { });
         }
 
         [Fact]
@@ -893,21 +858,13 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisableTwoFactorAuthenticationHasHttpPostAttribute()
         {
-            var controller = new ManageController(null, null, null);
-            
-            var attribute = controller.GetAttributesOn(x => x.DisableTwoFactorAuthentication()).OfType<HttpPostAttribute>().SingleOrDefault();
-            
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.DisableTwoFactorAuthentication), new Type[] { });
         }
 
         [Fact]
         public void DisableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.DisableTwoFactorAuthentication()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.DisableTwoFactorAuthentication), new Type[] { });
         }
 
         [Fact]
@@ -923,11 +880,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ChangePasswordGetHasHttpGetAttribute()
         {
-            var controller = new ManageController(null, null, null);
-
-            var attribute = controller.GetAttributesOn(x => x.ChangePassword()).OfType<HttpGetAttribute>().SingleOrDefault();
-
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.ChangePassword), new Type[] { });
         }
 
         [Fact]
@@ -1098,17 +1051,13 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ChangePasswordPostHasHttpPostAttribute()
         {
-            var controller = new ManageController(null, null, null); 
-            var attribute = controller.GetAttributesOn(x => x.ChangePassword(It.IsAny<ChangePasswordViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.ChangePassword), new[] {typeof(ChangePasswordViewModel)});
         }
 
         [Fact]
         public void ChangePasswordPostHasValidateAntiForgeryTokenAttribute()
         {
-            var controller = new ManageController(null, null, null);
-            var attribute = controller.GetAttributesOn(x => x.ChangePassword(It.IsAny<ChangePasswordViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.ChangePassword), new[] { typeof(ChangePasswordViewModel) });
         }
 
         [Fact]
@@ -1124,9 +1073,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void ChangeEmailGetHasHttpGetAttribute()
         {
-            var controller = new ManageController(null, null, null);
-            var attribute = controller.GetAttributesOn(x => x.ChangeEmail()).OfType<HttpGetAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
+            CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.ChangeEmail), new Type[] { });
         }
 
         [Fact]
@@ -1332,14 +1279,16 @@ namespace AllReady.UnitTest.Controllers
             CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.Error);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeEmailPostHasHttpPostAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.ChangeEmail), new [] { typeof(ChangeEmailViewModel) });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeEmailPostHasValidateAntiForgeryTokenAttribute()
         {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.ChangeEmail), new[] { typeof(ChangeEmailViewModel) });
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1407,9 +1356,10 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ConfirmEmailHasHttpGetAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.ConfirmNewEmail), new [] { typeof(string)});
         }
 
         [Fact]
@@ -1466,14 +1416,16 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResendChangesEmailConfirmationHasHttpPostAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.ResendChangeEmailConfirmation), new Type[] { });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ResendChangesEmailConfirmationHasVAlidateAntiForgeryTokenAttribute()
         {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.ResendChangeEmailConfirmation), new Type[] { });
         }
 
         [Fact]
@@ -1508,14 +1460,16 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CancelChangeEmailHasHttpPostAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.CancelChangeEmail), new Type[] { });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void CancelChangeEmailHasValidateAntiForgeryTokenAttribute()
         {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.CancelChangeEmail), new Type[] { });
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1523,9 +1477,10 @@ namespace AllReady.UnitTest.Controllers
         {   
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetPasswordGetHasHttpGetAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.SetPassword), new Type[] { });
         }
 
         [Fact]
@@ -1607,14 +1562,16 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetPasswordPostHasHttpPostAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.SetPassword), new [] { typeof(SetPasswordViewModel) });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetPasswordPostHasValidateAntiForgeryTokenAttribute()
         {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.SetPassword), new[] { typeof(SetPasswordViewModel) });
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1693,9 +1650,10 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ManageLoginsHasHttpGetAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.ManageLogins), new[] { typeof(ManageMessageId) });
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1800,6 +1758,14 @@ namespace AllReady.UnitTest.Controllers
             var result = actionResult as ViewResult;
             Assert.NotNull(result);
             Assert.Equal(result.ViewName, "Error");
+        }
+
+        private static void CheckManageControllerMethodAttribute<T>(string methodName, Type[] parametersTypes)
+        {
+            var t = typeof(ManageController);
+            MethodInfo methodInfo = t.GetMethod(methodName, parametersTypes);
+            var attribute = methodInfo.GetCustomAttributes().OfType<T>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
     }
 }
