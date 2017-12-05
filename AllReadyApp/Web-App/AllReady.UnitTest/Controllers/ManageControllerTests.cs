@@ -12,6 +12,7 @@ using static AllReady.Controllers.ManageController;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
 using System.Security.Claims;
+using AllReady.Extensions;
 using Microsoft.AspNetCore.Identity;
 using AllReady.Features.Manage;
 using AllReady.Features.Login;
@@ -1042,11 +1043,26 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(ManageMessageId.ChangePasswordSuccess, result.RouteValues["Message"]);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangePasswordPostAddsIdentityResultErrorsToModelStateErrorsWhenUserIsNotNullAndPasswordWasNotChangedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            ApplicationUser user = new ApplicationUser { Id = "userID" };
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "ChangePasswordFailureDescription" });
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(user.Id);
+            userManagerMock.Setup(u => u.ChangePasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(identityResult);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+
+            await controller.ChangePassword(new ChangePasswordViewModel());
+
+            var errorMessages = controller.ModelState.GetErrorMessages();
+            Assert.Equal(1, errorMessages.Count);
+            Assert.Equal(identityResult.Errors.Select(x => x.Description).Single(), errorMessages.Single());
         }
 
         [Fact(Skip = "NotImplemented")]
