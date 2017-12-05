@@ -1104,9 +1104,12 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public void ChangePasswordHPostasHttpPostAttribute()
+        [Fact]
+        public void ChangePasswordPostHasHttpPostAttribute()
         {
+            var controller = new ManageController(null, null, null); 
+            var attribute = controller.GetAttributesOn(x => x.ChangePassword(It.IsAny<ChangePasswordViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
