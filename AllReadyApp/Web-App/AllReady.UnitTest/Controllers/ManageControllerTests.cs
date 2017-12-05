@@ -1138,11 +1138,24 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeEmailPostReturnsSameViewAndViewModelWhenModelStateIsInvalid()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newMail = "email";
+
+            var controller = new ManageController(null, null, null);
+            controller.ModelState.AddModelError("error", "error msg");
+
+            var changeEmailViewModel = new ChangeEmailViewModel() { NewEmail = newMail };
+
+            var result = await controller.ChangeEmail(changeEmailViewModel);
+
+            var viewResult = result as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            var resultChangeEmailViewModel = resultViewModel as ChangeEmailViewModel;
+            Assert.NotNull(resultChangeEmailViewModel);
+            Assert.Equal(newMail, resultChangeEmailViewModel.NewEmail);
         }
 
         [Fact(Skip = "NotImplemented")]
