@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -1158,11 +1157,23 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(newMail, resultChangeEmailViewModel.NewEmail);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeEmailPostSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+            var validVm = new ChangeEmailViewModel();
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser { Id = userId });
+            
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+           
+            await controller.ChangeEmail(validVm);
+
+            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
