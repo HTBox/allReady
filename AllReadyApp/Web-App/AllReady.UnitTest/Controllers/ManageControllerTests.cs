@@ -1277,11 +1277,21 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmNewEmailSendsUserByUserIdQueryWithCorrectUserId()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+            
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+
+            var mediator = new Mock<IMediator>();
+
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+
+            await controller.ConfirmNewEmail("");
+
+            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
