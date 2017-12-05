@@ -1130,9 +1130,12 @@ namespace AllReady.UnitTest.Controllers
             Assert.IsType<ViewResult>(result);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeEmailGetHasHttpGetAttribute()
         {
+            var controller = new ManageController(null, null, null);
+            var attribute = controller.GetAttributesOn(x => x.ChangeEmail()).OfType<HttpGetAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
