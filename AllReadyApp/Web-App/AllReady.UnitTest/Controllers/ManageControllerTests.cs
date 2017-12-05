@@ -1212,7 +1212,7 @@ namespace AllReady.UnitTest.Controllers
 
             var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-            userManagerMock.Setup(u => u.CheckPasswordAsync(user, password)).ReturnsAsync(false);
+            userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(false);
 
             var mediator = new Mock<IMediator>();
 
@@ -1230,7 +1230,7 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ChangeEmailPostReturnsCorrectViewModelWhenCheckPasswordIsUnsuccessful()
         {
-            await TaskCompletedTask; const string userId = "UserID";
+            const string userId = "UserID";
             const string password = "password";
 
             var user = new ApplicationUser { Id = userId };
@@ -1239,10 +1239,9 @@ namespace AllReady.UnitTest.Controllers
 
             var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
             userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
-            userManagerMock.Setup(u => u.CheckPasswordAsync(user, password)).ReturnsAsync(false);
+            userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(false);
 
             var mediator = new Mock<IMediator>();
-
             mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
 
             var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
@@ -1257,11 +1256,29 @@ namespace AllReady.UnitTest.Controllers
             Assert.Equal(password, resultChangeEmailViewModel.Password);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+            const string email = "newEmail";
+
+            var user = new ApplicationUser { Id = userId };
+
+            var validVm = new ChangeEmailViewModel { NewEmail = email };
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+
+            var mediator = new Mock<IMediator>();
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+
+            await controller.ChangeEmail(validVm);
+
+            userManagerMock.Verify(u => u.FindByEmailAsync(email.Normalize()), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
