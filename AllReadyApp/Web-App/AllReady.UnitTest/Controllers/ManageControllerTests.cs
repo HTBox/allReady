@@ -513,9 +513,9 @@ namespace AllReady.UnitTest.Controllers
             controller.Url = urlMock.Object;
             urlMock.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns("callbackUrl");
 
-            var result = (RedirectToActionResult)await controller.ResendEmailConfirmation();
+            IActionResult actionResult = await controller.ResendEmailConfirmation();
 
-            Assert.Equal(nameof(controller.EmailConfirmationSent), result.ActionName);
+            CheckRedirectionToAction(actionResult, nameof(ManageController.EmailConfirmationSent));
         }
 
         [Fact]
@@ -625,11 +625,9 @@ namespace AllReady.UnitTest.Controllers
 
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediatorMock.Object);
 
-            var result = (RedirectToActionResult)await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
+            IActionResult actionResult = await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
 
-            Assert.NotNull(result);
-            Assert.Equal(nameof(controller.ManageLogins), result.ActionName);
-            Assert.Equal(ManageMessageId.RemoveLoginSuccess, result.RouteValues["Message"]);
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.ManageLogins), ManageMessageId.RemoveLoginSuccess);
         }
 
         [Fact]
@@ -638,18 +636,25 @@ namespace AllReady.UnitTest.Controllers
             const string unusedLoginProvider = "loginProvider";
             const string unusedProviderKey = "providerKey";
 
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
+            ManageController controller = InitializeControllerWithNullUser();
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            IActionResult actionResult = await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
 
-            var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.ManageLogins), ManageMessageId.Error);
+        }
 
-            var result = (RedirectToActionResult)await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
+        private static void CheckRedirectionToActionWithMessageRouteValue(IActionResult actionResult, string expectedActionName, ManageMessageId expectedMessageRouteValue)
+        {
+            var result = CheckRedirectionToAction(actionResult, expectedActionName);
+            Assert.Equal(expectedMessageRouteValue, result.RouteValues["Message"]);
+        }
 
+        private static RedirectToActionResult CheckRedirectionToAction(IActionResult actionResult, string expectedActionName)
+        {
+            var result = (RedirectToActionResult) actionResult;
             Assert.NotNull(result);
-            Assert.Equal(nameof(controller.ManageLogins), result.ActionName);
-            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
+            Assert.Equal(expectedActionName, result.ActionName);
+            return result;
         }
 
         [Fact]
@@ -666,11 +671,9 @@ namespace AllReady.UnitTest.Controllers
 
             var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
 
-            var result = (RedirectToActionResult)await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
+            IActionResult actionResult = await controller.RemoveLogin(unusedLoginProvider, unusedProviderKey);
 
-            Assert.NotNull(result);
-            Assert.Equal(nameof(controller.ManageLogins), result.ActionName);
-            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.ManageLogins), ManageMessageId.Error);
         }
 
         [Fact]
@@ -775,9 +778,9 @@ namespace AllReady.UnitTest.Controllers
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
 
-            var result = (RedirectToActionResult)await controller.EnableTwoFactorAuthentication();
+            IActionResult actionResult = await controller.EnableTwoFactorAuthentication();
 
-            Assert.Equal(nameof(controller.Index), result.ActionName);
+            CheckRedirectionToAction(actionResult, nameof(ManageController.Index));
         }
 
         [Fact]
@@ -883,9 +886,9 @@ namespace AllReady.UnitTest.Controllers
             var controller = new ManageController(userManagerMock.Object, signInManagerMock.Object, mediator.Object);
             controller.SetFakeUser(userId);
 
-            var result = (RedirectToActionResult)await controller.DisableTwoFactorAuthentication();
+            IActionResult actionResult = await controller.DisableTwoFactorAuthentication();
 
-            Assert.Equal(nameof(controller.Index), result.ActionName);
+            CheckRedirectionToAction(actionResult, nameof(ManageController.Index));
         }
 
         [Fact]
@@ -1035,11 +1038,8 @@ namespace AllReady.UnitTest.Controllers
             ApplicationUser user = new ApplicationUser { Id = userId };
 
             var changePasswordResult = await ChangePasswordSuccessfully(user);
-
-            var result = (RedirectToActionResult)changePasswordResult.Result;
-            Assert.NotNull(result);
-            Assert.Equal(nameof(ManageController.Index), result.ActionName);
-            Assert.Equal(ManageMessageId.ChangePasswordSuccess, result.RouteValues["Message"]);
+            
+            CheckRedirectionToActionWithMessageRouteValue(changePasswordResult.Result, nameof(ManageController.Index), ManageMessageId.ChangePasswordSuccess);
         }
 
         private static async Task<(ManageController Controller, IActionResult Result)> ChangePasswordUnsuccessfully(IdentityResult identityResult, ChangePasswordViewModel changePasswordViewModel)
@@ -1090,17 +1090,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ChangePasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
+            ManageController controller = InitializeControllerWithNullUser();
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            IActionResult actionResult = await controller.ChangePassword(new ChangePasswordViewModel());
 
-            var controller = new ManageController(userManagerMock.Object, null, mediatorMock.Object);
-
-            var result = (RedirectToActionResult)await controller.ChangePassword(new ChangePasswordViewModel());
-            Assert.NotNull(result);
-            Assert.Equal(nameof(ManageController.Index), result.ActionName);
-            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.Error);
         }
 
         [Fact]
@@ -1257,7 +1251,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenChangePasswordIsSuccessful()
+        public async Task ChangeEmailPostInvokesFindByEmailAsyncWithCorrectParametersWhenCheckPasswordIsSuccessful()
         {
             const string userId = "UserID";
             const string email = "newEmail";
@@ -1282,10 +1276,10 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostAddsCorrectErrorToModelStateWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
+        public async Task ChangeEmailPostAddsCorrectErrorToModelStateWhenCheckPasswordIsSuccessfulAndEmailCannotBeFound()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+           //delete this line when starting work on this unit test
+            await TaskCompletedTask; 
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1330,11 +1324,35 @@ namespace AllReady.UnitTest.Controllers
             await TaskCompletedTask;
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ChangeEmailPostRedirectsToTheCorrectActionWithTheCorrectRouteValuesWhenUserIsNull()
+        { 
+            ManageController controller = InitializeControllerWithNullUser();
+
+            var result = (RedirectToActionResult)await controller.ChangeEmail(new ChangeEmailViewModel());
+            
+            Assert.NotNull(result);
+            Assert.Equal(nameof(ManageController.Index), result.ActionName);
+            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
+        }
+
+        private static ManageController InitializeControllerWithNullUser()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+
+            return new ManageController(userManagerMock.Object, null, mediatorMock.Object);
+
+            //var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            //userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("");
+
+            //var mediator = new Mock<IMediator>();
+            //mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser) null);
+
+            //var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+            //return controller;
         }
 
         [Fact(Skip = "NotImplemented")]
