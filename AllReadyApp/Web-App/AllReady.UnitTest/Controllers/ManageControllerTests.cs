@@ -796,7 +796,6 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void EnableTwoFactorAuthenticationHasValidateAntiForgeryTokenAttribute()
         {
-            
             var controller = new ManageController(null, null, null);
             
             var attribute = controller.GetAttributesOn(x => x.EnableTwoFactorAuthentication()).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
@@ -894,7 +893,6 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public void DisableTwoFactorAuthenticationHasHttpPostAttribute()
         {
-            
             var controller = new ManageController(null, null, null);
             
             var attribute = controller.GetAttributesOn(x => x.DisableTwoFactorAuthentication()).OfType<HttpPostAttribute>().SingleOrDefault();
@@ -1329,30 +1327,9 @@ namespace AllReady.UnitTest.Controllers
         { 
             ManageController controller = InitializeControllerWithNullUser();
 
-            var result = (RedirectToActionResult)await controller.ChangeEmail(new ChangeEmailViewModel());
-            
-            Assert.NotNull(result);
-            Assert.Equal(nameof(ManageController.Index), result.ActionName);
-            Assert.Equal(ManageMessageId.Error, result.RouteValues["Message"]);
-        }
+            IActionResult actionResult = await controller.ChangeEmail(new ChangeEmailViewModel());
 
-        private static ManageController InitializeControllerWithNullUser()
-        {
-            var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
-
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-
-            return new ManageController(userManagerMock.Object, null, mediatorMock.Object);
-
-            //var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            //userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns("");
-
-            //var mediator = new Mock<IMediator>();
-            //mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser) null);
-
-            //var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
-            //return controller;
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.Error);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1368,8 +1345,11 @@ namespace AllReady.UnitTest.Controllers
         [Fact(Skip = "NotImplemented")]
         public async Task ConfirmNewEmailReturnsErrorViewWhenTokenIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controller = InitializeControllerWithNullUser();
+
+            var actionResult = await controller.ConfirmNewEmail(null);
+
+            CheckReturnsErrorView(actionResult);
         }
 
         [Fact]
@@ -1389,11 +1369,14 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmNewEmailReturnsErrorViewWhenUserIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controller = InitializeControllerWithNullUser();
+
+            var actionResult = await controller.ConfirmNewEmail("");
+
+            CheckReturnsErrorView(actionResult);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1672,11 +1655,14 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ManageLoginsReturnsErrorViewWhenUserIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controller = InitializeControllerWithNullUser();
+
+            var actionResult = await controller.ManageLogins();
+
+            CheckReturnsErrorView(actionResult);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1754,11 +1740,14 @@ namespace AllReady.UnitTest.Controllers
             mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LinkLoginCallbackReturnsErrorViewWhenUserIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controller = InitializeControllerWithNullUser();
+
+            var actionResult = await controller.LinkLoginCallback();
+
+            CheckReturnsErrorView(actionResult);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1794,6 +1783,23 @@ namespace AllReady.UnitTest.Controllers
         {
             //delete this line when starting work on this unit test
             await TaskCompletedTask;
+        }
+
+        private static ManageController InitializeControllerWithNullUser()
+        {
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync((ApplicationUser)null);
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+
+            return new ManageController(userManagerMock.Object, null, mediatorMock.Object);
+        }
+
+        private void CheckReturnsErrorView(IActionResult actionResult)
+        {
+            var result = actionResult as ViewResult;
+            Assert.NotNull(result);
+            Assert.Equal(result.ViewName, "Error");
         }
     }
 }
