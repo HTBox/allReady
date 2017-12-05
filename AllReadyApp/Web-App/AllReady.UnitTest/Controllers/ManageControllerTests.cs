@@ -1112,9 +1112,12 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangePasswordPostHasValidateAntiForgeryTokenAttribute()
         {
+            var controller = new ManageController(null, null, null);
+            var attribute = controller.GetAttributesOn(x => x.ChangePassword(It.IsAny<ChangePasswordViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         [Fact(Skip = "NotImplemented")]
