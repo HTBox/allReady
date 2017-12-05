@@ -1120,9 +1120,14 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(attribute);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void ChangeEmailGetReturnsAView()
         {
+            var controller = new ManageController(null, null, null);
+
+            var result = controller.ChangeEmail();
+
+            Assert.IsType<ViewResult>(result);
         }
 
         [Fact(Skip = "NotImplemented")]
