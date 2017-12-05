@@ -1227,11 +1227,34 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(errorMessages.Single());
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostReturnsCorrectVieModelWhenChangePasswordIsUnsuccessful()
+        [Fact]
+        public async Task ChangeEmailPostReturnsCorrectViewModelWhenCheckPasswordIsUnsuccessful()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            await TaskCompletedTask; const string userId = "UserID";
+            const string password = "password";
+
+            var user = new ApplicationUser { Id = userId };
+
+            var validVm = new ChangeEmailViewModel { Password = password };
+
+            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
+            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            userManagerMock.Setup(u => u.CheckPasswordAsync(user, password)).ReturnsAsync(false);
+
+            var mediator = new Mock<IMediator>();
+
+            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(user);
+
+            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
+
+            var result = await controller.ChangeEmail(validVm);
+
+            var viewResult = result as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            var resultChangeEmailViewModel = resultViewModel as ChangeEmailViewModel;
+            Assert.NotNull(resultChangeEmailViewModel);
+            Assert.Equal(password, resultChangeEmailViewModel.Password);
         }
 
         [Fact(Skip = "NotImplemented")]
