@@ -919,9 +919,7 @@ namespace AllReady.UnitTest.Controllers
 
             ManageController controller = (await ChangePasswordUnsuccessfully(identityResult, changePasswordViewModel)).Controller;
 
-            var errorMessages = controller.ModelState.GetErrorMessages();
-            Assert.Equal(1, errorMessages.Count);
-            Assert.Equal(identityResult.Errors.Select(x => x.Description).Single(), errorMessages.Single());
+            CheckIdentityResultAddedToModelStateError(controller, identityResult);
         }
 
         [Fact]
@@ -1509,15 +1507,21 @@ namespace AllReady.UnitTest.Controllers
             CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.SetPasswordSuccess);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNull()
+        [Fact]
+        public async Task SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNullAndPasswordNotAddedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "SetPasswordFailureDescription" });
+
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(identityResult);
+
+            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel());
+
+            CheckIdentityResultAddedToModelStateError(controllerAndMocks.controller, identityResult);
         }
 
         [Fact(Skip = "NotImplemented")]
-        public async Task SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNull()
+        public async Task SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNullAndPasswordNotAddedSuccessfully()
         {
             //delete this line when starting work on this unit test
             await TaskCompletedTask;
@@ -1753,6 +1757,13 @@ namespace AllReady.UnitTest.Controllers
             MethodInfo methodInfo = t.GetMethod(methodName, parametersTypes);
             var attribute = methodInfo.GetCustomAttributes().OfType<T>().SingleOrDefault();
             Assert.NotNull(attribute);
+        }
+
+        private static void CheckIdentityResultAddedToModelStateError(ManageController controller, IdentityResult identityResult)
+        {
+            var errorMessages = controller.ModelState.GetErrorMessages();
+            Assert.Equal(1, errorMessages.Count);
+            Assert.Equal(identityResult.Errors.Select(x => x.Description).Single(), errorMessages.Single());
         }
     }
 }
