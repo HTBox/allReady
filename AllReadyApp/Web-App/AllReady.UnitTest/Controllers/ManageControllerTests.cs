@@ -1202,7 +1202,8 @@ namespace AllReady.UnitTest.Controllers
         [Fact]
         public async Task ConfirmNewEmailInvokesChangeEmailAsyncWithCorrectParametersWhenUserIsNotNull()
         {
-            var user = new ApplicationUser{PendingNewEmail = "email"};
+            const string pendingNewEmail = "email";
+            var user = new ApplicationUser{PendingNewEmail = pendingNewEmail};
             const string token = "token";
 
             var controllerAndMocks = InitializeControllerWithValidUser(user);
@@ -1210,14 +1211,21 @@ namespace AllReady.UnitTest.Controllers
 
             await controllerAndMocks.controller.ConfirmNewEmail(token);
 
-            controllerAndMocks.userManagerMock.Verify(u => u.ChangeEmailAsync(user, user.PendingNewEmail, token));
+            controllerAndMocks.userManagerMock.Verify(u => u.ChangeEmailAsync(user, pendingNewEmail, token));
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ConfirmNewEmailInvokesSetUserNameAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
+        [Fact]
+        public async Task ConfirmNewEmailInvokesSetUserNameAsyncWithCorrectParametersWhenUserIsNotNullAndChangeEmailIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string pendingNewEmail = "email";
+            var user = new ApplicationUser { PendingNewEmail = pendingNewEmail };
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.ChangeEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+
+            await controllerAndMocks.controller.ConfirmNewEmail("");
+
+            controllerAndMocks.userManagerMock.Verify(u => u.SetUserNameAsync(user, pendingNewEmail));
         }
 
         [Fact(Skip = "NotImplemented")]
