@@ -119,6 +119,18 @@ namespace AllReady.UnitTest.Extensions
             return Mock.Get(controller.Response);
         }
 
+        public static Mock<IUrlHelper> GetMockIUrlHelper(this Controller controller)
+        {
+            SetFakeIUrlHelperIfNotAlreadySet(controller);
+            return Mock.Get(controller.Url);
+        }
+
+        private static void SetFakeIUrlHelperIfNotAlreadySet(Controller controller)
+        {
+            if (controller.Url == null)
+                controller.SetFakeIUrlHelper();
+        }
+
         public static Mock<IUrlHelper> SetFakeIUrlHelper(this Controller controller)
         {
             controller.Url = new Mock<IUrlHelper>().Object;

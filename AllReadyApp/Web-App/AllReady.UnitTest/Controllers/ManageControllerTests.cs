@@ -1310,11 +1310,27 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.userManagerMock.Verify(u => u.GenerateChangeEmailTokenAsync(user, newEmail));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendChangesEmailConfirmationInvokesUrlActionWithCorrectParameters()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newEmail = "email";
+            const string requestScheme = "requestScheme";
+            const string token = "token";
+            var user = new ApplicationUser { PendingNewEmail = newEmail };
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo(requestScheme);
+            controllerAndMocks.userManagerMock.Setup(x => x.GenerateChangeEmailTokenAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(token);
+
+            await controllerAndMocks.controller.ResendChangeEmailConfirmation();
+
+            controllerAndMocks.controller.GetMockIUrlHelper().Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
+                    uac.Action == nameof(ManageController.ConfirmNewEmail) &&
+                    uac.Controller == "Manage" &&
+                    uac.Protocol == requestScheme)),
+                Times.Once);
+
         }
 
         [Fact(Skip = "NotImplemented")]
