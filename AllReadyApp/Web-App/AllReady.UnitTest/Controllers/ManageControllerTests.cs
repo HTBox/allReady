@@ -1466,23 +1466,24 @@ namespace AllReady.UnitTest.Controllers
         {
             const string userId = "UserID";
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userId});
 
-            var mediator = new Mock<IMediator>();
+            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel());
 
-            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
-
-            await controller.SetPassword(new SetPasswordViewModel());
-
-            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
+            controllerAndMocks.mediatorMock.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SetPasswordPostInvokesAddPasswordAsyncWithCorrectParametersWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string password = "password";
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
+
+            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel(){NewPassword = password});
+
+            controllerAndMocks.userManagerMock.Verify(u => u.AddPasswordAsync(user, password));
         }
 
         [Fact(Skip = "NotImplemented")]
