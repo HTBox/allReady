@@ -1295,11 +1295,19 @@ namespace AllReady.UnitTest.Controllers
             CheckReturnsErrorView(actionResult);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendChangesEmailConfirmationInvokesGenerateChangeEmailTokenAsyncWithCorrectParameters()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newEmail = "email";
+            var user = new ApplicationUser {PendingNewEmail = newEmail};
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+            
+            await controllerAndMocks.controller.ResendChangeEmailConfirmation();
+
+            controllerAndMocks.userManagerMock.Verify(u => u.GenerateChangeEmailTokenAsync(user, newEmail));
         }
 
         [Fact(Skip = "NotImplemented")]
