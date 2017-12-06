@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using AllReady.Features.Manage;
 using AllReady.Features.Login;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.UnitTest.Controllers
@@ -1737,16 +1738,11 @@ namespace AllReady.UnitTest.Controllers
         {
             const string userId = "UserID";
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userId});
 
-            var mediator = new Mock<IMediator>();
+            await controllerAndMocks.controller.LinkLoginCallback();
 
-            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
-
-            await controller.LinkLoginCallback();
-
-            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
+            controllerAndMocks.mediatorMock.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
         [Fact]
@@ -1759,39 +1755,74 @@ namespace AllReady.UnitTest.Controllers
             CheckReturnsErrorView(actionResult);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LinkLoginCallbackInvokesGetExternalLoginInfoAsyncWithCorrectUserIdWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userId });
+
+            await controllerAndMocks.controller.LinkLoginCallback();
+
+            controllerAndMocks.signInManagerMock.Verify(s => s.GetExternalLoginInfoAsync(userId), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndExternalLoginInfoIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser { Id = userId });
+            controllerAndMocks.signInManagerMock.Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>())).ReturnsAsync((ExternalLoginInfo)null);
+
+            var actionResult = await controllerAndMocks.controller.LinkLoginCallback();
+
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.ManageLogins), ManageMessageId.Error);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task LinkLoginCallbackInvokesAddLoginAsyncWithCorrectParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            var externalLoginInfo = new ExternalLoginInfo(new ClaimsPrincipal(), "", "", "");
+            controllerAndMocks.signInManagerMock.Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>())).ReturnsAsync(externalLoginInfo);
+            controllerAndMocks.userManagerMock.Setup(u => u.AddLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<ExternalLoginInfo>())).ReturnsAsync(new IdentityResult());
+
+            await controllerAndMocks.controller.LinkLoginCallback();
+
+            controllerAndMocks.userManagerMock.Verify(u => u.AddLoginAsync(user, externalLoginInfo), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull()
+        private static async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull(IdentityResult addLoginResult, ManageMessageId expectedMessageRouteValue)
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.signInManagerMock.Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>())).ReturnsAsync(new ExternalLoginInfo(new ClaimsPrincipal(), "", "", ""));
+            controllerAndMocks.userManagerMock.Setup(u => u.AddLoginAsync(It.IsAny<ApplicationUser>(), It.IsAny<UserLoginInfo>())).ReturnsAsync(addLoginResult);
+            var actionResult = await controllerAndMocks.controller.LinkLoginCallback();
+
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.ManageLogins), expectedMessageRouteValue);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ControllerHasAuthorizeAtttribute()
+        [Fact]
+        public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNullAndAddLoginSucceeds()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            await LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull(IdentityResult.Success, ManageMessageId.AddLoginSuccess);
+        }
+
+        [Fact]
+        public async Task LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNullAndAddLoginFails()
+        {
+            await LinkLoginCallbackRedirectsToCorrectActionWithCorrectRouteParametersWhenUserIsNotNullAndExternalLoginInfoIsNotNull(IdentityResult.Failed(), ManageMessageId.Error);
+        }
+
+        [Fact]
+        public void ControllerHasAuthorizeAttribute()
+        {
+            var t = typeof(ManageController);
+            var attribute = t.GetCustomAttributes().OfType<AuthorizeAttribute>().SingleOrDefault();
+            Assert.NotNull(attribute);
         }
 
         private static (ManageController controller, Mock<UserManager<ApplicationUser>> userManagerMock, Mock<IMediator> mediatorMock, Mock<SignInManager<ApplicationUser>> signInManagerMock) InitializeControllerWithValidUser(ApplicationUser applicationUser)
