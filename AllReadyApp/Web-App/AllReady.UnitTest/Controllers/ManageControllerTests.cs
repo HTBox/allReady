@@ -17,6 +17,7 @@ using AllReady.Extensions;
 using Microsoft.AspNetCore.Identity;
 using AllReady.Features.Manage;
 using AllReady.Features.Login;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace AllReady.UnitTest.Controllers
@@ -1670,19 +1671,53 @@ namespace AllReady.UnitTest.Controllers
             CheckManageControllerMethodAttribute<HttpGetAttribute>(nameof(ManageController.ManageLogins), new[] { typeof(ManageMessageId) });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LinkLoginInvokesUrlActionWithTheCorrectParameters()
         {
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            var urlHelper = controllerAndMocks.controller.SetFakeIUrlHelper();
+
+            controllerAndMocks.controller.LinkLogin("");
+
+            urlHelper.Verify(u => u.Action(It.Is<UrlActionContext>(uac =>
+                    uac.Action == nameof(ManageController.LinkLoginCallback) &&
+                    uac.Controller == "Manage")),
+                Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LinkLoginInvokesConfigureExternalAuthenticationPropertiesWithCorrectParameters()
         {
+            const string provider = "provider";
+            const string url = "url";
+            const string userID = "userId";
+
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userID});
+            var urlHelper = controllerAndMocks.controller.SetFakeIUrlHelper();
+            urlHelper.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns(url);
+
+            controllerAndMocks.controller.LinkLogin(provider);
+
+            controllerAndMocks.signInManagerMock.Verify(s => s.ConfigureExternalAuthenticationProperties(provider, url, userID));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LinkLoginReturnsCorrectResult()
         {
+            const string provider = "provider";
+
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            AuthenticationProperties authenticationProperties = new AuthenticationProperties();
+            controllerAndMocks.signInManagerMock.Setup(s => s.ConfigureExternalAuthenticationProperties(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(authenticationProperties);
+
+            var actionResult = controllerAndMocks.controller.LinkLogin(provider);
+
+            Assert.NotNull(actionResult);
+            ChallengeResult challengeResult = actionResult as ChallengeResult;
+            Assert.NotNull(challengeResult);
+            Assert.Equal(provider, challengeResult.AuthenticationSchemes.Single());
+            Assert.Equal(authenticationProperties, challengeResult.Properties);
         }
 
         [Fact]
