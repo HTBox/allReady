@@ -1481,16 +1481,21 @@ namespace AllReady.UnitTest.Controllers
             var controllerAndMocks = InitializeControllerWithValidUser(user);
             controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
 
-            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel(){NewPassword = password});
+            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel{NewPassword = password});
 
             controllerAndMocks.userManagerMock.Verify(u => u.AddPasswordAsync(user, password));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SetPasswordPostInvokesSignInAsyncWithCorrectParametersWhenUserIsNotNullAndPasswordAddedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+
+            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel());
+
+            controllerAndMocks.signInManagerMock.Verify(s => s.SignInAsync(user, false,It.IsAny<string>()));
         }
 
         [Fact(Skip = "NotImplemented")]
