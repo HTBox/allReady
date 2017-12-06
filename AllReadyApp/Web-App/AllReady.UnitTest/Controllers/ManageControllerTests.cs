@@ -1647,11 +1647,21 @@ namespace AllReady.UnitTest.Controllers
             await CheckManageLoginsAddsCorrectValueToSHOW_REMOVE_BUTTON(controllerAndMocks.controller, false);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ManageLoginsReturnsCorrectViewModelWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            var userLoginInfos = new List<UserLoginInfo>();
+            controllerAndMocks.userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(userLoginInfos);
+
+            var actionResult = await controllerAndMocks.controller.ManageLogins();
+
+            var viewResult = actionResult as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            var manageLoginsViewModel = resultViewModel as ManageLoginsViewModel;
+            Assert.NotNull(manageLoginsViewModel);
+            Assert.Equal(userLoginInfos, manageLoginsViewModel.CurrentLogins);
         }
 
         [Fact]
