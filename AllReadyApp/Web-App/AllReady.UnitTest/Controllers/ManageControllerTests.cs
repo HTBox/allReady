@@ -1061,12 +1061,7 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(false);
             var result = await controllerAndMocks.controller.ChangeEmail(validVm);
 
-            var viewResult = result as ViewResult;
-            Assert.NotNull(viewResult);
-            var resultViewModel = viewResult.ViewData.Model;
-            var resultChangeEmailViewModel = resultViewModel as ChangeEmailViewModel;
-            Assert.NotNull(resultChangeEmailViewModel);
-            Assert.Equal(password, resultChangeEmailViewModel.Password);
+            CheckViewModelAssociatedToViewResult(result, validVm);
         }
 
         [Fact]
