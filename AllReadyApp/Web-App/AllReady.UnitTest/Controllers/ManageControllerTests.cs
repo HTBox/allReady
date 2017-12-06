@@ -1333,12 +1333,20 @@ namespace AllReady.UnitTest.Controllers
 
         }
 
-        [Fact(Skip = "NotImplemented")]
-        //public async Task ResendChangesEmailConfirmationInvokesSendEmailAsyncWithCorrectParameters()
+        [Fact]
         public async Task ResendChangesEmailConfirmationSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectData()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string requestScheme = "requestScheme";
+            const string email = "email";
+
+            var user = new ApplicationUser {PendingNewEmail = email};
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo(requestScheme);
+
+            await controllerAndMocks.controller.ResendChangeEmailConfirmation();
+
+            controllerAndMocks.mediatorMock.Verify(m => m.SendAsync(It.Is<SendNewEmailAddressConfirmationEmail>(s => s.Email == email)), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
