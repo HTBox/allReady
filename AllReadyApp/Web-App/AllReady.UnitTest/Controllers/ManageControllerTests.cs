@@ -1528,11 +1528,14 @@ namespace AllReady.UnitTest.Controllers
             CheckViewModelAssociatedToViewResult(result.actionResult, setPasswordViewModel);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SetPasswordPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controller = InitializeControllerWithNullUser();
+
+            var actionResult = await controller.SetPassword(new SetPasswordViewModel());
+
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.Error);
         }
 
         [Fact]
