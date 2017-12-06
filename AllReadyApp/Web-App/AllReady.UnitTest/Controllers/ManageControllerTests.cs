@@ -1425,9 +1425,14 @@ namespace AllReady.UnitTest.Controllers
             CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.CancelChangeEmail), new Type[] { });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void SetPasswordGetReturnsAView()
-        {   
+        {
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+
+            var actionResult = controllerAndMocks.controller.SetPassword();
+
+            Assert.IsType<ViewResult>(actionResult); 
         }
 
         [Fact]
