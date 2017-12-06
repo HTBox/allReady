@@ -1400,11 +1400,17 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.userManagerMock.Verify(u => u.UpdateAsync(user));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task CancelChangeEmailRedirectsToCorrectAction()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string userId = "UserID";
+            var user = new ApplicationUser { Id = userId };
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+
+            var actionResult = await controllerAndMocks.controller.CancelChangeEmail();
+
+            CheckRedirectionToAction(actionResult, nameof(ManageController.Index));
         }
 
         [Fact]
