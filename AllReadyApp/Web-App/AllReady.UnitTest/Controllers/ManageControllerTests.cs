@@ -33,10 +33,7 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
           
             var result = await controller.Index(ManageMessageId.ChangePasswordSuccess);
-            var resultViewModel = ((ViewResult)result);
-            var message = resultViewModel.ViewData["StatusMessage"].ToString();
-         
-            Assert.Equal("Your password has been changed.", message);
+            CheckCorrectMessageAddedToViewData(result, "Your password has been changed.");
         }
 
         [Fact]
@@ -46,10 +43,7 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
             
             var result = await controller.Index(ManageMessageId.SetPasswordSuccess);
-            var resultViewModel = ((ViewResult)result);
-            var message = resultViewModel.ViewData["StatusMessage"].ToString();
-           
-            Assert.Equal("Your password has been set.", message);
+            CheckCorrectMessageAddedToViewData(result, "Your password has been set.");
         }
 
         [Fact]
@@ -59,10 +53,7 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
             
             var result = await controller.Index(ManageMessageId.SetTwoFactorSuccess);
-            var resultViewModel = ((ViewResult)result);
-            var message = resultViewModel.ViewData["StatusMessage"].ToString();
-          
-            Assert.Equal("Your two-factor authentication provider has been set.", message);
+            CheckCorrectMessageAddedToViewData(result, "Your two-factor authentication provider has been set.");
         }
 
         [Fact]
@@ -72,10 +63,7 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
            
             var result = await controller.Index(ManageMessageId.Error);
-            var resultViewModel = ((ViewResult)result);
-            var message = resultViewModel.ViewData["StatusMessage"].ToString();
-           
-            Assert.Equal("An error has occurred.", message);
+            CheckCorrectMessageAddedToViewData(result, "An error has occurred.");
         }
 
         [Fact]
@@ -85,10 +73,7 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
            
             var result = await controller.Index(ManageMessageId.AddPhoneSuccess);
-            var resultViewModel = ((ViewResult)result);
-            var message = resultViewModel.ViewData["StatusMessage"].ToString();
-            
-            Assert.Equal("Your mobile phone number was added.", message);
+            CheckCorrectMessageAddedToViewData(result, "Your mobile phone number was added.");
         }
 
         [Fact]
@@ -98,10 +83,7 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
           
             var result = await controller.Index(ManageMessageId.RemovePhoneSuccess);
-            var resultViewModel = ((ViewResult)result);
-            var message = resultViewModel.ViewData["StatusMessage"].ToString();
-            
-            Assert.Equal("Your mobile phone number was removed.", message);
+            CheckCorrectMessageAddedToViewData(result, "Your mobile phone number was removed.");
         }
 
         [Fact]
@@ -1550,25 +1532,31 @@ namespace AllReady.UnitTest.Controllers
             CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.SetPassword), new[] { typeof(SetPasswordViewModel) });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        private static async Task CheckManageLoginsAddsCorrectMessageToViewData(ManageMessageId message, string expectedMessageAddedToViewData)
+        {
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            controllerAndMocks.userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<UserLoginInfo>());
+
+            var result = await controllerAndMocks.controller.ManageLogins(message);
+            CheckCorrectMessageAddedToViewData(result, expectedMessageAddedToViewData);
+        }
+
+        [Fact]
         public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsRemoveLoginSuccess()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            await CheckManageLoginsAddsCorrectMessageToViewData(ManageMessageId.RemoveLoginSuccess, "The external login was removed.");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsAddLoginSuccess()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            await CheckManageLoginsAddsCorrectMessageToViewData(ManageMessageId.AddLoginSuccess, "The external login was added.");
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ManageLoginsAddsCorrectMessageToViewDataWhenMessageIdIsError()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            await CheckManageLoginsAddsCorrectMessageToViewData(ManageMessageId.Error, "An error has occurred.");
         }
 
         [Fact]
@@ -1776,6 +1764,14 @@ namespace AllReady.UnitTest.Controllers
             Assert.NotNull(viewResult);
             var resultViewModel = viewResult.ViewData.Model;
             Assert.Equal(expectedViewModel, resultViewModel);
+        }
+
+        private static void CheckCorrectMessageAddedToViewData(IActionResult result, string expectedMessage)
+        {
+            var resultViewModel = ((ViewResult)result);
+            var message = resultViewModel.ViewData["StatusMessage"].ToString();
+
+            Assert.Equal(expectedMessage, message);
         }
     }
 }
