@@ -1564,16 +1564,11 @@ namespace AllReady.UnitTest.Controllers
         {
             const string userId = "UserID";
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userId});
 
-            var mediator = new Mock<IMediator>();
+            await controllerAndMocks.controller.ManageLogins();
 
-            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
-
-            await controller.ManageLogins();
-
-            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
+            controllerAndMocks.mediatorMock.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
         [Fact]
@@ -1586,18 +1581,30 @@ namespace AllReady.UnitTest.Controllers
             CheckReturnsErrorView(actionResult);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ManageLoginsInvokesGetLoginsAsyncWithCorrectParametersWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var user = new ApplicationUser ();
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<UserLoginInfo>());
+
+            await controllerAndMocks.controller.ManageLogins();
+
+            controllerAndMocks.userManagerMock.Verify(u => u.GetLoginsAsync(user), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ManageLoginsInvokesGetExternalAuthenticationSchemesWhenUserIsNotNull()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var user = new ApplicationUser();
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<UserLoginInfo>());
+
+            await controllerAndMocks.controller.ManageLogins();
+
+            controllerAndMocks.signInManagerMock.Verify(s => s.GetExternalAuthenticationSchemesAsync(), Times.Once);
         }
 
         [Fact(Skip = "NotImplemented")]
