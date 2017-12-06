@@ -1268,24 +1268,31 @@ namespace AllReady.UnitTest.Controllers
         {
             const string userId = "UserID";
 
-            var userManagerMock = UserManagerMockHelper.CreateUserManagerMock();
-            userManagerMock.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(userId);
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser { Id = userId });
 
-            var mediator = new Mock<IMediator>();
-            mediator.Setup(m => m.SendAsync(It.IsAny<UserByUserIdQuery>())).ReturnsAsync(new ApplicationUser());
+            await controllerAndMocks.controller.ResendChangeEmailConfirmation();
 
-            var controller = new ManageController(userManagerMock.Object, null, mediator.Object);
-
-            await controller.ResendChangeEmailConfirmation();
-
-            mediator.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
+            controllerAndMocks.mediatorMock.Verify(u => u.SendAsync(It.Is<UserByUserIdQuery>(i => i.UserId == userId)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
+        public async Task ResendChangeEmailConfirmationReturnsErrorViewWhenUserIsNull()
+        {
+            var controller = InitializeControllerWithNullUser();
+
+            IActionResult actionResult = await controller.ResendEmailConfirmation();
+
+            CheckReturnsErrorView(actionResult);
+        }
+
+        [Fact]
         public async Task ResendChangeEmailConfirmationReturnsErrorViewWhenUsersPendingNewEmailIsNullOrEmpty()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser { PendingNewEmail = ""});
+
+            IActionResult actionResult = await controllerAndMocks.controller.ResendEmailConfirmation();
+
+            CheckReturnsErrorView(actionResult);
         }
 
         [Fact(Skip = "NotImplemented")]
