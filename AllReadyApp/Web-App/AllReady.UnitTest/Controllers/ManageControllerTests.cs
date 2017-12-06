@@ -1228,11 +1228,18 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.userManagerMock.Verify(u => u.SetUserNameAsync(user, pendingNewEmail));
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ConfirmNewEmailInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndSettingUserNameIsSuccessful()
+        [Fact]
+        public async Task ConfirmNewEmailInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangeEmailIsSuccessful()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string pendingNewEmail = "email";
+            var user = new ApplicationUser { PendingNewEmail = pendingNewEmail };
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.ChangeEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(IdentityResult.Success);
+
+            await controllerAndMocks.controller.ConfirmNewEmail("");
+
+            controllerAndMocks.userManagerMock.Verify(u => u.UpdateAsync(user));
         }
 
         [Fact(Skip = "NotImplemented")]
