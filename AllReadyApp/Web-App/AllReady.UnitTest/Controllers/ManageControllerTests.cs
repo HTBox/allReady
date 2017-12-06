@@ -1349,11 +1349,18 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.mediatorMock.Verify(m => m.SendAsync(It.Is<SendNewEmailAddressConfirmationEmail>(s => s.Email == email)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ResendChangesEmailConfirmationRedirectsToCorrectAction()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var user = new ApplicationUser(){PendingNewEmail = "email"};
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo(It.IsAny<string>());
+
+            IActionResult actionResult = await controllerAndMocks.controller.ResendChangeEmailConfirmation();
+
+            CheckRedirectionToAction(actionResult, nameof(ManageController.EmailConfirmationSent));
         }
 
         [Fact]
