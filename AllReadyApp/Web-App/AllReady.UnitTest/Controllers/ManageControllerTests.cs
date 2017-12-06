@@ -929,12 +929,7 @@ namespace AllReady.UnitTest.Controllers
             ChangePasswordViewModel changePasswordViewModel = new ChangePasswordViewModel();
 
             IActionResult result = (await ChangePasswordUnsuccessfully(identityResult, changePasswordViewModel)).Result;
-            var viewResult = result as ViewResult;
-            Assert.NotNull(viewResult);
-            var resultViewModel = viewResult.ViewData.Model;
-            var resultChangePasswordViewModel = resultViewModel as ChangePasswordViewModel;
-            Assert.NotNull(resultChangePasswordViewModel);
-            Assert.Equal(changePasswordViewModel, resultChangePasswordViewModel);
+            CheckViewModelAssociatedToViewResult(result, changePasswordViewModel);
         }
 
         [Fact]
@@ -1507,24 +1502,35 @@ namespace AllReady.UnitTest.Controllers
             CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.SetPasswordSuccess);
         }
 
+        private static async Task<(ManageController controller, IActionResult actionResult)> SetPasswordUncessfully(IdentityResult identityResult, SetPasswordViewModel setPasswordViewModel)
+        {
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(identityResult);
+
+            var actionResult = await controllerAndMocks.controller.SetPassword(setPasswordViewModel);
+            return (controllerAndMocks.controller, actionResult);
+        }
+
         [Fact]
         public async Task SetPasswordPostAddsCorrectErrorMessageToModelStateWhenUserIsNotNullAndPasswordNotAddedSuccessfully()
         {
             var identityResult = IdentityResult.Failed(new IdentityError { Description = "SetPasswordFailureDescription" });
 
-            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
-            controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(identityResult);
+            var result = await SetPasswordUncessfully(identityResult, new SetPasswordViewModel());
 
-            await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel());
-
-            CheckIdentityResultAddedToModelStateError(controllerAndMocks.controller, identityResult);
+            CheckIdentityResultAddedToModelStateError(result.controller, identityResult);
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task SetPasswordPostReturnsCorrectViewModelWhenUserIsNotNullAndPasswordNotAddedSuccessfully()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var identityResult = IdentityResult.Failed(new IdentityError { Description = "SetPasswordFailureDescription" });
+
+            SetPasswordViewModel setPasswordViewModel = new SetPasswordViewModel();
+
+            var result = await SetPasswordUncessfully(identityResult, setPasswordViewModel);
+
+            CheckViewModelAssociatedToViewResult(result.actionResult, setPasswordViewModel);
         }
 
         [Fact(Skip = "NotImplemented")]
@@ -1764,6 +1770,14 @@ namespace AllReady.UnitTest.Controllers
             var errorMessages = controller.ModelState.GetErrorMessages();
             Assert.Equal(1, errorMessages.Count);
             Assert.Equal(identityResult.Errors.Select(x => x.Description).Single(), errorMessages.Single());
+        }
+
+        private static void CheckViewModelAssociatedToViewResult(IActionResult result, object expectedViewModel)
+        {
+            var viewResult = result as ViewResult;
+            Assert.NotNull(viewResult);
+            var resultViewModel = viewResult.ViewData.Model;
+            Assert.Equal(expectedViewModel, resultViewModel);
         }
     }
 }
