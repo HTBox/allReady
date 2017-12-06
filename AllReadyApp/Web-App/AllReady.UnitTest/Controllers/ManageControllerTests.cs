@@ -1671,14 +1671,16 @@ namespace AllReady.UnitTest.Controllers
         {
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LinkLoginHasHttpPostAttribute()
         {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.LinkLogin), new[] { typeof(string) });
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public void LinkLoginHasValidateAntiForgeryTokenAttribute()
         {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.LinkLogin), new[] { typeof(string) });
         }
 
         [Fact]
