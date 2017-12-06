@@ -1242,11 +1242,19 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.userManagerMock.Verify(u => u.UpdateAsync(user));
         }
 
-        [Fact(Skip = "NotImplemented")]
+        [Fact]
         public async Task ConfirmNewEmailRedirectsToCorrectActionWithCorrectRouteValues()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string pendingNewEmail = "email";
+            var user = new ApplicationUser { PendingNewEmail = pendingNewEmail };
+            const string token = "token";
+
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.userManagerMock.Setup(u => u.ChangeEmailAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
+
+            IActionResult actionResult = await controllerAndMocks.controller.ConfirmNewEmail(token);
+
+            CheckRedirectionToActionWithMessageRouteValue(actionResult, nameof(ManageController.Index), ManageMessageId.ChangeEmailSuccess);
         }
 
         [Fact]
