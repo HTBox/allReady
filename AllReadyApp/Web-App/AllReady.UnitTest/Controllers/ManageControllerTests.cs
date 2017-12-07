@@ -1252,7 +1252,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var controller = InitializeControllerWithNullUser();
 
-            IActionResult actionResult = await controller.ResendEmailConfirmation();
+            IActionResult actionResult = await controller.ResendChangeEmailConfirmation();
 
             CheckReturnsErrorView(actionResult);
         }
@@ -1262,7 +1262,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser { PendingNewEmail = ""});
 
-            IActionResult actionResult = await controllerAndMocks.controller.ResendEmailConfirmation();
+            IActionResult actionResult = await controllerAndMocks.controller.ResendChangeEmailConfirmation();
 
             CheckReturnsErrorView(actionResult);
         }
@@ -1567,6 +1567,7 @@ namespace AllReady.UnitTest.Controllers
             const string userId = "UserID";
 
             var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userId});
+            controllerAndMocks.userManagerMock.Setup(u => u.GetLoginsAsync(It.IsAny<ApplicationUser>())).ReturnsAsync(new List<UserLoginInfo>());
 
             await controllerAndMocks.controller.ManageLogins();
 
