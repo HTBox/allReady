@@ -1439,6 +1439,7 @@ namespace AllReady.UnitTest.Controllers
             const string userId = "UserID";
 
             var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser{Id = userId});
+            controllerAndMocks.userManagerMock.Setup(u => u.AddPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(new IdentityResult());
 
             await controllerAndMocks.controller.SetPassword(new SetPasswordViewModel());
 
