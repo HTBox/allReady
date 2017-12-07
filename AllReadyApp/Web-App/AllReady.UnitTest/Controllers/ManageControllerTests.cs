@@ -1067,53 +1067,121 @@ namespace AllReady.UnitTest.Controllers
             controllerAndMocks.userManagerMock.Verify(u => u.FindByEmailAsync(email.Normalize()), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostAddsCorrectErrorToModelStateWhenCheckPasswordIsSuccessfulAndEmailCannotBeFound()
+        private static async Task<(ManageController controller, IActionResult result)> ChangeEmailWithCheckPasswordSuccessul(ChangeEmailViewModel changeEmailViewModel)
         {
-           //delete this line when starting work on this unit test
-            await TaskCompletedTask; 
+            var controllerAndMocks = InitializeControllerWithValidUser(new ApplicationUser());
+            controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            controllerAndMocks.userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationUser());
+
+            var result = await controllerAndMocks.controller.ChangeEmail(changeEmailViewModel);
+            return (controllerAndMocks.controller, result);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfulAndEmailCannotBeFound()
+        [Fact]
+        public async Task ChangeEmailPostAddsCorrectErrorToModelStateWhenCheckPasswordIsSuccessfulAndEmailAlreadyRegistered()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var controllerAndResult = await ChangeEmailWithCheckPasswordSuccessul(new ChangeEmailViewModel { NewEmail = "email" });
+
+            var errorMessages = controllerAndResult.controller.ModelState.GetErrorMessagesByKey(nameof(ChangeEmailViewModel.NewEmail));
+
+            Assert.Equal(1, errorMessages.Count);
+            Assert.NotNull(errorMessages.Single());
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact]
+        public async Task ChangeEmailPostReturnsCorrectViewModelWhenChangePasswordIsSuccessfulAndEmailAlreadyRegistered()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            var validVm = new ChangeEmailViewModel { NewEmail = "email" };
+
+            var controllerAndResult = await ChangeEmailWithCheckPasswordSuccessul(validVm);
+            
+            CheckViewModelAssociatedToViewResult(controllerAndResult.result, validVm);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact]
+        public async Task ChangeEmailPostInvokesUpdateAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailNotAlreadyRegistered()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newEmail = "newEmail";
+
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo("");
+            controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            controllerAndMocks.userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+
+            await controllerAndMocks.controller.ChangeEmail(new ChangeEmailViewModel{NewEmail = newEmail});
+
+            controllerAndMocks.userManagerMock.Verify(um => um.UpdateAsync(It.Is<ApplicationUser>(u => u.PendingNewEmail == newEmail && u == user)), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact]
+        public async Task ChangeEmailPostInvokesGenerateChangeEmailTokenAsyncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailNotAlreadyRegistered()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newEmail = "newEmail";
+
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo("");
+            controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            controllerAndMocks.userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+
+            await controllerAndMocks.controller.ChangeEmail(new ChangeEmailViewModel { NewEmail = newEmail });
+
+            controllerAndMocks.userManagerMock.Verify(u => u.GenerateChangeEmailTokenAsync(user, newEmail), Times.Once);
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectDataWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact]
+        public async Task ChangeEmailPostInvokesUrlActioncWithCorrectParametersWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailNotAlreadyRegistered()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newEmail = "newEmail";
+            const string scheme = "scheme";
+
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            var fakeIUrlHelper = controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo(scheme);
+            controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            controllerAndMocks.userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+
+            await controllerAndMocks.controller.ChangeEmail(new ChangeEmailViewModel { NewEmail = newEmail });
+
+            fakeIUrlHelper.Verify(u => u.Action(It.Is<UrlActionContext>(c => c.Action == nameof(ManageController.ConfirmNewEmail) && c.Controller == "Manage" && c.Protocol == scheme)));
         }
 
-        [Fact(Skip = "NotImplemented")]
-        public async Task ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailIsFound()
+        [Fact]
+        public async Task ChangeEmailPostSendsSendNewEmailAddressConfirmationEmailAsyncWithCorrectDataWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailNotAlreadyRegistered()
         {
-            //delete this line when starting work on this unit test
-            await TaskCompletedTask;
+            const string newEmail = "newEmail";
+            const string url = "url";
+
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            var fakeIUrlHelper = controllerAndMocks.controller.SetFakeIUrlHelper();
+            fakeIUrlHelper.Setup(u => u.Action(It.IsAny<UrlActionContext>())).Returns(url);
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo("");
+            controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            controllerAndMocks.userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+
+            await controllerAndMocks.controller.ChangeEmail(new ChangeEmailViewModel { NewEmail = newEmail });
+
+            controllerAndMocks.mediatorMock.Verify(u => u.SendAsync(It.Is< SendNewEmailAddressConfirmationEmail>(x => x.Email == newEmail && x.CallbackUrl == url)), Times.Once);
+        }
+
+        [Fact]
+        public async Task ChangeEmailPostRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsNotNullAndChangePasswordIsSuccessfulAndUsersEmailNotAlreadyRegistered()
+        {
+            var user = new ApplicationUser();
+            var controllerAndMocks = InitializeControllerWithValidUser(user);
+            controllerAndMocks.controller.SetFakeIUrlHelper();
+            controllerAndMocks.controller.SetFakeHttpRequestSchemeTo("");
+            controllerAndMocks.userManagerMock.Setup(u => u.CheckPasswordAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);
+            controllerAndMocks.userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>())).ReturnsAsync((ApplicationUser)null);
+
+            var actionResult = await controllerAndMocks.controller.ChangeEmail(new ChangeEmailViewModel() { NewEmail = "" });
+
+            CheckRedirectionToAction(actionResult, nameof(ManageController.EmailConfirmationSent));
         }
 
         [Fact]
