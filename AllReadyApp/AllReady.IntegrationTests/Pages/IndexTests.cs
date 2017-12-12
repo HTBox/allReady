@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace AllReady.IntegrationTests
+namespace AllReady.IntegrationTests.Pages
 {
     public class IndexTests : IClassFixture<TestFixture<IntegrationTestStartup>>
     { 
