@@ -1,4 +1,4 @@
-﻿@using System
+@using System
 @using AllReady.Areas.Admin.ViewModels.Site
 @using AllReady.ViewModels.Campaign
 @using AllReady.ViewModels.Organization
@@ -10,7 +10,7 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li><a asp-page="/Index">Home</a></li>
             <li><a asp-controller="Organization" asp-action="Index">Organizations</a></li>
             <li><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.ManagingOrganizationId">@Model.ManagingOrganizationName</a></li>
             <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
