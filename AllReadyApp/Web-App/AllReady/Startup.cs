@@ -181,6 +181,14 @@ namespace AllReady
             return container.Resolve<IServiceProvider>();
         }
 
+
+        protected virtual void GetDbContext(IServiceCollection services)
+        {
+            // Add Entity Framework services to the services container.
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+        }
+
+
         protected virtual void AddDatabaseServices(IServiceCollection services)
         {
             // Add Entity Framework services to the services container.

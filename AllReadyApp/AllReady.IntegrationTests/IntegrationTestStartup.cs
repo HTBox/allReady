@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AllReady
+namespace AllReady.IntegrationTests
 {
     public class IntegrationTestStartup : Startup
     {
@@ -20,13 +20,13 @@ namespace AllReady
                 .AddEntityFrameworkInMemoryDatabase()
                 .AddDbContext<AllReadyContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemory").UseInternalServiceProvider(services.BuildServiceProvider());
-                    options.EnableSensitiveDataLogging();
+                    options.UseInMemoryDatabase("InMemory");
                 });
         }
 
         protected override void LoadSeedData(bool purgeRefreshSampleData, SampleDataGenerator sampleDataGenerator)
         {
+            // tests will load their own data? Possibly have some default data instead
         }
 
         protected override void MigrateDatabase(bool purgeRefreshSampleData, IHostingEnvironment hostingEnvironment, AllReadyContext context)
@@ -36,12 +36,12 @@ namespace AllReady
 
         protected override void AddHangFire(IServiceCollection services)
         {
-            // do nothing for now - will need to be added later in some form
+            // do nothing for now - may need to be added later in some form
         }
 
         protected override void RegisterHangFire(IApplicationBuilder app)
         {
-            // do nothing for now - will need to be added later in some form
+            // do nothing for now - may need to be added later in some form
         }
     }
 }

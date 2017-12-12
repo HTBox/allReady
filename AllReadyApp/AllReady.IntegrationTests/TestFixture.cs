@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using AllReady.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AllReady.IntegrationTests
 {
-    // A test fixture which hosts the target project (project we wish to test) in an in-memory server.
     public class TestFixture<TStartup> : IDisposable
     {
         private readonly TestServer _server;
@@ -29,11 +29,15 @@ namespace AllReady.IntegrationTests
 
             _server = new TestServer(builder);
 
+            DbContext = _server.Host.Services.GetService(typeof(AllReadyContext)) as AllReadyContext;
+
             Client = _server.CreateClient();
             Client.BaseAddress = new Uri("http://localhost");
         }
 
         public HttpClient Client { get; }
+
+        public AllReadyContext DbContext { get; }
 
         public void Dispose()
         {
