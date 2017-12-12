@@ -388,7 +388,7 @@ namespace AllReady.Controllers
         {
             var user = await GetCurrentUser();
 
-            if(string.IsNullOrEmpty(user.PendingNewEmail))
+            if(string.IsNullOrEmpty(user?.PendingNewEmail))
             {
                 return View(ERROR_VIEW);
             }
