@@ -601,6 +601,29 @@ namespace AllReady.Migrations
                     b.ToTable("Request");
                 });
 
+            modelBuilder.Entity("AllReady.Models.RequestComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Comment")
+                        .IsRequired();
+
+                    b.Property<DateTime>("CreatedUtcDate");
+
+                    b.Property<Guid>("RequestId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RequestComment");
+                });
+
             modelBuilder.Entity("AllReady.Models.Resource", b =>
                 {
                     b.Property<int>("Id")
@@ -1058,6 +1081,18 @@ namespace AllReady.Migrations
                     b.HasOne("AllReady.Models.ItineraryRequest", "Itinerary")
                         .WithMany()
                         .HasForeignKey("ItineraryId1", "ItineraryRequestId");
+                });
+
+            modelBuilder.Entity("AllReady.Models.RequestComment", b =>
+                {
+                    b.HasOne("AllReady.Models.Request", "Request")
+                        .WithMany("RequestComments")
+                        .HasForeignKey("RequestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("AllReady.Models.ApplicationUser", "User")
+                        .WithMany("RequestComments")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AllReady.Models.Resource", b =>

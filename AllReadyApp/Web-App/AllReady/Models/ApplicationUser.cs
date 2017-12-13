@@ -94,5 +94,10 @@ namespace AllReady.Models
         /// Navigation property for this users login accounts.
         /// </summary>
         public virtual ICollection<IdentityUserLogin<string>> Logins { get; } = new List<IdentityUserLogin<string>>();
+
+        /// <summary>
+        /// Navigation property to get all request comments for this user
+        /// </summary>
+        public virtual ICollection<RequestComment> RequestComments { get; set; } = new List<RequestComment>();
     }
 }
