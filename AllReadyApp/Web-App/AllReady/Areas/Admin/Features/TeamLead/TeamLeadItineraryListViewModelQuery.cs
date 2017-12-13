@@ -76,14 +76,14 @@ namespace AllReady.Areas.Admin.Features.TeamLead
                             Name = eventGroup.Key.EventName
                         };
 
-                        foreach (var itineraryGroup in eventGroup)
+                        foreach (var itinerary in eventGroup)
                         {
                             var itineraryItem = new TeamLeadItineraryListerItinerary
                             {
-                                Name = itineraryGroup.ItineraryName,
-                                Date = itineraryGroup.ItineraryDate,
-                                Id = itineraryGroup.ItineraryId,
-                                TimeZoneId = itineraryGroup.TimeZoneId
+                                Name = itinerary.ItineraryName,
+                                Date = itinerary.ItineraryDate,
+                                Id = itinerary.ItineraryId,
+                                TimeZoneId = itinerary.TimeZoneId
                             };
 
                             eventItem.Itineraries.Add(itineraryItem);
