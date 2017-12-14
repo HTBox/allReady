@@ -1,0 +1,44 @@
+@using AllReady.Constants
+@using AllReady.Security
+@model AllReady.Areas.Admin.ViewModels.TeamLead.TeamLeadItineraryListerViewModel
+
+@{
+    ViewBag.Title = "Your Itineraries";
+}
+
+<h1>@ViewBag.Title</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.HasItineraries)
+        {
+            foreach (var campaign in Model.Campaigns)
+            {
+                <h2>@campaign.Name</h2>
+
+                foreach (var campaignEvent in campaign.CampaignEvents)
+                {
+                    <h3>@campaignEvent.Name</h3>
+
+                    <h4>Itineraries:</h4>
+
+                    <ul>
+                        @foreach (var itinerary in campaignEvent.Itineraries)
+                        {
+
+                            <li>
+                                <a asp-controller="Itinerary" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@itinerary.Id">@itinerary.Name</a>
+                                <time value="@itinerary.Date" format="D"></time>
+                                <em>(<time-zone-name time-zone-id="@itinerary.TimeZoneId"></time-zone-name>)</em>
+                            </li>
+                        }
+                    </ul>
+                }
+            }
+        }
+        else
+        {
+            <p>You are not currently assigned to manage any itinerary teams.</p>
+        }
+    </div>
+</div>
