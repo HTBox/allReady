@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AllReady.Features.Campaigns;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,7 +15,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             // Arrange
             var handler = new FeaturedCampaignQueryHandler(Context)
             {
-                DateTimeOffsetUtcNow = () => new DateTime(2017, 01, 07)
+                DateTimeOffsetUtcNow = () => DateTime.Now
             };
 
             // Act
@@ -105,7 +105,7 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Featured = true,
                 ManagingOrganization = org,
                 Published = true,
-                EndDateTime = new DateTime(2012, 1, 1)
+                EndDateTime = DateTime.Now.AddDays(-10)
             });
 
             Context.Campaigns.Add(new Campaign
@@ -115,7 +115,7 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Featured = true,
                 ManagingOrganization = org,
                 Published = true,
-                EndDateTime = new DateTime(2018, 1, 1)
+                EndDateTime = DateTime.Now.AddDays(90) // future date
             });
 
             Context.Campaigns.Add(new Campaign
@@ -125,7 +125,7 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Featured = false,
                 ManagingOrganization = org,
                 Published = true,
-                EndDateTime = new DateTime(2018, 1, 1)
+                EndDateTime = DateTime.Now.AddDays(90) // future date
             });
 
             Context.Campaigns.Add(new Campaign
@@ -135,7 +135,7 @@ namespace AllReady.UnitTest.Features.Campaigns
                 Featured = true,
                 ManagingOrganization = org,
                 Published = true,
-                EndDateTime = new DateTime(2018, 1, 1)
+                EndDateTime = DateTime.Now.AddDays(90) // future date
             });
 
             Context.SaveChanges();
