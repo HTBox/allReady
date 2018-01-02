@@ -18,7 +18,7 @@ namespace AllReady.IntegrationTests
 
         public TestFixture()
         {
-            var startupAssembly = typeof(TStartup).GetTypeInfo().Assembly;
+            var startupAssembly = typeof(TStartup).GetTypeInfo().BaseType.Assembly;
             var contentRoot = GetProjectPath(startupAssembly);
 
             var builder = new WebHostBuilder()

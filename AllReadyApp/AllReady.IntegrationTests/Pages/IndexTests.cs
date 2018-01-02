@@ -1,9 +1,7 @@
-using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AllReady.Models;
 using Shouldly;
 using Xunit;
 
@@ -13,33 +11,11 @@ namespace AllReady.IntegrationTests.Pages
     { 
         private readonly HttpClient _client;
 
-        private const string CampaignName = "Featured Campaign Name";
+        private const string FeaturedCampaignName = "Featured Campaign Name";
 
         public IndexTests(TestFixture<IntegrationTestStartup> fixture)
         {
             _client = fixture.Client;
-           
-            var campaign = new Campaign
-            {
-                EndDateTime = DateTimeOffset.UtcNow.AddDays(10),
-                Featured = true,
-                Published = true,
-                Locked = false,
-                Name = CampaignName,
-                Description = "This is a featured campaign",
-                Headline = "This is a featured headline",
-                ManagingOrganization = new Organization
-                {
-                    Name = "Test Organisation"
-                }
-            };
-
-            fixture.DbContext.Campaigns.Add(campaign);
-
-            fixture.DbContext.Events.Add(new Event { Campaign = campaign, Name = "Event Name 1", EndDateTime = DateTimeOffset.UtcNow.AddDays(2) });
-            fixture.DbContext.Events.Add(new Event { Campaign = campaign, Name = "Event Name 2", EndDateTime = DateTimeOffset.UtcNow.AddDays(2) });
-
-            fixture.DbContext.SaveChanges();
         }
 
         [Fact]
@@ -60,7 +36,7 @@ namespace AllReady.IntegrationTests.Pages
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
-            content.ShouldContain(CampaignName);
+            content.ShouldContain(FeaturedCampaignName);
         }
 
         [Fact]

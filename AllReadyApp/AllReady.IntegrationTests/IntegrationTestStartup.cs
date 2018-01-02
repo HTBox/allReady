@@ -1,3 +1,4 @@
+using System;
 using AllReady.DataAccess;
 using AllReady.Models;
 using Microsoft.AspNetCore.Builder;
@@ -31,7 +32,29 @@ namespace AllReady.IntegrationTests
 
         protected override void MigrateDatabase(bool purgeRefreshSampleData, IHostingEnvironment hostingEnvironment, AllReadyContext context)
         {
-            // do not migrate in memory
+            // for now we load up a default set of data used by all tests - this works for now, but needs review
+
+            var campaign = new Campaign
+            {
+                EndDateTime = DateTimeOffset.UtcNow.AddDays(10),
+                Featured = true,
+                Published = true,
+                Locked = false,
+                Name = "Featured Campaign Name",
+                Description = "This is a featured campaign",
+                Headline = "This is a featured headline",
+                ManagingOrganization = new Organization
+                {
+                    Name = "Test Organisation"
+                }
+            };
+
+            context.Campaigns.Add(campaign);
+
+            context.Events.Add(new Event { Campaign = campaign, Name = "Event Name 1", EndDateTime = DateTimeOffset.UtcNow.AddDays(2) });
+            context.Events.Add(new Event { Campaign = campaign, Name = "Event Name 2", EndDateTime = DateTimeOffset.UtcNow.AddDays(2) });
+
+            context.SaveChanges();
         }
 
         protected override void AddHangFire(IServiceCollection services)
