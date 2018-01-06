@@ -44,7 +44,7 @@ namespace AllReady.Controllers
             _generalSettings = generalSettings;
             _mediator = mediator;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
-            _redirectAccountControllerRequests = redirectAccountControllerRequests;
+            _redirectAccountControllerRequests = redirectAccountControllerRequests; 
         }
 
         // GET: /Account/Login
@@ -75,8 +75,9 @@ namespace AllReady.Controllers
                     var isAdminUser = user.IsUserType(UserType.OrgAdmin) || user.IsUserType(UserType.SiteAdmin);
                     if (isAdminUser && !await _userManager.IsEmailConfirmedAsync(user))
                     {
-                        //TODO: Showing the error page here makes for a bad experience for the user.
-                        //It would be better if we redirected to a specific page prompting the user to check their email for a confirmation email and providing an option to resend the confirmation email.
+                        // TODO: Showing the error page here makes for a bad experience for the user.
+                        // It would be better if we redirected to a specific page prompting the user to check their
+                        // email for a confirmation email and providing an option to resend the confirmation email.
                         ViewData["Message"] = "You must have a confirmed email to log on.";
                         return View("Error");
                     }
@@ -143,7 +144,7 @@ namespace AllReady.Controllers
                     var callbackUrl = Url.Action(new UrlActionContext
                     {
                         Action = nameof(ConfirmEmail),
-                        Controller = "Account",
+                        Controller = this.Name(),
                         Values = new { userId = user.Id, token = emailConfirmationToken },
                         Protocol = HttpContext.Request.Scheme
                     });
@@ -204,7 +205,7 @@ namespace AllReady.Controllers
                 }
             }
 
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            return View(result.Succeeded ? nameof(AccountController.ConfirmEmail) : "Error");
         }
 
         // GET: /Account/ForgotPassword
@@ -231,7 +232,7 @@ namespace AllReady.Controllers
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ResetPassword), Controller = "Account", Values = new { userId = user.Id, code },
+                var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ResetPassword), Controller = this.Name(), Values = new { userId = user.Id, code },
                     Protocol = HttpContext.Request.Scheme });
                 await _mediator.SendAsync(new SendResetPasswordEmail { Email = model.Email, CallbackUrl = callbackUrl });
 
@@ -381,7 +382,7 @@ namespace AllReady.Controllers
                             var callbackUrl = Url.Action(new UrlActionContext
                             {
                                 Action = nameof(ConfirmEmail),
-                                Controller = "Account",
+                                Controller = this.Name(),
                                 Values = new { userId = user.Id, token = emailConfirmationToken },
                                 Protocol = HttpContext.Request.Scheme
                             });
@@ -437,12 +438,16 @@ namespace AllReady.Controllers
 
             if (user.IsUserType(UserType.SiteAdmin))
             {
-                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = AreaNames.Admin });
+                return new RedirectToActionResult(nameof(SiteController.Index),
+                    ControllerNames.NameOf(typeof(SiteController)),
+                    new { area = AreaNames.Admin });
             }
 
             if (user.IsUserType(UserType.OrgAdmin))
             {
-                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = AreaNames.Admin });
+                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index),
+                    ControllerNames.NameOf(typeof(CampaignController)),
+                    new { area = AreaNames.Admin });
             }
 
             return new RedirectToPageResult("/Index");
