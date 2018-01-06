@@ -44,7 +44,7 @@ namespace AllReady.Controllers
             _generalSettings = generalSettings;
             _mediator = mediator;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
-            _redirectAccountControllerRequests = redirectAccountControllerRequests; 
+            _redirectAccountControllerRequests = redirectAccountControllerRequests;
         }
 
         // GET: /Account/Login
