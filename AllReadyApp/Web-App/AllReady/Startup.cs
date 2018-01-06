@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using AllReady.DataAccess;
+using AllReady.ExtensionWrappers;
 using AllReady.Hangfire;
 using AllReady.Models;
 using AllReady.Security;
@@ -166,7 +167,17 @@ namespace AllReady
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
             });
+          
+          // todo: determine if this code is needed (commenting out to fix build)
+            //ExternalUserInformationProviderFactory registration
+            //containerBuilder.RegisterType<TwitterExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Twitter");
+            //containerBuilder.RegisterType<GoogleExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Google");
+            //containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Microsoft");
+            //containerBuilder.RegisterType<MicrosoftAndFacebookExternalUserInformationProvider>().Named<IProvideExternalUserInformation>("Facebook");
+            //containerBuilder.RegisterType<ExternalUserInformationProviderFactory>().As<IExternalUserInformationProviderFactory>();
+            //containerBuilder.RegisterType<FromSqlWrapper>().As<IFromSqlWrapper>();
 
+          
             //Hangfire
             services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
 
