@@ -14,7 +14,7 @@ using AllReady.Constants;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area(AreaNames.Admin)]
-    [Authorize(nameof(UserType.OrgAdmin))]
+    [Authorize]
     public class CampaignManagerInviteController : Controller
     {
         private readonly IMediator _mediator;
@@ -28,6 +28,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Admin/Invite/Send/5
         [Route("[area]/[controller]/[action]/{campaignId:int}")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> Send(int campaignId)
         {
             var viewModel = await _mediator.SendAsync(new CampaignManagerInviteQuery { CampaignId = campaignId });
@@ -44,6 +45,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Admin/Invite/Send/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(nameof(UserType.OrgAdmin))]
         [Route("[area]/[controller]/[action]/{campaignId:int}")]
         public async Task<IActionResult> Send(int campaignId, CampaignManagerInviteViewModel invite)
         {
@@ -92,6 +94,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [Route("[area]/[controller]/[action]/{inviteId:int}")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> Details(int inviteId)
         {
             var viewModel = await _mediator.SendAsync(new CampaignManagerInviteDetailQuery { CampaignManagerInviteId = inviteId });
@@ -110,6 +113,7 @@ namespace AllReady.Areas.Admin.Controllers
         }
 
         [Route("[area]/[controller]/[action]/{inviteId:int}")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> Cancel(int inviteId)
         {
             var query = new CampaignManagerInviteDetailQuery {CampaignManagerInviteId = inviteId};
@@ -134,15 +138,87 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteAcceptRoute")]
         public async Task<IActionResult> Accept(int inviteId)
         {
-            // Implement in Issue 1891
-            return View();
+            var viewModel = await _mediator.SendAsync(new AcceptDeclineCampaignManagerInviteDetailQuery { CampaignManagerInviteId = inviteId });
+
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]")]
+        public async Task<IActionResult> InviteAccepted(AcceptDeclineCampaignManagerInviteViewModel viewModel)
+        {
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            await _mediator.SendAsync(new AcceptCampaignManagerInviteCommand
+            {
+                CampaignManagerInviteId = viewModel.InviteId
+            });
+
+            await _mediator.SendAsync(new CreateCampaignManagerCommand
+            {
+                UserId = user.Id,
+                CampaignId = viewModel.CampaignId
+            });
+
+            return View(viewModel);
         }
 
         [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "CampaignManagerInviteDeclineRoute")]
         public async Task<IActionResult> Decline(int inviteId)
         {
-            // Implement in Issue 1891
-            return View();
+            var viewModel = await _mediator.SendAsync(new AcceptDeclineCampaignManagerInviteDetailQuery { CampaignManagerInviteId = inviteId });
+
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]")]
+        public async Task<IActionResult> InviteDeclined(AcceptDeclineCampaignManagerInviteViewModel viewModel)
+        {
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            await _mediator.SendAsync(new DeclineCampaignManagerInviteCommand
+            {
+                CampaignManagerInviteId = viewModel.InviteId
+            });
+
+            return View(viewModel);
         }
     }
 }

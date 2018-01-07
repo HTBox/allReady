@@ -49,19 +49,13 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
+                    <a asp-page="/Index" class="navbar-brand"><img src="~/images/Web-Logo-small.png" alt="Web Logo" /></a>
                 </div>
                 <div class="navbar-collapse collapse">
-                    @{
-                        var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
-                        var areaName = descriptor.RouteValues["area"]; // there must be a better way to get the area name!
-                        var controllerName = descriptor.ControllerName;
-                        var isUser = areaName != AreaNames.Admin;
-                    }
                     <ul class="nav navbar-nav">
-                        <li @(isUser && controllerName == "Campaign" ? " class=active" : "")><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
-                        <li @(isUser && controllerName == "Organization" ? " class=active" : "")><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
-                        <li @(isUser && controllerName == "Home" && descriptor.ActionName == "About" ? " class=active" : "")><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
+                        <li><a asp-area="" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+                        <li><a asp-area="" asp-controller="Organization" asp-action="Index">Organizations</a></li>
+                        <li><a asp-page="/About">About</a></li>
                         @await Html.PartialAsync("_AdminNavigationPartial")
                     </ul>
                     @await Html.PartialAsync("_LoginPartial")
@@ -79,14 +73,14 @@
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/lib/bootstrap-toggle/js/bootstrap-toggle.js"></script>
-        <script src="~/lib/knockout/dist/knockout.js"></script>
+        <script src="~/lib/knockout/build/output/knockout-latest.debug.js"></script>
         <script src="~/lib/moment/min/moment-with-locales.js"></script>
         <script src="~/lib/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
         <script src="~/lib/tota11y/build/tota11y.js"></script>
         <script src="~/lib/tinymce/tinymce.js"></script>
         <script src="~/lib/bootstrap-tagsinput/dist/bootstrap-tagsinput.js"></script>
         <script src="~/lib/d3/d3.js"></script>
-        <script src="~/lib/jquery.maskedinput/dist/jquery.maskedinput.js"></script>
+        <script src="~/lib/jquery.maskedinput/src/jquery.maskedinput.js"></script>
         <script src="~/lib/fullcalendar/dist/fullcalendar.js"></script>
     </environment>
     <environment names="Staging,Production">

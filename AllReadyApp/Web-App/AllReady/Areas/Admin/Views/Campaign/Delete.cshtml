@@ -1,4 +1,4 @@
-﻿@using AllReady.Constants
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Campaign.DeleteViewModel
 @{ ViewData["Title"] = Model.Title; }
 <div class="row">
@@ -39,7 +39,6 @@
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="UserIsOrgAdmin" />
                 <div class="form-actions no-color">
                     <button type="submit" value="Delete" class="btn btn-default">Delete campaign</button> 
                     <a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin" class="btn btn-default">Cancel</a>

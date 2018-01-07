@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Constants;
 using AllReady.Controllers;
 using AllReady.Models;
@@ -89,11 +89,9 @@ namespace AllReady.UnitTest.Controllers
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var sut = new RedirectAccountControllerRequests(urlHelper.Object);
-            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser()) as RedirectToActionResult;
+            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser()) as RedirectToPageResult;
 
-            Assert.Equal(nameof(HomeController.Index), result.ActionName);
-            Assert.Equal("Home", result.ControllerName);
-            Assert.Null(result.RouteValues);
+            Assert.Equal(result.PageName, "/Index");
         }
     }
 }

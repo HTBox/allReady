@@ -1,0 +1,18 @@
+@model AllReady.Areas.Admin.ViewModels.ManagerInvite.AcceptDeclineEventManagerInviteViewModel
+
+@{
+    ViewData["Title"] = "Accept Event Manager Invite";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>You have been invited to manage the event @Model.EventName in the campaign @Model.CampaignName</p>
+<form asp-action="InviteAccepted">
+    <input type="hidden" asp-for="@Model.CampaignName" />
+    <input type="hidden" asp-for="@Model.EventName" />
+    <input type="hidden" asp-for="@Model.InviteeEmailAddress" />
+    <input type="hidden" asp-for="@Model.InviteId" />
+    <input type="hidden" asp-for="@Model.EventId" />
+    <button type="submit" class="btn btn-success">Accept Invite</button>
+</form>
+

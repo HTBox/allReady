@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Campaigns;
+using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Extensions;
 using AllReady.Models;
@@ -174,7 +174,6 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             viewModel.Title = $"Delete campaign {viewModel.Name}";
-            viewModel.UserIsOrgAdmin = true;
 
             return View(viewModel);
         }
@@ -182,15 +181,16 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Campaign/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var viewModel = await _mediator.SendAsync(new CampaignSummaryQuery { CampaignId = id });
             var authorizableOrganization = await _mediator.SendAsync(new Features.Organizations.AuthorizableOrganizationQuery(viewModel.OrganizationId));
             if (!await authorizableOrganization.UserCanDelete())
             {
                 return new ForbidResult();
             }
 
-            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = viewModel.Id });
+            await _mediator.SendAsync(new DeleteCampaignCommand { CampaignId = id });
 
             return RedirectToAction(nameof(Index), new { area = AreaNames.Admin });
         }

@@ -590,10 +590,9 @@ namespace AllReady.UnitTest.Controllers
             sut.Url = urlHelper.Object;
             sut.TempData = Mock.Of<ITempDataDictionary>();
 
-            var result = await sut.Register(new RegisterViewModel()) as RedirectToActionResult;
+            var result = await sut.Register(new RegisterViewModel()) as RedirectToPageResult;
 
-            Assert.Equal(result.ActionName, nameof(HomeController.Index));
-            Assert.Equal(result.ControllerName, "Home");
+            Assert.Equal(result.PageName, "/Index");
         }
 
 
@@ -709,10 +708,9 @@ namespace AllReady.UnitTest.Controllers
             var signInManager = SignInManagerMockHelper.CreateSignInManagerMock(UserManagerMockHelper.CreateUserManagerMock());
 
             var sut = new AccountController(null, signInManager.Object, null, null, null, null);
-            var result = await sut.LogOff() as RedirectToActionResult;
+            var result = await sut.LogOff() as RedirectToPageResult;
 
-            Assert.Equal(result.ActionName, nameof(HomeController.Index));
-            Assert.Equal(result.ControllerName, "Home");
+            Assert.Equal(result.PageName, "/Index");
         }
 
         [Fact]
