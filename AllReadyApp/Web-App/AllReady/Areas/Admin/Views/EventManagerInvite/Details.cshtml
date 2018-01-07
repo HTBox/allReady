@@ -1,7 +1,7 @@
-﻿@using AllReady.Constants
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.ManagerInvite.EventManagerInviteDetailsViewModel
 @{
-    ViewData["Title"] = $"Event Manger Invite For {Model.InviteeEmailAddress}";
+    ViewData["Title"] = $"Event Manager Invite For {Model.InviteeEmailAddress}";
 }
 
 <div class="row">
@@ -10,7 +10,7 @@
             <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
             <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">@Model.EventName</a></li>
-            <li>Campaign manger invite for @Model.InviteeEmailAddress</li>
+            <li>Campaign manager invite for @Model.InviteeEmailAddress</li>
         </ol>
     </div>
 </div>

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Campaign
 {
@@ -16,8 +16,5 @@ namespace AllReady.Areas.Admin.ViewModels.Campaign
         public string OrganizationName { get; set; }
 
         public string Title { get; set; }
-
-        //used to carry value from GET to POST action method in controller, not stored in a model anywhere
-        public bool UserIsOrgAdmin { get; set; }
     }
 }

@@ -31,10 +31,6 @@ namespace AllReady.TagHelpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            // this is a hack that should not be needed. Need to understand why 2.0.0 upgrade causes this to match head & body tags which causes layout exception
-            // Exception = InvalidOperationException: RenderBody has not been called for the page at '/Views/Shared/_Layout.cshtml'. To ignore call IgnoreBody().
-            if (output.TagName != "time") return;
-
             output.TagName = null;
 
             if (!Value.HasValue)

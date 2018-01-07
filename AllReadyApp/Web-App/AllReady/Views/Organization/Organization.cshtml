@@ -1,11 +1,11 @@
-﻿@using AllReady.ViewModels.Organization
+@using AllReady.ViewModels.Organization
 @model AllReady.ViewModels.Organization.OrganizationViewModel
 @{  ViewData["Title"] = Model.Name; }
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li><a asp-page="/Index">Home</a></li>
             <li><a asp-controller="Organization" asp-action="Index">Organizations</a></li>
             <li>@Model.Name</li>
         </ol>

@@ -213,7 +213,7 @@ namespace AllReady.Controllers
                     return Redirect(model.ReturnUrl);
                 }
                 
-                return RedirectToAction(nameof(HomeController.Index), "Home");
+                return RedirectToPage("/Index");
             }
 
             if (result.IsLockedOut)

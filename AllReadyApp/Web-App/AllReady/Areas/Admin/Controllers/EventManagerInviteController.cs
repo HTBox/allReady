@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area(AreaNames.Admin)]
-    [Authorize(nameof(UserType.OrgAdmin))]
+    [Authorize]
     public class EventManagerInviteController : Controller
     {
         private readonly IMediator _mediator;
@@ -30,6 +30,7 @@ namespace AllReady.Areas.Admin.Controllers
 
         // GET: Admin/Invite/Send/5
         [Route("[area]/[controller]/[action]/{eventId:int}")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> Send(int eventId)
         {
             var eventViewModel = await _mediator.SendAsync(new EventManagerInviteQuery { EventId = eventId });
@@ -47,6 +48,7 @@ namespace AllReady.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("[area]/[controller]/[action]/{eventId:int}")]
+        [Authorize(nameof(UserType.OrgAdmin))]
         public async Task<IActionResult> Send(int eventId, EventManagerInviteViewModel invite)
         {
             if (invite == null)
@@ -113,15 +115,87 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "EventManagerInviteAcceptRoute")]
         public async Task<IActionResult> Accept(int inviteId)
         {
-            // Implement in Issue 1891
-            return View();
+            var viewModel = await _mediator.SendAsync(new AcceptDeclineEventManagerInviteDetailQuery { EventManagerInviteId = inviteId });
+
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]")]
+        public async Task<IActionResult> InviteAccepted(AcceptDeclineEventManagerInviteViewModel viewModel)
+        {
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            await _mediator.SendAsync(new AcceptEventManagerInviteCommand
+            {
+                EventManagerInviteId = viewModel.InviteId
+            });
+
+            await _mediator.SendAsync(new CreateEventManagerCommand
+            {
+                UserId = user.Id,
+                EventId = viewModel.EventId
+            });
+
+            return View(viewModel);
         }
 
         [Route("[area]/[controller]/[action]/{inviteId:int}", Name = "EventManagerInviteDeclineRoute")]
         public async Task<IActionResult> Decline(int inviteId)
         {
-            // Implement in Issue 1891
-            return View();
+            var viewModel = await _mediator.SendAsync(new AcceptDeclineEventManagerInviteDetailQuery { EventManagerInviteId = inviteId });
+
+            if (viewModel == null)
+            {
+                return NotFound();
+            }
+
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            return View(viewModel);
+        }
+
+        [Route("[area]/[controller]/[action]")]
+        public async Task<IActionResult> InviteDeclined(AcceptDeclineEventManagerInviteViewModel viewModel)
+        {
+            // User must be the invited user
+            var user = await _userManager.GetUserAsync(User);
+
+            if (user?.Email != viewModel.InviteeEmailAddress)
+            {
+                return Unauthorized();
+            }
+
+            await _mediator.SendAsync(new DeclineEventManagerInviteCommand
+            {
+                EventManagerInviteId = viewModel.InviteId
+            });
+
+            return View(viewModel);
         }
     }
 }

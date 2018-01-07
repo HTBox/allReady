@@ -1,0 +1,14 @@
+<ion-header [elasticHeader]="EventsList">
+    <ion-navbar>
+        <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+        <ion-title>Events</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding fullscreen #EventsList>
+    <div *ngIf="this.events.length == 0" class="noevents">
+        No Upcoming Events
+    </div>
+    <div class="event-list" *ngFor="let event of this.events">
+        <event-card [event]="event"></event-card>
+    </div>
+</ion-content>

@@ -1,4 +1,4 @@
-﻿module Pages
+module Pages
 open canopy
 
 module TopMenu =
@@ -42,6 +42,7 @@ module AdminCampaignCreate =
     type CampaignDetails = {
         Name:string
         Description:string
+        Headline:string
         FullDescription:string
         OrganizationName:string
         Address1:string
@@ -55,6 +56,7 @@ module AdminCampaignCreate =
         Name = ""
         Description = ""
         FullDescription = ""
+        Headline = ""
         OrganizationName = ""
         Address1="1 Microsoft Way"
         City="Redmond"
@@ -70,16 +72,17 @@ module AdminCampaignCreate =
     let PopulateCampaignDetails details =
         "#Name" << details.Name
         "#Description" << details.Description
+        "#Headline" << details.Headline
         press tab
         let insertFullDescriptionScript = sprintf "tinyMCE.activeEditor.setContent('%s')" details.FullDescription
         js(insertFullDescriptionScript) |> ignore
         "#OrganizationId" << details.OrganizationName
+        check "#Published"
         "#Location_Address1" << details.Address1
         "#Location_City" << details.City
         "#Location_State" << details.State
         "#Location_PostalCode" << details.PostalCode.ToString()
         "#Location_Country" << details.Country
-        check "#Published"
 
 module AdminCampaignDetails =
     let RelativeUrl = "Admin/Campaign/Details"
@@ -156,8 +159,8 @@ module AdminEventCreate =
 
     let PopulateEventdetails details =
         "#Name" << details.Name
-        "#StartDateTime" << details.StartDate.ToString()
-        "#EndDateTime" << details.EndDate.ToString()
+        "#StartDateTime" << details.StartDate.ToString("MM/dd/yyyy")
+        "#EndDateTime" << details.EndDate.ToString("MM/dd/yyyy")
         "#EventType" << details.EventType.ToString()
         "#Location_City" << details.City
         "#Location_State" << details.State
@@ -184,15 +187,15 @@ module AdminTaskCreate =
         Description = ""
         VolunteersRequired = 1
         StartDate = System.DateTime.Now.AddDays(1.0)
-        EndDate = System.DateTime.Now.AddDays(5.0)
+        EndDate = System.DateTime.Now.AddDays(4.0)
     }
 
     let PopulateTaskDetails details =
         "#Name" << details.Name
         "#Description" << details.Description
         "#NumberOfVolunteersRequired" << details.VolunteersRequired.ToString()
-        "#StartDateTime" << details.StartDate.ToString()
-        "#EndDateTime" << details.EndDate.ToString()
+        "#StartDateTime" << details.StartDate.ToString("MM/dd/yyyy h:mm tt")
+        "#EndDateTime" << details.EndDate.ToString("MM/dd/yyyy h:mm tt")
 
     let private createBtn = "Save"
 
@@ -211,4 +214,3 @@ module AdminTaskDetails =
     let RelativeUrl = "Admin/Task/Details"
 
 
-    

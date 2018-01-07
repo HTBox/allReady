@@ -1,8 +1,13 @@
-﻿# Specifies intentionally untracked files to ignore when using Git
+# Specifies intentionally untracked files to ignore when using Git
 # http://git-scm.com/docs/gitignore
 
 node_modules/
 platforms/
+bin/
+bld/
 plugins/
-www/lib/**
 simulation/
+vs/
+.sourcemaps/
+*.jsproj.user
+.editorconfig

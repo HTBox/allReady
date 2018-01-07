@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Configuration;
@@ -819,10 +819,9 @@ namespace AllReady.UnitTest.Controllers
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var sut = new AdminController(null, signInManager.Object, null, null, null) { Url = urlHelper.Object };
-            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as RedirectToActionResult;
+            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as RedirectToPageResult;
 
-            Assert.Equal(nameof(HomeController.Index), result.ActionName);
-            Assert.Equal("Home", result.ControllerName);
+            Assert.Equal(result.PageName, "/Index");
         }
 
         [Fact]

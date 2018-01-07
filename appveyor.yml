@@ -4,17 +4,16 @@ image: Visual Studio 2017
 
 nuget:
   account_feed: false
-  
+
 init:
  - git config --global core.autocrlf true
  
 cache:
   - AllReadyApp\Web-App\AllReady\node_modules   #node modules for the app
   - '%APPDATA%\npm-cache'             # npm cache
-  
-install:
- - cmd: nuget sources add -Name api.nuget.org -Source https://api.nuget.org/v3/index.json
- - choco install firefox
+
+services:
+  - mssql2016
  
 before_build:
  - cmd: dotnet restore AllReadyApp\AllReady.Core\AllReady.Core.csproj
@@ -22,7 +21,7 @@ before_build:
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
- - cmd: npm install gulp bower -g
+ - cmd: npm install gulp -g
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
@@ -30,8 +29,37 @@ build_script:
  - cmd: dotnet publish AllReadyApp\Web-App\AllReady\AllReady.csproj --output c:\Published
  - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
- - cmd: msbuild AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
+ - cmd: msbuild /p:Configuration=Release AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
 
 test_script:
+# === Run Unit Tests
  - ps: cd .\AllReadyApp\Web-App\AllReady.UnitTest
- - cmd: dotnet test 
+ - cmd: dotnet test
+# === Run Integration Tests
+# Use the version of chromedriver.exe from the build server to ensure it matches the browser version
+ - ps: Copy-Item "C:\Tools\WebDriver\chromedriver.exe" (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release")
+ - ps: $env:Data:DefaultConnection:ConnectionString="Server=(local)\SQL2016;Database=master;User ID=sa;Password=Password12!"
+ - ps: $env:Data:HangfireConnection:ConnectionString="Server=(local)\SQL2016;Database=master;User ID=sa;Password=Password12!"
+ - ps: $env:ASPNETCORE_ENVIRONMENT="Development"
+ - ps: $env:ASPNETCORE_URLS="http://localhost:48408"
+ - ps: Write-Host "== creating database =="
+ - ps: cd (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\Web-App\AllReady")
+ - ps: sqlcmd -S "(local)\SQL2016" -Q "Use [master]; CREATE DATABASE [AllReady]"
+ - ps: dotnet ef database update > (Join-Path $env:APPVEYOR_BUILD_FOLDER "db_update.log")
+ - ps: Write-Host "== starting web server =="
+ - ps: cd c:\Published
+ - ps: $webhost = start-process "dotnet" "AllReady.dll" -PassThru -RedirectStandardOutput (Join-Path $env:APPVEYOR_BUILD_FOLDER kestrel.log)
+ - ps: Start-Sleep 30  # Wait for webserver to warm up
+ - ps: cd $env:APPVEYOR_BUILD_FOLDER 
+ - ps: Write-Host "== Running integration tests =="
+ - ps: AllReadyApp\AllReady.IntegrationTest\bin\Release\AllReady.IntegrationTest.exe
+ - ps: Write-Host "== Finished running integration tests =="
+ - ps: |
+     if(!$webhost.HasExited) {
+       Write-Host "== stopping web server =="
+       taskkill /F /IM dotnet.exe 
+     }
+
+on_failure:
+  - ps: Push-AppveyorArtifact db_update.log -Type File
+  - ps: Push-AppveyorArtifact kestrel.log -Type File
