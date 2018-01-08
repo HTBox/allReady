@@ -110,11 +110,9 @@ ko.bindingHandlers.dateRangePicker = {
             if (ko.isObservable(value)) {
                 if (!picker.startDate || !picker.endDate) {
                     $(element).val('');
-                    console.log("Date is null");
                     value(null);
                 }
                 else {
-                    console.log("daterangepicker applied: " + picker.startDate);
                     $(element).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
                     var daterange = {
                         begin: picker.startDate,
@@ -127,22 +125,11 @@ ko.bindingHandlers.dateRangePicker = {
 
         //when a user cancels the date, update the view model
         ko.utils.registerEventHandler(element, "cancel.daterangepicker", function (event, picker) {
-            console.log("daterangepicker cancelled");
             $(element).val('');
             var value = valueAccessor();
             if (ko.isObservable(value)) {
                 value(null);
             }
         });
-
-       /* ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-            var picker = $(element).data("DateTimePicker");
-            if (picker) {
-                picker.destroy();
-            }
-        });*/
-    },
-    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
-        // This is for input data binding only.
     }
 };

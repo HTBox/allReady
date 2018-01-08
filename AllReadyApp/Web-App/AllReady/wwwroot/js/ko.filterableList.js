@@ -39,17 +39,12 @@ ko.observableArray.fn.filterOnDateRange = function (beginDateProperty, endDatePr
     return this.filterList(function (observableArray) {
         var selectedDateRange, selectedBeginDate, selectedEndDate;
         selectedDateRange = dateInRange();
-        console.log("enter filterList" + selectedDateRange);
         if (selectedDateRange) {
             selectedBeginDate = moment(selectedDateRange.begin);
-            console.log("selectedBeginDate" + selectedBeginDate);
             selectedEndDate = moment(selectedDateRange.end);
-            console.log("selectedEndDate" + selectedEndDate);
 
             selectedBeginDate.startOf("day");
             selectedEndDate.endOf("day");
-            console.log("selectedBeginDate" + selectedBeginDate);
-            console.log("selectedEndDate" + selectedEndDate);
 
             return ko.utils.arrayFilter(observableArray(), function (item) {
                 var beginDate = moment(item[beginDateProperty]),
@@ -61,7 +56,6 @@ ko.observableArray.fn.filterOnDateRange = function (beginDateProperty, endDatePr
             });
         }
         else {
-            console.log("observableArray" + observableArray());
             return observableArray();
         }
     });
