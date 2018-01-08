@@ -132,5 +132,12 @@ ko.bindingHandlers.dateRangePicker = {
                 value(null);
             }
         });
+
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+            var picker = $(element).data('daterangepicker');
+            if (picker) {
+                picker.remove();
+            }
+        });
     }
 };
