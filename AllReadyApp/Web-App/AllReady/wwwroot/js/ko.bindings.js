@@ -113,7 +113,8 @@ ko.bindingHandlers.dateRangePicker = {
                     value(null);
                 }
                 else {
-                    $(element).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+                    var format = options.locale.format;
+                    $(element).val(picker.startDate.format(format) + ' - ' + picker.endDate.format(format));
                     var daterange = {
                         begin: picker.startDate,
                         end: picker.endDate
