@@ -127,6 +127,15 @@ ko.bindingHandlers.dateRangePicker = {
             }
         });
 
+        //when a user cancels the date, update the view model
+        ko.utils.registerEventHandler(element, "cancel.daterangepicker", function (event, picker) {
+            console.log("daterangepicker cancelled");
+            var value = valueAccessor();
+            if (ko.isObservable(value)) {
+                value(null);
+            }
+        });
+
        /* ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
             var picker = $(element).data("DateTimePicker");
             if (picker) {
