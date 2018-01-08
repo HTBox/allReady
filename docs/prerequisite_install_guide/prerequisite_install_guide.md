@@ -355,6 +355,7 @@ You have now finished installing all of the required software to start working o
 
 ## Getting the Source Code
 
+### Video: Forking and Cloning from GitHub
 [![Forking and Cloning from GitHub](https://img.youtube.com/vi/OODDLyvePr8/0.jpg)](https://www.youtube.com/watch?v=OODDLyvePr8)
 
 ### Forking the Repository
