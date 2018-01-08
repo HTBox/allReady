@@ -75,9 +75,11 @@ ko.bindingHandlers.dateTimePicker = {
                     value(null);
                 }
                 else if (event.date instanceof Date) {
+                    console.log("instance of Date: " + event.date);
                     value(event.date);
                 }
                 else {
+                    console.log(event.date.toDate());
                     value(event.date.toDate());
                 }
             }
@@ -102,23 +104,26 @@ ko.bindingHandlers.dateRangePicker = {
         var options = allBindingsAccessor().daterangepickerOptions || {};
         $(element).daterangepicker(options);
 
-        /*//when a user changes the date, update the view model
-        ko.utils.registerEventHandler(element, "dp.change", function (event) {
+        //when a user changes the date, update the view model
+        ko.utils.registerEventHandler(element, "apply.daterangepicker", function (event, picker) {
             var value = valueAccessor();
             if (ko.isObservable(value)) {
-                if (!event.date) {
+                if (!picker.startDate || !picker.endDate) {
+                    console.log("Date is null");
                     value(null);
                 }
-                else if (event.date instanceof Date) {
-                    value(event.date);
+                else if (picker.startDate instanceof Date && picker.endDate instanceof Date) {
+                    console.log("instance of Date" + picker.startDate + " - " + picker.endDate);
+                    value(picker.startDate);
                 }
                 else {
-                    value(event.date.toDate());
+                    console.log("daterangepicker applied: " + picker.startDate);
+                    value(picker.startDate);
                 }
             }
         });
 
-        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+       /* ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
             var picker = $(element).data("DateTimePicker");
             if (picker) {
                 picker.destroy();

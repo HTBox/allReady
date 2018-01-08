@@ -219,6 +219,16 @@
                         <div class="form-group">
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
                         </div>
+                        <!-- previous div -->
+                        @*<div class="form-group">
+                            <div class="input-group" data-bind="dateTimePicker: tasks.dateInRange, dateTimePickerOptions: { format: 'L', showClear: true }">
+                                <input type="text" class="form-control" placeholder="On date" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                        </div>*@
+                        <!-- end previous div -->
                         <div class="form-group">
                             <div class="input-group" data-bind="dateRangePicker: tasks.dateInRange, daterangepickerOptions: { locale: { cancelLabel: 'Clear' } }">
                                 <input type="text" class="form-control" placeholder="On date" />
