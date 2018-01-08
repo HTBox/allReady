@@ -355,6 +355,8 @@ You have now finished installing all of the required software to start working o
 
 ## Getting the Source Code
 
+[![Forking and Cloning from GitHub](https://img.youtube.com/vi/OODDLyvePr8/0.jpg)](https://www.youtube.com/watch?v=OODDLyvePr8)
+
 ### Forking the Repository
 
 In order to make changes the first thing you need to do is create a copy of the repository into your account.  In Git terms, this is called forking the repository.
