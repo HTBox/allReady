@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Goals;
 using AllReady.Areas.Admin.ViewModels.Goal;
@@ -87,7 +87,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(goal.CampaignId));
-            if (!await authorizableCampaign.UserCanEdit())
+            if (!await authorizableCampaign.UserCanDelete())
             {
                 return Unauthorized();
             }
@@ -107,7 +107,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(goal.CampaignId));
-            if (!await authorizableCampaign.UserCanEdit())
+            if (!await authorizableCampaign.UserCanDelete())
             {
                 return Unauthorized();
             }
