@@ -118,7 +118,11 @@ ko.bindingHandlers.dateRangePicker = {
                 }
                 else {
                     console.log("daterangepicker applied: " + picker.startDate);
-                    value(picker.startDate);
+                    var daterange = {
+                        begin: picker.startDate,
+                        end: picker.endDate
+                    };
+                    value(daterange);
                 }
             }
         });

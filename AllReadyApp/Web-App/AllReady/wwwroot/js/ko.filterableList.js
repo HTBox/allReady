@@ -41,9 +41,9 @@ ko.observableArray.fn.filterOnDateRange = function (beginDateProperty, endDatePr
         selectedDateRange = dateInRange();
         console.log("enter filterList" + selectedDateRange);
         if (selectedDateRange) {
-            selectedBeginDate = moment(selectedDateRange);
+            selectedBeginDate = moment(selectedDateRange.begin);
             console.log("selectedBeginDate" + selectedBeginDate);
-            selectedEndDate = moment(selectedDateRange);
+            selectedEndDate = moment(selectedDateRange.end);
             console.log("selectedEndDate" + selectedEndDate);
 
             selectedBeginDate.startOf("day");
