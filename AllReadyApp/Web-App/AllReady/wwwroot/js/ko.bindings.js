@@ -100,7 +100,7 @@ ko.bindingHandlers.dateTimePicker = {
 // knockout binding for datepicker date
 ko.bindingHandlers.dateRangePicker = {
     init: function (element, valueAccessor, allBindingsAccessor) {
-        //initialize datepicker with some optional options
+        //initialize daterangepicker with some optional options
         var options = allBindingsAccessor().daterangepickerOptions || {};
         $(element).daterangepicker(options);
 
@@ -114,10 +114,12 @@ ko.bindingHandlers.dateRangePicker = {
                 }
                 else {
                     var format = options.locale.format;
-                    $(element).val(picker.startDate.format(format) + ' - ' + picker.endDate.format(format));
+                    var formattedDate = picker.startDate.format(format) + ' - ' + picker.endDate.format(format);
+                    $(element).val(formattedDate);
                     var daterange = {
                         begin: picker.startDate,
-                        end: picker.endDate
+                        end: picker.endDate,
+                        formatedDate: formattedDate
                     };
                     value(daterange);
                 }

@@ -220,10 +220,12 @@
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
                         </div>
                         <div class="form-group">
-                                <input type="text" class="form-control" placeholder="On date" data-bind="dateRangePicker: tasks.dateInRange, daterangepickerOptions: {  autoUpdateInput: false, locale: { cancelLabel: 'Clear', format: 'L' } }"/>
-                                @*<span class="input-group-addon">
+                            <div class="input-group" data-bind="dateRangePicker: tasks.dateInRange, daterangepickerOptions: {  autoUpdateInput: false, locale: { cancelLabel: 'Clear', format: 'L' } }" >
+                                <input type="text" class="form-control input-sm" placeholder="On date" data-bind="value: tasks.displayedRange" />
+                                <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
-                                </span>*@
+                                </span>
+                            </div>
                         </div>
                         <div class="form-group">
                             <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">
