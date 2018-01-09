@@ -119,7 +119,7 @@ ko.bindingHandlers.dateRangePicker = {
                     var daterange = {
                         begin: picker.startDate,
                         end: picker.endDate,
-                        formatedDate: formattedDate
+                        formattedDate: formattedDate
                     };
                     value(daterange);
                 }
