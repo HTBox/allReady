@@ -38,17 +38,13 @@ ko.observableArray.fn.filterOnDateRange = function (beginDateProperty, endDatePr
 
     this.displayedRange = ko.computed(function() {
         var selectedDateRange = this.dateInRange();
-        var formattedDate = "";
-        if (selectedDateRange) {
-            formattedDate = selectedDateRange.formattedDate;
-        }
-        return formattedDate;
+        return selectedDateRange.formattedDate;
     }, this);
 
     return this.filterList(function (observableArray) {
-        var selectedDateRange, selectedBeginDate, selectedEndDate;
-        selectedDateRange = dateInRange();
-        if (selectedDateRange) {
+        var selectedBeginDate, selectedEndDate;
+        var selectedDateRange = dateInRange();
+        if (selectedDateRange.begin && selectedDateRange.end) {
             selectedBeginDate = moment(selectedDateRange.begin);
             selectedEndDate = moment(selectedDateRange.end);
 
