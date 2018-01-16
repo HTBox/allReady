@@ -43,7 +43,60 @@
     <div class="tab-content">
 
         <div id="account-tab" class="tab-pane fade in active">
-            TODO Move account details here.
+
+            <form asp-controller="Manage" asp-action="ResendEmailConfirmation">
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label asp-for="EmailAddress" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input type="hidden" asp-for="EmailAddress">
+                            <p class="form-control-static">
+                                <span>
+                                    <i class="@(Model.IsEmailAddressConfirmed ? "fa fa-check text-success" : "")"
+                                    title="@(Model.IsEmailAddressConfirmed ? "Your email address has been confirmed" : "")"></i> @Model.EmailAddress
+                                    @if (string.IsNullOrEmpty(Model.ProposedNewEmailAddress))
+                                    {
+                                        <span> | <a asp-controller="Manage" asp-action="ChangeEmail">Change</a></span>
+                                    }
+                                </span>
+                                @if (!Model.IsEmailAddressConfirmed)
+                                {
+                                    <br />
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fa fa-exclamation-circle"></i> Your email address has not been confirmed.
+                                        <br />
+                                        allReady cannot send you email notifications until your email address has been confirmed.
+                                        <br />
+                                        Check your inbox for a confirmation email.
+                                        <br />
+                                        <button class="btn btn-default" type="submit">Send me a new confirmation email</button>
+                                    </div>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            @if (Model.ProposedNewEmailAddress != null)
+            {
+                <div class="alert alert-warning" role="alert">
+                    <p>
+                        <i class="fa fa-exclamation-circle"></i> You have requested that your email address is changed to @Model.ProposedNewEmailAddress but this has not been confirmed.
+                        <br />
+                        allReady cannot update your email address until your new email address has been confirmed.
+                        <br />
+                        Check your inbox for a confirmation email.
+                    </p>
+                    <form asp-controller="Manage" asp-action="ResendChangeEmailConfirmation">
+                        <br /><button class="btn btn-default" type="submit">Send me a new confirmation email</button>
+                    </form>
+                    <form asp-controller="Manage" asp-action="CancelChangeEmail">
+                        <button class="btn btn-default" type="submit">Cancel email change</button>
+                    </form>
+                </div>
+            }
+
         </div>
         <div id="skills-tab" class="tab-pane">
             TODO Move skills details here.
@@ -51,58 +104,6 @@
 
     </div>
 
-    <form asp-controller="Manage" asp-action="ResendEmailConfirmation">
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label asp-for="EmailAddress" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input type="hidden" asp-for="EmailAddress">
-                    <p class="form-control-static">
-                        <span>
-                            <i class="@(Model.IsEmailAddressConfirmed ? "fa fa-check text-success" : "")"
-                               title="@(Model.IsEmailAddressConfirmed ? "Your email address has been confirmed" : "")"></i> @Model.EmailAddress
-                            @if (string.IsNullOrEmpty(Model.ProposedNewEmailAddress))
-                            {
-                                <span> | <a asp-controller="Manage" asp-action="ChangeEmail">Change</a></span>
-                            }
-                        </span>
-                        @if (!Model.IsEmailAddressConfirmed)
-                        {
-                            <br />
-                            <div class="alert alert-warning" role="alert">
-                                <i class="fa fa-exclamation-circle"></i> Your email address has not been confirmed.
-                                <br />
-                                allReady cannot send you email notifications until your email address has been confirmed.
-                                <br />
-                                Check your inbox for a confirmation email.
-                                <br />
-                                <button class="btn btn-default" type="submit">Send me a new confirmation email</button>
-                            </div>
-                        }
-                    </p>
-                </div>
-            </div>
-        </div>
-    </form>
-
-    @if (Model.ProposedNewEmailAddress != null)
-    {
-        <div class="alert alert-warning" role="alert">
-            <p>
-                <i class="fa fa-exclamation-circle"></i> You have requested that your email address is changed to @Model.ProposedNewEmailAddress but this has not been confirmed.
-                <br />
-                allReady cannot update your email address until your new email address has been confirmed.
-                <br />
-                Check your inbox for a confirmation email.
-            </p>
-            <form asp-controller="Manage" asp-action="ResendChangeEmailConfirmation">
-                <br /><button class="btn btn-default" type="submit">Send me a new confirmation email</button>
-            </form>
-            <form asp-controller="Manage" asp-action="CancelChangeEmail">
-                <button class="btn btn-default" type="submit">Cancel email change</button>
-            </form>
-        </div>
-    }
 
     @using (Html.BeginForm())
     {
