@@ -36,6 +36,7 @@ namespace AllReady.Models
         public DbSet<EventManagerInvite> EventManagerInvites { get; set; }
         public DbSet<CampaignManagerInvite> CampaignManagerInvites { get; set; }
         public DbSet<FileAttachment> Attachments { get; set; }
+        public DbSet<RequestComment> RequestComments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,6 +75,7 @@ namespace AllReady.Models
             Map(modelBuilder.Entity<EventManagerInvite>());
             Map(modelBuilder.Entity<CampaignManagerInvite>());
             Map(modelBuilder.Entity<FileAttachment>());
+            Map(modelBuilder.Entity<RequestComment>());
         }
 
         private void Map(EntityTypeBuilder<Location> builder)
@@ -339,6 +341,14 @@ namespace AllReady.Models
             builder.HasKey(a => a.Id);
             builder.HasOne(a => a.VolunteerTask);
             builder.Property(a => a.Name).IsRequired();
+        }
+
+        public void Map(EntityTypeBuilder<RequestComment> builder)
+        {
+            builder.HasKey(rc => rc.Id);
+            builder.HasOne(rc => rc.Request).WithMany(r => r.RequestComments).HasForeignKey(rc => rc.RequestId);
+            builder.HasOne(rc => rc.User).WithMany(r => r.RequestComments).HasForeignKey(rc => rc.UserId);
+            builder.Property(a => a.Comment).IsRequired();
         }
     }
 }

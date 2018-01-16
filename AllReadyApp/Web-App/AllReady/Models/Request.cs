@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace AllReady.Models
@@ -41,5 +41,10 @@ namespace AllReady.Models
         public ItineraryRequest Itinerary { get; set; }
 
         public string Notes { get; set; }
+
+        /// <summary>
+        /// Navigation property to get all comments for this request
+        /// </summary>
+        public virtual ICollection<RequestComment> RequestComments { get; set; }
     }
 }
