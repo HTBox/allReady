@@ -97,6 +97,138 @@
                 </div>
             }
 
+            <!-- End Email Form -->
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                <hr />
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input type="text" asp-for="FirstName" class="form-control"/>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <input type="text" asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Mobile phone number</label>
+                        <div class="col-md-10">
+                            <p class="form-control-static">
+                                @(Model.PhoneNumber ?? "None")
+                                @if (Model.PhoneNumber != null)
+                                {
+                                    <a asp-controller="Manage" asp-action="AddPhoneNumber">Change</a>
+                                        @: &nbsp;|&nbsp;
+                                        <a asp-controller="Manage" asp-action="RemovePhoneNumber">Remove</a>
+                                        @if (!Model.IsPhoneNumberConfirmed)
+                                        {
+                                            @: &nbsp;|&nbsp;
+                                            <a asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-phoneNumber="@Model.PhoneNumber">Verify</a>
+                                        }
+                                }
+                                else
+                                {
+                                    <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
+                                }
+                                @if (!Model.IsPhoneNumberConfirmed && Model.PhoneNumber != null)
+                                {
+                                    <br />
+                                    <div class="alert alert-warning" role="alert">
+                                        <i class="fa fa-exclamation-circle"></i> Your mobile phone number has not been confirmed.
+                                        <br />
+                                        allReady cannot send you SMS notifications until your mobile phone number has been confirmed.
+                                        <br />
+                                        Please check your messages for your confirmation code.
+                                    </div>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    @if (User.IsOrganizationAdmin())
+                        {
+                        @if (User.IsUserType(UserType.SiteAdmin))
+                            {
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Approve users</label>
+                                <div class="col-md-10">
+                                    <p class="form-control-static">
+                                        <a asp-controller="Site" asp-action="Index" asp-area="@AreaNames.Admin">Find</a>
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Social media logins</label>
+                            <div class="col-md-10">
+                                <p class="form-control-static">
+                                    @Model.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
+                                </p>
+                            </div>
+                        </div>
+
+                    }
+                    <div class="form-group">
+                        <label class="control-label col-md-2">Password</label>
+                        <div class="col-md-10">
+                            <p class="form-control-static">
+                                @if (Model.HasPassword)
+                                {
+                                    <a asp-controller="Manage" asp-action="ChangePassword">Change</a>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Manage" asp-action="SetPassword">Create</a>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TimeZoneId" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <select asp-for="TimeZoneId" asp-items="@SelectListService.GetTimeZones()" class="form-control"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
+                        <div class="col-md-10">
+                            <div data-bind="foreach: skills">
+                                <div class="form-inline">
+                                    <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                                    <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                                    <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
+                                        <span class="fa fa-remove" aria-hidden="true"></span>
+                                        Delete
+                                    </a>
+                                </div>
+                            </div>
+                            <a href="#" data-bind="click: addSkill" title="Add skill">
+                                <span class="fa fa-plus" aria-hidden="true"></span>
+                                Add
+                            </a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" name="button" value="Save" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
+                            <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
+                            <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
         </div>
         <div id="skills-tab" class="tab-pane">
             TODO Move skills details here.
@@ -105,135 +237,6 @@
     </div>
 
 
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken()
-        <hr />
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input type="text" asp-for="FirstName" class="form-control"/>
-                    <span asp-validation-for="FirstName" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input type="text" asp-for="LastName" class="form-control" />
-                    <span asp-validation-for="LastName" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="control-label col-md-2">Mobile phone number</label>
-                <div class="col-md-10">
-                    <p class="form-control-static">
-                        @(Model.PhoneNumber ?? "None")
-                        @if (Model.PhoneNumber != null)
-                        {
-                            <a asp-controller="Manage" asp-action="AddPhoneNumber">Change</a>
-                                @: &nbsp;|&nbsp;
-                                <a asp-controller="Manage" asp-action="RemovePhoneNumber">Remove</a>
-                                @if (!Model.IsPhoneNumberConfirmed)
-                                {
-                                    @: &nbsp;|&nbsp;
-                                    <a asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-phoneNumber="@Model.PhoneNumber">Verify</a>
-                                }
-                        }
-                        else
-                        {
-                            <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
-                        }
-                        @if (!Model.IsPhoneNumberConfirmed && Model.PhoneNumber != null)
-                        {
-                            <br />
-                            <div class="alert alert-warning" role="alert">
-                                <i class="fa fa-exclamation-circle"></i> Your mobile phone number has not been confirmed.
-                                <br />
-                                allReady cannot send you SMS notifications until your mobile phone number has been confirmed.
-                                <br />
-                                Please check your messages for your confirmation code.
-                            </div>
-                        }
-                    </p>
-                </div>
-            </div>
-            @if (User.IsOrganizationAdmin())
-                {
-                @if (User.IsUserType(UserType.SiteAdmin))
-                    {
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Approve users</label>
-                        <div class="col-md-10">
-                            <p class="form-control-static">
-                                <a asp-controller="Site" asp-action="Index" asp-area="@AreaNames.Admin">Find</a>
-                            </p>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="form-group">
-                    <label class="control-label col-md-2">Social media logins</label>
-                    <div class="col-md-10">
-                        <p class="form-control-static">
-                            @Model.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
-                        </p>
-                    </div>
-                </div>
-
-            }
-            <div class="form-group">
-                <label class="control-label col-md-2">Password</label>
-                <div class="col-md-10">
-                    <p class="form-control-static">
-                        @if (Model.HasPassword)
-                        {
-                            <a asp-controller="Manage" asp-action="ChangePassword">Change</a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Manage" asp-action="SetPassword">Create</a>
-                        }
-                    </p>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="TimeZoneId" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <select asp-for="TimeZoneId" asp-items="@SelectListService.GetTimeZones()" class="form-control"></select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <div data-bind="foreach: skills">
-                        <div class="form-inline">
-                            <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                            <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                            <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
-                                <span class="fa fa-remove" aria-hidden="true"></span>
-                                Delete
-                            </a>
-                        </div>
-                    </div>
-                    <a href="#" data-bind="click: addSkill" title="Add skill">
-                        <span class="fa fa-plus" aria-hidden="true"></span>
-                        Add
-                    </a>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <button type="submit" name="button" value="Save" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
-                    <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
-                    <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
-                </div>
-            </div>
-        </div>
-    }
 </div>
 
 @section scripts {
