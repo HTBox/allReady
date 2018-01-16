@@ -30,7 +30,6 @@ input[type="checkbox"].form-control, input[type="radio"].form-control {
 
 .logo-background {
     background-color: #d58033;
-    width: 100vw;
     left: -25px;
     color: #fff;
     padding-bottom: 20px;
