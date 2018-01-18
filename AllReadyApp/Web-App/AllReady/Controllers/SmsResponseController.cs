@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Requests;
+using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Attributes;
 using AllReady.Features.Requests;
 using AllReady.Models;
@@ -13,8 +13,8 @@ namespace AllReady.Controllers
 {
     public class SmsResponseController : Controller
     {
-        private const string Accepted = "y";
-        private const string Declined = "n";
+        private const string AcceptedResponse = "y";
+        private const string DeclinedResponse = "n";
 
         private readonly IMediator _mediator;
         private readonly ISmsSender _smsSender;
@@ -46,12 +46,12 @@ namespace AllReady.Controllers
                 {
                     switch (response)
                     {
-                        case (Accepted):
+                        case (AcceptedResponse):
                             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Confirmed });
-                            await _smsSender.SendSmsAsync(from, "Thank you for confirming you availability.");
+                            await _smsSender.SendSmsAsync(from, "Thank you for confirming your availability.");
                             break;
 
-                        case (Declined):
+                        case (DeclinedResponse):
                             await _mediator.SendAsync(new ChangeRequestStatusCommand { RequestId = requestId, NewStatus = RequestStatus.Unassigned });
                             await _smsSender.SendSmsAsync(from, "We have canceled your request and once it is rescheduled you will receive further communication.");
                             break;

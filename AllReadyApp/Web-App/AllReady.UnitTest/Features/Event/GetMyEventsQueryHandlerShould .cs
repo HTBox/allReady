@@ -9,18 +9,18 @@ namespace AllReady.UnitTest.Features.Event
 {
     using Event = AllReady.Models.Event;
 
-    public class GetMyEventsQueryHandlerShould : InMemoryContextTest
+    public class GetVolunteerEventsHandlerShould : InMemoryContextTest
     {
         [Fact]
         public async Task ReturnExpectedEvents()
         {
             var userId = "UserId1";
-            var message = new GetMyEventsQuery { UserId = userId };
-            var sut = new GetMyEventsQueryHandler(Context);
+            var message = new GetVolunteerEventsQuery { UserId = userId };
+            var sut = new GetVolunteerEventsQueryHandler(Context);
             var response = await sut.Handle(message);
 
-            Assert.True(response.CurrentEvents.First().EventId == 1
-                     && response.FutureEvents.First().EventId == 3);
+            Assert.True(response.CurrentEvents.Count() ==1
+                     && response.FutureEvents.Count() ==2);
         }
 
         protected override void LoadTestData()

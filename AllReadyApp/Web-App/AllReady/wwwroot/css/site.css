@@ -1,4 +1,4 @@
-﻿/*Helpers*/
+/*Helpers*/
 
 .margin-1 {
     margin-bottom: 10px;
@@ -13,14 +13,23 @@
 body {
     margin: 0;
     padding: 0;
+    padding-top: 50px;
     font-family: sans-serif;
     position: relative;
     padding-bottom: 16rem;
 }
 
+/** since .form-control isn't designed for radio buttons and checkboxes */
+input[type="checkbox"].form-control, input[type="radio"].form-control {
+    box-shadow: unset;
+    border-image: unset;
+    box-shadow: unset;
+    max-width: unset;
+    width: 20px;
+}
+
 .logo-background {
     background-color: #d58033;
-    width: 100vw;
     left: -25px;
     color: #fff;
     padding-bottom: 20px;
@@ -30,19 +39,20 @@ body {
     margin-left: -50px;
 }
 
-/* Set widths on the form inputs since otherwise they're 100% wide */
-input,
-select,
-textarea {
-    max-width: 380px;
-}
+@media (min-width: 768px) {
+    /* On larger screens set widths on the form inputs since otherwise they're 100% wide */
+    input,
+    select,
+    textarea {
+        max-width: 380px;
+    }
 
     input.wide,
     select.wide,
     textarea.wide {
         max-width: inherit;
     }
-
+}
 /* Wrapping element */
 /* Set some basic padding to keep content from hitting the edges */
 .body-content {
@@ -129,6 +139,7 @@ footer {
 }
 
 .navbar {
+    
     background-color:#d58033;
     border-radius: 0;
     margin-bottom:0;

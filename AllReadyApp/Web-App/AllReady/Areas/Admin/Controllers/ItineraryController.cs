@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Features.Events;
+using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.Itineraries;
 using AllReady.Areas.Admin.Features.Requests;
 using AllReady.Areas.Admin.Features.TaskSignups;
@@ -15,10 +15,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AllReady.Constants;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize]
     public class ItineraryController : Controller
     {
@@ -54,6 +55,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             itinerary.TeamLeadChangedSuccess = teamLeadSuccess;
+            itinerary.TeamManagementEnabled = await authorizableItinerary.UserCanManageTeamMembers();
 
             return View("Details", itinerary);
         }
@@ -183,7 +185,7 @@ namespace AllReady.Areas.Admin.Controllers
 
             await _mediator.SendAsync(new EditItineraryCommand { Itinerary = model });
 
-            return RedirectToAction(nameof(Details), new { area = "Admin", id = model.Id });
+            return RedirectToAction(nameof(Details), new { area = AreaNames.Admin, id = model.Id });
         }
 
         [HttpPost]
@@ -442,13 +444,17 @@ namespace AllReady.Areas.Admin.Controllers
         [Route("Admin/Itinerary/{itineraryId}/[Action]")]
         public async Task<IActionResult> SetTeamLead(int itineraryId, [FromForm] int volunteerTaskSignupId)
         {
+           
             var authorizableItinerary = await _mediator.SendAsync(new AuthorizableItineraryQuery(itineraryId));
             if (!await authorizableItinerary.UserCanManageTeamMembers())
             {
                 return new ForbidResult();
             }
 
-            var result = await _mediator.SendAsync(new SetTeamLeadCommand(itineraryId, volunteerTaskSignupId));
+            var itinUrl = Url.Action(nameof(this.Details), "Itinerary", new { area = AreaNames.Admin, id = itineraryId },
+                HttpContext.Request.Scheme);
+
+            var result = await _mediator.SendAsync(new SetTeamLeadCommand(itineraryId, volunteerTaskSignupId, itinUrl));
 
             // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
 
@@ -471,8 +477,6 @@ namespace AllReady.Areas.Admin.Controllers
             var result = await _mediator.SendAsync(new RemoveTeamLeadCommand(itineraryId));
 
             // todo - this method of sending messages between requests is not great - should look at properly implementing session and using TempData where possible
-
-            //var isSuccess = result == SetTeamLeadResult.Success;
 
             return RedirectToAction(nameof(Details), new { id = itineraryId });
         }

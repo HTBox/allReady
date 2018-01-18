@@ -2,6 +2,7 @@
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Goals;
 using AllReady.Areas.Admin.ViewModels.Goal;
+using AllReady.Constants;
 using AllReady.Models;
 using AllReady.Security;
 using MediatR;
@@ -10,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
     public class GoalController : Controller
     {
@@ -57,7 +58,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _mediator.SendAsync(new GoalEditCommand {Goal = model});
-                return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = "admin", id = campaignId});
+                return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = AreaNames.Admin, id = campaignId});
             }
             return View("Edit", model);
         }
@@ -87,7 +88,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             await _mediator.SendAsync(new GoalDeleteCommand {GoalId = id});
-            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = "admin", id = goal.CampaignId});
+            return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = AreaNames.Admin, id = goal.CampaignId});
         }
 
         // GET /Admin/Goal/Edit/{goalId}
@@ -134,7 +135,7 @@ namespace AllReady.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _mediator.SendAsync(new GoalEditCommand {Goal = model});
-                return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = "admin", id = goal.CampaignId});
+                return RedirectToAction(nameof(CampaignController.Details), "Campaign", new {area = AreaNames.Admin, id = goal.CampaignId});
             }
             return View("Edit", model);
         }

@@ -1,4 +1,5 @@
 ﻿@using System.Threading.Tasks
+@using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.VolunteerTask.DetailsViewModel
 @{
@@ -8,9 +9,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">@Model.EventName</a></li>
             <li>@Model.Name</li>
         </ol>
     </div>
@@ -18,7 +19,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        <h2>@Model.Name <a asp-area="Admin" asp-controller="VolunteerTask" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-area="Admin" asp-controller="VolunteerTask" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
+        <h2>@Model.Name <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
         <p>
             <time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>
@@ -39,7 +40,7 @@
                     <h3>Required Skills</h3>
                     <ul>
                         @foreach (var requiredSkill in Model.RequiredSkills)
-                {
+                        {
                             <li><strong>@requiredSkill.Skill.HierarchicalName</strong></li>
                         }
                     </ul>
@@ -78,6 +79,7 @@
                             <th>Phone</th>
                             <th>Skills</th>
                             <th>E-mail</th>
+                            <th>&nbsp;</th>
                         </tr>
                         @foreach (var volunteer in Model.AssignedVolunteers)
                         {
@@ -93,6 +95,7 @@
                                     </ul>
                                 </td>
                                 <td>@volunteer.UserName</td>
+                                <td><a href="#" data-id="@volunteer.UserId" data-target="removeVolunteerModal" title="Remove volunteer from task"><i class="text-danger glyphicon glyphicon-trash"></i></a></td>
                             </tr>
                         }
                     </table>
@@ -105,7 +108,7 @@
         </div>
     </div>
 </div>
-<!-- Modal -->
+<!-- Modal to message all volunteers -->
 <div class="modal fade" id="messageVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="messageVolunteersLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -113,7 +116,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="messageVolunteersLabel">Message All Volunteers</h4>
             </div>
-            <form asp-area="Admin" asp-controller="VolunteerTask" asp-action="MessageAllVolunteers" method="post">
+            <form asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="MessageAllVolunteers" method="post">
                 <div class="modal-body">
                     <input type="hidden" value="@Model.Id" name="volunteerTaskId" id="message-volunteerTaskId">
                     <div class="form-group">
@@ -138,6 +141,29 @@
         </div>
     </div>
 </div>
+<!-- Modal to ask if the removed  should be notified -->
+<div class="modal fade" id="removeVolunteerModal" tabindex="-1" role="dialog" aria-labelledby="removeVolunteerLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="removeVolunteerLabel">Remove volunteer from task</h4>
+            </div>
+            <form asp-controller="VolunteerTask" asp-action="RemoveVolunteer" asp-area="@AreaNames.Admin" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="UserId" value=""  />
+                    <input type="hidden" name="TaskId" value="@Model.Id" />
+                    <input type="hidden" name="Notify" value="false" id="remove-Notify" />
+                    Should the removed volunteer be notified by an email?
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-default">No, just remove user</button>
+                    <button type="submit" id="sendMessageToRemovedVolunteer" class="btn btn-primary">Yes, remove and notify</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script src="~/js/taskDetails.js"></script>
@@ -145,6 +171,15 @@
         $(function () {
             var taskDetailsAdmin = new HTBox.TaskDetailAdmin();
             $("#openMessageToVolunteers").prop('disabled', false);
+        });
+        $('#sendMessageToRemovedVolunteer').click(function () {
+            $('#removeVolunteerModal [name="Notify"]').val('true');
+        });
+        $('[data-target="removeVolunteerModal"]').click(function (e) {
+            e.preventDefault();
+            var userId = this.getAttribute("data-id");
+            $('#removeVolunteerModal [name="UserId"]').val(userId);
+            $('#removeVolunteerModal').modal('show');
         });
     </script>
 }

@@ -1,8 +1,9 @@
+﻿@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
 <div class="row">
     <div class="col-md-12">
-        <a asp-controller="Resource" asp-action="Create" asp-area="Admin" asp-route-campaignId="@Model.Id" class="btn btn-default">Create New</a>
+        <a asp-controller="Resource" asp-action="Create" asp-area="@AreaNames.Admin" asp-route-campaignId="@Model.Id" class="btn btn-default">Create New</a>
     </div>
 </div>
 
@@ -21,7 +22,7 @@
             {
                 <tr>
                     <td>
-                        <a asp-controller="Resource" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Title</a>
+                        <a asp-controller="Resource" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.Id">@item.Title</a>
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
                             <br />

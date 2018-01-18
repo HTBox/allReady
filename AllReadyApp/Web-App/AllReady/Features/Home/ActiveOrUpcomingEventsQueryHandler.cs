@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,9 +19,9 @@ namespace AllReady.Features.Home
             _context = context;
         }
 
-        public async Task<List<ActiveOrUpcomingEvent>> Handle(ActiveOrUpcomingEventsQuery message)
+        public Task<List<ActiveOrUpcomingEvent>> Handle(ActiveOrUpcomingEventsQuery message)
         {
-            return await _context.Events
+            return _context.Events
                 .AsNoTracking()
                 .Include(x => x.Campaign).ThenInclude(x => x.ManagingOrganization)
                 .Where(ev => ev.EndDateTime.Date >= DateTimeOffsetUtcNow().Date && 

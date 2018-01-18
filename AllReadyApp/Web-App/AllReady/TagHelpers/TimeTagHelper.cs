@@ -1,5 +1,5 @@
-﻿using System;
-using AllReady.Providers;
+using System;
+using TimeZoneConverter;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace AllReady.TagHelpers
@@ -32,7 +32,7 @@ namespace AllReady.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             output.TagName = null;
-            
+
             if (!Value.HasValue)
             {
                 output.Content.SetContent("*");
@@ -42,13 +42,13 @@ namespace AllReady.TagHelpers
                 var dateTimeToDisplay = Value.Value;
                 if (!string.IsNullOrEmpty(TargetTimeZoneId))
                 {
-                    TimeZoneInfo targetTimeZone = TimeZoneInfo.FindSystemTimeZoneById(TargetTimeZoneId);
+                    TimeZoneInfo targetTimeZone = TZConvert.GetTimeZoneInfo(TargetTimeZoneId);
                     var targetOffset = targetTimeZone.GetUtcOffset(dateTimeToDisplay);
                     dateTimeToDisplay = dateTimeToDisplay.ToOffset(targetOffset);
                 }
                 var formattedTime = dateTimeToDisplay.ToString(Format);
                 output.Content.SetContent(formattedTime);
-            }            
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Extensions;
 using AllReady.Areas.Admin.ViewModels.Campaign;
@@ -27,6 +28,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .Include(ci => ci.CampaignGoals)
                 .Include(c => c.CampaignContacts).ThenInclude(c => c.Contact)
                 .Include(l => l.Location)
+                .Include(c => c.ManagementInvites)
                 .SingleOrDefaultAsync(c => c.Id == message.CampaignId);
 
             CampaignDetailViewModel result = null;
@@ -66,7 +68,13 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                         Description = r.Description,
                         Title = r.Name,
                         Url = r.ResourceUrl
-                    })
+                    }),
+                    CampaignManagerInvites = campaign.ManagementInvites.Select(i => new CampaignDetailViewModel.CampaignManagerInviteList
+                    {
+                        Id = i.Id,
+                        InviteeEmail = i.InviteeEmailAddress,
+                        Status = GetCampaignManagerInviteStatus(i),
+                    }),
                 };
 
                 if (!campaign.CampaignContacts.Any())// Include isn't including
@@ -81,6 +89,14 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             }
 
             return result;
+        }
+
+        private CampaignDetailViewModel.CampaignManagerInviteStatus GetCampaignManagerInviteStatus(CampaignManagerInvite campaignManagerInvite)
+        {
+            if (campaignManagerInvite.IsAccepted) return CampaignDetailViewModel.CampaignManagerInviteStatus.Accepted;
+            if (campaignManagerInvite.IsPending) return CampaignDetailViewModel.CampaignManagerInviteStatus.Pending;
+            if (campaignManagerInvite.IsRejected) return CampaignDetailViewModel.CampaignManagerInviteStatus.Rejected;
+            return CampaignDetailViewModel.CampaignManagerInviteStatus.Revoked;
         }
     }
 }

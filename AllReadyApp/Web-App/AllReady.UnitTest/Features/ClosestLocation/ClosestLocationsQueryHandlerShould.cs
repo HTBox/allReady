@@ -27,7 +27,7 @@ namespace AllReady.UnitTest.Features.ClosestLocation
             var sut = new ClosestLocationsQueryHandler(context);
             var results = sut.Handle(message);
 
-            Assert.Equal(results.Count, 0);
+            Assert.Empty(results);
 
             // TODO: validate something meaningful
             /*

@@ -4,6 +4,7 @@ using AllReady.Areas.Admin.Features.Events;
 using AllReady.Areas.Admin.Features.UnlinkedRequests;
 using AllReady.Areas.Admin.ViewModels.UnlinkedRequests;
 using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Constants;
 using AllReady.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +13,7 @@ using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
     public class UnlinkedRequestController : Controller
     {

@@ -1,5 +1,8 @@
-﻿@model IEnumerable<AllReady.Areas.Admin.ViewModels.VolunteerTask.TaskSummaryViewModel>
-
+@using AllReady.Constants
+@model IEnumerable<AllReady.Areas.Admin.ViewModels.VolunteerTask.TaskSummaryViewModel>
+@*
+    This page requires js\taskList.js to be able to assign tasks to users
+*@
 <div class="row">
     <div class="col-md-12">
         <table class="table">
@@ -19,13 +22,16 @@
                 <th>
                     End
                 </th>
+                <th>
+                    &nbsp;
+                </th>
             </tr>
 
             @foreach (var item in Model.OrderBy(t => t.StartDateTime).ThenBy(t => t.Name))
             {
                 <tr>
                     <td>
-                        <a asp-controller="VolunteerTask" asp-action="Details" asp-area="Admin" asp-route-id="@item.Id">@item.Name</a>
+                        <a asp-controller="VolunteerTask" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.Id">@item.Name</a>
                     </td>
                     @if (item.AssignedVolunteers == null || item.AssignedVolunteers.Count == 0)
                     {
@@ -39,7 +45,7 @@
                     }
                     else
                     {
-                        <td><a asp-controller="VolunteerTask" asp-action="Details" asp-area="Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
+                        <td><a asp-controller="VolunteerTask" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-eventId="@item.EventId" asp-route-id="@item.Id">Multiple Volunteers</a></td>
                         <td>@item.AcceptedVolunteerCount / @item.AssignedVolunteers.Count Accepted</td>
                     }
 
@@ -49,9 +55,39 @@
                     <td>
                         <time value="item.EndDateTime"></time>
                     </td>
+                    <td>
+                        <a data-name="assignTaskToVolunteer" data-id="@item.Id" class="btn btn-primary" asp-action="VolunteerCandidates" asp-controller="VolunteerTask" asp-route-taskId="@item.Id" asp-route-EventId="@item.EventId">Assign volunteer(s)</a>
+                    </td>
                 </tr>
             }
 
         </table>
     </div>
 </div>
+<div class="modal fade" id="assignVolunteersModal" tabindex="-1" role="dialog" aria-labelledby="assignVolunteersLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="assignVolunteersLabel">Assign volunteers to task</h4>
+            </div>
+            <form asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="AssignChosenVolunteers" method="post">
+                <input type="hidden" value="" name="TaskId" id="assign-TaskId">
+                <div class="modal-body">
+                    <div class="users"></div>
+                    <hr />
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="NotifyUsers" value="true"/> Notify users
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" id="sendMessageToVolunteers" class="btn btn-primary">Assign selected user(s)</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

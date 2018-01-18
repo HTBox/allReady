@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -576,7 +576,7 @@ namespace AllReady.DataAccess
                     Description = "Description of a very important volunteerTask # " + i,
                     Name = "Task # " + i,
                     EndDateTime = AdjustToTimezone(DateTime.Today.AddHours(17).AddDays(i), _timeZone),
-                    StartDateTime = AdjustToTimezone(DateTime.Today.AddHours(9).AddDays(i - 1), _timeZone),
+                    StartDateTime = AdjustToTimezone(DateTime.Today.AddHours(9).AddDays(campaignEvent.EventType == EventType.Itinerary ? i : i - 1), _timeZone),
                     Organization = organization,
                     NumberOfVolunteersRequired = 5
                 });
@@ -602,7 +602,7 @@ namespace AllReady.DataAccess
         private List<PostalCodeGeo> GetPostalCodes(IList<PostalCodeGeo> existingPostalCode)
         {
             var postalCodes = new List<PostalCodeGeo>();
-            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo { City = "Remond", State = "WA", PostalCode = "98052" });
+            if (!existingPostalCode.Any(item => item.PostalCode == "98052")) postalCodes.Add(new PostalCodeGeo { City = "Redmond", State = "WA", PostalCode = "98052" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98004")) postalCodes.Add(new PostalCodeGeo { City = "Bellevue", State = "WA", PostalCode = "98004" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98116")) postalCodes.Add(new PostalCodeGeo { City = "Seattle", State = "WA", PostalCode = "98116" });
             if (!existingPostalCode.Any(item => item.PostalCode == "98117")) postalCodes.Add(new PostalCodeGeo { City = "Seattle", State = "WA", PostalCode = "98117" });
@@ -677,8 +677,8 @@ namespace AllReady.DataAccess
 
                 var user3 = new ApplicationUser
                 {
-                    FirstName = "FirstName5",
-                    LastName = "LastName5",
+                    FirstName = "FirstName6",
+                    LastName = "LastName6",
                     UserName = _settings.DefaultUsername,
                     Email = _settings.DefaultUsername,
                     TimeZoneId = _timeZone.Id,

@@ -1,4 +1,4 @@
-﻿// knockout binding for jquery.maskedinput plugin
+// knockout binding for jquery.maskedinput plugin
 ko.bindingHandlers.masked = {
     init: function (element, valueAccessor) {
         var value = valueAccessor(),
@@ -13,7 +13,7 @@ ko.bindingHandlers.accordion = {
         var options = ko.utils.unwrapObservable(value()) || {},
             toggleClass = "[data-toggle-accordion]",
             contentClass = ".collapse",
-            openItem = ko.utils.unwrapObservable(options.openItem) || false,
+            openItem = parseInt(ko.utils.unwrapObservable(options.openItem)),
             itemClass = "." + (ko.utils.unwrapObservable(options.item) || "panel-group"),
             accordionDirectionIconClass = "." + (ko.utils.unwrapObservable(options.itemIconDirection) || "accordion-icon-direction"),
             items = $(elem).find(contentClass);
@@ -42,7 +42,7 @@ ko.bindingHandlers.accordion = {
         });
 
         // if initial open item specified, expand it
-        if (openItem) {
+        if (openItem > -1) {
             items.eq(openItem).collapse("show");
         };
 
@@ -57,5 +57,40 @@ ko.bindingHandlers.accordion = {
 
             $accordionDirectionIcon.toggleClass("fa-caret-down fa-caret-up");
         }
+    }
+};
+
+// knockout binding for datepicker date
+ko.bindingHandlers.dateTimePicker = {
+    init: function (element, valueAccessor, allBindingsAccessor) {
+        //initialize datepicker with some optional options
+        var options = allBindingsAccessor().dateTimePickerOptions || {};
+        $(element).datetimepicker(options);
+
+        //when a user changes the date, update the view model
+        ko.utils.registerEventHandler(element, "dp.change", function (event) {
+            var value = valueAccessor();
+            if (ko.isObservable(value)) {
+                if (!event.date) {
+                    value(null);
+                }
+                else if (event.date instanceof Date) {
+                    value(event.date);
+                }
+                else {
+                    value(event.date.toDate());
+                }
+            }
+        });
+
+        ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+            var picker = $(element).data("DateTimePicker");
+            if (picker) {
+                picker.destroy();
+            }
+        });
+    },
+    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+        // This is for input data binding only.
     }
 };

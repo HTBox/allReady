@@ -14,7 +14,7 @@ namespace AllReady.UnitTest
 
             return new Mock<SignInManager<ApplicationUser>>(
                 userManagerMock == null ? UserManagerMockHelper.CreateUserManagerMock().Object : userManagerMock.Object,
-                contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null);
+                contextAccessor.Object, Mock.Of<IUserClaimsPrincipalFactory<ApplicationUser>>(), null, null, null);
         }
     }
 }

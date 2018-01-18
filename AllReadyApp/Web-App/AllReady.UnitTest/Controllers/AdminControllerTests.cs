@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Controllers;
 using AllReady.Extensions;
 using AllReady.Features.Admin;
@@ -144,7 +145,7 @@ namespace AllReady.UnitTest.Controllers
             //note: I can't test the Values part here b/c I do not have control over the Id generation (which is a guid represented as as string) on ApplicationUser b/c it's new'ed up in the controller
             urlHelper.Verify(mock => mock.Action(It.Is<UrlActionContext>(uac =>
                 uac.Action == "ConfirmEmail" &&
-                uac.Controller == "Admin" &&
+                uac.Controller == ControllerNames.Admin &&
                 uac.Protocol == requestScheme)),
                 Times.Once);
         }
@@ -196,8 +197,8 @@ namespace AllReady.UnitTest.Controllers
 
             var result = await sut.Register(new RegisterViewModel()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(AdminController.DisplayEmail));
-            Assert.Equal(result.ControllerName, "Admin");
+            Assert.Equal(nameof(AdminController.DisplayEmail), result.ActionName);
+            Assert.Equal(ControllerNames.Admin, result.ControllerName);
         }
 
         [Fact]
@@ -272,7 +273,7 @@ namespace AllReady.UnitTest.Controllers
         {
             var sut = CreateAdminControllerWithNoInjectedDependencies();
             var result = await sut.ConfirmEmail(null, null) as ViewResult;
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -281,7 +282,7 @@ namespace AllReady.UnitTest.Controllers
             var userManager = UserManagerMockHelper.CreateUserManagerMock();
             var sut = new AdminController(userManager.Object, null, null, null, null);
             var result = await sut.ConfirmEmail(null, "code") as ViewResult;
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -386,7 +387,7 @@ namespace AllReady.UnitTest.Controllers
 
             var result = await sut.ConfirmEmail("userId", "code") as ViewResult;
 
-            Assert.Equal(result.ViewName, "ConfirmEmail");
+            Assert.Equal("ConfirmEmail", result.ViewName);
         }
 
         [Fact]
@@ -399,7 +400,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(userManager.Object, null, null, null, null);
             var result = await sut.ConfirmEmail("userId", "code") as ViewResult;
 
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -459,7 +460,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             var result = await sut.SendCode(null, It.IsAny<bool>()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -548,7 +549,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             var result = await sut.SendCode(It.IsAny<SendCodeViewModel>()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -579,7 +580,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(userManager.Object, signInManager.Object, null, null, null);
             var result = await sut.SendCode(new SendCodeViewModel()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -649,7 +650,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(userManager.Object, signInManager.Object, null, null, null);
             var result = await sut.SendCode(model) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(AdminController.VerifyCode));
+            Assert.Equal(nameof(AdminController.VerifyCode), result.ActionName);
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -694,7 +695,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             var result = await sut.VerifyCode(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "Error");
+            Assert.Equal("Error", result.ViewName);
         }
 
         [Fact]
@@ -775,7 +776,7 @@ namespace AllReady.UnitTest.Controllers
             await sut.VerifyCode(new VerifyCodeViewModel());
 
             var errorMessage = sut.ModelState.GetErrorMessages().Single();
-            Assert.Equal(errorMessage, "Invalid code.");
+            Assert.Equal("Invalid code.", errorMessage);
         }
 
         [Fact]
@@ -787,7 +788,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AdminController(null, signInManager.Object, null, null, null);
             var result = await sut.VerifyCode(new VerifyCodeViewModel()) as ViewResult;
 
-            Assert.Equal(result.ViewName, "Lockout");
+            Assert.Equal("Lockout", result.ViewName);
         }
 
         [Fact]
@@ -818,10 +819,9 @@ namespace AllReady.UnitTest.Controllers
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var sut = new AdminController(null, signInManager.Object, null, null, null) { Url = urlHelper.Object };
-            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as RedirectToActionResult;
+            var result = await sut.VerifyCode(new VerifyCodeViewModel()) as RedirectToPageResult;
 
-            Assert.Equal(result.ActionName, nameof(HomeController.Index));
-            Assert.Equal(result.ControllerName, "Home");
+            Assert.Equal(result.PageName, "/Index");
         }
 
         [Fact]

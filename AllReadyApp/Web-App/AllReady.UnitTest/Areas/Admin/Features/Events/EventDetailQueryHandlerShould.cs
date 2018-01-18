@@ -1,15 +1,19 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Events;
 using AllReady.Models;
 using Xunit;
+using AllReady.Areas.Admin.ViewModels.Event;
+using Shouldly;
 
 namespace AllReady.UnitTest.Areas.Admin.Features.Events
 {
     public class EventDetailQueryHandlerShould : InMemoryContextTest
     {
+        private int _queenAnneEventId;
+
         protected override void LoadTestData()
         {
             var seattlePostalCode = "98117";
@@ -49,7 +53,17 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
                 EndDateTime = new DateTime(2015, 12, 31, 15, 0, 0).ToUniversalTime(),
                 Location = seattle,
                 RequiredSkills = new List<EventSkill>(),
-                EventType = EventType.Itinerary
+                EventType = EventType.Itinerary,
+                ManagementInvites = new List<EventManagerInvite>
+                {
+                    new EventManagerInvite
+                    {
+                        Id = 1,
+                        InviteeEmailAddress = "test@test.com",
+                        SentDateTimeUtc = new DateTime(2015, 5, 28),
+                        EventId = _queenAnneEventId,
+                    }
+                }
             };
 
             var rallyEvent = new Event
@@ -155,6 +169,8 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             Context.VolunteerTaskSignups.Add(volunteerTaskSignup);
 
             Context.SaveChanges();
+
+            _queenAnneEventId = queenAnne.Id;
         }
 
         [Fact]
@@ -212,6 +228,70 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
             var secondItineraryResult = result.Itineraries.ToList()[1];
 
             Assert.Equal(1, secondItineraryResult.RequestCount);
+        }
+
+        [Fact]
+        public async Task ReturnEventManagerInvitesWithStatusPending_WhenNotRejectedAcceptedOrRevoked()
+        {
+            var query = new EventDetailQuery { EventId = _queenAnneEventId };
+            var handler = new EventDetailQueryHandler(Context);
+            EventDetailViewModel result = await handler.Handle(query);
+
+            result.EventManagerInvites.Count().ShouldBe(1);
+            result.EventManagerInvites.Single().Id.ShouldBe(1);
+            result.EventManagerInvites.Single().InviteeEmail.ShouldBe("test@test.com");
+            result.EventManagerInvites.Single().Status.ShouldBe(EventDetailViewModel.EventManagerInviteStatus.Pending);
+        }          
+
+        [Fact]
+        public async Task ReturnEventManagerInvitesWithStatusAccepted_WhenInviteIsAccepted()
+        {
+            var query = new EventDetailQuery { EventId = _queenAnneEventId };
+            var handler = new EventDetailQueryHandler(Context);
+            EventManagerInvite invite = Context.EventManagerInvites.Where(e => e.EventId == _queenAnneEventId).Single();
+            invite.AcceptedDateTimeUtc = new DateTime(2015, 5, 29);
+            Context.SaveChanges();
+
+            EventDetailViewModel result = await handler.Handle(query);
+
+            result.EventManagerInvites.Count().ShouldBe(1);
+            result.EventManagerInvites.Single().Id.ShouldBe(1);
+            result.EventManagerInvites.Single().InviteeEmail.ShouldBe("test@test.com");
+            result.EventManagerInvites.Single().Status.ShouldBe(EventDetailViewModel.EventManagerInviteStatus.Accepted);
+        }
+
+        [Fact]
+        public async Task ReturnEventManagerInvitesWithStatusRejected_WhenInviteIsRejected()
+        {
+            var query = new EventDetailQuery { EventId = _queenAnneEventId };
+            var handler = new EventDetailQueryHandler(Context);
+            EventManagerInvite invite = Context.EventManagerInvites.Where(e => e.EventId == _queenAnneEventId).Single();
+            invite.RejectedDateTimeUtc = new DateTime(2015, 5, 29);
+            Context.SaveChanges();
+
+            EventDetailViewModel result = await handler.Handle(query);
+
+            result.EventManagerInvites.Count().ShouldBe(1);
+            result.EventManagerInvites.Single().Id.ShouldBe(1);
+            result.EventManagerInvites.Single().InviteeEmail.ShouldBe("test@test.com");
+            result.EventManagerInvites.Single().Status.ShouldBe(EventDetailViewModel.EventManagerInviteStatus.Rejected);
+        }
+
+        [Fact]
+        public async Task ReturnEventManagerInvitesWithStatusRevoked_WhenInviteIsRevoked()
+        {
+            var query = new EventDetailQuery { EventId = _queenAnneEventId };
+            var handler = new EventDetailQueryHandler(Context);
+            EventManagerInvite invite = Context.EventManagerInvites.Where(e => e.EventId == _queenAnneEventId).Single();
+            invite.RevokedDateTimeUtc = new DateTime(2015, 5, 29);
+            Context.SaveChanges();
+
+            EventDetailViewModel result = await handler.Handle(query);
+
+            result.EventManagerInvites.Count().ShouldBe(1);
+            result.EventManagerInvites.Single().Id.ShouldBe(1);
+            result.EventManagerInvites.Single().InviteeEmail.ShouldBe("test@test.com");
+            result.EventManagerInvites.Single().Status.ShouldBe(EventDetailViewModel.EventManagerInviteStatus.Revoked);
         }
     }
 }

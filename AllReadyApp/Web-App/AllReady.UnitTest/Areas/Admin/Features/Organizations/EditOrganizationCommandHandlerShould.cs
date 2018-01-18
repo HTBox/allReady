@@ -24,7 +24,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
 
             // Assert
             Assert.Single(Context.Organizations.Where(t => t.Id == id));
-            Assert.Equal(Context.Entry(fetchedOrg).State, Microsoft.EntityFrameworkCore.EntityState.Unchanged);
+            Assert.Equal(Microsoft.EntityFrameworkCore.EntityState.Unchanged, Context.Entry(fetchedOrg).State);
         }
 
         public static Location Create25Bogus()

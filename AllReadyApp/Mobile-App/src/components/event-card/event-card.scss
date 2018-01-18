@@ -1,0 +1,30 @@
+event-card {
+    ion-card {
+        padding: 0 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        border-radius: 10px !important;
+        border: solid .5px #cccccc !important;
+    }
+    ion-card-title {
+        color: #337ab7 !important;
+        line-height: 1em !important;
+        border-bottom: solid 1px #337ab7;
+    }
+    .eventImage {
+        padding-top: 20%;
+        margin-bottom: 20%;
+        max-width: 250px;
+        max-height: 250px;
+    }
+    .CampaignLabel {
+        font-weight: bold;
+    }
+    .Description {
+        color: darkslategray;
+        margin: 10px !important;
+        padding: 10px !important;
+        font-style: italic;
+        font-size: 15px;
+    }
+}

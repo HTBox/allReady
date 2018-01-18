@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Organizations;
 using MediatR;
 using Moq;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Validators;
+using AllReady.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -50,7 +51,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void TheControllerShouldHaveAnAreaAttributeOfAdmin()
         {
-            ClassHasCorrectAttribute(typeof(AreaAttribute), "Admin");
+            ClassHasCorrectAttribute(typeof(AreaAttribute), AreaNames.Admin);
         }
 
         [Fact]
@@ -104,7 +105,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             CreateSut();
 
-            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).ReturnsAsync(null);
+            _mediator.Setup(x => x.SendAsync(It.Is<OrganizationDetailQuery>(y => y.Id == Id))).ReturnsAsync((OrganizationDetailViewModel)null);
 
             var result = await _sut.Details(Id);
 
@@ -157,7 +158,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditGetReturnsHttpNotFoundResult_WhenOrganizationIsNotFound()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationEditQuery>())).ReturnsAsync(null);
+            mediator.Setup(x => x.SendAsync(It.IsAny<OrganizationEditQuery>())).ReturnsAsync((OrganizationEditViewModel)null);
 
             var sut = new OrganizationController(mediator.Object, null);
             var result = await sut.Edit(It.IsAny<int>());
@@ -273,7 +274,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = (RedirectToActionResult)await controller.Edit(model);
 
             Assert.Equal("Details", result.ActionName);
-            Assert.Equal("Admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(Id, result.RouteValues["id"]);
         }
 
@@ -371,12 +372,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DeleteConfirmedShouldRedirectToTheCorrectActionAndArea()
         {
-            var routeValueDictionary = new RouteValueDictionary { ["area"] = "Admin" };
+            var routeValueDictionary = new RouteValueDictionary { ["area"] = AreaNames.Admin };
 
             var sut = new OrganizationController(Mock.Of<IMediator>(), null);
             var result = await sut.DeleteConfirmed(It.IsAny<int>()) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(OrganizationController.Index));
+            Assert.Equal(nameof(OrganizationController.Index), result.ActionName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 

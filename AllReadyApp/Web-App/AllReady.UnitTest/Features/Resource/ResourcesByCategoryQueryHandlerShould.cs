@@ -28,7 +28,7 @@ namespace AllReady.UnitTest.Features.Resource
                 var sut = new ResourcesByCategoryQueryHandler(context);
                 var resource = sut.Handle(message);
 
-                Assert.Equal(resource.Count, 1);
+                Assert.Single(resource);
             }
         }
     }

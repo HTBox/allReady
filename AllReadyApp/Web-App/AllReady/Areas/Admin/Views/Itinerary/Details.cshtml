@@ -1,4 +1,5 @@
-﻿@using AllReady.Services
+﻿@using System.Linq
+@using AllReady.Services
 @model AllReady.Areas.Admin.ViewModels.Itinerary.ItineraryDetailsViewModel
 @inject AllReady.Services.ISelectListService SelectListService
 
@@ -75,44 +76,50 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        @if (Model.HasPotentialTeamMembers)
-        {
-            <div class="form-inline">
-                <label>Add team member:</label>
-                <form asp-action="AddTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
-                    <select asp-items="Model.PotentialTeamMembers" id="selectedTeamMember" name="selectedTeamMember" class="form-control" required></select>
-                    <button type="submit" class="btn btn-default submit-form">Add</button>
-                </form>
-            </div>
-        }
-        else
-        {
-            <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
-        }
+@if (Model.TeamManagementEnabled)
+{
+    <div class="row">
+        <div class="col-md-12">
+            @if (Model.HasPotentialTeamMembers)
+            {
+                <div class="form-inline">
+                    <label>Add team member:</label>
+                    <form asp-action="AddTeamMember" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                        <select asp-items="Model.PotentialTeamMembers" id="selectedTeamMember" name="selectedTeamMember" class="form-control" required></select>
+                        <button type="submit" class="btn btn-default submit-form">Add</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <p>There are no potential team members to add to this itinerary. There must be volunteers (for a task occuring on the same day as the itinerary) for them to be available to assign to this team.</p>
+            }
+        </div>
     </div>
-</div>
+}
 <div class="row">
     <div class="col-md-8">
-        <h4>Assigned Team Members</h4>
-        @if (Model.HasPotentialTeamLeads)
+        @if (Model.TeamManagementEnabled)
         {
-            <div class="form-inline">
-                <label>Select a @(@Model.HasTeamLead ? "new " : "")team lead:</label>
-                <form asp-action="SetTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
-                    <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control" required></select>
-                    <button type="submit" class="btn btn-default submit-form">Set Team Lead</button>
-                </form>
-            </div>
-        }
-        @if (Model.HasTeamLead)
-        {
-            <div>
-                <form asp-action="RemoveTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
-                    <button type="submit" class="btn btn-default submit-form">Remove Team Lead</button>
-                </form>
-            </div>
+            <h4>Assigned Team Members</h4>
+            if (Model.HasPotentialTeamLeads)
+            {
+                <div class="form-inline">
+                    <label>Select a @(@Model.HasTeamLead ? "new " : "")team lead:</label>
+                    <form asp-action="SetTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                        <select asp-items="Model.PotentialTeamLeads" id="volunteerTaskSignupId" name="volunteerTaskSignupId" class="form-control" required></select>
+                        <button type="submit" class="btn btn-default submit-form">Set Team Lead</button>
+                    </form>
+                </div>
+            }
+            if (Model.HasTeamLead)
+            {
+                <div>
+                    <form asp-action="RemoveTeamLead" asp-controller="Itinerary" asp-area="Admin" asp-route-itineraryId="@Model.Id">
+                        <button type="submit" class="btn btn-default submit-form">Remove Team Lead</button>
+                    </form>
+                </div>
+            }
         }
         @if (Model.TeamMembers.Count > 0)
         {
@@ -126,14 +133,17 @@
                 @foreach (var tm in Model.TeamMembers)
                 {
                     string style = tm.IsTeamLead ? "font-weight:bold" : null;
-                <tr>
-                    <td style=@style>@tm.DisplayName</td>
-                    <td>@tm.VolunteerEmail</td>
-                    <td>@tm.VolunteerTaskName</td>
-                    <td>
-                        <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" href=@("/Admin/Itinerary/" + @Model.Id + "/ConfirmRemoveTeamMember/" + @tm.VolunteerTaskSignupId)><span class="fa fa-remove"></span></a>
-                    </td>
-                </tr>
+                    <tr>
+                        <td style=@style>@tm.DisplayName</td>
+                        <td>@tm.VolunteerEmail</td>
+                        <td>@tm.VolunteerTaskName</td>
+                        <td>
+                            @if (Model.TeamManagementEnabled)
+                            {
+                                <a data-toggle="tooltip" data-placement="top" title="Remove from team" class="btn btn-danger" href=@("/Admin/Itinerary/" + @Model.Id + "/ConfirmRemoveTeamMember/" + @tm.VolunteerTaskSignupId)><span class="fa fa-remove"></span></a>
+                            }
+                        </td>
+                    </tr>
                 }
             </table>
         }
@@ -177,7 +187,7 @@
         </div>
     </div>
 }
-@if (Model.Requests.Any())
+@if (Model.HasAnyRequests)
 {
     <form method="post" action="@Url.Action("Details", "Itinerary", new { area = "Admin" })#requests" class="form-horizontal">
         @Html.AntiForgeryToken()

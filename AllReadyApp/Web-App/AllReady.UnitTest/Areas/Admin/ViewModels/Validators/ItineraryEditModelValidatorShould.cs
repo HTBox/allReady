@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AllReady.Areas.Admin.ViewModels.Itinerary;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.Areas.Admin.ViewModels.Validators;
@@ -8,82 +8,48 @@ namespace AllReady.UnitTest.Areas.Admin.ViewModels.Validators
 {
     public class ItineraryEditModelValidatorShould
     {
-        private readonly DateTimeOffset eventStartDate = new DateTimeOffset(new DateTime(2016, 1, 1));
-        private readonly DateTimeOffset eventEndDate = new DateTimeOffset(new DateTime(2020, 12, 31));
+        private readonly DateTimeOffset _eventStartDate = new DateTimeOffset(new DateTime(2016, 1, 1));
+        private readonly DateTimeOffset _eventEndDate = new DateTimeOffset(new DateTime(2020, 12, 31));
 
         [Fact]
-        public void ReturnsCorrectErrorWhenDateIsLessThanParentEventStartDate()
+        public void ReturnCorrectError_WhenItineraryDate_IsLessThanEventStartDate()
         {
             var sut = new ItineraryEditModelValidator();
 
             var model = new ItineraryEditViewModel
             {
                 EventId = 1,
-                Date = eventStartDate.AddDays(-1).DateTime
+                Date = _eventStartDate.AddDays(-1).DateTime
             };
 
             var errors = sut.Validate(model, TestEvent);
 
             Assert.True(errors.Exists(x => x.Key.Equals("Date")));
-            Assert.Equal(errors.Find(x => x.Key == "Date").Value, "Date cannot be earlier than the event start date " + eventStartDate.Date.ToString("d"));
+            Assert.Equal(errors.Find(x => x.Key == "Date").Value, "Date cannot be earlier than the event start date " + _eventStartDate.Date.ToString("d"));
         }
 
         [Fact]
-        public void ReturnsCorrectErrorWhenModelsDateIsGreaterThanParentEventEndDate()
+        public void ReturnCorrectError_WhenItineraryDate_IsGreaterThanEventEndDate()
         {
             var sut = new ItineraryEditModelValidator();
 
             var model = new ItineraryEditViewModel
             {
                 EventId = 1,
-                Date = eventEndDate.AddDays(1).DateTime
+                Date = _eventEndDate.AddDays(1).DateTime
             };
 
             var errors = sut.Validate(model, TestEvent);
 
             Assert.True(errors.Exists(x => x.Key.Equals("Date")));
-            Assert.Equal(errors.Find(x => x.Key == "Date").Value, "Date cannot be later than the event end date " + eventEndDate.Date.ToString("d"));
-        }
-
-        [Fact(Skip = "TempSkip")]
-        public void ReturnsCorrectErrorWhenEventStartDateIsEarlierThanTodayAndModelsDateIsEarlierThenCurrentDate()
-        {
-            var sut = new ItineraryEditModelValidator();
-
-            var model = new ItineraryEditViewModel
-            {
-                EventId = 1,
-                Date = DateTimeOffset.Now.DateTime.AddDays(-1)
-            };
-
-            var errors = sut.Validate(model, TestEvent);
-
-            Assert.True(errors.Exists(x => x.Key.Equals("Date")));
-            Assert.Equal(errors.Find(x => x.Key == "Date").Value, "Date cannot be earlier than the current date if the event start date is in the past " + eventEndDate.Date.ToString("d"));
-        }
-
-        [Fact(Skip ="TempSkip")]
-        //this test case needs renaming, ESL alert :|
-        public void ReturnsNoErrorForWhenDatesIsBetweenStartAndEndOfParentEventAndDateIsNotEarlierThanCurrentDateIfEventsDateIsInThePast()
-        {
-            var sut = new ItineraryEditModelValidator();
-
-            var model = new ItineraryEditViewModel
-            {
-                EventId = 1,
-                Date = DateTimeOffset.Now.DateTime.Date
-            };
-
-            var errors = sut.Validate(model, TestEvent);
-
-            Assert.True(errors.Count == 0);
+            Assert.Equal(errors.Find(x => x.Key == "Date").Value, "Date cannot be later than the event end date " + _eventEndDate.Date.ToString("d"));
         }
 
         private EventSummaryViewModel TestEvent => new EventSummaryViewModel
         {
             Id = 1,
-            StartDateTime = eventStartDate,
-            EndDateTime = eventEndDate,
+            StartDateTime = _eventStartDate,
+            EndDateTime = _eventEndDate,
             TimeZoneId = "Central Standard Time"
         };
     }

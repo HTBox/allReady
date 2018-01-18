@@ -1,0 +1,60 @@
+<ion-header [elasticHeader]="EventDetails">
+    <ion-navbar>
+        <button ion-button menuToggle><ion-icon name="menu"></ion-icon></button>
+        <ion-title>Event Details</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content padding fullscreen #EventDetails>
+
+    <ion-grid>
+        <ion-row>
+            <ion-col id="EventImageColumn" col-2 [hidden]="!event.ImageUrl">
+                <img class="eventImage" [src]="event.ImageUrl ? event.ImageUrl : ''" />
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <span class="eventTitle">{{ event.Title }}</span>
+    <span [hidden]="(event.Location == null)" class="eventLocation">
+            {{ event.Location ? event.Location.Address1 : '' }}<br/> 
+            {{ event.Location ? event.Location.Address2 : '' }} 
+            {{ event.Location ? event.Location.City : '' }}, 
+            {{ event.Location ? event.Location.State : '' }} 
+            {{ event.Location ? event.Location.PostalCode : '' }}
+        </span>
+    <span class="eventStartTime">{{ formattedStartDateTime  }} - {{ formattedEndDateTime }}</span>
+    <ion-grid>
+        <ion-row>
+            <ion-col>
+                <div class="eventDescription">{{ event.Description ? event.Description : 'No Description'}}</div>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col>
+                <div class="eventCampaignNameLabel">Campaign:
+                    <span class="eventCampaignName">{{ event.CampaignName }}</span>
+                </div>
+                <div class="eventOrganizationNameLabel">Organizer:
+                    <span class="eventOrganizationName">{{ event.OrganizationName }}</span>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <div class="item item-text-wrap">
+        <div [hidden]="state !== 0">
+            <button ion-button full round (click)="checkin()" style="background-color:green">Check in to this Event</button>
+        </div>
+        <div [hidden]="state !== 1">
+            <h1>You have successfully checked in to the event.</h1>
+        </div>
+        <div [hidden]="state !== 2">
+            <p style="color:Red">oops. {{ errorMessage }}</p>
+            <button (click)="checkin(event)">Check in</button>
+        </div>
+    </div>
+
+    <div *ngFor="let task of event.Tasks">
+        <task [task]="task"></task>
+    </div>
+
+</ion-content>

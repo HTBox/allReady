@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using AllReady.Models;
@@ -46,9 +46,9 @@ namespace AllReady.UnitTest.Extensions
         {
             SetFakeHttpContextIfNotAlreadySet(controller);
 
-            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId)}, new IdentityCookieOptions().ApplicationCookieAuthenticationScheme);
+            var identity = new ClaimsIdentity(new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId) }, IdentityConstants.ApplicationScheme);
             var claimsPrincipal = new ClaimsPrincipal(identity);
-           
+
             Mock.Get(controller.HttpContext).SetupGet(httpContext => httpContext.User).Returns(claimsPrincipal);
         }
 
@@ -117,6 +117,18 @@ namespace AllReady.UnitTest.Extensions
         {
             SetFakeHttpContextIfNotAlreadySet(controller);
             return Mock.Get(controller.Response);
+        }
+
+        public static Mock<IUrlHelper> GetMockIUrlHelper(this Controller controller)
+        {
+            SetFakeIUrlHelperIfNotAlreadySet(controller);
+            return Mock.Get(controller.Url);
+        }
+
+        private static void SetFakeIUrlHelperIfNotAlreadySet(Controller controller)
+        {
+            if (controller.Url == null)
+                controller.SetFakeIUrlHelper();
         }
 
         public static Mock<IUrlHelper> SetFakeIUrlHelper(this Controller controller)

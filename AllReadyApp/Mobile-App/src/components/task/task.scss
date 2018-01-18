@@ -1,0 +1,29 @@
+task {
+    .taskDiv {
+        border: solid 1px #bdc3c7;
+        padding: 0 0 0 0;
+    }
+    .taskName {
+        display: block;
+        background-color: burlywood;
+        padding: 10px;
+    }
+    .taskDescription {
+        display: block;
+        padding: 5px;
+    }
+    .VolunteerButton {
+        background-color: #3498db;
+        color: white;
+        display: inline-block;
+        height: 2.5em;
+        width: 94%;
+        margin: 10px;
+    }
+    .taskVolunteersRequiredText {
+        margin: 5px;
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+}

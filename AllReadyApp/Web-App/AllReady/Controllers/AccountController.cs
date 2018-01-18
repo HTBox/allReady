@@ -1,7 +1,8 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Configuration;
+using AllReady.Constants;
 using AllReady.Features.Login;
 using AllReady.Features.Manage;
 using AllReady.Models;
@@ -9,6 +10,7 @@ using AllReady.Providers.ExternalUserInformationProviders;
 using AllReady.Security;
 using AllReady.ViewModels.Account;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,13 +29,11 @@ namespace AllReady.Controllers
         private readonly IMediator _mediator;
         private readonly IExternalUserInformationProviderFactory _externalUserInformationProviderFactory;
         private readonly IRedirectAccountControllerRequests _redirectAccountControllerRequests;
-        private readonly string _externalCookieScheme;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IOptions<GeneralSettings> generalSettings,
-            IOptions<IdentityCookieOptions> identityCookieOptions,
             IMediator mediator,
             IExternalUserInformationProviderFactory externalUserInformationProviderFactory,
             IRedirectAccountControllerRequests redirectAccountControllerRequests
@@ -45,7 +45,6 @@ namespace AllReady.Controllers
             _mediator = mediator;
             _externalUserInformationProviderFactory = externalUserInformationProviderFactory;
             _redirectAccountControllerRequests = redirectAccountControllerRequests;
-            _externalCookieScheme = identityCookieOptions?.Value.ExternalCookieAuthenticationScheme;
         }
 
         // GET: /Account/Login
@@ -53,9 +52,8 @@ namespace AllReady.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            //Ensure we remove any pre-existing external cookie to ensure clean login (https://github.com/aspnet/Templates/pull/662)
-            if (_externalCookieScheme != null)
-                await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -94,7 +92,7 @@ namespace AllReady.Controllers
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(AdminController.SendCode), "Admin", new { ReturnUrl = returnUrl, model.RememberMe });
+                    return RedirectToAction(nameof(AdminController.SendCode), AreaNames.Admin, new { ReturnUrl = returnUrl, model.RememberMe });
                 }
 
                 if (result.IsLockedOut)
@@ -159,8 +157,8 @@ namespace AllReady.Controllers
                     await _signInManager.SignInAsync(user, isPersistent: false);
 
                     TempData["NewAccount"] = true;
-
-                    return RedirectToAction(nameof(HomeController.Index), "Home");
+                    
+                    return RedirectToPage("/Index");
                 }
 
                 AddErrorsToModelState(result);
@@ -176,7 +174,7 @@ namespace AllReady.Controllers
         public async Task<IActionResult> LogOff()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToPage("/Index");
         }
 
         // GET: /Account/ConfirmEmail
@@ -439,15 +437,15 @@ namespace AllReady.Controllers
 
             if (user.IsUserType(UserType.SiteAdmin))
             {
-                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(SiteController.Index), "Site", new { area = AreaNames.Admin });
             }
 
             if (user.IsUserType(UserType.OrgAdmin))
             {
-                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = "Admin" });
+                return new RedirectToActionResult(nameof(Areas.Admin.Controllers.CampaignController.Index), "Campaign", new { area = AreaNames.Admin });
             }
 
-            return new RedirectToActionResult(nameof(HomeController.Index), "Home", null);
+            return new RedirectToPageResult("/Index");
         }
     }
 }

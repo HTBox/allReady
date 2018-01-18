@@ -1,4 +1,4 @@
-﻿using AllReady.Models;
+using AllReady.Models;
 using AllReady.Services;
 using MediatR;
 using System.Linq;
@@ -29,8 +29,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
                 .AsNoTracking()
                 .Include(x => x.StartLocation)
                 .Include(x => x.EndLocation)
-                .Include(x => x.Event).ThenInclude(x => x.Campaign)
-                .Include(x => x.Event.Campaign.ManagingOrganization)
+                .Include(x => x.Event).ThenInclude(x => x.Campaign).ThenInclude(x => x.ManagingOrganization)
                 .Include(x => x.TeamMembers).ThenInclude(x => x.VolunteerTask)
                 .Include(x => x.Requests).ThenInclude(x => x.Request)
                 .Where(a => a.Id == message.ItineraryId)
@@ -101,6 +100,7 @@ namespace AllReady.Areas.Admin.Features.Itineraries
             {
                 itineraryDetails.Requests[0].IsFirst = true;
                 itineraryDetails.Requests[itineraryDetails.Requests.Count - 1].IsLast = true;
+                itineraryDetails.HasAnyRequests = true;
 
                 BuildBingUrl(itineraryDetails);
             }

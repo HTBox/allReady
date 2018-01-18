@@ -14,12 +14,13 @@ using AllReady.Areas.Admin.ViewModels.Request;
 using AllReady.Features.Requests;
 using AllReady.Security;
 using System.Threading.Tasks;
+using AllReady.Constants;
 using AllReady.Features.Sms;
 using AllReady.Models;
 
 namespace AllReady.Areas.Admin.Controllers
 {
-    [Area("Admin")]
+    [Area(AreaNames.Admin)]
     [Authorize(nameof(UserType.OrgAdmin))]
     public class ImportController : Controller
     {

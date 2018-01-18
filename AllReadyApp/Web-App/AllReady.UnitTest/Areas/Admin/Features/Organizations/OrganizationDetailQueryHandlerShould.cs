@@ -94,7 +94,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Organizations
             var query = new OrganizationDetailQuery { Id = 1 };
             var handler = new OrganizationDetailQueryHandler(Context);
             var result = await handler.Handle(query);
-            Assert.Equal(1, result.Campaigns.Count);
+            Assert.Single(result.Campaigns);
             Assert.Equal("Campaign 1", result.Campaigns[0].Name);
         }
 

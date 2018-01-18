@@ -1,0 +1,83 @@
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.ManagerInvite.CampaignManagerInviteDetailsViewModel
+@{
+    ViewData["Title"] = $"Campaign manager invite for {Model.InviteeEmailAddress}";
+}
+<div class="row">
+    <div class="col-12">
+        <ol class="breadcrumb">
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li>Campaign manager invite for @Model.InviteeEmailAddress</li>
+        </ol>
+    </div>
+</div>
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.SenderUserEmail)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.SenderUserEmail)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Status)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Status)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SentDateTimeUtc)
+            </dt>
+            <dd>
+                <time value="Model.SentDateTimeUtc" format="D"></time>
+            </dd>
+
+            @if (Model.IsAccepted)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.AcceptedDateTimeUtc)
+                </dt>
+                <dd>
+                    <time value="Model.AcceptedDateTimeUtc" format="D"></time>
+                </dd>
+            }
+
+            @if (Model.IsRejected)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.RejectedDateTimeUtc)
+                </dt>
+                <dd>
+                    <time value="Model.RejectedDateTimeUtc" format="D"></time>
+                </dd>
+            }
+
+            @if (Model.IsRevoked)
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.RevokedDateTimeUtc)
+                </dt>
+                <dd>
+                    <time value="Model.RevokedDateTimeUtc" format="D"></time>
+                </dd>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.CustomMessage))
+            {
+                <dt>
+                    @Html.DisplayNameFor(model => model.CustomMessage)
+                </dt>
+                <dd>
+                    @Html.DisplayFor(model => model.CustomMessage)
+                </dd>
+            }
+        </dl>
+    </div>
+</div>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace AllReady.Models
 {
     public class Event
     {
-        public int Id { get; set; }
+        public int Id { get; set; } 
 
         [Display(Name = "Campaign")]
         public int CampaignId { get; set; }

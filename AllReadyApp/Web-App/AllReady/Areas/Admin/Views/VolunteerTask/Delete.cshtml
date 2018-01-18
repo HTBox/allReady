@@ -1,14 +1,15 @@
 ﻿@using System.Linq
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.VolunteerTask.DeleteViewModel
 @{  ViewData["Title"] = Model.Title; }
 
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Campaign" asp-action="Index" asp-area="Admin">Campaigns</a></li>
-            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="Admin">@Model.CampaignName</a></li>
-            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="Admin">@Model.EventName</a></li>
-            <li><a asp-controller="VolunteerTask" asp-action="Details" asp-route-eventId="@Model.EventId" asp-route-id="@Model.Id" asp-area="Admin">@Model.Name</a></li>
+            <li><a asp-controller="Campaign" asp-action="Index" asp-area="@AreaNames.Admin">Campaigns</a></li>
+            <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId" asp-area="@AreaNames.Admin">@Model.CampaignName</a></li>
+            <li><a asp-controller="Event" asp-action="Details" asp-route-id="@Model.EventId" asp-area="@AreaNames.Admin">@Model.EventName</a></li>
+            <li><a asp-controller="VolunteerTask" asp-action="Details" asp-route-eventId="@Model.EventId" asp-route-id="@Model.Id" asp-area="@AreaNames.Admin">@Model.Name</a></li>
             <li>Delete</li>
         </ol>
     </div>
@@ -65,7 +66,7 @@
 
             <div class="form-actions no-color">
                 <button type="submit" class="btn btn-default">Delete</button>
-                <a asp-area="Admin" asp-controller="VolunteerTask" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-default">Cancel</a>
+                <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-default">Cancel</a>
             </div>
         </div>
     </form>

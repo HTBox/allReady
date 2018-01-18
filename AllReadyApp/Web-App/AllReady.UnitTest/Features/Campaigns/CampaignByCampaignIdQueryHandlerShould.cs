@@ -1,38 +1,44 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
 using AllReady.Models;
+using Shouldly;
 using Xunit;
 
 namespace AllReady.UnitTest.Features.Campaigns
 {
     public class CampaignByCampaignIdQueryHandlerShould : InMemoryContextTest
     {
-        private readonly CampaignByCampaignIdQuery message;
-        private readonly Campaign campaign;
-        private readonly CampaignByCampaignIdQueryHandler sut;
+        private readonly CampaignByCampaignIdQuery _message;
+        private const int CampaignId = 1;
+        private readonly CampaignByCampaignIdQueryHandler _sut;
 
         public CampaignByCampaignIdQueryHandlerShould()
         {
-            message = new CampaignByCampaignIdQuery { CampaignId = 1 };
-            campaign = new Campaign { Id = message.CampaignId, Published = true };
+            _sut = new CampaignByCampaignIdQueryHandler(Context);
+            _message = new CampaignByCampaignIdQuery { CampaignId = CampaignId };
+        }
+
+        protected override void LoadTestData()
+        {
+            var campaign = new Campaign { Id = CampaignId, Published = true, ManagingOrganization = new Organization(), Location = new Location()};
 
             Context.Add(campaign);
             Context.SaveChanges();
-
-            sut = new CampaignByCampaignIdQueryHandler(Context);
         }
 
         [Fact]
         public async Task ReturnCorrectData()
         {
-            var result = await sut.Handle(message);
-            Assert.Same(campaign, result);
+            var result = await _sut.Handle(_message);
+
+            result.ShouldNotBeNull();
+            result.Id.ShouldBe(CampaignId);
         }
 
         [Fact]
         public async Task ReturnCorrectType()
         {
-            var result = await sut.Handle(message);
+            var result = await _sut.Handle(_message);
             Assert.IsType<Campaign>(result);
         }
     }

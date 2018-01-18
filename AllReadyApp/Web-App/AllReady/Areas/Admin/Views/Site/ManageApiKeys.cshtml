@@ -1,4 +1,5 @@
-﻿@model ApplicationUser
+﻿@using AllReady.Constants
+@model ApplicationUser
 @{
     ViewBag.Title = "Managing API Key";
 }
@@ -20,11 +21,11 @@
 </p>
 
 <p>
-    <a asp-area="Admin" asp-controller="Site" asp-action="GenerateToken" asp-route-userId="@Model.Id" class="btn btn-sm btn-danger">Generate New API Key <span class="fa fa-key"></span></a>
+    <a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="GenerateToken" asp-route-userId="@Model.Id" class="btn btn-sm btn-danger">Generate New API Key <span class="fa fa-key"></span></a>
 </p>
 
 <p>
-    <a asp-area="Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Back to Safety <span class="fa fa-life-saver"></span></a>
+    <a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index" class="btn btn-default">Back to Safety <span class="fa fa-life-saver"></span></a>
 </p>
 
 

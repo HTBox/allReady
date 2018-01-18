@@ -1,0 +1,43 @@
+﻿@using AllReady.Constants
+@model AllReady.Areas.Admin.ViewModels.Event.EventDetailViewModel
+
+<div class="row">
+    <div class="col-md-12">
+        <a asp-controller="EventManagerInvite" asp-action="Send" asp-area="@AreaNames.Admin" asp-route-eventId="@Model.Id"
+           class="btn btn-default">Create New</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.EventManagerInvites.Any())
+        {
+            <table class="table">
+                <tr>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                </tr>
+                @foreach (var invite in Model.EventManagerInvites)
+                {
+                    <tr>
+                        <td>
+                            <a asp-action="Details" asp-controller="EventManagerInvite" asp-area="@AreaNames.Admin" asp-route-inviteId="@invite.Id">@invite.InviteeEmail</a>
+                        </td>
+                        <td>
+                            @invite.Status.ToString()
+                        </td>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <br/>
+            <p>There are currently no invites to display</p>
+        }
+    </div>
+</div>

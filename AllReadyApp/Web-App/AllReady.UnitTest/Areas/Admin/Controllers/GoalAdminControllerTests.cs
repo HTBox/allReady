@@ -1,9 +1,10 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Goals;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Areas.Admin.ViewModels.Goal;
+using AllReady.Constants;
 using AllReady.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -147,7 +148,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Campaign", result.ControllerName);
-            Assert.Equal("admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(campaignId, result.RouteValues["id"]);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<GoalEditCommand>()), Times.Once);
@@ -178,7 +179,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Campaign", result.ControllerName);
-            Assert.Equal("admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(campaignId, result.RouteValues["id"]);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<GoalEditCommand>()), Times.Once);
@@ -213,7 +214,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
-                .ReturnsAsync(null)
+                .ReturnsAsync((GoalDeleteViewModel)null)
                 .Verifiable();
 
             var goalController = new GoalController(mockMediator.Object);
@@ -326,7 +327,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
-                .ReturnsAsync(null)
+                .ReturnsAsync((GoalDeleteViewModel)null)
                 .Verifiable();
 
             var goalController = new GoalController(mockMediator.Object);
@@ -369,7 +370,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Campaign", result.ControllerName);
-            Assert.Equal("admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(campaignId, result.RouteValues["id"]);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<GoalDeleteCommand>()), Times.Once);
         }
@@ -402,7 +403,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Campaign", result.ControllerName);
-            Assert.Equal("admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(campaignId, result.RouteValues["id"]);
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<GoalDeleteCommand>()), Times.Once);
         }
@@ -438,7 +439,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalEditQuery>()))
-                .ReturnsAsync(null)
+                .ReturnsAsync((GoalEditViewModel)null)
                 .Verifiable();
 
             var goalController = new GoalController(mockMediator.Object);
@@ -589,7 +590,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Campaign", result.ControllerName);
-            Assert.Equal("admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(campaignId, result.RouteValues["id"]);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<GoalEditCommand>()), Times.Once);
@@ -626,7 +627,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(result);
             Assert.Equal("Details", result.ActionName);
             Assert.Equal("Campaign", result.ControllerName);
-            Assert.Equal("admin", result.RouteValues["area"]);
+            Assert.Equal(AreaNames.Admin, result.RouteValues["area"]);
             Assert.Equal(campaignId, result.RouteValues["id"]);
 
             mockMediator.Verify(mock => mock.SendAsync(It.IsAny<GoalEditCommand>()), Times.Once);

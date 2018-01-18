@@ -1,16 +1,16 @@
-﻿@using System.Threading.Tasks
+@using System.Threading.Tasks
 @using AllReady.Security
 @inject UserManager<ApplicationUser> userManager
 
 @if (User.Identity.IsAuthenticated)
 {
-    var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
-    var controllerName = descriptor.ControllerName;
+    //var descriptor = (Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor)ViewContext.ActionDescriptor;
+    //var controllerName = descriptor.ControllerName;
     <form asp-area="" asp-controller="Account" asp-action="LogOff" method="post">
         <ul class="nav navbar-nav navbar-right login-status">
             <li>
-                <a asp-area="" asp-controller="Volunteer" asp-action="Dashboard" title="Dashboard">
-                    Dashboard
+                <a asp-area="" asp-controller="DashboardHub" asp-action="DashboardHub" title="Dashboard Hub">
+                    Dashboard Hub
                 </a>
             </li>
             <li class="dropdown">
@@ -23,7 +23,7 @@
                     <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li @(controllerName == "Manage" ? " class=active" : "")>
+                    <li>
                         <a asp-area="" asp-controller="Manage" asp-action="Index" title="Manage">
                             My Account
                         </a>

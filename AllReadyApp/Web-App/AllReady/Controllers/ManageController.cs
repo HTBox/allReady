@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -113,8 +113,8 @@ namespace AllReady.Controllers
         public async Task<IActionResult> ResendEmailConfirmation()
         {
             var user = await _userManager.GetUserAsync(User);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(ConfirmNewEmail), Controller = "Account", Values = new { userId = user.Id, code },
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = Url.Action(new UrlActionContext { Action = nameof(AccountController.ConfirmEmail), Controller = "Account", Values = new { userId = user.Id, token },
                 Protocol = HttpContext.Request.Scheme });
 
             await _mediator.SendAsync(new SendConfirmAccountEmail { Email = user.Email, CallbackUrl = callbackUrl });
@@ -388,7 +388,7 @@ namespace AllReady.Controllers
         {
             var user = await GetCurrentUser();
 
-            if(string.IsNullOrEmpty(user.PendingNewEmail))
+            if(string.IsNullOrEmpty(user?.PendingNewEmail))
             {
                 return View(ERROR_VIEW);
             }
@@ -459,7 +459,8 @@ namespace AllReady.Controllers
             }
 
             var userLogins = await _userManager.GetLoginsAsync(user);
-            var otherLogins = _signInManager.GetExternalAuthenticationSchemes().Where(auth => userLogins.All(ul => auth.AuthenticationScheme != ul.LoginProvider)).ToList();
+            var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
+            var otherLogins = schemes.Where(auth => userLogins.All(ul => auth.Name != ul.LoginProvider)).ToList();
 
             ViewData[SHOW_REMOVE_BUTTON] = user.PasswordHash != null || userLogins.Count > 1;
 

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
@@ -40,7 +40,7 @@ namespace AllReady.UnitTest.Features.Campaigns
             var results = await sut.Handle(new AuthorizedCampaignsQuery{ UserId = "Eroica" });
 
             Assert.Equal(campaigns[0].Id, results[0].Id);
-            Assert.True(campaigns[0].CampaignManagers.Any(c=>c.UserId == "Eroica"));
+            Assert.Contains(campaigns[0].CampaignManagers, c =>c.UserId == "Eroica");
         }
 
         [Fact]

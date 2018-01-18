@@ -1,4 +1,5 @@
-﻿@using AllReady.Security
+@using AllReady.Security
+@using Microsoft.AspNetCore.Mvc.Rendering
 @model AllReady.ViewModels.Event.EventViewModel
 
 @{
@@ -9,9 +10,9 @@
 <div class="row">
     <div class="col-12">
         <ol class="breadcrumb">
-            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li><a asp-page="/Index">Home</a></li>
             <li><a asp-controller="Organization" asp-action="Index">Organizations</a></li>
-            <li><a asp-controller="Organization" asp-action="ShowOrganization">@Model.OrganizationName</a></li>
+            <li><a asp-controller="Organization" asp-action="ShowOrganization" asp-route-id="@Model.OrganizationId">@Model.OrganizationName</a></li>
             <li><a asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
             <li><a asp-controller="Campaign" asp-action="Details" asp-route-id="@Model.CampaignId">@Model.CampaignName</a></li>
             <li>@Model.Title</li>
@@ -64,7 +65,7 @@
                     <p>@Model.Description</p>
                 </div>
             </div>
-            <div class="row" id="CampaignInfo" data-bind="accordion">
+            <div class="row" id="CampaignInfo" data-bind="accordion: { openItem : 0 }">
                 <div class="panel-group">
                     <div data-toggle-accordion>
                         <div class="panel-heading col-sm-12" >
@@ -217,6 +218,14 @@
                     <div class="form-inline">
                         <div class="form-group">
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group" data-bind="dateTimePicker: tasks.dateInRange, dateTimePickerOptions: { format: 'L', showClear: true }">
+                                <input type="text" class="form-control" placeholder="On date" />
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
                         </div>
                         <div class="form-group">
                             <button type="button" class="btn btn-default btn-sm" data-bind="css: { active: tasks.showOld }, click: tasks.showOld.toggle">

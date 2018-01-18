@@ -1,21 +1,23 @@
-using System.IO;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace AllReady
 {
-  public class Program
-  {
-    // Entry point for the application.
-    public static void Main(string[] args)
+    public class Program
     {
-      var host = new WebHostBuilder()
-        .UseKestrel()
-        .UseContentRoot(Directory.GetCurrentDirectory())
-        .UseIISIntegration()
-        .UseStartup<Startup>()
-        .Build();
+        public static void Main(string[] args)
+        {
+            BuildWebHost(args).Run();
+        }
 
-      host.Run();
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((ctx, config) =>
+                    config.SetBasePath(ctx.HostingEnvironment.ContentRootPath)
+                        .AddJsonFile("version.json"))
+                .UseStartup<Startup>()
+                .Build();
     }
-  }
 }

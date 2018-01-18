@@ -12,6 +12,7 @@ namespace AllReady.ViewModels
         public string TimeZone { get; set; }
         public string Campaign { get; set; }
         public string Organization { get; set; }
+        public int VolunteerCount { get; set; }
 
         public List<MyEventsListerItemTask> Tasks { get; set; } = new List<MyEventsListerItemTask>();
     }

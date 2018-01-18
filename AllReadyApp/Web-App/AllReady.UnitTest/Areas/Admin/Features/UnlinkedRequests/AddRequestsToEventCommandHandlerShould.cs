@@ -90,7 +90,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.UnlinkedRequests
             });
 
             Assert.True(succeded);
-            Assert.Equal(Context.Requests.Count(), 3);
+            Assert.Equal(3, Context.Requests.Count());
             Assert.Equal(Context.Requests.Select(x => x.EventId).ToList(),
                 new List<int?>() {expectedEventId, expectedEventId, expectedEventId});
             Assert.Equal(Context.Requests.Select(x => x.RequestId).ToList(),

@@ -1,4 +1,5 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
+using AllReady.Constants;
 using AllReady.Controllers;
 using AllReady.Models;
 using AllReady.UnitTest.Extensions;
@@ -48,14 +49,14 @@ namespace AllReady.UnitTest.Controllers
 
             var routeValueDictionary = new RouteValueDictionary
             {
-                ["area"] = "Admin"
+                ["area"] = AreaNames.Admin
             };
 
             var sut = new RedirectAccountControllerRequests(urlHelper.Object);
             var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(SiteController.Index));
-            Assert.Equal(result.ControllerName, "Site");
+            Assert.Equal(nameof(SiteController.Index), result.ActionName);
+            Assert.Equal("Site", result.ControllerName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
@@ -70,14 +71,14 @@ namespace AllReady.UnitTest.Controllers
 
             var routeValueDictionary = new RouteValueDictionary
             {
-                ["area"] = "Admin"
+                ["area"] = AreaNames.Admin
             };
 
             var sut = new RedirectAccountControllerRequests(urlHelper.Object);
             var result = sut.RedirectToLocal(It.IsAny<string>(), applicationUser) as RedirectToActionResult;
 
-            Assert.Equal(result.ActionName, nameof(AllReady.Areas.Admin.Controllers.CampaignController.Index));
-            Assert.Equal(result.ControllerName, "Campaign");
+            Assert.Equal(nameof(AllReady.Areas.Admin.Controllers.CampaignController.Index), result.ActionName);
+            Assert.Equal("Campaign", result.ControllerName);
             Assert.Equal(result.RouteValues, routeValueDictionary);
         }
 
@@ -88,11 +89,9 @@ namespace AllReady.UnitTest.Controllers
             urlHelper.Setup(x => x.IsLocalUrl(It.IsAny<string>())).Returns(false);
 
             var sut = new RedirectAccountControllerRequests(urlHelper.Object);
-            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser()) as RedirectToActionResult;
+            var result = sut.RedirectToLocal(It.IsAny<string>(), new ApplicationUser()) as RedirectToPageResult;
 
-            Assert.Equal(result.ActionName, nameof(HomeController.Index));
-            Assert.Equal(result.ControllerName, "Home");
-            Assert.Equal(result.RouteValues, null);
+            Assert.Equal(result.PageName, "/Index");
         }
     }
 }

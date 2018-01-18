@@ -1,4 +1,4 @@
-﻿using AllReady.Areas.Admin.Controllers;
+using AllReady.Areas.Admin.Controllers;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.ViewModels.Campaign;
 using AllReady.Areas.Admin.ViewModels.Shared;
@@ -117,7 +117,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
 
-            Assert.Equal(view.ViewName, "Edit");
+            Assert.Equal("Edit", view.ViewName);
             Assert.NotNull(viewModel);
         }
 
@@ -200,7 +200,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(campaignSummaryModel, null);
             var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryViewModel.EndDate));
 
-            Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "The end date must fall on or after the start date.");
+            Assert.Equal("The end date must fall on or after the start date.", modelStateErrorCollection.Single().ErrorMessage);
         }
 
         [Fact]
@@ -217,7 +217,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(campaignSummaryModel, null);
             var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryViewModel.EndDate));
 
-            Assert.Equal(modelStateErrorCollection.Single().ErrorMessage, "The end date must fall on or after the start date.");
+            Assert.Equal("The end date must fall on or after the start date.", modelStateErrorCollection.Single().ErrorMessage);
         }
 
         [Fact]
@@ -240,7 +240,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var validationContext = new ValidationContext(model, null, null);
             var validationResults = new List<ValidationResult>();
             Validator.TryValidateObject(model, validationContext, validationResults);
-            Assert.Equal(0, validationResults.Count());
+            Assert.Empty(validationResults);
 
             var file = FormFile("image/jpeg");
             var view = (RedirectToActionResult)await sut.Edit(model, file);
@@ -249,7 +249,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Verify(mock => mock.SendAsync(It.Is<EditCampaignCommand>(c => c.Campaign.OrganizationId == organizationId)));
 
             // verify that the next route
-            Assert.Equal(view.RouteValues["area"], "Admin");
+            Assert.Equal("Admin", view.RouteValues["area"]);
             Assert.Equal(view.RouteValues["id"], newCampaignId);
         }
 
@@ -282,8 +282,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var result = (RedirectToActionResult)await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
 
-            Assert.Equal(result.ActionName, "Details");
-            Assert.Equal(result.RouteValues["area"], "Admin");
+            Assert.Equal("Details", result.ActionName);
+            Assert.Equal("Admin", result.RouteValues["area"]);
             Assert.Equal(result.RouteValues["id"], campaignId);
         }
 
@@ -304,7 +304,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             await sut.Edit(viewModel, file);
 
             Assert.False(sut.ModelState.IsValid);
-            Assert.Equal(sut.ModelState["ImageUrl"].Errors.Single().ErrorMessage, "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+            Assert.Equal("You must upload a valid image file for the logo (.jpg, .png, .gif)", sut.ModelState["ImageUrl"].Errors.Single().ErrorMessage);
         }
 
         [Fact]
@@ -562,7 +562,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DeleteCampaignImageReturnsJsonObjectWithStatusOfNotFound()
         {
             var mediatorMock = new Mock<IMediator>();
-            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(null);
+            mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null);
             var imageServiceMock = new Mock<IImageService>();
             var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
 
@@ -738,58 +738,61 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .ShouldBe("NothingToDelete");
         }
 
-         [Fact]
+        [Fact]
         public async Task DeleteConfirmedSendsDeleteCampaignCommandWithCorrectCampaignId()
         {
-            var viewModel = new DeleteViewModel { Id = 1, OrganizationId = 1 };
-
+            int id = 1;
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = id, OrganizationId = 100});
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false, 1));
             var sut = new CampaignController(mediator.Object, null);
-            await sut.DeleteConfirmed(viewModel);
+            await sut.DeleteConfirmed(id);
 
-            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+            mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == id)), Times.Once);
         }
 
         [Fact]
         public async Task DetailConfirmedReturnsForbidResultWhenUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = 1, OrganizationId = 100});
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
 
             var sut = new CampaignController(mediator.Object, null);
-            Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(new DeleteViewModel { UserIsOrgAdmin = false }));
+            Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(1));
         }
 
         [Fact]
         public async Task DetailConfirmedSendsDeleteCampaignCommandWithCorrectCampaignIdWhenUserIsAuthorized()
         {
-            var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
+            int id = 100;
 
-            var viewModel = new DeleteViewModel { Id = 100, UserIsOrgAdmin = true };
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mockMediator.Object, null);
 
-            await sut.DeleteConfirmed(viewModel);
+            await sut.DeleteConfirmed(id);
 
-            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
+            mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == id)), Times.Once);
         }
 
         [Fact]
         public async Task DetailConfirmedRedirectsToCorrectActionWithCorrectRouteValuesWhenUserIsAuthorized()
         {
-            var viewModel = new DeleteViewModel { Id = 100, UserIsOrgAdmin = true };
+            int id = 100;
 
             var mediator = new Mock<IMediator>();
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = new CampaignController(mediator.Object, null);
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
-            var result = await sut.DeleteConfirmed(viewModel) as RedirectToActionResult;
-            Assert.Equal(result.ActionName, nameof(CampaignController.Index));
+            var result = await sut.DeleteConfirmed(id) as RedirectToActionResult;
+            Assert.Equal(nameof(CampaignController.Index), result.ActionName);
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -797,7 +800,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasHttpPostAttribute()
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -805,16 +808,16 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Name, "Delete");
+            Assert.Equal("Delete", attribute.Name);
         }
 
         [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<DeleteViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
@@ -869,7 +872,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
             var result = await sut.PublishConfirmed(viewModel) as RedirectToActionResult;
-            Assert.Equal(result.ActionName, nameof(CampaignController.Index));
+            Assert.Equal(nameof(CampaignController.Index), result.ActionName);
             Assert.Equal(result.RouteValues, routeValues);
         }
 
@@ -887,7 +890,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var sut = CreateCampaignControllerWithNoInjectedDependencies();
             var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
-            Assert.Equal(attribute.Name, "Publish");
+            Assert.Equal("Publish", attribute.Name);
         }
 
         [Fact]
@@ -932,8 +935,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var view = (RedirectToActionResult)await sut.LockUnlock(campaignId);
 
             // verify the next route
-            Assert.Equal(view.ActionName, nameof(CampaignController.Details));
-            Assert.Equal(view.RouteValues["area"], "Admin");
+            Assert.Equal(nameof(CampaignController.Details), view.ActionName);
+            Assert.Equal("Admin", view.RouteValues["area"]);
             Assert.Equal(view.RouteValues["id"], campaignId);
         }
 
@@ -956,23 +959,23 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             return new CampaignController(null, null);
         }
 
-        private static Mock<IMediator> MockMediatorCampaignDetailQuery(out CampaignController controller)
+        private static void MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync((CampaignDetailViewModel)null).Verifiable();
 
             controller = new CampaignController(mockMediator.Object, null);
 
-            return mockMediator;
+            return;
         }
 
-        private static Mock<IMediator> MockMediatorCampaignSummaryQuery(out CampaignController controller)
+        private static void MockMediatorCampaignSummaryQuery(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(null).Verifiable();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null).Verifiable();
 
             controller = new CampaignController(mockMediator.Object, null);
-            return mockMediator;
+            return;
         }
 
         private static IFormFile FormFile(string fileType)

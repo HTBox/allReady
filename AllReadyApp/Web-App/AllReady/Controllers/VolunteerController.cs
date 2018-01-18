@@ -6,35 +6,36 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using AllReady.Models;
+using System.Collections.Generic;
 
 namespace AllReady.Controllers
 {
-  [Authorize]
-  public class VolunteerController : Controller
-  {
-    private readonly IMediator _mediator;
-    private UserManager<ApplicationUser> _userManager;
-
-    public VolunteerController(IMediator mediator, UserManager<ApplicationUser> userManager)
+    [Authorize]
+    public class VolunteerController : Controller
     {
-      _mediator = mediator;
-      _userManager = userManager;
-    }
+        private readonly IMediator _mediator;
+        private UserManager<ApplicationUser> _userManager;
 
-    [HttpGet]
-    [Route("~/v")]
-    public IActionResult DashboardShortUrl()
-    {
-      return RedirectToAction(nameof(Dashboard));
-    }
+        public VolunteerController(IMediator mediator, UserManager<ApplicationUser> userManager)
+        {
+            _mediator = mediator;
+            _userManager = userManager;
+        }
 
-    [HttpGet]
-    [Route("~/Volunteers/Dashboard")]
-    public async Task<IActionResult> Dashboard()
-    {
-      var viewModel = await _mediator.SendAsync(new GetMyEventsQuery { UserId = _userManager.GetUserId(User) });
+        [HttpGet]
+        [Route("~/v")]
+        public IActionResult DashboardShortUrl()
+        {
+            return RedirectToAction(nameof(Dashboard));
+        }
 
-      return View("Dashboard", viewModel);
+        [HttpGet]
+        [Route("~/Volunteers/Dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            var viewModel = await _mediator.SendAsync(new GetVolunteerEventsQuery { UserId = _userManager.GetUserId(User) });
+
+            return View("Dashboard", viewModel);
+        }
     }
-  }
 }

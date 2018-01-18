@@ -33,7 +33,7 @@ namespace AllReady.UnitTest.Features.Tasks
         public async Task ReturnCorrectAmount()
         {
             var result = await sut.Handle(message);
-            Assert.Equal(1, result.Count);
+            Assert.Single(result);
         }
 
         [Fact]

@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Internal;
+using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System;
 using System.Threading.Tasks;
+using TimeZoneConverter;
 
 namespace AllReady.ModelBinding
 {
@@ -31,13 +32,13 @@ namespace AllReady.ModelBinding
             if (bindingContext.Result.IsModelSet)
             {
                 var timeZoneId = bindingContext.ValueProvider.GetValue(_timeZoneIdPropertyName).FirstValue;
-                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+                var timeZone = TZConvert.GetTimeZoneInfo(timeZoneId);
                 DateTimeOffset dateTimeOffsetModel = (DateTimeOffset)bindingContext.Result.Model;
                 var adjustedDateTimeOffset = new DateTimeOffset(dateTimeOffsetModel.DateTime, timeZone.GetUtcOffset(dateTimeOffsetModel.DateTime));
                 bindingContext.Result = ModelBindingResult.Success(adjustedDateTimeOffset);
             }
 
-            return TaskCache.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 }

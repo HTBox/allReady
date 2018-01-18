@@ -51,6 +51,11 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
 
         public List<RequestListViewModel> Requests { get; set; } = new List<RequestListViewModel>();
 
+        /// <summary>
+        /// Set true if the itinerary has any requests before filtering
+        /// </summary>
+        public bool HasAnyRequests { get; set; }
+
         public string DisplayDate => Date.ToString("D");
 
         /// <summary>
@@ -90,5 +95,10 @@ namespace AllReady.Areas.Admin.ViewModels.Itinerary
         public bool? TeamLeadChangedSuccess { get; set; }
 
         public bool HasTeamLeadResult => TeamLeadChangedSuccess.HasValue;
+
+        /// <summary>
+        /// Identifies whether team management functions are enabled and should be shown in the UI.
+        /// </summary>
+        public bool TeamManagementEnabled { get; set; }
     }
 }
