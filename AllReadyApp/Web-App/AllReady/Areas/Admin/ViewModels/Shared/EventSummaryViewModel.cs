@@ -10,6 +10,7 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Event Title")]
         public string Name { get; set; }
 
         [Required]
