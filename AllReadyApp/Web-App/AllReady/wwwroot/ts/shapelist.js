@@ -11,7 +11,7 @@ System.register(["./shapes"], function (exports_1, context_1) {
         execute: function () {
             // This works!
             (function (ShapeUser) {
-                var User = /** @class */ (function () {
+                var User = (function () {
                     function User() {
                         this.rects = new sss.Shapes.Rectangle(10, 4);
                     }

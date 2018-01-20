@@ -10,7 +10,7 @@ System.register([], function (exports_1, context_1) {
                 (function (maps) {
                     var geoMaps = Microsoft.Maps;
                     var BingMapKey = "ArclGe51CDYUCjW2tcjeuCSxXDg0z4_NFRCmVMpnpMY0qGUvPBazQIp9AjDgm2kv";
-                    var Location = /** @class */ (function () {
+                    var Location = (function () {
                         function Location(config) {
                             for (var p in config) {
                                 if (config.hasOwnProperty(p)) {
@@ -21,7 +21,7 @@ System.register([], function (exports_1, context_1) {
                         return Location;
                     }());
                     maps.Location = Location;
-                    var MapRender = /** @class */ (function () {
+                    var MapRender = (function () {
                         function MapRender(divIdForMap) {
                             this.bingMap = new geoMaps.Map(document.getElementById(divIdForMap), {
                                 credentials: BingMapKey

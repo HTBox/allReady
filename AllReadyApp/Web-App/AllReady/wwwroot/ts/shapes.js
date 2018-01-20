@@ -6,7 +6,7 @@ System.register([], function (exports_1, context_1) {
         setters: [],
         execute: function () {
             (function (Shapes) {
-                var Rectangle = /** @class */ (function () {
+                var Rectangle = (function () {
                     function Rectangle(height, width) {
                         this.height = height;
                         this.width = width;
