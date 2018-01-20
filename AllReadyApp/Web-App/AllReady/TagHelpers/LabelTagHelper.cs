@@ -19,8 +19,10 @@ namespace AllReady.TagHelpers
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)  
         {  
             await base.ProcessAsync(context, output);  
-   
-            if (For.Metadata.IsRequired)  
+
+            // Automatically mark required fields with an asterisk, except booleans
+            // because MVC always sets IsRequired to true for booleans.
+            if (For.Metadata.IsRequired && For.Metadata.ModelType.FullName != "System.Boolean")  
             {  
                 var span = new TagBuilder("span");  
                 span.AddCssClass("required");
