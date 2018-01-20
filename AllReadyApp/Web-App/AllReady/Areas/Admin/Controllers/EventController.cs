@@ -48,6 +48,11 @@ namespace AllReady.Areas.Admin.Controllers
             var viewModel =
                 await _mediator.SendAsync(new EventListerQuery {UserId = _userAuthorizationService.AssociatedUserId});
 
+            if (viewModel.Count == 1 && viewModel.First().Events.Count == 1)
+            {
+                return Redirect(Url.Action("Details", "Event", new { id = viewModel.First().Events.First().EventId }));
+            }
+
             return View(viewModel);
         }
 
