@@ -57,17 +57,17 @@
         <h3>Organization Information</h3>
 
         <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label">Organisation Name</label>
+            <div class="col-md-10">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
             <label asp-for="LogoUrl" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="LogoUrl" class="form-control" />
                 <span asp-validation-for="LogoUrl" class="text-danger"></span>
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Name" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
         <div class="form-group">
@@ -114,7 +114,7 @@
             </div>
         </div>
 
-        <h3>Location</h3>
+        <h3>Primary Location</h3>
 
         @Html.EditorFor(m => m.Location)
 
