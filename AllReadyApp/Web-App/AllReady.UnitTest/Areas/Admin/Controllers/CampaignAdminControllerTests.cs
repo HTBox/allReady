@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AllReady.UnitTest.Areas.Admin.Controllers.Builders;
 using Xunit;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
@@ -28,7 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int organizationId = 99;
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Index();
 
@@ -40,7 +41,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             sut.MakeUserNotAnOrgAdmin();
             await sut.Index();
 
@@ -53,7 +54,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             await sut.Details(campaignId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignDetailQuery>(c => c.CampaignId == campaignId)));
@@ -74,7 +75,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailViewModel()).Verifiable();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             Assert.IsType<ForbidResult>(await sut.Details(It.IsAny<int>()));
         }
 
@@ -85,7 +86,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailViewModel()).Verifiable();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(true, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             Assert.IsType<ViewResult>(await sut.Details(It.IsAny<int>()));
         }
 
@@ -101,7 +102,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(true, false, false, false));
 
             // user is org admin
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
 
             var view = (ViewResult)(await sut.Details(campaignId));
             var resultViewModel = (CampaignDetailViewModel)view.ViewData.Model;
@@ -112,7 +113,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
-            var sut = new CampaignController(null, null);
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var view = (ViewResult)sut.Create();
 
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
@@ -126,7 +127,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var dateTimeNow = DateTime.Now;
 
-            var sut = new CampaignController(null, null) { DateTimeNow = () => dateTimeNow };
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().WithToday(() => dateTimeNow).Build();
             var view = (ViewResult)sut.Create();
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
 
@@ -140,7 +141,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             await sut.Edit(campaignId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == campaignId)));
@@ -163,7 +164,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockImageService = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediator.Object, mockImageService.Object).Build();
             Assert.IsType<ForbidResult>(await sut.Edit(It.IsAny<int>()));
         }
 
@@ -176,14 +177,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mockImageService = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediator.Object, mockImageService.Object).Build();
             Assert.IsType<ViewResult>(await sut.Edit(It.IsAny<int>()));
         }
 
         [Fact]
         public async Task EditPostReturnsBadRequestWhenCampaignIsNull()
         {
-            var sut = new CampaignController(null, null);
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
 
             var result = await sut.Edit(null, null);
             Assert.IsType<BadRequestResult>(result);
@@ -194,7 +195,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var campaignSummaryModel = new CampaignSummaryViewModel { OrganizationId = 1, StartDate = DateTime.Now.AddDays(1), EndDate = DateTime.Now.AddDays(-1) };
 
-            var sut = new CampaignController(null, null);
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             sut.MakeUserAnOrgAdmin(campaignSummaryModel.OrganizationId.ToString());
 
             await sut.Edit(campaignSummaryModel, null);
@@ -212,7 +213,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             await sut.Edit(campaignSummaryModel, null);
             var modelStateErrorCollection = sut.ModelState.GetErrorMessagesByKey(nameof(CampaignSummaryViewModel.EndDate));
@@ -230,7 +231,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>())).ReturnsAsync(newCampaignId);
 
             var mockImageService = new Mock<IImageService>();
-            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mockMediator.Object, mockImageService.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var model = MassiveTrafficLightOutageModel;
@@ -262,7 +263,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             var result = await sut.Edit(viewModel, null);
             Assert.IsType<ForbidResult>(result);
@@ -277,7 +278,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>())).ReturnsAsync(campaignId);
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
-            var sut = new CampaignController(mockMediator.Object, new Mock<IImageService>().Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mockMediator.Object, new Mock<IImageService>().Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var result = (RedirectToActionResult)await sut.Edit(new CampaignSummaryViewModel { Name = "Foo", OrganizationId = organizationId, Id = campaignId }, null);
@@ -300,7 +301,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var file = FormFile("");
 
-            var sut = new CampaignController(mediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediator.Object, mockImageService.Object).Build();
             await sut.Edit(viewModel, file);
 
             Assert.False(sut.ModelState.IsValid);
@@ -314,7 +315,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             var mockImageService = new Mock<IImageService>();
 
-            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mockMediator.Object, mockImageService.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var file = FormFile("audio/mpeg3");
@@ -336,7 +337,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
             var mockImageService = new Mock<IImageService>();
 
-            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mockMediator.Object, mockImageService.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var file = FormFile("image/jpeg");
@@ -362,7 +363,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var file = FormFile("image/jpeg");
             mockImageService.Setup(x => x.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), file)).ReturnsAsync("newImageUrl");
 
-            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mockMediator.Object, mockImageService.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var campaignSummaryViewModel = new CampaignSummaryViewModel
@@ -391,7 +392,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var file = FormFile("image/jpeg");
             mockImageService.Setup(x => x.UploadCampaignImageAsync(It.IsAny<int>(), It.IsAny<int>(), file)).ReturnsAsync("newImageUrl");
 
-            var sut = new CampaignController(mockMediator.Object, mockImageService.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mockMediator.Object, mockImageService.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
 
             var campaignSummaryViewModel = new CampaignSummaryViewModel
@@ -430,7 +431,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.Is<PublishViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new PublishViewModel { Id = campaignId, OrganizationId = organizationId });
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(true, false, false, false));
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             sut.MakeUserAnOrgAdmin(organizationId.ToString());
             await sut.Publish(campaignId);
 
@@ -452,7 +453,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<PublishViewModelQuery>())).ReturnsAsync(new PublishViewModel());
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             Assert.IsType<ForbidResult>(await sut.Publish(It.IsAny<int>()));
         }
@@ -467,7 +468,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(mock => mock.SendAsync(It.Is<PublishViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(viewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(true, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             Assert.IsType<ViewResult>(await sut.Publish(campaignId));
         }
@@ -482,7 +483,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(mock => mock.SendAsync(It.Is<PublishViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(viewModel);
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(true, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             var view = (ViewResult)await sut.Publish(campaignId);
             var resultViewModel = (PublishViewModel)view.ViewData.Model;
@@ -500,7 +501,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             await sut.Delete(campaignId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId)), Times.Once);
@@ -521,7 +522,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteViewModelQuery>())).ReturnsAsync(new DeleteViewModel());
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             Assert.IsType<ForbidResult>(await sut.Delete(It.IsAny<int>()));
         }
@@ -535,7 +536,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteViewModelQuery>())).ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             Assert.IsType<ViewResult>(await sut.Delete(It.IsAny<int>()));
         }
@@ -550,7 +551,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.Is<DeleteViewModelQuery>(c => c.CampaignId == campaignId))).ReturnsAsync(new DeleteViewModel { Id = campaignId, OrganizationId = organizationId });
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
 
             var view = (ViewResult)await sut.Delete(campaignId);
             var viewModel = (DeleteViewModel)view.ViewData.Model;
@@ -564,7 +565,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediatorMock = new Mock<IMediator>();
             mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null);
             var imageServiceMock = new Mock<IImageService>();
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
 
             var result = await sut.DeleteCampaignImage(It.IsAny<int>());
 
@@ -584,7 +585,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediatorMock.Setup(m => m.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel());
             mediatorMock.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
             var imageServiceMock = new Mock<IImageService>();
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
 
             var result = await sut.DeleteCampaignImage(It.IsAny<int>());
 
@@ -599,7 +600,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var mediatorMock = new Mock<IMediator>();
             var imageServiceMock = new Mock<IImageService>();
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
 
             const int campaignId = 2;
 
@@ -625,7 +626,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
 
             var result = await sut.DeleteCampaignImage(It.IsAny<int>());
@@ -656,7 +657,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
 
             await sut.DeleteCampaignImage(It.IsAny<int>());
@@ -679,7 +680,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
 
             await sut.DeleteCampaignImage(It.IsAny<int>());
@@ -702,7 +703,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
 
             var result = await sut.DeleteCampaignImage(It.IsAny<int>());
@@ -727,7 +728,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
 
-            var sut = new CampaignController(mediatorMock.Object, imageServiceMock.Object);
+            var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
             sut.MakeUserAnOrgAdmin(campaignSummaryViewModel.OrganizationId.ToString());
 
             var result = await sut.DeleteCampaignImage(It.IsAny<int>());
@@ -745,7 +746,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = id, OrganizationId = 100});
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false, 1));
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             await sut.DeleteConfirmed(id);
 
             mediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == id)), Times.Once);
@@ -758,7 +759,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = 1, OrganizationId = 100});
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             Assert.IsType<ForbidResult>(await sut.DeleteConfirmed(1));
         }
 
@@ -771,7 +772,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
 
             await sut.DeleteConfirmed(id);
 
@@ -787,7 +788,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
@@ -799,7 +800,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DeleteConfirmedHasHttpPostAttribute()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -807,7 +808,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DeleteConfirmedHasActionNameAttributeWithCorrectName()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal("Delete", attribute.Name);
@@ -816,7 +817,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DeleteConfirmedHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -828,7 +829,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false, 1));
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             await sut.PublishConfirmed(viewModel);
 
             mediator.Verify(mock => mock.SendAsync(It.Is<PublishCampaignCommand>(i => i.CampaignId == viewModel.Id)), Times.Once);
@@ -840,7 +841,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             Assert.IsType<ForbidResult>(await sut.PublishConfirmed(new PublishViewModel { UserIsOrgAdmin = false }));
         }
 
@@ -852,7 +853,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             await sut.PublishConfirmed(viewModel);
 
@@ -867,7 +868,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
-            var sut = new CampaignController(mediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             var routeValues = new Dictionary<string, object> { ["area"] = "Admin" };
 
@@ -879,7 +880,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void PublishConfirmedHasHttpPostAttribute()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -887,7 +888,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void PublishConfirmedHasActionNameAttributeWithCorrectName()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal("Publish", attribute.Name);
@@ -896,7 +897,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void PublishConfirmedHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             var attribute = sut.GetAttributesOn(x => x.PublishConfirmed(It.IsAny<PublishViewModel>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -904,7 +905,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task LockUnlockReturnsForbidResultWhenUserIsNotOrgAdmin()
         {
-            var sut = CreateCampaignControllerWithNoInjectedDependencies();
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().Build();
             sut.MakeUserAnOrgAdmin("1");
             Assert.IsType<ForbidResult>(await sut.LockUnlock(100));
         }
@@ -915,7 +916,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 99;
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             sut.MakeUserASiteAdmin();
 
             await sut.LockUnlock(campaignId);
@@ -929,7 +930,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             const int campaignId = 100;
             var mockMediator = new Mock<IMediator>();
 
-            var sut = new CampaignController(mockMediator.Object, null);
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             sut.MakeUserASiteAdmin();
 
             var view = (RedirectToActionResult)await sut.LockUnlock(campaignId);
@@ -954,17 +955,12 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             Assert.NotNull(attr);
         }
 
-        private static CampaignController CreateCampaignControllerWithNoInjectedDependencies()
-        {
-            return new CampaignController(null, null);
-        }
-
         private static void MockMediatorCampaignDetailQuery(out CampaignController controller)
         {
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync((CampaignDetailViewModel)null).Verifiable();
 
-            controller = new CampaignController(mockMediator.Object, null);
+            controller = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
 
             return;
         }
