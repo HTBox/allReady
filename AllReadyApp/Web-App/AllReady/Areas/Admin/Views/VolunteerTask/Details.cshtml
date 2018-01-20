@@ -19,7 +19,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        <h2>@Model.Name <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a> <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
+        <h2>@Model.Name <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default">Edit</a> <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="glyphicon glyphicon-trash"></i></a></h2>
         <p>@Model.Description</p>
         <p>
             <time value="Model.StartDateTime"></time> - <time value="Model.EndDateTime"></time>

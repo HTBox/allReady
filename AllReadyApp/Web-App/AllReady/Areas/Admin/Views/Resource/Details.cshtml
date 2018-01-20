@@ -20,7 +20,7 @@
     <div class="col-md-10">
         <h2>
             <span>@Model.Name</span>
-            <a asp-area="@AreaNames.Admin" asp-controller="Resource" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default"><i class="fa fa-edit"></i></a>
+            <a asp-area="@AreaNames.Admin" asp-controller="Resource" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default">Edit</a>
             <a asp-area="@AreaNames.Admin" asp-controller="Resource" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger"><i class="fa fa-trash"></i></a>
         </h2>
         <p>@Model.Description</p>
