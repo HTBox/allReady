@@ -293,11 +293,25 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- Column 2 -->
-        @Html.Partial("_LocationInfo", Model)
+        <div class="col-sm-4">
+            <div class="row share-buttons">
+                <a href="mailto:?subject=Check out this event! '@Model.Title'&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
+                    <img src="~/images/share-email.png">
+                </a>
+                <a href="http://twitter.com/intent/tweet?text=@("Check out this event! '" + Model.Title + "'")&url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
+                    <img src="~/images/share-twitter.png" alt="Share via Twitter" />
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
+                    <img src="~/images/share-fb.png" alt="Share via Facebook" />
+                </a>
+            </div>
+            <div class="row">
+                @Html.Partial("_LocationInfo", Model)
+            </div>
+        </div>
     </div>
 </div>
 
