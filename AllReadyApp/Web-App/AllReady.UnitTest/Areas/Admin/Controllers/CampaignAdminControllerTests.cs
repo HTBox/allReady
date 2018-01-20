@@ -115,6 +115,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
             var sut = new CampaignController(null, null);
+            sut.SetClaims(new List<Claim>());
+
             var view = (ViewResult)sut.Create();
 
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
