@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 using AllReady.Areas.Admin.ViewModels.Shared;
@@ -27,6 +28,7 @@ namespace AllReady.Areas.Admin.ViewModels.VolunteerTask
         public int OrganizationId { get; set; }
 
         [Required]
+        [Display(Name = "Task Name")]
         public string Name { get; set; }
 
         public string Description { get; set; }
