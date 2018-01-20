@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using AllReady.Constants;
+using AllReady.ViewModels.Campaign;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -63,7 +64,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public PartialViewResult CampaignPreview(CampaignSummaryViewModel campaign, IFormFile fileUpload)
         {
-            return PartialView("_CampaignPreview", campaign);
+            return PartialView("_CampaignPreview", new CampaignViewModel(campaign));
         }
 
         // GET: Campaign/Create
