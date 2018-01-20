@@ -157,6 +157,16 @@
                     <span class="label label-danger" data-bind="visible: !requiredSkills.isValid()">@Html.DisplayNameFor(m => m.RequiredSkills) must be unique</span>
                 </div>
             </div>
+            <hr />
+            <button type="button"
+                    id="btnGetLocationInfo"
+                    class="btn btn-info"
+                    data-toggle="modal"
+                    data-target="#confirmLocationModal"
+                    title="Information copied from campaign.">
+                Copy Location from Campaign
+            </button>
+            <h3>Location</h3>
             <div class="form-group">
                 <label asp-for="Location.Address1" class="control-label col-md-2"></label>
                 <div class="col-md-10">
@@ -256,8 +266,30 @@
     </div>
 </form>
 
+<div class="modal fade" id="confirmLocationModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
+    <div class="modal-dialog">
+        <div class="modal-content" role="document">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modalLabel">Confirm Location Details</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    This will copy in the location details that you have stored
+                    at the organization levels. If you have location information
+                    saved here now, it will be overwritten.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="confirmOverwriteLocation" type="button" class="btn btn-primary">Overwrite existing details</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section scripts {
+    <script src="~/js/eventadmin.js"></script>
     @*<script src="~/js/eventmap.js"></script>*@
     @if (isEdit)
     {
