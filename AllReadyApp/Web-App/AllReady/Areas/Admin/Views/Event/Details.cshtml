@@ -28,7 +28,7 @@
     <div class="col-md-10">
         <h2>
             <span data-event-title>@Model.Name</span>
-            <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default" title="Edit This Event" aria-label="Edit This Event"><i class="fa fa-edit"></i></a>
+            <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-default" title="Edit This Event" aria-label="Edit This Event">Edit</a>
             @if (Model.ShowDeleteButton)
             {
                 <a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Duplicate" asp-route-id="@Model.Id" class="btn btn-default">Duplicate</a>
