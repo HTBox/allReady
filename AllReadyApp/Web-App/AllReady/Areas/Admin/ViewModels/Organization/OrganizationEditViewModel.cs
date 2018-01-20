@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using AllReady.Areas.Admin.ViewModels.Shared;
 
 namespace AllReady.Areas.Admin.ViewModels.Organization
@@ -8,6 +8,7 @@ namespace AllReady.Areas.Admin.ViewModels.Organization
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Organization Name")]
         public string Name { get; set; }
 
         [Display(Name = "Logo URL")]
