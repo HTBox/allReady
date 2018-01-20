@@ -118,9 +118,14 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label asp-for="ExternalUrlText" class="col-md-2 control-label"></label>
+                    <div class="control-label col-md-2">
+                        <label asp-for="ExternalUrlText"></label>
+                        <p>
+                            <cite>This is the text that will be displayed with the link to the outside page</cite>
+                        </p>
+                    </div>
                     <div class="col-md-10">
-                        <input asp-for="ExternalUrlText" class="form-control" />
+                        <input asp-for="ExternalUrlText" class="form-control"/>
                         <span asp-validation-for="ExternalUrlText" class="text-danger"></span>
                     </div>
                 </div>
@@ -217,7 +222,7 @@
                         data-toggle="modal"
                         data-target="#confirmContactModal"
                         title="Information copied from selected organisation.">
-                    Copy Location and Primary Contact
+                    Copy Location and Primary Contact from Organization
                 </button>
                 <h3>Location</h3>
                 @Html.EditorFor(m => m.Location)
