@@ -5,7 +5,7 @@
 <div class="panel panel-success campaign-goal @if (!Model.Display){ <text>not-displayed</text> } ">
     <div class="panel-heading">
         <div class="actions">
-            <a asp-controller="Goal" asp-action="Edit" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
+            <a asp-controller="Goal" asp-action="Edit" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit">Edit</a>
             <a asp-controller="Goal" asp-action="Delete" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id"  class="btn btn-default inline-form"><i class="glyphicon glyphicon-trash"></i></a>
         </div>
         @Html.Raw(Model.TextualGoal)
