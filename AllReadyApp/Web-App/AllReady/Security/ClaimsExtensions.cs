@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using AllReady.Models;
@@ -45,8 +45,8 @@ namespace AllReady.Security
         public static string GetTimeZoneId(this ClaimsPrincipal user)
         {
             var timeZoneIdClaim = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.TimeZoneId);
-            return timeZoneIdClaim?.Value;
-            }
+            return timeZoneIdClaim == null ? "UTC" : timeZoneIdClaim.Value;
+        }
 
         public static bool IsUserProfileIncomplete(this ClaimsPrincipal user) =>
             user.HasClaim(c => c.Type == ClaimTypes.ProfileIncomplete);
