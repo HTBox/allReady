@@ -20,6 +20,16 @@ namespace AllReady.Areas.Admin.ViewModels.VolunteerTask
         [Display(Name = "Event")]
         public string EventName { get; set; }
 
+        [Display(Name = "Event start date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
+        public DateTimeOffset EventStartDate { get; set; }
+
+        [Display(Name = "Event end date")]
+        [AdjustToTimezone(TimeZoneIdPropertyName = nameof(TimeZoneId))]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss.fff}")]
+        public DateTimeOffset EventEndDate { get; set; }
+
         public int CampaignId { get; set; }
 
         [Display(Name = "Campaign")]
