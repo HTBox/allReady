@@ -16,6 +16,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.UnitTest.Areas.Admin.Controllers.Builders;
 using Xunit;
 
@@ -252,6 +253,38 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             // verify that the next route
             Assert.Equal("Admin", view.RouteValues["area"]);
             Assert.Equal(view.RouteValues["id"], newCampaignId);
+        }
+
+        [Fact]
+        public async Task EditPostFileTooLarge()
+        {
+            const int organizationId = 99;
+            const int newCampaignId = 100;
+
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<EditCampaignCommand>())).ReturnsAsync(newCampaignId);
+
+            var imageSizeValidator = new Mock<IImageSizeValidator>();
+            imageSizeValidator.SetupGet(x => x.FileSizeInBytes).Returns(1024);
+            imageSizeValidator.Setup(x => x.BytesToMb()).Returns(1);
+
+            var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).WithImageSizeValidator(imageSizeValidator.Object).Build();
+            sut.MakeUserAnOrgAdmin(organizationId.ToString());
+
+            var model = MassiveTrafficLightOutageModel;
+            model.OrganizationId = organizationId;
+
+            // verify the model is valid
+            var validationContext = new ValidationContext(model, null, null);
+            var validationResults = new List<ValidationResult>();
+            Validator.TryValidateObject(model, validationContext, validationResults);
+            Assert.Empty(validationResults);
+
+            var file = FormFile("image/jpeg");
+            await sut.Edit(model, file);
+
+            Assert.False(sut.ModelState.IsValid);
+            Assert.Equal("File size must be less than 1.00MB!", sut.ModelState["ImageUrl"].Errors.Single().ErrorMessage);
         }
 
         [Fact]
@@ -970,14 +1003,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null).Verifiable();
 
-            controller = new CampaignController(mockMediator.Object, null);
-            return;
+            controller = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
         }
 
-        private static IFormFile FormFile(string fileType)
+        private static IFormFile FormFile(string fileType, long length = (1 * 1024 * 1024)+1)
         {
             var mockFormFile = new Mock<IFormFile>();
             mockFormFile.Setup(mock => mock.ContentType).Returns(fileType);
+            mockFormFile.Setup(mock => mock.Length).Returns(length);
             return mockFormFile.Object;
         }
 
