@@ -28,6 +28,12 @@ input[type="checkbox"].form-control, input[type="radio"].form-control {
     width: 20px;
 }
 
+label span.required {
+    font-size: larger;
+    padding-left: 5px;
+    color: red;
+}
+
 .logo-background {
     background-color: #d58033;
     left: -25px;
