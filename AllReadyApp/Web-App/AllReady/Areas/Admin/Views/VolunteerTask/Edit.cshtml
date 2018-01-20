@@ -26,6 +26,7 @@
 
 <form asp-controller="VolunteerTask" asp-action="Edit" enctype="multipart/form-data">
     <div class="form-horizontal">
+        <p>Fields marked with * are required</p>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="EventId" />
         <input type="hidden" asp-for="CampaignId" />
