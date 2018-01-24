@@ -39,7 +39,7 @@ namespace AllReady
             Configuration = configuration;
             Configuration["version"] = new ApplicationEnvironment().ApplicationVersion;
         }
-        
+
         public IConfiguration Configuration { get; }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -51,8 +51,7 @@ namespace AllReady
                 options.AddPolicy("allReady", AllReadyCorsPolicyFactory.BuildAllReadyOpenCorsPolicy());
             });
 
-            // Add Entity Framework services to the services container.
-            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+            AddDatabaseServices(services);
 
             Options.LoadConfigurationOptions(services, Configuration);
 
@@ -77,7 +76,8 @@ namespace AllReady
             if (Configuration["Authentication:Facebook:AppId"] != null)
             {
                 services.AddAuthentication()
-                    .AddFacebook(options => {
+                    .AddFacebook(options =>
+                    {
                         options.AppId = Configuration["authentication:facebook:appid"];
                         options.AppSecret = Configuration["authentication:facebook:appsecret"];
                         options.BackchannelHttpHandler = new FacebookBackChannelHandler();
@@ -92,7 +92,8 @@ namespace AllReady
             if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
             {
                 services.AddAuthentication()
-                    .AddMicrosoftAccount(options => {
+                    .AddMicrosoftAccount(options =>
+                    {
                         options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
                         options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
                         options.Events = new OAuthEvents()
@@ -105,7 +106,8 @@ namespace AllReady
             if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
             {
                 services.AddAuthentication()
-                    .AddTwitter(options => {
+                    .AddTwitter(options =>
+                    {
                         options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
                         options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
                         options.RetrieveUserDetails = true;
@@ -119,7 +121,8 @@ namespace AllReady
             if (Configuration["Authentication:Google:ClientId"] != null)
             {
                 services.AddAuthentication()
-                    .AddGoogle(options => {
+                    .AddGoogle(options =>
+                    {
                         options.ClientId = Configuration["Authentication:Google:ClientId"];
                         options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
                         options.Events = new OAuthEvents()
@@ -167,8 +170,7 @@ namespace AllReady
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
             });
 
-            //Hangfire
-            services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
+            AddHangFire(services);
 
             services.AddScoped<IAllReadyUserManager, AllReadyUserManager>();
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
@@ -177,6 +179,26 @@ namespace AllReady
             // configure IoC support
             var container = AllReady.Configuration.Services.CreateIoCContainer(services, Configuration);
             return container.Resolve<IServiceProvider>();
+        }
+
+
+        protected virtual void GetDbContext(IServiceCollection services)
+        {
+            // Add Entity Framework services to the services container.
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+        }
+
+
+        protected virtual void AddDatabaseServices(IServiceCollection services)
+        {
+            // Add Entity Framework services to the services container.
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+        }
+
+        protected virtual void AddHangFire(IServiceCollection services)
+        {
+            //Hangfire
+            services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
         }
 
         // Configure is called after ConfigureServices is called.
@@ -224,15 +246,9 @@ namespace AllReady
                 context.Database.EnsureDeleted();
             }
 
-            //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
-            if (purgeRefreshSampleData || !env.IsProduction())
-            {
-                context.Database.Migrate();
-            }
+            MigrateDatabase(purgeRefreshSampleData, env, context);
 
-            ////Hangfire
-            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangfireDashboardAuthorizationFilter() } });
-            app.UseHangfireServer();
+            RegisterHangFire(app);
 
             // Add MVC to the request pipeline.
             app.UseMvc(routes =>
@@ -241,16 +257,36 @@ namespace AllReady
                 routes.MapRoute(name: "default", template: "{controller=Home}/{action=Index}/{id?}");
             });
 
+            LoadSeedData(purgeRefreshSampleData, sampleData);
+        }
+
+        protected virtual void RegisterHangFire(IApplicationBuilder app)
+        {
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions { Authorization = new[] { new HangfireDashboardAuthorizationFilter() } });
+            app.UseHangfireServer();
+        }
+
+        protected virtual void LoadSeedData(bool purgeRefreshSampleData, SampleDataGenerator sampleDataGenerator)
+        {
             // Add sample data and test admin accounts if specified in Config.Json.
             // for production applications, this should either be set to false or deleted.
             if (purgeRefreshSampleData || Configuration["SampleData:InsertSampleData"] == "true")
             {
-                sampleData.InsertTestData();
+                sampleDataGenerator.InsertTestData();
             }
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                sampleData.CreateAdminUser().GetAwaiter().GetResult();
+                sampleDataGenerator.CreateAdminUser().GetAwaiter().GetResult();
+            }
+        }
+
+        protected virtual void MigrateDatabase(bool purgeRefreshSampleData, IHostingEnvironment hostingEnvironment, AllReadyContext context)
+        {
+            //call Migrate here to force the creation of the AllReady database so Hangfire can create its schema under it
+            if (purgeRefreshSampleData || !hostingEnvironment.IsProduction())
+            {
+                context.Database.Migrate();
             }
         }
     }
