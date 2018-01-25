@@ -35,7 +35,7 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         [Display(Name = "Existing Image")]
         public string ImageUrl { get; set; }
 
-        [Display(Name = "Browse for image")]
+        [Display(Name = "Upload event image")]
         public string FileUpload { get; set; }        
 
         [MaxLength(150)]
