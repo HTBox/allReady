@@ -33,6 +33,8 @@
         Emulate the tabs here: 
         Live: http://localhost:5000/Admin/Campaign/Edit/1
         Code: Areas\Admin\Views\Campaign\Edit.cshtml
+        Ideas: 
+        * Break tabs out into separate cshtml pages.
     -->
 
     <ul class="nav nav-tabs">
@@ -41,6 +43,8 @@
     </ul>
 
     <div class="tab-content">
+
+        <!-- Begin account-tab -->
 
         <div id="account-tab" class="tab-pane fade in active">
 
@@ -96,8 +100,6 @@
                     </form>
                 </div>
             }
-
-            <!-- End Email Form -->
 
             @using (Html.BeginForm())
             {
@@ -230,9 +232,16 @@
             }
 
         </div>
+
+        <!-- End account tab -->
+
+        <!-- Begin skills tab -->
+
         <div id="skills-tab" class="tab-pane">
             TODO Move skills details here.
         </div>
+
+        <!-- End skills tab -->
 
     </div>
 
