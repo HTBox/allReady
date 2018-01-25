@@ -104,7 +104,9 @@ namespace AllReady.Areas.Admin.Controllers
                 OrganizationId = campaign.OrganizationId,
                 OrganizationName = campaign.OrganizationName,
                 StartDateTime = DateTimeTodayDate(),
-                EndDateTime = DateTimeTodayDate()
+                EndDateTime = DateTimeTodayDate(),
+                CampaignStartDateTime = campaign.StartDate,
+                CampaignEndDateTime = campaign.EndDate
             };
 
             return View("Edit", viewModel);

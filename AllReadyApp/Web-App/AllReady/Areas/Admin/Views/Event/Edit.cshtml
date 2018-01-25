@@ -122,7 +122,14 @@
                     <span asp-validation-for="TimeZoneId" class="text-danger"></span>
                 </div>
             </div>
-
+            <div class="form-group">
+                <label class="control-label col-md-2">Campaign Start/End dates</label>
+                <div class="col-md-10">
+                    <p class="form-control-static">
+                        <time value="Model.CampaignStartDateTime" TargetTimeZoneId="Model.TimeZoneId"></time> - <time value="Model.CampaignStartDateTime" TargetTimeZoneId="Model.TimeZoneId"></time>
+                    </p>
+                </div>
+            </div>
             <div class="form-group">
                 <label asp-for="StartDateTime" class="control-label col-md-2"></label>
                 <div class="col-md-10">
