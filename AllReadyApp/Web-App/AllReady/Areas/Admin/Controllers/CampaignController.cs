@@ -73,7 +73,8 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", new CampaignSummaryViewModel
             {
                 StartDate = DateTimeNow(),
-                EndDate = DateTimeNow().AddMonths(1)
+                EndDate = DateTimeNow().AddMonths(1),
+                TimeZoneId = User.GetTimeZoneId()
             });
         }
 
