@@ -52,8 +52,11 @@ namespace AllReady
             });
 
             // Add Entity Framework services to the services container.
-            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
-
+            var allReadyDbConnectionString = Environment.GetEnvironmentVariable("ALLREADY_DOCKER_DEBUG") == "TRUE" ?
+                Configuration["Data:DockerDefaultConnection:ConnectionString"] :
+                Configuration["Data:DefaultConnection:ConnectionString"];
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(allReadyDbConnectionString));
+            
             Options.LoadConfigurationOptions(services, Configuration);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -168,7 +171,10 @@ namespace AllReady
             });
 
             //Hangfire
-            services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
+            var hangFireConnectionString = Environment.GetEnvironmentVariable("ALLREADY_DOCKER_DEBUG") == "TRUE" ?
+                Configuration["Data:DockerHangfireConnection:ConnectionString"] :
+                Configuration["Data:HangfireConnection:ConnectionString"];
+            services.AddHangfire(configuration => configuration.UseSqlServerStorage(hangFireConnectionString));
 
             services.AddScoped<IAllReadyUserManager, AllReadyUserManager>();
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
@@ -184,7 +190,6 @@ namespace AllReady
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.
             app.UseCors("allReady");
-
             app.UseSession();
 
             // Add the following to the request pipeline only in development environment.

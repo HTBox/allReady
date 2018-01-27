@@ -1,0 +1,22 @@
+version: "3"
+services:
+    web:
+        build: 
+            context: .
+            dockerfile: Dockerfile-web
+        ports:
+            - "8000:80"
+        depends_on:
+            - db
+    db:
+        image: "microsoft/mssql-server-linux:2017-CU3"
+        volumes: 
+            - sql-server-data:/var/opt/mssql
+        ports: 
+            - "1433:1433"
+        environment:
+            SA_PASSWORD: "yourStrong(!)Password"
+            ACCEPT_EULA: "Y"
+
+volumes:
+    sql-server-data:

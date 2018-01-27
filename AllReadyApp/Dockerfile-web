@@ -1,0 +1,12 @@
+FROM microsoft/aspnetcore-build:2.0
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ALLREADY_DOCKER_DEBUG=TRUE
+COPY . /app
+WORKDIR /app
+RUN ["dotnet","restore","AllReadyWebOnly.sln"]
+WORKDIR /app/Web-App/AllReady
+RUN ["npm", "install", "--unsafe-perm"]
+RUN ["dotnet","build"]
+EXPOSE 80/tcp
+RUN chmod +x ../../entrypoint.sh
+CMD /bin/bash ../../entrypoint.sh
