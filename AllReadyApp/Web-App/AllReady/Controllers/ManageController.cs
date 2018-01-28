@@ -58,7 +58,6 @@ namespace AllReady.Controllers
 
             if (command == "SaveProfile") 
             {
-                // TODO: 1871 determine a better way to handle partial model validation
                 if (!ModelState.IsValid)
                 {
                     var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
