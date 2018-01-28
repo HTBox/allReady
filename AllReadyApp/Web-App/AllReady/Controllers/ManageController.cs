@@ -56,17 +56,19 @@ namespace AllReady.Controllers
         {
             var user = await GetCurrentUser();
 
-            if (!ModelState.IsValid)
+            if (command == "SaveProfile") 
             {
-                var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
-                viewModelWithInputs.FirstName= model.FirstName;
-                viewModelWithInputs.LastName = model.LastName;
-                viewModelWithInputs.TimeZoneId = model.TimeZoneId;
-                viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
-                return View(viewModelWithInputs);
-            }
-            else if (command == "SaveProfile") 
-            {
+                // TODO: 1871 determine a better way to handle partial model validation
+                if (!ModelState.IsValid)
+                {
+                    var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
+                    viewModelWithInputs.FirstName= model.FirstName;
+                    viewModelWithInputs.LastName = model.LastName;
+                    viewModelWithInputs.TimeZoneId = model.TimeZoneId;
+                    viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
+                    return View(viewModelWithInputs);
+                }
+
                 await SaveProfile(model, user);
             } 
             else if (command == "SaveSkills") 
