@@ -52,10 +52,8 @@ namespace AllReady.Controllers
         // POST: /Manage/Index
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(IndexViewModel model)
+        public async Task<IActionResult> Index(IndexViewModel model, string command)
         {
-            var shouldRefreshSignin = false;
-
             var user = await GetCurrentUser();
 
             if (!ModelState.IsValid)
@@ -67,6 +65,23 @@ namespace AllReady.Controllers
                 viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
                 return View(viewModelWithInputs);
             }
+            else if (command == "SaveProfile") 
+            {
+                await SaveProfile(model, user);
+            } 
+            else if (command == "SaveSkills") 
+            {
+                SaveSkills(model, user);
+            }
+
+            await _mediator.SendAsync(new UpdateUser { User = user });
+            await UpdateUserProfileCompleteness(user);
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task SaveProfile(IndexViewModel model, ApplicationUser user) 
+        {
+            bool shouldRefreshSignin = false;
 
             if (!string.IsNullOrEmpty(model.FirstName))
             {
@@ -88,6 +103,14 @@ namespace AllReady.Controllers
                 shouldRefreshSignin = true;
             }
 
+            if (shouldRefreshSignin)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+            }
+        }
+
+        private void SaveSkills(IndexViewModel model, ApplicationUser user) 
+        {
             user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
             if (model.AssociatedSkills != null)
             {
@@ -95,17 +118,6 @@ namespace AllReady.Controllers
             }
 
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
-
-            await _mediator.SendAsync(new UpdateUser { User = user });
-
-            if (shouldRefreshSignin)
-            {
-                await _signInManager.RefreshSignInAsync(user);
-            }
-
-            await UpdateUserProfileCompleteness(user);
-
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
