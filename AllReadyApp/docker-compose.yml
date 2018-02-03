@@ -3,13 +3,18 @@ services:
     web:
         build: 
             context: .
-            dockerfile: Dockerfile-web
+            dockerfile: Web-App/AllReady/Dockerfile
+        container_name: allreadyweb
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ALLREADY_DOCKER_DEBUG=TRUE
         ports:
             - "8000:80"
         depends_on:
             - db
     db:
         image: "microsoft/mssql-server-linux:2017-CU3"
+        container_name: allreadysqlserver
         volumes: 
             - sql-server-data:/var/opt/mssql
         ports: 
