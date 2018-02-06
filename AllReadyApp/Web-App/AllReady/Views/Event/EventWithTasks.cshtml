@@ -219,8 +219,8 @@
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
                         </div>
                         <div class="form-group">
-                            <div class="input-group" data-bind="dateTimePicker: tasks.dateInRange, dateTimePickerOptions: { format: 'L', showClear: true }">
-                                <input type="text" class="form-control" placeholder="On date" />
+                            <div class="input-group" data-bind="dateRangePicker: tasks.dateInRange, daterangepickerOptions: {  autoUpdateInput: false, locale: { cancelLabel: 'Clear', format: 'L' } }" >
+                                <input type="text" class="form-control input-sm" placeholder="On date" data-bind="value: tasks.displayedRange" />
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span>
