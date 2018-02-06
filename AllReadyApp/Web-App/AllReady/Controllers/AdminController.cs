@@ -117,15 +117,6 @@ namespace AllReady.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-        //
-        // GET: /Admin/ForgotPassword
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword()
-        {
-            return View();
-        }
-
         // GET: /Admin/SendCode
         [HttpGet]
         [AllowAnonymous]
