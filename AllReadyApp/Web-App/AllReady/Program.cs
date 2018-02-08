@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace AllReady
 {
@@ -14,9 +13,7 @@ namespace AllReady
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((ctx, config) =>
-                    config.SetBasePath(ctx.HostingEnvironment.ContentRootPath)
-                        .AddJsonFile("version.json"))
+                .ConfigureAppConfiguration((ctx, config) => config.SetBasePath(ctx.HostingEnvironment.ContentRootPath).AddJsonFile("version.json"))
                 .UseStartup<Startup>()
                 .Build();
     }

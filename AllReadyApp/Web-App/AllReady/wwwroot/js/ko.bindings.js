@@ -60,37 +60,51 @@ ko.bindingHandlers.accordion = {
     }
 };
 
+function Daterange(begin, end, formattedDate) {
+    this.begin = begin;
+    this.end = end;
+    this.formattedDate = formattedDate;
+}
+
 // knockout binding for datepicker date
-ko.bindingHandlers.dateTimePicker = {
+ko.bindingHandlers.dateRangePicker = {
+
     init: function (element, valueAccessor, allBindingsAccessor) {
-        //initialize datepicker with some optional options
-        var options = allBindingsAccessor().dateTimePickerOptions || {};
-        $(element).datetimepicker(options);
+        //initialize daterangepicker with some optional options
+        var options = allBindingsAccessor().daterangepickerOptions || {};
+        $(element).daterangepicker(options);
 
         //when a user changes the date, update the view model
-        ko.utils.registerEventHandler(element, "dp.change", function (event) {
+        ko.utils.registerEventHandler(element, "apply.daterangepicker", function (event, picker) {
             var value = valueAccessor();
             if (ko.isObservable(value)) {
-                if (!event.date) {
-                    value(null);
+                var daterange = new Daterange();
+
+                if (picker.startDate && picker.endDate) {
+                    var format = options.locale.format;
+                    daterange.begin = picker.startDate;
+                    daterange.end = picker.endDate;
+                    daterange.formattedDate = picker.startDate.format(format) + ' - ' + picker.endDate.format(format);
                 }
-                else if (event.date instanceof Date) {
-                    value(event.date);
-                }
-                else {
-                    value(event.date.toDate());
-                }
+                $(element).val(daterange.formattedDate);
+                value(daterange);
+            }
+        });
+
+        //when a user cancels the date, update the view model
+        ko.utils.registerEventHandler(element, "cancel.daterangepicker", function (event, picker) {
+            $(element).val('');
+            var value = valueAccessor();
+            if (ko.isObservable(value)) {
+                value(new Daterange());
             }
         });
 
         ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
-            var picker = $(element).data("DateTimePicker");
+            var picker = $(element).data('daterangepicker');
             if (picker) {
-                picker.destroy();
+                picker.remove();
             }
         });
-    },
-    update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
-        // This is for input data binding only.
     }
 };

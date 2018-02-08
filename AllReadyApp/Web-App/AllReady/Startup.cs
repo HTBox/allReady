@@ -27,19 +27,12 @@ namespace AllReady
 {
     public class Startup
     {
-        private static Task HandleRemoteLoginFailure(RemoteFailureContext ctx)
-        {
-            ctx.Response.Redirect("/Account/Login");
-            ctx.HandleResponse();
-            return Task.CompletedTask;
-        }
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
             Configuration["version"] = new ApplicationEnvironment().ApplicationVersion;
         }
-        
+
         public IConfiguration Configuration { get; }
 
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -73,81 +66,9 @@ namespace AllReady
             });
 
             services.AddAuthentication();
-
-            if (Configuration["Authentication:Facebook:AppId"] != null)
-            {
-                services.AddAuthentication()
-                    .AddFacebook(options => {
-                        options.AppId = Configuration["authentication:facebook:appid"];
-                        options.AppSecret = Configuration["authentication:facebook:appsecret"];
-                        options.BackchannelHttpHandler = new FacebookBackChannelHandler();
-                        options.UserInformationEndpoint = "https://graph.facebook.com/v2.5/me?fields=id,name,email,first_name,last_name";
-                        options.Events = new OAuthEvents()
-                        {
-                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-                        };
-                    });
-            }
-
-            if (Configuration["Authentication:MicrosoftAccount:ClientId"] != null)
-            {
-                services.AddAuthentication()
-                    .AddMicrosoftAccount(options => {
-                        options.ClientId = Configuration["Authentication:MicrosoftAccount:ClientId"];
-                        options.ClientSecret = Configuration["Authentication:MicrosoftAccount:ClientSecret"];
-                        options.Events = new OAuthEvents()
-                        {
-                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-                        };
-                    });
-            }
-
-            if (Configuration["Authentication:Twitter:ConsumerKey"] != null)
-            {
-                services.AddAuthentication()
-                    .AddTwitter(options => {
-                        options.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
-                        options.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
-                        options.RetrieveUserDetails = true;
-                        options.Events = new TwitterEvents()
-                        {
-                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-                        };
-                    });
-            }
-
-            if (Configuration["Authentication:Google:ClientId"] != null)
-            {
-                services.AddAuthentication()
-                    .AddGoogle(options => {
-                        options.ClientId = Configuration["Authentication:Google:ClientId"];
-                        options.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
-                        options.Events = new OAuthEvents()
-                        {
-                            OnRemoteFailure = ctx => HandleRemoteLoginFailure(ctx)
-                        };
-                    });
-            }
-
-            // Add Authorization rules for the app
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(nameof(UserType.OrgAdmin), b => b.RequireClaim(ClaimTypes.UserType, nameof(UserType.OrgAdmin), nameof(UserType.SiteAdmin)));
-                options.AddPolicy(nameof(UserType.SiteAdmin), b => b.RequireClaim(ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
-            });
-
-            services.AddLocalization();
-
-            //Currently AllReady only supports en-US culture. This forces datetime and number formats to the en-US culture regardless of local culture
-            var usCulture = new CultureInfo("en-US");
-            var supportedCultures = new[] { usCulture };
-            services.Configure<RequestLocalizationOptions>(options =>
-            {
-                options.DefaultRequestCulture = new RequestCulture(usCulture, usCulture);
-                options.SupportedCultures = supportedCultures;
-                options.SupportedUICultures = supportedCultures;
-            });
-
+            services.AddExternalAuthenticationServices(Configuration);
+            services.AddAppAuthorization();
+            services.AddAppLocalization();
             services.AddMemoryCache();
 
             // Add MVC services to the services container.

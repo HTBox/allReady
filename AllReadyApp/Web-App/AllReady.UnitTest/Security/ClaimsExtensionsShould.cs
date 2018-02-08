@@ -1,4 +1,5 @@
-﻿using AllReady.Models;
+using System;
+using AllReady.Models;
 using AllReady.Security;
 using System.Security.Claims;
 using Xunit;
@@ -178,11 +179,11 @@ namespace AllReady.UnitTest.Security
     }
 
     [Fact]
-    public void GetTimeZoneIdReturnsNullWhenUserDoesNotHaveTimeZoneIdClaim()
+    public void GetTimeZoneIdReturnsDefaultUtcWhenUserDoesNotHaveTimeZoneIdClaim()
     {
-      var principal = new ClaimsPrincipal();
-      var result = principal.GetTimeZoneId();
-      Assert.Null(result);
+        var principal = new ClaimsPrincipal();
+        var result = principal.GetTimeZoneId();
+        Assert.Equal("UTC", result);
     }
 
     [Fact]
@@ -197,11 +198,11 @@ namespace AllReady.UnitTest.Security
     }
 
     [Fact]
-    public void GetTimeZoneInfoReturnsNullUsersTimeZoneIdIsNotSet()
+    public void GetTimeZoneInfoReturnsDefaultUtcUsersTimeZoneIdIsNotSet()
     {
-      var principal = new ClaimsPrincipal();
-      var result = principal.GetTimeZoneInfo();
-      Assert.Null(result);
+        var principal = new ClaimsPrincipal();
+        var result = principal.GetTimeZoneInfo();
+        Assert.Equal("UTC", result.Id);
     }
 
     [Fact]
