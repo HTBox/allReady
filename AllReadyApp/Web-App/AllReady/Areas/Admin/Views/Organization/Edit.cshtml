@@ -50,10 +50,10 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         @if (isEdit)
-        {
-            <input type="hidden" asp-for="Id" />
-        }
-        
+    {
+        <input type="hidden" asp-for="Id" />
+}
+
         <h3>Organization Information</h3>
         <p>Fields marked with * are required</p>
         <div class="form-group">
@@ -73,7 +73,7 @@
         <div class="form-group">
             <label asp-for="WebUrl" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="WebUrl" class="form-control"/>
+                <input asp-for="WebUrl" class="form-control" />
                 <span asp-validation-for="WebUrl" class="text-danger"></span>
             </div>
         </div>
@@ -125,7 +125,7 @@
 
         <h3>Primary Location</h3>
 
-        @Html.EditorFor(m => m.Location)
+        @Html.EditorFor(m => m.Location, new { RequiredAddressOne = false })
 
         <h3>Primary Contact</h3>
 
