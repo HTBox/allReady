@@ -174,7 +174,7 @@
                 Copy Location from Campaign
             </button>
             <h3>Location</h3>
-            @Html.EditorFor(m => m.Location, new { RequiredAddressOne = true })
+            @Html.EditorFor(m => m.Location, new { RequiredAddressOne = Model.EventType == EventType.Rally })
         </div>
 
         <div class="col-lg-6 pull-right">
