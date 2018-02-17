@@ -98,7 +98,7 @@
 
             <!-- Begin ManageController.Index form -->
 
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("SaveProfile"))
             {
                 @Html.AntiForgeryToken()
                 <hr />
@@ -201,7 +201,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" name="command" value="SaveProfile" class="btn btn-default">Save</button>
+                            <button type="submit" class="btn btn-default">Save</button>
                             <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
                         </div>
                     </div>
@@ -218,7 +218,7 @@
 
         <div id="skills-tab" class="tab-pane">
 
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("SaveSkills"))
             {
                 @Html.AntiForgeryToken()
                 <div class="form-horizontal">
@@ -243,7 +243,7 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" name="command" value="SaveSkills" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
+                            <button type="submit" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
                             <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
                             <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
                         </div>

@@ -49,38 +49,46 @@ namespace AllReady.Controllers
             return View(await user.ToViewModel(_userManager, _signInManager));
         }
 
-        // POST: /Manage/Index
+        // POST: /Manage/SaveProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(IndexViewModel model, string command)
+        public async Task<IActionResult> SaveProfile(ProfileViewModel model)
         {
             var user = await GetCurrentUser();
 
-            if (command == "SaveProfile") 
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
-                    viewModelWithInputs.FirstName= model.FirstName;
-                    viewModelWithInputs.LastName = model.LastName;
-                    viewModelWithInputs.TimeZoneId = model.TimeZoneId;
-                    viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
-                    return View(viewModelWithInputs);
-                }
-
-                await SaveProfile(model, user);
-            } 
-            else if (command == "SaveSkills") 
-            {
-                SaveSkills(model, user);
+                var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
+                viewModelWithInputs.FirstName= model.FirstName;
+                viewModelWithInputs.LastName = model.LastName;
+                viewModelWithInputs.TimeZoneId = model.TimeZoneId;
+                return View(viewModelWithInputs);
             }
 
+            await SaveProfile(model, user);
+
+            // TODO 2231 Consider putting this shared block into a private method.
             await _mediator.SendAsync(new UpdateUser { User = user });
             await UpdateUserProfileCompleteness(user);
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task SaveProfile(IndexViewModel model, ApplicationUser user) 
+        // POST: /Manage/SaveSkills
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveSkills(SkillsViewModel model)
+        {
+            var user = await GetCurrentUser();
+
+            SaveSkills(model, user);
+
+            // TODO 2231 Consider putting this shared block into a private method.
+            await _mediator.SendAsync(new UpdateUser { User = user });
+            await UpdateUserProfileCompleteness(user);
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task SaveProfile(ProfileViewModel model, ApplicationUser user) 
         {
             bool shouldRefreshSignin = false;
 
@@ -110,12 +118,21 @@ namespace AllReady.Controllers
             }
         }
 
-        private void SaveSkills(IndexViewModel model, ApplicationUser user) 
+        private void SaveSkills(SkillsViewModel model, ApplicationUser user) 
         {
-            user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+            // TODO 2231 Figure out what this expression is doing.
+            user.AssociatedSkills.RemoveAll(
+                usk => model.AssociatedSkills == null || 
+                !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+
             if (model.AssociatedSkills != null)
             {
-                user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
+                // TODO 2231 Figure out what this expression is doing.
+                var skillsToAdd = model.AssociatedSkills
+                    .Where(msk => !user.AssociatedSkills
+                        .Any(usk => usk.SkillId == msk.SkillId));
+
+                user.AssociatedSkills.AddRange(skillsToAdd);
             }
 
             user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);

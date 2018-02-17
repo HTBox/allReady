@@ -5,14 +5,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AllReady.ViewModels.Manage
 {
-    public class IndexViewModel
+    public class ProfileViewModel
     {
-        public IndexViewModel()
-        {
-            Logins = new List<UserLoginInfo>();
-            AssociatedSkills = new List<UserSkill>();
-        }
-
         [Required]
         [Display(Name = "First Name")]
         [MaxLength(200, ErrorMessage = "Name cannot be longer than 200 characters.")]
@@ -32,7 +26,7 @@ namespace AllReady.ViewModels.Manage
 
         public bool HasPassword { get; set; }
 
-        public IList<UserLoginInfo> Logins { get; set; }
+        public IList<UserLoginInfo> Logins { get; set; } = new List<UserLoginInfo>();
 
         public string PhoneNumber { get; set; }
 
@@ -40,11 +34,8 @@ namespace AllReady.ViewModels.Manage
 
         public bool BrowserRemembered { get; set; }
 
-        [Display(Name = "My skills")]
-        public List<UserSkill> AssociatedSkills { get; set; }
-
-        [Display(Name = "Time Zone")]
         [Required]
+        [Display(Name = "Time Zone")]
         public string TimeZoneId { get; set; }
 
         public string ProposedNewEmailAddress { get; set; }
