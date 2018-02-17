@@ -67,22 +67,6 @@ namespace AllReady.Controllers
 
             await SaveProfile(model, user);
 
-            // TODO 2231 Consider putting this shared block into a private method.
-            await _mediator.SendAsync(new UpdateUser { User = user });
-            await UpdateUserProfileCompleteness(user);
-            return RedirectToAction(nameof(Index));
-        }
-
-        // POST: /Manage/SaveSkills
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveSkills(SkillsViewModel model)
-        {
-            var user = await GetCurrentUser();
-
-            SaveSkills(model, user);
-
-            // TODO 2231 Consider putting this shared block into a private method.
             await _mediator.SendAsync(new UpdateUser { User = user });
             await UpdateUserProfileCompleteness(user);
             return RedirectToAction(nameof(Index));
@@ -118,9 +102,24 @@ namespace AllReady.Controllers
             }
         }
 
+        // POST: /Manage/SaveSkills
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveSkills(SkillsViewModel model)
+        {
+            var user = await GetCurrentUser();
+
+            SaveSkills(model, user);
+
+            // TODO 2231 Question: do we need to SendAsync for the saving of skills?
+            await _mediator.SendAsync(new UpdateUser { User = user });
+            return RedirectToAction(nameof(Index));
+        }
+
         private void SaveSkills(SkillsViewModel model, ApplicationUser user) 
         {
             // TODO 2231 Figure out what this expression is doing.
+            // Then consider breaking it out into a local function.
             user.AssociatedSkills.RemoveAll(
                 usk => model.AssociatedSkills == null || 
                 !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
@@ -128,6 +127,7 @@ namespace AllReady.Controllers
             if (model.AssociatedSkills != null)
             {
                 // TODO 2231 Figure out what this expression is doing.
+                // Then consider breaking it out into a local function.
                 var skillsToAdd = model.AssociatedSkills
                     .Where(msk => !user.AssociatedSkills
                         .Any(usk => usk.SkillId == msk.SkillId));

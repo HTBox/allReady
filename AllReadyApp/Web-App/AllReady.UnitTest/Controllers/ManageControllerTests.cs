@@ -223,6 +223,7 @@ namespace AllReady.UnitTest.Controllers
                 nameof(ManageController.SaveProfile), 
                 new[] { typeof(ProfileViewModel) });
         }
+
         [Fact]
         public async Task SaveProfilePostSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
         {
@@ -248,6 +249,25 @@ namespace AllReady.UnitTest.Controllers
 
             controllerAndMocks.mediatorMock.Verify(m => m.SendAsync(It.Is<RemoveUserProfileIncompleteClaimCommand>(u => u.UserId == user.Id)), Times.Once);
         }
+
+
+        [Fact]
+        public void SaveSkillsPostHasHttpPostAttribute()
+        {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(
+                nameof(ManageController.SaveSkills), 
+                new [] {typeof(SkillsViewModel) });
+        }
+
+        [Fact]
+        public void SaveSkillsPostHasValidateAntiForgeryTokenAttribute()
+        {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(
+                nameof(ManageController.SaveSkills), 
+                new[] { typeof(SkillsViewModel) });
+        }
+
+        // TODO 2231 Analyze what SaveSkills POST is doing; then add appropriate unit tests.
 
         [Fact]
         public async Task UpdateUserProfileCompletenessInvokesRefreshSignInAsyncWithCorrectUserWhenUsersProfileIsComplete()
