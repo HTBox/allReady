@@ -28,13 +28,18 @@ namespace AllReady.Security
             return result;
         }
 
-        public static async Task<ProfileViewModel> ToViewModel(
+        public static async Task<IndexViewModel> ToViewModel(
             this ApplicationUser user, 
             UserManager<ApplicationUser> userManager, 
             SignInManager<ApplicationUser> signInManager)
         {
+            var skills = new SkillsViewModel
+            {
+                AssociatedSkills = user.AssociatedSkills
+            };
+
             var profileCompletenessWarnings = user.ValidateProfileCompleteness();
-            var result = new ProfileViewModel
+            var profile = new ProfileViewModel
             {
                 HasPassword = await userManager.HasPasswordAsync(user),
                 EmailAddress = user.Email,
@@ -51,7 +56,12 @@ namespace AllReady.Security
                 IsProfileComplete = user.IsProfileComplete(),
                 ProfileCompletenessWarnings = profileCompletenessWarnings.Select(p => p.ErrorMessage)
             };
-            return result;
+
+            return new IndexViewModel
+            {
+                ProfileViewModel = profile,
+                SkillsViewModel = skills,
+            };
         }
     }
 }

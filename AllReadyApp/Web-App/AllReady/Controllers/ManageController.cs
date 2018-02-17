@@ -58,11 +58,14 @@ namespace AllReady.Controllers
 
             if (!ModelState.IsValid)
             {
-                var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
-                viewModelWithInputs.FirstName= model.FirstName;
-                viewModelWithInputs.LastName = model.LastName;
-                viewModelWithInputs.TimeZoneId = model.TimeZoneId;
-                return View(viewModelWithInputs);
+                var vm = await user.ToViewModel(_userManager, _signInManager);
+
+                // TODO 2231 Adhere to the Law of Demeter.
+                vm.ProfileViewModel.FirstName= model.FirstName;
+                vm.ProfileViewModel.LastName = model.LastName;
+                vm.ProfileViewModel.TimeZoneId = model.TimeZoneId;
+
+                return View(vm);
             }
 
             await SaveProfile(model, user);
