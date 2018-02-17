@@ -56,22 +56,28 @@ namespace AllReady.Controllers
         {
             var user = await GetCurrentUser();
 
+            Console.WriteLine("------------------");
+            Console.WriteLine("SaveProfile");
+
             if (!ModelState.IsValid)
             {
                 var vm = await user.ToViewModel(_userManager, _signInManager);
 
                 // TODO 2231 Adhere to the Law of Demeter.
-                vm.ProfileViewModel.FirstName= model.FirstName;
+                vm.ProfileViewModel.FirstName = model.FirstName;
                 vm.ProfileViewModel.LastName = model.LastName;
                 vm.ProfileViewModel.TimeZoneId = model.TimeZoneId;
 
-                return View(vm);
+                return View("Index", vm);
             }
 
             await SaveProfile(model, user);
 
             await _mediator.SendAsync(new UpdateUser { User = user });
             await UpdateUserProfileCompleteness(user);
+
+            Console.WriteLine("------------------");
+
             return RedirectToAction(nameof(Index));
         }
 

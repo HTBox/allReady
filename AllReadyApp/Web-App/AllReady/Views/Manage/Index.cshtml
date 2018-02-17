@@ -1,14 +1,11 @@
-﻿@using AllReady.Constants
+﻿<!-- TODO 2231 Which of the follow four are necessary? -->
+@using AllReady.Constants
 @using AllReady.Security;
-<!-- 
-    TODO 2231 Break the Profile and Skills sections into their own Partial Views. 
-    That way we can avoid doing Model.ChildViewModel.SomeProperty
--->
-
 @using AllReady.ViewModels.Manage
 @inject AllReady.Services.ISelectListService SelectListService
 
 @model IndexViewModel
+
 @{
     ViewData["Title"] = "Manage your account";
 }
@@ -39,233 +36,22 @@
     </ul>
 
     <div class="tab-content">
-
-        <!-- Begin account-tab -->
-
         <div id="account-tab" class="tab-pane fade in active">
 
-            <!-- Begin ManageController.ResentEmailConfirmation form -->
-
-            <form asp-controller="Manage" asp-action="ResendEmailConfirmation">
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label asp-for="ProfileViewModel.EmailAddress" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input type="hidden" asp-for="ProfileViewModel.EmailAddress">
-                            <p class="form-control-static">
-                                <span>
-                                    <i class="@(Model.ProfileViewModel.IsEmailAddressConfirmed ? "fa fa-check text-success" : "")"
-                                    title="@(Model.ProfileViewModel.IsEmailAddressConfirmed ? "Your email address has been confirmed" : "")"></i> @Model.ProfileViewModel.EmailAddress
-                                    @if (string.IsNullOrEmpty(Model.ProfileViewModel.ProposedNewEmailAddress))
-                                    {
-                                        <span> | <a asp-controller="Manage" asp-action="ChangeEmail">Change</a></span>
-                                    }
-                                </span>
-                                @if (!Model.ProfileViewModel.IsEmailAddressConfirmed)
-                                {
-                                    <br />
-                                    <div class="alert alert-warning" role="alert">
-                                        <i class="fa fa-exclamation-circle"></i> Your email address has not been confirmed.
-                                        <br />
-                                        allReady cannot send you email notifications until your email address has been confirmed.
-                                        <br />
-                                        Check your inbox for a confirmation email.
-                                        <br />
-                                        <button class="btn btn-default" type="submit">Send me a new confirmation email</button>
-                                    </div>
-                                }
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-            <!-- End ManageController.ResentEmailConfirmation form -->
-
-            @if (Model.ProfileViewModel.ProposedNewEmailAddress != null)
-            {
-                <div class="alert alert-warning" role="alert">
-                    <p>
-                        <i class="fa fa-exclamation-circle"></i> You have requested that your email address is changed to @Model.ProfileViewModel.ProposedNewEmailAddress but this has not been confirmed.
-                        <br />
-                        allReady cannot update your email address until your new email address has been confirmed.
-                        <br />
-                        Check your inbox for a confirmation email.
-                    </p>
-                    <form asp-controller="Manage" asp-action="ResendChangeEmailConfirmation">
-                        <br /><button class="btn btn-default" type="submit">Send me a new confirmation email</button>
-                    </form>
-                    <form asp-controller="Manage" asp-action="CancelChangeEmail">
-                        <button class="btn btn-default" type="submit">Cancel email change</button>
-                    </form>
-                </div>
-            }
-
-            <!-- Begin ManageController.Index form -->
-
-            @using (Html.BeginForm("SaveProfile"))
-            {
-                @Html.AntiForgeryToken()
-                <hr />
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label asp-for="ProfileViewModel.FirstName" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input type="text" asp-for="ProfileViewModel.FirstName" class="form-control"/>
-                            <span asp-validation-for="ProfileViewModel.FirstName" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="ProfileViewModel.LastName" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <input type="text" asp-for="ProfileViewModel.LastName" class="form-control" />
-                            <span asp-validation-for="ProfileViewModel.LastName" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Mobile phone number</label>
-                        <div class="col-md-10">
-                            <p class="form-control-static">
-                                @(Model.ProfileViewModel.PhoneNumber ?? "None")
-                                @if (Model.ProfileViewModel.PhoneNumber != null)
-                                {
-                                    <a asp-controller="Manage" asp-action="AddPhoneNumber">Change</a>
-                                        @: &nbsp;|&nbsp;
-                                        <a asp-controller="Manage" asp-action="RemovePhoneNumber">Remove</a>
-                                        @if (!Model.ProfileViewModel.IsPhoneNumberConfirmed)
-                                        {
-                                            @: &nbsp;|&nbsp;
-                                            <a asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-phoneNumber="@Model.ProfileViewModel.PhoneNumber">Verify</a>
-                                        }
-                                }
-                                else
-                                {
-                                    <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
-                                }
-                                @if (!Model.ProfileViewModel.IsPhoneNumberConfirmed && Model.ProfileViewModel.PhoneNumber != null)
-                                {
-                                    <br />
-                                    <div class="alert alert-warning" role="alert">
-                                        <i class="fa fa-exclamation-circle"></i> Your mobile phone number has not been confirmed.
-                                        <br />
-                                        allReady cannot send you SMS notifications until your mobile phone number has been confirmed.
-                                        <br />
-                                        Please check your messages for your confirmation code.
-                                    </div>
-                                }
-                            </p>
-                        </div>
-                    </div>
-                    @if (User.IsOrganizationAdmin())
-                        {
-                        @if (User.IsUserType(UserType.SiteAdmin))
-                            {
-                            <div class="form-group">
-                                <label class="control-label col-md-2">Approve users</label>
-                                <div class="col-md-10">
-                                    <p class="form-control-static">
-                                        <a asp-controller="Site" asp-action="Index" asp-area="@AreaNames.Admin">Find</a>
-                                    </p>
-                                </div>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Social media logins</label>
-                            <div class="col-md-10">
-                                <p class="form-control-static">
-                                    @Model.ProfileViewModel.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
-                                </p>
-                            </div>
-                        </div>
-
-                    }
-                    <div class="form-group">
-                        <label class="control-label col-md-2">Password</label>
-                        <div class="col-md-10">
-                            <p class="form-control-static">
-                                @if (Model.ProfileViewModel.HasPassword)
-                                {
-                                    <a asp-controller="Manage" asp-action="ChangePassword">Change</a>
-                                }
-                                else
-                                {
-                                    <a asp-controller="Manage" asp-action="SetPassword">Create</a>
-                                }
-                            </p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="ProfileViewModel.TimeZoneId" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <select asp-for="ProfileViewModel.TimeZoneId" asp-items="@SelectListService.GetTimeZones()" class="form-control"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-default">Save</button>
-                            <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            <!-- End ManageController.Index form -->
+            @Html.Partial("_ManageProfile", Model.ProfileViewModel)
 
         </div>
-
-        <!-- End account tab -->
-
-        <!-- Begin skills tab -->
 
         <div id="skills-tab" class="tab-pane">
 
-            @using (Html.BeginForm("SaveSkills"))
-            {
-                @Html.AntiForgeryToken()
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label asp-for="SkillsViewModel.AssociatedSkills" class="control-label col-md-2"></label>
-                        <div class="col-md-10">
-                            <div data-bind="foreach: skills">
-                                <div class="form-inline">
-                                    <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
-                                    <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
-                                    <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
-                                        <span class="fa fa-remove" aria-hidden="true"></span>
-                                        Delete
-                                    </a>
-                                </div>
-                            </div>
-                            <a href="#" data-bind="click: addSkill" title="Add skill">
-                                <span class="fa fa-plus" aria-hidden="true"></span>
-                                Add
-                            </a>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <button type="submit" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
-                            <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
-                            <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.SkillsViewModel.AssociatedSkills)" must be unique</span>
-                        </div>
-                    </div>
-                </div>
-            }
+            @Html.Partial("_ManageSkills", Model.SkillsViewModel)
 
         </div>
-
-        <!-- End skills tab -->
-
     </div>
-
-
 </div>
 
 @section scripts {
+
     <script type="text/javascript">
         (function (ko, $, skills, availableSkills) {
 
@@ -297,8 +83,12 @@
             }
 
             ko.applyBindings(new ManageUserViewModel(skills, availableSkills));
-        })(ko, $,
+        })(
+            ko, 
+            $,
+            // TODO 2231 Figure out how to run this script from the _ManageSkills partial View.
             @Json.Serialize(Model.SkillsViewModel.AssociatedSkills.Select(rs => new { Id = rs.SkillId })),
             @Json.Serialize(SelectListService.GetSkills()));
+
     </script>
 }
