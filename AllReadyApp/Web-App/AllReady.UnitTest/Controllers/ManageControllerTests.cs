@@ -125,9 +125,9 @@ namespace AllReady.UnitTest.Controllers
            
             var result = await controller.Index(ManageMessageId.RemovePhoneSuccess);
             var resultViewModel = ((ViewResult)result);
-            var vm = (ProfileViewModel)resultViewModel.ViewData.Model;
+            var vm = (IndexViewModel)resultViewModel.ViewData.Model;
            
-            Assert.IsType<ProfileViewModel>(vm);
+            Assert.IsType<IndexViewModel>(vm);
         }
 
         [Fact]
@@ -168,9 +168,9 @@ namespace AllReady.UnitTest.Controllers
            
             var result = await controller.SaveProfile(invalidVm);
             var resultViewModel = ((ViewResult)result);
-            var vm = (ProfileViewModel)resultViewModel.ViewData.Model;
+            var vm = (IndexViewModel)resultViewModel.ViewData.Model;
             
-            Assert.IsType<ProfileViewModel>(vm);
+            Assert.IsType<IndexViewModel>(vm);
         }
 
         [Fact]
