@@ -56,9 +56,6 @@ namespace AllReady.Controllers
         {
             var user = await GetCurrentUser();
 
-            Console.WriteLine("------------------");
-            Console.WriteLine("SaveProfile");
-
             if (!ModelState.IsValid)
             {
                 var vm = await user.ToViewModel(_userManager, _signInManager);
@@ -68,6 +65,9 @@ namespace AllReady.Controllers
                 vm.ProfileViewModel.LastName = model.LastName;
                 vm.ProfileViewModel.TimeZoneId = model.TimeZoneId;
 
+                // TODO 2231 Solve the problem: When the model is invalid, the 
+                // address bar says "Manage/SaveProfile" when we would expect
+                // it to say "Manage/Index".
                 return View("Index", vm);
             }
 
@@ -75,8 +75,6 @@ namespace AllReady.Controllers
 
             await _mediator.SendAsync(new UpdateUser { User = user });
             await UpdateUserProfileCompleteness(user);
-
-            Console.WriteLine("------------------");
 
             return RedirectToAction(nameof(Index));
         }
