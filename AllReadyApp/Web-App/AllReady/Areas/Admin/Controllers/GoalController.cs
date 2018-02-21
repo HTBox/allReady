@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.Features.Goals;
 using AllReady.Areas.Admin.ViewModels.Goal;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AllReady.Areas.Admin.Controllers
 {
     [Area(AreaNames.Admin)]
-    [Authorize(nameof(UserType.OrgAdmin))]
+    [Authorize]
     public class GoalController : Controller
     {
         private readonly IMediator _mediator;
@@ -27,10 +27,17 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(int campaignId)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery {CampaignId = campaignId});
-            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            if (campaign == null) 
+            {
+                return NotFound();
+            }
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id));
+            if (!await authorizableCampaign.UserCanEdit())
             {
                 return Unauthorized();
             }
+
             var viewModel = new GoalEditViewModel()
             {
                 CampaignId = campaign.Id,
@@ -49,11 +56,17 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Create(int campaignId, GoalEditViewModel model)
         {
             var campaign = await _mediator.SendAsync(new CampaignSummaryQuery {CampaignId = campaignId});
-            if (campaign == null || !User.IsOrganizationAdmin(campaign.OrganizationId))
+            if (campaign == null) 
+            {
+                return NotFound();
+            }
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(campaign.Id));
+            if (!await authorizableCampaign.UserCanEdit())
             {
                 return Unauthorized();
             }
-
+            
             ValidateGoalEditViewModel(model);
             if (ModelState.IsValid)
             {
@@ -68,7 +81,13 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var goal = await _mediator.SendAsync(new GoalDeleteQuery {GoalId = id});
-            if (goal == null || !User.IsOrganizationAdmin(goal.OwningOrganizationId))
+            if (goal == null)
+            {
+                return NotFound();
+            }
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(goal.CampaignId));
+            if (!await authorizableCampaign.UserCanDelete())
             {
                 return Unauthorized();
             }
@@ -82,7 +101,13 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var goal = await _mediator.SendAsync(new GoalDeleteQuery {GoalId = id});
-            if (goal == null || !User.IsOrganizationAdmin(goal.OwningOrganizationId))
+            if (goal == null)
+            {
+                return NotFound();
+            }
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(goal.CampaignId));
+            if (!await authorizableCampaign.UserCanDelete())
             {
                 return Unauthorized();
             }
@@ -96,7 +121,13 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var goal = await _mediator.SendAsync(new GoalEditQuery {GoalId = id});
-            if (goal == null || !User.IsOrganizationAdmin(goal.OrganizationId))
+            if (goal == null)
+            {
+                return NotFound();
+            }
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(goal.CampaignId));
+            if (!await authorizableCampaign.UserCanEdit())
             {
                 return Unauthorized();
             }
@@ -123,12 +154,21 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Edit(int id, GoalEditViewModel model)
         {
             var goal = await _mediator.SendAsync(new GoalEditQuery {GoalId = id});
-            if (goal == null || !User.IsOrganizationAdmin(goal.OrganizationId))
+            if (goal == null)
+            {
+                return NotFound();
+            }
+
+            if (id != model.Id)
+            {
+                return BadRequest();
+            }
+
+            var authorizableCampaign = await _mediator.SendAsync(new AuthorizableCampaignQuery(goal.CampaignId));
+            if (!await authorizableCampaign.UserCanEdit())
             {
                 return Unauthorized();
             }
-            if (id != model.Id)
-                return BadRequest();
 
             ValidateGoalEditViewModel(model);
 
