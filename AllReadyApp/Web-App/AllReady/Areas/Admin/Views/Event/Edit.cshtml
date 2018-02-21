@@ -58,10 +58,10 @@
         <div class="form-horizontal col-lg-6 pull-left">
             <div asp-validation-summary="All" class="text-danger"></div>
             @if (isEdit)
-            {
-                <input type="hidden" asp-for="Id" />
-                <input type="hidden" asp-for="ImageUrl" id="image-url-input" />
-            }
+    {
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ImageUrl" id="image-url-input" />
+}
             <input asp-for="CampaignId" type="hidden" />
             <input asp-for="CampaignName" type="hidden" />
             <input asp-for="OrganizationId" type="hidden" />
@@ -106,15 +106,15 @@
 
             <!-- Uncomment this code when wait list functionality is completed -->
             @*@{
-                    var displaySetting = Model.IsLimitVolunteers ? "" : "style=display:none";
-                }
-                <div id="IsAllowWaitListControl" class="form-group" @displaySetting>
-                    <label asp-for="IsAllowWaitList" class="control-label col-md-2"></label>
-                    <div class="col-md-10">
-                        <input asp-for="IsAllowWaitList" type="checkbox" class="form-control" />
-                        <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
-                    </div>
-                </div>*@
+            var displaySetting = Model.IsLimitVolunteers ? "" : "style=display:none";
+        }
+        <div id="IsAllowWaitListControl" class="form-group" @displaySetting>
+            <label asp-for="IsAllowWaitList" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input asp-for="IsAllowWaitList" type="checkbox" class="form-control" />
+                <span asp-validation-for="IsAllowWaitList" class="text-danger"></span>
+            </div>
+        </div>*@
             <div class="form-group">
                 <label asp-for="TimeZoneId" class="col-md-2 control-label"></label>
                 <div class="col-md-10">
@@ -174,56 +174,7 @@
                 Copy Location from Campaign
             </button>
             <h3>Location</h3>
-            <div class="form-group">
-                <label asp-for="Location.Address1" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    @if (Model.EventType == EventType.Rally)
-                    {
-                        <input asp-for="Location.Address1" class="form-control  location-address1" data-val="true" data-val-required="The Address1 field is required." type="text" />
-                        <span asp-validation-for="Location.Address1" class="text-danger"></span>
-                    }
-                    else
-                    {
-                        <input asp-for="Location.Address1" class="form-control" />
-                        <span asp-validation-for="Location.Address1" class="text-danger"></span>
-                    }
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location.Address2" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Location.Address2" class="form-control" />
-                  <span asp-validation-for="Location.Address2" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location.City" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Location.City" class="form-control" />
-                    <span asp-validation-for="Location.City" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location.State" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Location.State" class="form-control" />
-                    <span asp-validation-for="Location.State" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location.PostalCode" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Location.PostalCode" class="form-control" />
-                    <span asp-validation-for="Location.PostalCode" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <label asp-for="Location.Country" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="Location.Country" class="form-control" />
-                    <span asp-validation-for="Location.Country" class="text-danger"></span>
-                </div>
-            </div>
+            @Html.EditorFor(m => m.Location, new { RequiredAddressOne = Model.EventType == EventType.Rally })
         </div>
 
         <div class="col-lg-6 pull-right">
