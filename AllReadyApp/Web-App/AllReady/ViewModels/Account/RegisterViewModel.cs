@@ -5,12 +5,12 @@ namespace AllReady.ViewModels.Account
     public class RegisterViewModel
     {
         [Required]
-        [RegularExpression(@"(.*?)\s([\wáâàãçéêíóôõúüÁÂÀÃÇÉÊÍÓÔÕÚÜ]+\-?\'?\w+\.*?$)", ErrorMessage = "The {0} should not contain any special characters.")]
+        [RegularExpression(@"^[\wáâàãçéêíóôõúüÁÂÀÃÇÉÊÍÓÔÕÚÜ\-\'\.\, ]+$", ErrorMessage = "The {0} should not contain any special characters.")]
         [Display(Name = "First Name")]
         public string FirstName{ get; set; }
 
         [Required]
-        [RegularExpression(@"(.*?)\s([\wáâàãçéêíóôõúüÁÂÀÃÇÉÊÍÓÔÕÚÜ]+\-?\'?\w+\.*?$)", ErrorMessage = "The {0} should not contain any special characters.")]
+        [RegularExpression(@"^[\wáâàãçéêíóôõúüÁÂÀÃÇÉÊÍÓÔÕÚÜ\-\'\.\, ]+$", ErrorMessage = "The {0} should not contain any special characters.")]
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 

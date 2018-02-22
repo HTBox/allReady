@@ -355,6 +355,9 @@ You have now finished installing all of the required software to start working o
 
 ## Getting the Source Code
 
+### Video: Forking and Cloning from GitHub
+[![Forking and Cloning from GitHub](https://img.youtube.com/vi/OODDLyvePr8/0.jpg)](https://www.youtube.com/watch?v=OODDLyvePr8)
+
 ### Forking the Repository
 
 In order to make changes the first thing you need to do is create a copy of the repository into your account.  In Git terms, this is called forking the repository.
@@ -938,7 +941,7 @@ The first time that you launch a Visual Studio Emulator for Android device it wi
 
 > **Important:** You must be able to access the Android device on Windows in order for this to work.  It is outside of this guide to troubleshoot Windows not seeing your Android device.
 
-**WARNING:** With the default configuration of the Mobile App, you will not be able to communicate with the Api since it uses the web site running locally on your running using localhost which is not available to external devices or emulators.  To get around this you need to make sure that any Api changes you have made have have been submitted as a Pull Request and merged into the AllReady master branch.  
+**WARNING:** With the default configuration of the Mobile App, you will not be able to communicate with the Api since it uses the web site running locally on your running using localhost which is not available to external devices or emulators. To get around this you need to make sure that any Api changes you have made have been submitted as a Pull Request and merged into the AllReady master branch.  
 
 Changing the Api Url requires a coding change.
 

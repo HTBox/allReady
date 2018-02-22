@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,10 +32,12 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
                     Id = 3,
                     Name = "EventName",
                     CampaignId = 4,
+                    StartDateTime = DateTimeOffset.UtcNow.AddDays(-2),
+                    EndDateTime = DateTimeOffset.Now.AddDays(-1),
                     Campaign = new Campaign
                     {
-                        StartDateTime = DateTimeOffset.Now,
-                        EndDateTime = DateTimeOffset.Now,
+                        StartDateTime = DateTimeOffset.Now.AddDays(-5),
+                        EndDateTime = DateTimeOffset.Now.AddDays(-3),
                         Name = "CampaignName",
                         ManagingOrganizationId = 5,
                         TimeZoneId = "Central Standard Time"
@@ -57,18 +59,20 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Tasks
         {
             var result = await sut.Handle(message);
 
-            Assert.Equal(result.Id, task.Id);
-            Assert.Equal(result.Name, task.Name);
-            Assert.Equal(result.Description, task.Description);
-            Assert.Equal(result.StartDateTime, task.StartDateTime);
-            Assert.Equal(result.EndDateTime, task.EndDateTime);
-            Assert.Equal(result.NumberOfVolunteersRequired, task.NumberOfVolunteersRequired);
-            Assert.Equal(result.EventId, task.Event.Id);
-            Assert.Equal(result.EventName, task.Event.Name);
-            Assert.Equal(result.CampaignId, task.Event.CampaignId);
-            Assert.Equal(result.CampaignName, task.Event.Campaign.Name);
-            Assert.Equal(result.OrganizationId, task.Event.Campaign.ManagingOrganizationId);
-            Assert.Equal(result.TimeZoneId, task.Event.TimeZoneId);
+            Assert.Equal(task.Id, result.Id);
+            Assert.Equal(task.Name, result.Name);
+            Assert.Equal(task.Description, result.Description);
+            Assert.Equal(task.Event.StartDateTime, result.EventStartDate);
+            Assert.Equal(task.Event.EndDateTime, result.EventEndDate);
+            Assert.Equal(task.NumberOfVolunteersRequired, result.NumberOfVolunteersRequired);
+            Assert.Equal(task.Event.Id, result.EventId);
+            Assert.Equal(task.Event.Name, result.EventName);
+            Assert.Equal(task.StartDateTime, result.StartDateTime);
+            Assert.Equal(task.EndDateTime, result.EndDateTime);
+            Assert.Equal(task.Event.CampaignId, result.CampaignId);
+            Assert.Equal(task.Event.Campaign.Name, result.CampaignName);
+            Assert.Equal(task.Event.Campaign.ManagingOrganizationId, result.OrganizationId);
+            Assert.Equal(task.Event.TimeZoneId, result.TimeZoneId);
         }
 
         [Fact]

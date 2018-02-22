@@ -1,4 +1,4 @@
-﻿@using AllReady.Constants
+@using AllReady.Constants
 @using AllReady.Constants
 @using AllReady.Services
 @model AllReady.Areas.Admin.ViewModels.VolunteerTask.EditViewModel
@@ -26,13 +26,17 @@
 
 <form asp-controller="VolunteerTask" asp-action="Edit" enctype="multipart/form-data">
     <div class="form-horizontal">
+        <p>Fields marked with * are required</p>
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="EventId" />
         <input type="hidden" asp-for="CampaignId" />
         <input type="hidden" asp-for="EventName" />
+        <input type="hidden" asp-for="EventStartDate" />
+        <input type="hidden" asp-for="EventEndDate" />
         <input type="hidden" asp-for="CampaignName" />
         <input type="hidden" asp-for="TimeZoneId" />
         <input type="hidden" asp-for="OrganizationId" />
+
         <div class="form-group">
             <label asp-for="CampaignName" class="control-label col-md-2"></label>
             <div class="col-md-10">
@@ -44,7 +48,7 @@
             <div class="col-md-10">
                 <p class="form-control-static">@Model.EventName</p>
             </div>
-        </div>
+        </div>       
         <div class="form-group">
             <label asp-for="Name" class="control-label col-md-2"></label>
             <div class="col-md-10">
@@ -66,6 +70,16 @@
                 <span asp-validation-for="NumberOfVolunteersRequired" class="text-danger"></span>
             </div>
         </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Event Start/End dates</label>
+            <div class="col-md-10">
+                <p class="form-control-static">
+                    <time value="Model.EventStartDate" TargetTimeZoneId="Model.TimeZoneId"></time> - <time value="Model.EventEndDate" TargetTimeZoneId="Model.TimeZoneId"></time>
+                </p>
+            </div>
+        </div>
+
         <div class="form-group">
             <label asp-for="StartDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
@@ -77,11 +91,11 @@
         <div class="form-group">
             <label asp-for="EndDateTime" class="control-label col-md-2"></label>
             <div class="col-md-10">
-                <input type="text" asp-for="EndDateTime" class="form-control datetimepicker" autocomplete="off"/>
+                <input type="text" asp-for="EndDateTime" class="form-control datetimepicker" autocomplete="off" />
                 <time-zone-name time-zone-id="@Model.TimeZoneId" class="text-muted"></time-zone-name>
                 <span asp-validation-for="EndDateTime" class="text-danger"></span>
             </div>
-        </div>   
+        </div>
         <div class="form-group">
             <label asp-for="RequiredSkills" class="control-label col-md-2"></label>
             <div class="col-md-10">

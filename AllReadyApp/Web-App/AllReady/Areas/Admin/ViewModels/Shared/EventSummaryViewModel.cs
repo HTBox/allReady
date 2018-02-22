@@ -10,6 +10,7 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Event Title")]
         public string Name { get; set; }
 
         [Required]
@@ -34,7 +35,7 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
         [Display(Name = "Existing Image")]
         public string ImageUrl { get; set; }
 
-        [Display(Name = "Browse for image")]
+        [Display(Name = "Upload event image")]
         public string FileUpload { get; set; }        
 
         [MaxLength(150)]

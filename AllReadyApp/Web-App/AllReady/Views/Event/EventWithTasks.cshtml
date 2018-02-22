@@ -21,7 +21,6 @@
 </div>
 
 <div id="MainView">
-
     @Html.Partial("_Alert")
 
     <!-- Body -->
@@ -220,8 +219,8 @@
                             <input type="text" class="form-control input-sm" data-bind="textInput: tasks.searchTerm" placeholder="Search tasks" />
                         </div>
                         <div class="form-group">
-                            <div class="input-group" data-bind="dateTimePicker: tasks.dateInRange, dateTimePickerOptions: { format: 'L', showClear: true }">
-                                <input type="text" class="form-control" placeholder="On date" />
+                            <div class="input-group" data-bind="dateRangePicker: tasks.dateInRange, daterangepickerOptions: {  autoUpdateInput: false, locale: { cancelLabel: 'Clear', format: 'L' } }" >
+                                <input type="text" class="form-control input-sm" placeholder="On date" data-bind="value: tasks.displayedRange" />
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-calendar"></span>
                                 </span>
@@ -293,11 +292,25 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- Column 2 -->
-        @Html.Partial("_LocationInfo", Model)
+        <div class="col-sm-4">
+            <div class="row share-buttons">
+                <a href="mailto:?subject=Check out this event! '@Model.Title'&body=Check it out at @ViewBag.AbsoluteUrl" title="Share by Email">
+                    <img src="~/images/share-email.png">
+                </a>
+                <a href="http://twitter.com/intent/tweet?text=@("Check out this event! '" + Model.Title + "'")&url=@ViewBag.AbsoluteUrl&via=htbox" title="Share via Twitter">
+                    <img src="~/images/share-twitter.png" alt="Share via Twitter" />
+                </a>
+                <a href="https://www.facebook.com/sharer/sharer.php?u=@ViewBag.AbsoluteUrl" title="Share via Facebook" target="_blank">
+                    <img src="~/images/share-fb.png" alt="Share via Facebook" />
+                </a>
+            </div>
+            <div class="row">
+                @Html.Partial("_LocationInfo", Model)
+            </div>
+        </div>
     </div>
 </div>
 

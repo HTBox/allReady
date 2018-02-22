@@ -1,4 +1,4 @@
-﻿@using System.Threading.Tasks
+@using System.Threading.Tasks
 @using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
@@ -28,8 +28,8 @@
                 }
                 @Model.Name
             </h2>
-            <a asp-controller="Campaign" asp-action="Edit" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit"><i class="fa fa-edit"></i></a>
-            <a asp-controller="Campaign" asp-action="Delete" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Delete"><i class="glyphicon glyphicon-trash"></i></a>
+            <a asp-controller="Campaign" asp-action="Edit" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Edit">Edit</a>
+            <a asp-controller="Campaign" asp-action="Delete" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Delete">Delete</a>
             @if (!Model.Published)
             {
                 <div class="btn-group btn-group-sm row-btn-margin">
@@ -59,18 +59,11 @@
 </div>
 
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
         <p class="date-address">
             <time value="Model.StartDate" format="D"></time> - <time value="Model.EndDate" format="D"></time>
             <em><time-zone-name class="text-muted" time-zone-id="@Model.TimeZoneId"></time-zone-name></em>
         </p>
-
-    </div>
-</div>
-
-<div class="row">
-
-    <div class="col-md-12">
         <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.PrimaryContactFirstName)
@@ -96,12 +89,6 @@
             <dd>
                 @Html.DisplayFor(model => model.PrimaryContactEmail)
             </dd>
-        </dl>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <dl class="dl-horizontal">
             <dt>
                 @Html.DisplayNameFor(model => model.Location)
             </dt>
@@ -109,25 +96,21 @@
                 @Html.DisplayFor(model => model.Location)
             </dd>
         </dl>
-    </div>
-</div>
-<div class="row">
-    <div id="col-main" class="col-md-8">
         @if (!string.IsNullOrEmpty(Model.ExternalUrl))
         {
             <a href="@Model.ExternalUrl" target="_blank">@(string.IsNullOrWhiteSpace(Model.ExternalUrlText) ? Model.ExternalUrl : Model.ExternalUrlText) <i class="fa fa-external-link"></i></a>
         }
-        <hr />
-        @if (!string.IsNullOrEmpty(Model.ImageUrl))
-        {
-            <div class="row">
-                <img src="@Model.ImageUrl" class="img-responsive" />
-            </div>
-            <hr />
-        }
         @Html.Raw(Model.FullDescription)
     </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="img-responsive" />
+        }
+    </div>
 </div>
+
+<hr />
 
 <div class="row">
     <div class="col-md-12">

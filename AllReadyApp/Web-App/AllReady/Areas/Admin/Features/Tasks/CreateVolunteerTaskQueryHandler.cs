@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 
 using AllReady.Areas.Admin.ViewModels.VolunteerTask;
@@ -27,6 +27,8 @@ namespace AllReady.Areas.Admin.Features.Tasks
                 {
                     EventId = e.Id,
                     EventName = e.Name,
+                    EventStartDate = e.StartDateTime,
+                    EventEndDate = e.EndDateTime,
                     StartDateTime = e.StartDateTime,
                     EndDateTime = e.EndDateTime,
                     CampaignId = e.CampaignId,

@@ -15,8 +15,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
+using ClaimTypes = AllReady.Security.ClaimTypes;
 
 namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
@@ -113,6 +115,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateReturnsCorrectViewWithCorrectViewModel()
         {
             var sut = new CampaignController(null, null);
+            sut.SetClaims(new List<Claim>());
+
             var view = (ViewResult)sut.Create();
 
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
@@ -122,16 +126,33 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void CreateReturnsCorrectDataOnViewModel()
+        public void CreateReturnsCorrectDataOnViewModelWhenTimeZoneIdClaimNotSet()
         {
             var dateTimeNow = DateTime.Now;
 
             var sut = new CampaignController(null, null) { DateTimeNow = () => dateTimeNow };
+            sut.SetClaims(new List<Claim>());
             var view = (ViewResult)sut.Create();
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
 
             Assert.Equal(viewModel.StartDate, dateTimeNow);
             Assert.Equal(viewModel.EndDate, dateTimeNow.AddMonths(1));
+            Assert.Equal(viewModel.TimeZoneId, "UTC");
+        }
+        [Fact]
+        public void CreateReturnsCorrectDataOnViewModelWhenTimeZoneIdClaimSet()
+        {
+            var dateTimeNow = DateTime.Now;
+            var TimeZoneId = "GMT Standard Time";
+
+            var sut = new CampaignController(null, null) { DateTimeNow = () => dateTimeNow };
+            sut.SetClaims(new List<Claim>{new Claim(ClaimTypes.TimeZoneId, TimeZoneId) });
+            var view = (ViewResult)sut.Create();
+            var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
+
+            Assert.Equal(viewModel.StartDate, dateTimeNow);
+            Assert.Equal(viewModel.EndDate, dateTimeNow.AddMonths(1));
+            Assert.Equal(viewModel.TimeZoneId, TimeZoneId);
         }
 
         [Fact]
