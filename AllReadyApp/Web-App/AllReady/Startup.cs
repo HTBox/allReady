@@ -52,11 +52,8 @@ namespace AllReady
             });
 
             // Add Entity Framework services to the services container.
-            var allReadyDbConnectionString = Environment.GetEnvironmentVariable("ALLREADY_DOCKER_DEBUG") == "TRUE" ?
-                Configuration["Data:DockerDefaultConnection:ConnectionString"] :
-                Configuration["Data:DefaultConnection:ConnectionString"];
-            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(allReadyDbConnectionString));
-            
+            services.AddDbContext<AllReadyContext>(options => options.UseSqlServer(Configuration["Data:DefaultConnection:ConnectionString"]));
+
             Options.LoadConfigurationOptions(services, Configuration);
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -171,11 +168,8 @@ namespace AllReady
             });
 
             //Hangfire
-            var hangFireConnectionString = Environment.GetEnvironmentVariable("ALLREADY_DOCKER_DEBUG") == "TRUE" ?
-                Configuration["Data:DockerHangfireConnection:ConnectionString"] :
-                Configuration["Data:HangfireConnection:ConnectionString"];
-            services.AddHangfire(configuration => configuration.UseSqlServerStorage(hangFireConnectionString));
-
+            services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
+            
             services.AddScoped<IAllReadyUserManager, AllReadyUserManager>();
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
             services.AddScoped<IAuthorizableEventBuilder, AuthorizableEventBuilder>();

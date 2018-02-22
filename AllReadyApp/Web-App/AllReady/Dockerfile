@@ -1,6 +1,4 @@
 FROM microsoft/aspnetcore-build:2.0
-ENV ASPNETCORE_ENVIRONMENT=Development
-ENV ALLREADY_DOCKER_DEBUG=TRUE
 
 #Install debugger
 RUN apt-get update

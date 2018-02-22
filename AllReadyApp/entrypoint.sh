@@ -7,5 +7,5 @@ until dotnet ef database update; do
 sleep 1
 done
 
->&2 echo "SQL Server is up - executing command"
+>&2 echo "App and SQL Server is running"
 exec $run_cmd

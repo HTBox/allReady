@@ -6,8 +6,9 @@ services:
             dockerfile: Web-App/AllReady/Dockerfile
         container_name: allreadyweb
         environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-            - ALLREADY_DOCKER_DEBUG=TRUE
+            ASPNETCORE_ENVIRONMENT: Development
+            Data__DefaultConnection__ConnectionString: "Server=db,1433;Initial Catalog=master;Persist Security Info=False;User ID=sa;Password=yourStrong(!)Password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+            Data__HangfireConnection__ConnectionString: "Server=db,1433;Initial Catalog=master;Persist Security Info=False;User ID=sa;Password=yourStrong(!)Password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
         ports:
             - "8000:80"
         depends_on:
