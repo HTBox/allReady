@@ -32,9 +32,9 @@
             <a asp-controller="Campaign" asp-action="Delete" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-default inline-form" title="Delete">Delete</a>
             @if (!Model.Published)
             {
-                <div class="btn-group btn-group-sm row-btn-margin">
-                    <a data-toggle="tooltip" data-placement="top" title="Publish" asp-controller="Campaign" asp-action="Publish" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-primary"><span class="fa fa-upload"></span></a>
-                </div>
+                <a data-toggle="tooltip" data-placement="top" title="Publish" asp-controller="Campaign" asp-action="Publish" asp-area="@AreaNames.Admin" asp-route-id="@Model.Id" class="btn btn-primary">
+                    Publish
+                </a>
             }
             @if (User.IsUserType(UserType.SiteAdmin))
             {
@@ -52,7 +52,7 @@
             }
             else if (Model.Locked)
             {
-                 <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span><span> This campaign has been locked by a site administrator. Locked campaigns are not visible to the public or to volunteers.</span>
+                <span title="This campaign is locked" class="fa fa-exclamation-triangle text-warning"></span><span> This campaign has been locked by a site administrator. Locked campaigns are not visible to the public or to volunteers.</span>
             }
         </div>
     </div>
