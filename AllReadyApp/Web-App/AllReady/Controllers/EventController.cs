@@ -47,7 +47,7 @@ namespace AllReady.Controllers
             return View("Events");
         }
 
-        [Route("[controller]/{id}/")]
+        [Route("[controller]/{id}/", Name = "EventDetails")]
         [AllowAnonymous]
         public async Task<IActionResult> ShowEvent(int id)
         {
