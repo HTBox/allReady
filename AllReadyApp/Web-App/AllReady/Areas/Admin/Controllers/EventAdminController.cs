@@ -32,7 +32,11 @@ namespace AllReady.Areas.Admin.Controllers
         private readonly IUserAuthorizationService _userAuthorizationService;
         private readonly IImageSizeValidator _imageSizeValidator;
 
-        public EventController(IImageService imageService, IMediator mediator, IValidateEventEditViewModels eventEditViewModelValidator, IUserAuthorizationService userAuthorizationService, IImageSizeValidator imageSizeValidator)
+        public EventController(IImageService imageService,
+            IMediator mediator,
+            IValidateEventEditViewModels eventEditViewModelValidator,
+            IUserAuthorizationService userAuthorizationService,
+            IImageSizeValidator imageSizeValidator)
         {
             _imageService = imageService;
             _mediator = mediator;
@@ -46,7 +50,7 @@ namespace AllReady.Areas.Admin.Controllers
         public async Task<IActionResult> Lister()
         {
             var viewModel =
-                await _mediator.SendAsync(new EventListerQuery {UserId = _userAuthorizationService.AssociatedUserId});
+                await _mediator.SendAsync(new EventListerQuery { UserId = _userAuthorizationService.AssociatedUserId });
 
             return View(viewModel);
         }
@@ -70,7 +74,7 @@ namespace AllReady.Areas.Admin.Controllers
             }
 
             // todo - check if the user can duplicate (e.g. create events) against the campaign as well - depends on having an authorizable campaign class first
-            
+
             if (await authorizableEvent.UserCanDelete())
             {
                 viewModel.ShowDeleteButton = true;
@@ -194,7 +198,7 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 return BadRequest();
             }
-            
+
             var authorizableEvent = await _mediator.SendAsync(new AuthorizableEventQuery(eventEditViewModel.Id));
             if (!await authorizableEvent.UserCanEdit())
             {
