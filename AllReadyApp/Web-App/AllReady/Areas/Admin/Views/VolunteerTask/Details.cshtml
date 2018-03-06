@@ -1,4 +1,4 @@
-﻿@using System.Threading.Tasks
+@using System.Threading.Tasks
 @using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.VolunteerTask.DetailsViewModel
@@ -120,11 +120,11 @@
                 <div class="modal-body">
                     <input type="hidden" value="@Model.Id" name="volunteerTaskId" id="message-volunteerTaskId">
                     <div class="form-group">
-                        <label for="subject" class="control-label">Subject</label>
+                        <label for="subject" class="control-label">Subject<span class="required">*</span></label>
                         <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="control-label">Message</label>
+                        <label for="message-text" class="control-label">Message<span class="required">*</span></label>
                         <textarea rows="4" class="form-control wide" name="message" id="messageVolunteersModal-message"></textarea>
                         <span id="messageCharacterCount" class="text-muted"></span>
                     </div>
