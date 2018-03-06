@@ -132,7 +132,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             var dateTimeNow = DateTime.Now;
 
-            var sut = new CampaignController(null, null) { DateTimeNow = () => dateTimeNow };
+            var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().WithToday(() => dateTimeNow).Build();
             sut.SetClaims(new List<Claim>());
             var view = (ViewResult)sut.Create();
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
