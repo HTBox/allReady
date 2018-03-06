@@ -81,11 +81,14 @@
 
 @if (Model.ShowCreateChildObjectButtons)
 {
-    <div class="row">
-        <div class="col-md-12">
-            <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+    if (Model.EndDateTime > DateTime.UtcNow)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+            </div>
         </div>
-    </div>
+    }
 }
 
 <!-- Modal -->
@@ -100,11 +103,11 @@
                 <div class="modal-body">
                     <input type="hidden" value="@Model.Id" name="eventId" id="message-eventId">
                     <div class="form-group">
-                        <label for="subject" class="control-label">Subject</label>
+                        <label for="subject" class="control-label">Subject<span class="required">*</span></label>
                         <input type="text" class="form-control wide" name="subject" id="messageVolunteersModal-subject">
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="control-label">Message</label>
+                        <label for="message-text" class="control-label">Message<span class="required">*</span></label>
                         <textarea rows="4" class="form-control wide" name="message" id="messageVolunteersModal-message"></textarea>
                         <span id="messageCharacterCount" class="text-muted"></span>
                     </div>

@@ -1,4 +1,4 @@
-﻿@using AllReady.Constants
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.ManagerInvite.CampaignManagerInviteViewModel
 
 @{
@@ -21,7 +21,7 @@
         <form class="form-horizontal" asp-controller="CampaignManagerInvite" asp-area="@AreaNames.Admin" asp-action="Send" method="post" role="form">
             <input type="hidden" asp-for="@Model.CampaignName" />
             <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group required">
                 <label asp-for="InviteeEmailAddress" class="col-md-2 control-label"></label>
                 <div class="col-md-10">
                     <input asp-for="InviteeEmailAddress" class="form-control" />

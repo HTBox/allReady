@@ -30,6 +30,20 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     {
         private static readonly Task TaskCompletedTask = Task.CompletedTask;
 
+        private EventController GetInstance(IImageService imageService = null,
+            IMediator mediator = null,
+            IValidateEventEditViewModels validateEventEditViewModels = null,
+            IUserAuthorizationService userAuthorizationService = null,
+            ImageSizeValidator imageSizeValidator = null
+            )
+        {
+            return new EventController(imageService ?? Mock.Of<IImageService>(),
+                mediator ?? Mock.Of<IMediator>(),
+                validateEventEditViewModels ?? Mock.Of<IValidateEventEditViewModels>(),
+                userAuthorizationService ?? Mock.Of<IUserAuthorizationService>(),
+                imageSizeValidator ?? Mock.Of<IImageSizeValidator>());
+        }
+
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResult_WhenEventIsNull()
         {
@@ -56,7 +70,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = 1, Name = "Itinerary", OrganizationId = 1 });
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
-
+          
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
 
             Assert.IsType<ForbidResult>(await sut.Details(It.IsAny<int>()));
@@ -132,7 +146,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<EventDetailQuery>())).ReturnsAsync(new EventDetailViewModel { Id = eventID, Name = "Itinerary", OrganizationId = orgId });
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, true, true, true));
-
+          
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
 
             var result = await sut.Details(eventID) as ViewResult;
@@ -168,6 +182,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DetailsHasHttpGetAttribute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
             var attribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<HttpGetAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -176,6 +191,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DetailsHasRouteAttributeWithCorrectRoute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
             var routeAttribute = sut.GetAttributesOn(x => x.Details(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal("Admin/Event/Details/{id}", routeAttribute.Template);
@@ -232,6 +248,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreateGetHasRouteAttributeWithCorrectRoute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal("Admin/Event/Create/{campaignId}", routeAttribute.Template);
@@ -251,7 +268,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .Returns(new List<KeyValuePair<string, string>>());
 
             var sut = EventControllerBuilder.WithSuppliedInstances(imageService.Object, mediator.Object, eventDetailModelValidator.Object).Build();
-
+          
             sut.ModelState.AddModelError("test", "test");
             var result = (ViewResult)await sut.Create(It.IsAny<int>(), It.IsAny<EventEditViewModel>(), null);
 
@@ -297,23 +314,25 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void CreatePostHasHttpPostAttribute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
             var attribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
 
         [Fact]
-        public void CreatePostHasValidateAntiForgeryTokenAttrbiute()
+        public void CreatePostHasValidateAntiForgeryTokenAttribute()
         {
-            var sut = new EventController(null, Mock.Of<IMediator>(), null, Mock.Of<IUserAuthorizationService>(), Mock.Of<IImageSizeValidator>());
+            var sut = GetInstance();
             var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
         [Fact]
-        public void CreatePostHasRouteAttrbiuteWithCorrectRoute()
+        public void CreatePostHasRouteAttributeWithCorrectRoute()
         {
             var sut = EventControllerBuilder.CommonNullTestParams().Build();
-            var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<RouteAttribute>().SingleOrDefault();
+
+          var routeAttribute = sut.GetAttributesOn(x => x.Create(It.IsAny<int>(), It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<RouteAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
             Assert.Equal("Admin/Event/Create/{campaignId}", routeAttribute.Template);
         }
@@ -329,7 +348,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async void EditGetReturnsHttpNotFoundResult_WhenEventIsNull()
         {
             var mediator = new Mock<IMediator>();
+
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
+
             var result = await sut.Edit(It.IsAny<int>());
 
             Assert.IsType<NotFoundResult>(result);
@@ -343,6 +364,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
+
             sut.MakeUserNotAnOrgAdmin();
             Assert.IsType<ForbidResult>(await sut.Edit(It.IsAny<int>()));
         }
@@ -358,6 +380,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task EditPostReturnsBadRequestResult_WhenEventIsNull()
         {
             var sut = EventControllerBuilder.CommonNullTestParams().Build();
+
             Assert.IsType<BadRequestResult>(await sut.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>()));
         }
 
@@ -463,6 +486,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditPostHasHttpPostAttribute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
             var attribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -471,7 +495,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void EditPostHasValidateAntiForgeryTokenAttribute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
-            var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
+
+          var routeAttribute = sut.GetAttributesOn(x => x.Edit(It.IsAny<EventEditViewModel>(), It.IsAny<IFormFile>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
 
@@ -481,6 +506,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
                 .ReturnsAsync((DeleteViewModel)null);
+
+          
                         mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
 
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
@@ -499,7 +526,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             Assert.IsType<ForbidResult>(await sut.Delete(It.IsAny<int>()));
         }
-        
+
         [Fact]
         public async Task DeleteGetSendsDeleteQuery_WithCorrectEventId_WhenUserIsAuthorizedToDelete()
         {
@@ -507,7 +534,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
                 .ReturnsAsync(new DeleteViewModel()).Verifiable();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
-
+          
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
 
             await sut.Delete(1);
@@ -524,14 +551,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediator.Setup(x => x.SendAsync(It.IsAny<DeleteQuery>()))
                 .ReturnsAsync(new DeleteViewModel { OrganizationId = organizationId });
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(true, false, true, false));
-
+          
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
 
             var result = (ViewResult)await sut.Delete(It.IsAny<int>());
             var resultModel = result.ViewData.Model;
 
             Assert.IsType<DeleteViewModel>(resultModel);
-        }    
+        }
 
         [Fact]
         public async Task DeleteConfirmedReturnsForbidResult_WhenUserIsNotAuthorizedToDelete()
@@ -580,7 +607,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public void DeleteConfirmed_HasHttpPostAttribute()
         {
+        
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
+          
             var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<HttpPostAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
         }
@@ -589,7 +619,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmed_HasActionNameAttribute_WithCorrectName()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
-            var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
+
+          var attribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ActionNameAttribute>().SingleOrDefault();
             Assert.NotNull(attribute);
             Assert.Equal("Delete", attribute.Name);
         }
@@ -598,6 +629,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public void DeleteConfirmed_HasValidateAntiForgeryTokenAttribute()
         {
             var sut = EventControllerBuilder.AllNullParamsInstance().Build();
+
             var routeAttribute = sut.GetAttributesOn(x => x.DeleteConfirmed(It.IsAny<int>())).OfType<ValidateAntiForgeryTokenAttribute>().SingleOrDefault();
             Assert.NotNull(routeAttribute);
         }
@@ -609,8 +641,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mediatorMock.Setup(m => m.SendAsync(It.IsAny<EventEditQuery>())).ReturnsAsync((EventEditViewModel)null);
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
-            var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
 
+            var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
             var result = await sut.DeleteEventImage(It.IsAny<int>());
 
             result.ShouldNotBeNull();
@@ -633,6 +665,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+
             var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
             sut.MakeUserNotAnOrgAdmin();
 
@@ -652,6 +685,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediatorMock = new Mock<IMediator>();
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+
             var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
 
             const int eventId = 2;
@@ -678,6 +712,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+
             var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
             sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
 
@@ -702,6 +737,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+
             var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
             sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
 
@@ -726,6 +762,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+
             var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
             sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
 
@@ -753,6 +790,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var imageServiceMock = new Mock<IImageService>();
             var eventEditViewModelValidatorMock = new Mock<IValidateEventEditViewModels>();
+
             var sut = EventControllerBuilder.WithSuppliedInstances(imageServiceMock.Object, mediatorMock.Object, eventEditViewModelValidatorMock.Object).Build();
             sut.MakeUserAnOrgAdmin(eventEditViewModel.OrganizationId.ToString());
 
@@ -764,7 +802,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                 .GetValue(result.Value)
                 .ShouldBe("NothingToDelete");
         }
-        
+
         [Fact]
         public async Task MessageAllVolunteers_ReturnsBadRequestObjectResult_WhenModelStateIsInvalid()
         {
@@ -793,7 +831,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var sut = EventControllerBuilder.CommonNullTestParams().WithMediator(mediator.Object).Build();
 
-            await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel{ EventId = eventId });
+            await sut.MessageAllVolunteers(new MessageEventVolunteersViewModel { EventId = eventId });
 
             mediator.Verify(x => x.SendAsync(It.Is<AuthorizableEventQuery>(e => e.EventId == eventId)), Times.Once);
         }
@@ -956,7 +994,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<OrganizationIdByEventIdQuery>())).ReturnsAsync(It.IsAny<int>());
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableEventQuery>())).ReturnsAsync(new FakeAuthorizableEvent(false, false, false, false));
 
-            var sut = new EventController(null, mockMediator.Object, null, Mock.Of<IUserAuthorizationService>(), Mock.Of<IImageSizeValidator>());
+            var sut = GetInstance(mediator: mockMediator.Object);
 
             Assert.IsType<ForbidResult>(await sut.Requests(It.IsAny<int>(), null));
         }

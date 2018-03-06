@@ -50,12 +50,12 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         @if (isEdit)
-        {
-            <input type="hidden" asp-for="Id" />
-        }
-        
-        <h3>Organization Information</h3>
+    {
+        <input type="hidden" asp-for="Id" />
+}
 
+        <h3>Organization Information</h3>
+        <p>Fields marked with * are required</p>
         <div class="form-group">
             <label asp-for="Name" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -73,7 +73,7 @@
         <div class="form-group">
             <label asp-for="WebUrl" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <input asp-for="WebUrl" class="form-control"/>
+                <input asp-for="WebUrl" class="form-control" />
                 <span asp-validation-for="WebUrl" class="text-danger"></span>
             </div>
         </div>
@@ -97,26 +97,35 @@
             </div>
         </div>
         <div class="form-group">
+            <label class="col-md-2 control-label">Privacy Policy</label>
+            <div class="col-md-10">
+                <a id="show-pp-url" class="btn btn-default">Link to an external policy</a>
+                <a id="show-pp-text" class="btn btn-default">Enter policy text</a>
+                <div class="col-md">
+                    <span asp-validation-for="PrivacyPolicyUrl" class="text-danger"></span>
+                    <span asp-validation-for="PrivacyPolicy" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div id="pp-url" class="form-group">
             <label asp-for="PrivacyPolicyUrl" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="PrivacyPolicyUrl" class="form-control" />
-                <span asp-validation-for="PrivacyPolicyUrl" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
+        <div id="pp-text" class="form-group">
             <div class="control-label col-md-2">
                 <label asp-for="PrivacyPolicy"></label>
                 <p><cite>This formatted text will be used as the organization's privacy policy content</cite></p>
             </div>
             <div class="col-md-10">
                 <textarea asp-for="PrivacyPolicy" class="form-control wysiwyg" rows="6"></textarea>
-                <span asp-validation-for="PrivacyPolicy" class="text-danger"></span>
             </div>
         </div>
 
         <h3>Primary Location</h3>
 
-        @Html.EditorFor(m => m.Location)
+        @Html.EditorFor(m => m.Location, new { RequiredAddressOne = false })
 
         <h3>Primary Contact</h3>
 
@@ -156,3 +165,7 @@
         </div>
     </div>
 </form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_OrganisationEditPartial"); }
+}

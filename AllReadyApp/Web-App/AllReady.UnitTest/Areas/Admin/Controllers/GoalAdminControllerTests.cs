@@ -29,6 +29,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel())
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -51,6 +52,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel {Id = campaignId, OrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -79,6 +81,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel {Id = campaignId, OrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -110,6 +113,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel())
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -132,6 +136,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel {Id = campaignId, OrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -163,6 +168,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
                 .ReturnsAsync(new CampaignSummaryViewModel {Id = campaignId, OrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -196,6 +202,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
                 .ReturnsAsync(new GoalDeleteViewModel {OwningOrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
+
             var goalController = new GoalController(mockMediator.Object);
 
             var mockContext = MockControllerContextWithUser(OrgAdmin(654));
@@ -209,13 +217,14 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void TestGoalDeleteForOrgAdminForNonexistantGoalReturn401()
+        public async void TestGoalDeleteForOrgAdminForNonexistantGoalReturn404()
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
                 .ReturnsAsync((GoalDeleteViewModel)null)
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, true, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -226,7 +235,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await goalController.Delete(987);
 
             // Assert
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -245,6 +254,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     NumericGoal = 100
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, true, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -279,6 +289,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     NumericGoal = 100
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, true, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -309,6 +320,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalDeleteQuery>()))
                 .ReturnsAsync(new GoalDeleteViewModel { OwningOrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
+
             var goalController = new GoalController(mockMediator.Object);
 
             var mockContext = MockControllerContextWithUser(OrgAdmin(654));
@@ -322,7 +335,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void TestGoalDeleteConfirmedForOrgAdminForNonexistantGoalReturn401()
+        public async void TestGoalDeleteConfirmedForOrgAdminForNonexistantGoalReturn404()
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
@@ -339,7 +352,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await goalController.DeleteConfirmed(987);
 
             // Assert
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -357,6 +370,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     CampaignId = campaignId
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, true, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -390,6 +404,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     CampaignId = campaignId
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, true, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -417,9 +432,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
-            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>()))
-                .ReturnsAsync(new CampaignSummaryViewModel())
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalEditQuery>()))
+                .ReturnsAsync(new GoalEditViewModel(){OrganizationId = OrgAdminOrgId})
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -434,7 +450,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public async void TestGoalEditForOrgAdminForNonexistantGoalReturnUnauthorizedResult()
+        public async void TestGoalEditForOrgAdminForNonexistantGoalReturn404()
         {
             // Arrange
             var mockMediator = new Mock<IMediator>();
@@ -451,7 +467,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var result = await goalController.Edit(987);
 
             // Assert
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
 
         [Fact]
@@ -469,6 +485,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     OrganizationId = OrgAdminOrgId
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -506,6 +523,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     OrganizationId = OrgAdminOrgId
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -575,6 +593,8 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     OrganizationId = OrgAdminOrgId
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
+
             var goalController = new GoalController(mockMediator.Object);
 
             var mockContext = MockControllerContextWithUser(OrgAdmin(OrgAdminOrgId));
@@ -611,6 +631,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
                     OrganizationId = OrgAdminOrgId
                 })
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, true, false, false));
 
             var goalController = new GoalController(mockMediator.Object);
 
@@ -641,13 +662,15 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(mock => mock.SendAsync(It.IsAny<GoalEditQuery>()))
                 .ReturnsAsync(new GoalEditViewModel())
                 .Verifiable();
+            mockMediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
+
             var goalController = new GoalController(mockMediator.Object);
 
             var mockContext = MockControllerContextWithUser(OrgAdmin(654));
             goalController.ControllerContext = mockContext.Object;
 
             // Act
-            var result = await goalController.Edit(456, new GoalEditViewModel());
+            var result = await goalController.Edit(456, new GoalEditViewModel(){Id = 456});
 
             // Assert
             Assert.IsType<UnauthorizedResult>(result);

@@ -12,6 +12,7 @@ using System;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Constants;
+using AllReady.ViewModels.Campaign;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -66,7 +67,7 @@ namespace AllReady.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public PartialViewResult CampaignPreview(CampaignSummaryViewModel campaign, IFormFile fileUpload)
         {
-            return PartialView("_CampaignPreview", campaign);
+            return PartialView("_CampaignPreview", new CampaignViewModel(campaign));
         }
 
         // GET: Campaign/Create
@@ -76,7 +77,8 @@ namespace AllReady.Areas.Admin.Controllers
             return View("Edit", new CampaignSummaryViewModel
             {
                 StartDate = DateTimeNow(),
-                EndDate = DateTimeNow().AddMonths(1)
+                EndDate = DateTimeNow().AddMonths(1),
+                TimeZoneId = User.GetTimeZoneId()
             });
         }
 

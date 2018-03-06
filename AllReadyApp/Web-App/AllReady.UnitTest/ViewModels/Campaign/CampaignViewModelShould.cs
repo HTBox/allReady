@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using AllReady.Models;
 using AllReady.ViewModels.Campaign;
@@ -14,7 +14,7 @@ namespace AllReady.UnitTest.ViewModels.Campaign
         [Fact]
         public void ReturnImmediately_WhenConstructingWithNullCampaign()
         {
-            var sut = new CampaignViewModel(null);
+            var sut = new CampaignViewModel((Campaign)null);
             Assert.Equal(0, sut.Id);
         }
 
