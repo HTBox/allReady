@@ -55,6 +55,7 @@ namespace AllReady
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireDigit = true;
                     options.Password.RequireUppercase = false;
+                    options.Lockout.MaxFailedAccessAttempts = Convert.ToInt32(Configuration["Authentication:MaxFailedAccessAttempts"]);
                 })
                 .AddEntityFrameworkStores<AllReadyContext>()
                 .AddDefaultTokenProviders();
