@@ -171,7 +171,7 @@ namespace AllReady
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                sampleData.CreateAdminUser().GetAwaiter().GetResult();
+                Task.Run(() => sampleData.CreateAdminUser()).Wait();
             }
         }
     }
