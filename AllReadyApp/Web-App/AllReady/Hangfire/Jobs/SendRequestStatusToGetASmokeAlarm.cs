@@ -1,10 +1,11 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using AllReady.Configuration;
 using Microsoft.Extensions.Options;
 using AllReady.Services;
 using Newtonsoft.Json;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AllReady.Hangfire.Jobs
 {
@@ -19,14 +20,14 @@ namespace AllReady.Hangfire.Jobs
             _httpClient = httpClient;
         }
 
-        public void Send(string serial, string status, bool acceptance)
+        public async Task Send(string serial, string status, bool acceptance)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, $"{_getASmokeAlarmApiSettings.BaseAddress}admin/requests/status/{serial}")
             {
                 Content = new StringContent(JsonConvert.SerializeObject(new { acceptance, status }), Encoding.UTF8, "application/json")
             };
             request.Headers.Authorization = AuthenticationHeaderValue.Parse(_getASmokeAlarmApiSettings.Token);
-            var response = _httpClient.SendAsync(request).Result;
+            var response = await _httpClient.SendAsync(request);
             response.EnsureSuccessStatusCode();
         }
     }
@@ -42,6 +43,6 @@ namespace AllReady.Hangfire.Jobs
 
     public interface ISendRequestStatusToGetASmokeAlarm
     {
-        void Send(string serial, string status, bool acceptance);
+        Task Send(string serial, string status, bool acceptance);
     }
 }
