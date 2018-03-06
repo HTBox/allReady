@@ -1,10 +1,10 @@
-﻿<environment names="Development">
-    <script src="~/lib/jquery-validation/jquery.validate.js"></script>
+<environment names="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 </environment>
 <environment names="Staging,Production">
     <script src="//ajax.aspnetcdn.com/ajax/jquery.validation/1.11.1/jquery.validate.min.js"
-            asp-fallback-src="~/lib/jquery-validation/jquery.validate.js"
+            asp-fallback-src="~/lib/jquery-validation/dist/jquery.validate.js"
             asp-fallback-test="window.jquery && window.jquery.validator">
     </script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.2/jquery.validate.unobtrusive.min.js"

@@ -81,11 +81,14 @@
 
 @if (Model.ShowCreateChildObjectButtons)
 {
-    <div class="row">
-        <div class="col-md-12">
-            <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+    if (Model.EndDateTime > DateTime.UtcNow)
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <a asp-area="@AreaNames.Admin" asp-controller="VolunteerTask" asp-action="Create" asp-route-eventId="@Model.Id" class="btn btn-default">Create Task</a>
+            </div>
         </div>
-    </div>
+    }
 }
 
 <!-- Modal -->

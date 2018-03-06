@@ -1,4 +1,4 @@
-﻿@using AllReady.Constants
+@using AllReady.Constants
 @using AllReady.Security
 @model AllReady.Areas.Admin.ViewModels.Site.IndexViewModel
 @{
@@ -51,7 +51,8 @@
                                 <div class="modal fade" id="options-modal-@user.Id" tabindex="-1" role="dialog">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
-                                            <div class="modal-header"><h4>Edit - @user.UserName</h4>
+                                            <div class="modal-header">
+                                                <h4>Edit - @user.UserName</h4>
                                             </div>
                                             <div class="modal-body">
                                                 <div class="row">
@@ -89,6 +90,10 @@
                                     </div>
                                 </div>
                                 <a data-toggle="tooltip" data-placement="top" title="Delete" asp-action="DeleteUser" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-danger">Delete</a>
+                                @if (user.LockoutEnabled && user.LockoutEnd > DateTime.Now)
+                                {
+                                    <a data-toggle="tooltip" data-placement="top" title="Unlock" asp-action="UnlockUser" asp-controller="Site" asp-area="@AreaNames.Admin" asp-route-userId="@user.Id" class="btn btn-info">Unlock</a>
+                                }
                             </div>
                         </td>
                     </tr>
@@ -100,8 +105,8 @@
 </div>
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip({container:'body'});
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip({ container: 'body' });
         });
     </script>
 }

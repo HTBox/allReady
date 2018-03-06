@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Features.Campaigns;
@@ -40,7 +40,7 @@ namespace AllReady.Controllers
         }
 
         [HttpGet]
-        [Route("~/[controller]/{id}")]
+        [Route("~/[controller]/{id}", Name = "CampaignDetails")]
         public async Task<IActionResult> Details(int id)
         {
             var campaign = await GetCampaign(id);
