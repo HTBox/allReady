@@ -166,7 +166,7 @@ namespace AllReady
             // for production applications, this should either be set to false or deleted.
             if (purgeRefreshSampleData || Configuration["SampleData:InsertSampleData"] == "true")
             {
-                sampleData.InsertTestData();
+                sampleData.InsertTestData().GetAwaiter().GetResult();
             }
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")

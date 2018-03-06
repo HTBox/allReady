@@ -26,7 +26,7 @@ namespace AllReady.DataAccess
             _userManager = userManager;
         }
 
-        public void InsertTestData()
+        public async Task InsertTestData()
         {
             // Avoid polluting the database if there's already something in there.
             if (_context.Locations.Any() ||
@@ -440,7 +440,7 @@ namespace AllReady.DataAccess
                 TimeZoneId = _timeZone.Id,
                 PhoneNumber = "111-111-1111"
             };
-            _userManager.CreateAsync(user1, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            await _userManager.CreateAsync(user1, _settings.DefaultAdminPassword);
             users.Add(user1);
 
             var user2 = new ApplicationUser
@@ -453,7 +453,7 @@ namespace AllReady.DataAccess
                 TimeZoneId = _timeZone.Id,
                 PhoneNumber = "222-222-2222"
             };
-            _userManager.CreateAsync(user2, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            await _userManager.CreateAsync(user2, _settings.DefaultAdminPassword);
             users.Add(user2);
 
             var user3 = new ApplicationUser
@@ -466,7 +466,7 @@ namespace AllReady.DataAccess
                 TimeZoneId = _timeZone.Id,
                 PhoneNumber = "333-333-3333"
             };
-            _userManager.CreateAsync(user3, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            await _userManager.CreateAsync(user3, _settings.DefaultAdminPassword);
             users.Add(user3);
             #endregion
 
@@ -482,7 +482,7 @@ namespace AllReady.DataAccess
                 TimeZoneId = _timeZone.Id,
                 PhoneNumber = "333-333-3333"
             };
-            _userManager.CreateAsync(eventManagerUser, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            await _userManager.CreateAsync(eventManagerUser, _settings.DefaultAdminPassword);
             users.Add(eventManagerUser);
 
             var eventManager = new EventManager
@@ -508,7 +508,7 @@ namespace AllReady.DataAccess
                 TimeZoneId = _timeZone.Id,
                 PhoneNumber = "333-333-3333"
             };
-            _userManager.CreateAsync(campaignManagerUser, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
+            await _userManager.CreateAsync(campaignManagerUser, _settings.DefaultAdminPassword);
             users.Add(campaignManagerUser);
 
             var campaignManager = new CampaignManager
@@ -657,8 +657,8 @@ namespace AllReady.DataAccess
                     EmailConfirmed = true,
                     PhoneNumber = "444-444-4444"
                 };
-                _userManager.CreateAsync(user, _settings.DefaultAdminPassword).GetAwaiter().GetResult();
-                _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin))).GetAwaiter().GetResult();
+                await _userManager.CreateAsync(user, _settings.DefaultAdminPassword);
+                await _userManager.AddClaimAsync(user, new Claim(Security.ClaimTypes.UserType, nameof(UserType.SiteAdmin)));
 
                 var user2 = new ApplicationUser
                 {
