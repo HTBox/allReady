@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Models;
 using MediatR;
@@ -16,14 +16,13 @@ namespace AllReady.Areas.Admin.Features.Resource
         }
         public async Task<int> Handle(CreateOrEditResourceCommand message)
         {
-            var resource = await GetResource(message) ?? new AllReady.Models.Resource();
+            var resource = await GetResource(message) ?? _context.Add(new AllReady.Models.Resource()).Entity;
 
             resource.Name = message.Resource.Name;
             resource.Description = message.Resource.Description;
             resource.CampaignId = message.Resource.CampaignId;
             resource.ResourceUrl = message.Resource.ResourceUrl;
 
-            _context.AddOrUpdate(resource);
             await _context.SaveChangesAsync();
 
             return resource.Id;
