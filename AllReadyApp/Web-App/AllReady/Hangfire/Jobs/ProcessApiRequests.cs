@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Configuration;
 using AllReady.Models;
 using AllReady.Services.Mapping.GeoCoding;
@@ -27,7 +28,7 @@ namespace AllReady.Hangfire.Jobs
             this.approvedRegions = approvedRegions.Value;
         }
 
-        public void Process(RequestApiViewModel viewModel)
+        public async Task Process(RequestApiViewModel viewModel)
         {
             //since this is Hangfire job code, it needs to be idempotent, this could be re-tried if there is a failure
             if (context.Requests.Any(x => x.ProviderRequestId == viewModel.ProviderRequestId))
@@ -57,7 +58,7 @@ namespace AllReady.Hangfire.Jobs
                 };
 
                 //this is a web service call
-                var coordinates = geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.PostalCode, string.Empty).Result;
+                var coordinates = await geocoder.GetCoordinatesFromAddress(request.Address, request.City, request.State, request.PostalCode, string.Empty);
 
                 request.Latitude = coordinates?.Latitude ?? 0;
                 request.Longitude = coordinates?.Longitude ?? 0;
@@ -78,6 +79,6 @@ namespace AllReady.Hangfire.Jobs
 
     public interface IProcessApiRequests
     {
-        void Process(RequestApiViewModel viewModel);
+        Task Process(RequestApiViewModel viewModel);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Areas.Admin.ViewModels.Organization;
@@ -24,7 +24,13 @@ namespace AllReady.Areas.Admin.Features.Campaigns
                 .Include(l => l.Location)
                 .Include(tc => tc.CampaignContacts)
                 .Include(i => i.CampaignGoals)
-                .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id) ?? new Campaign();
+                .SingleOrDefaultAsync(c => c.Id == message.Campaign.Id);
+
+            if (campaign == null)
+            {
+                campaign = new Campaign();
+                _context.Campaigns.Add(campaign);
+            }
 
             campaign.Name = message.Campaign.Name;
             campaign.Description = message.Campaign.Description;
@@ -45,9 +51,7 @@ namespace AllReady.Areas.Admin.Features.Campaigns
             campaign.Featured = message.Campaign.Featured;
             campaign.Published = message.Campaign.Published;
             campaign.Headline = message.Campaign.Headline;
-
-            _context.AddOrUpdate(campaign);
-
+            
             await _context.SaveChangesAsync();
 
             return campaign.Id;

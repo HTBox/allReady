@@ -10,6 +10,9 @@ This repo contains the code for **allReady**, an open-source solution focused on
 + [Project overview](#project-overview)
 + [How you can help](#how-you-can-help)
 
+## Long-Running and I/O-Bound Operations
+If you are interested in working with Azure Functions and moving things like communications, importing data, image processing and more please check out the related repository for our [allReady-processing](https://github.com/HTBox/allReady-processing) project.
+
 ## Upcoming v1.0 Release
 We are on the path to our first production v1.0 release!  We are tracking requirements in our [v1.0 Release Milestone](https://github.com/HTBox/allReady/milestone/21) and currently directing efforts to closing out issues starting with P1-P3 priority items that are currently being triaged and tagged.
 

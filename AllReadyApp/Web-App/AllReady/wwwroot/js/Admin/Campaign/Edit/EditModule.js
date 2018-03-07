@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../lib/jquery/dist/jquery.js" />
+/// <reference path="../../../../lib/jquery/dist/jquery.js" />
 "use strict";
 
 define("EditModule", function () {
@@ -90,9 +90,7 @@ define("EditModule", function () {
                 $("#preview-table-container").html(response);
                 $("#full-description-td").html(tinyMCE.activeEditor.getContent({ format: 'raw' }));
             }, "HTML");
-
         });
-
     }
 
     return {

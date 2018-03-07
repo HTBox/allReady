@@ -90,6 +90,7 @@ namespace AllReady.UnitTest.Controllers
 
             var sut = new EventController(mediator.Object, userManager.Object);
             sut.SetFakeUser(userId);
+            sut.SetFakeIUrlHelper();
 
             var result = await sut.ShowEvent(It.IsAny<int>()) as ViewResult;
 

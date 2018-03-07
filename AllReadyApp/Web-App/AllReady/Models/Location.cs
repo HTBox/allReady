@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using AllReady.Areas.Admin.ViewModels.Shared;
 using AllReady.ViewModels.Shared;
@@ -16,6 +17,22 @@ namespace AllReady.Models
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
         public string Country { get; set; } = "USA";
+
+        public Location()
+        {
+        }
+
+        public Location(LocationEditViewModel from)
+        {
+            Address1 = from.Address1;
+            Address2 = from.Address2;
+            City = from.City;
+            State = from.State;
+            PostalCode = from.PostalCode;
+            Name = from.Name;
+            PhoneNumber = from.PhoneNumber;
+            Country = from.Country;
+        }
 
         [NotMapped]
         public string FullAddress
@@ -94,7 +111,7 @@ namespace AllReady.Models
                 }
                 else
                 {
-                    if (location == null || locationEditModel.Id.GetValueOrDefault() != 0)
+                    if (location == null || locationEditModel.Id.GetValueOrDefault() == 0)
                     {
                         location = new Location();
                     }

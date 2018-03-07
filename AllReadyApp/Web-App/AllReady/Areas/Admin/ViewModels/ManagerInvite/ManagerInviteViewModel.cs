@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.ManagerInvite
 {
@@ -11,7 +11,7 @@ namespace AllReady.Areas.Admin.ViewModels.ManagerInvite
         [Display(Name = "Email")]
         public string InviteeEmailAddress { get; set; }
 
-        [Display(Name = "Message")]
+        [Display(Name = "Custom Message")]
         public string CustomMessage { get; set; }
 
         public int CampaignId { get; set; }

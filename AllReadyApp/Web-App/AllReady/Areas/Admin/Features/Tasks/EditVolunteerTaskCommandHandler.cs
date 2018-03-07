@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
@@ -22,7 +22,7 @@ namespace AllReady.Areas.Admin.Features.Tasks
 
         public async Task<int> Handle(EditVolunteerTaskCommand message)
         {
-            var volunteerTask = await _context.VolunteerTasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.VolunteerTask.Id) ?? new VolunteerTask();
+            var volunteerTask = await _context.VolunteerTasks.Include(t => t.RequiredSkills).SingleOrDefaultAsync(t => t.Id == message.VolunteerTask.Id) ?? _context.Add(new VolunteerTask()).Entity;
 
             volunteerTask.Name = message.VolunteerTask.Name;
             volunteerTask.Description = message.VolunteerTask.Description;
@@ -46,8 +46,6 @@ namespace AllReady.Areas.Admin.Features.Tasks
             {
                 volunteerTask.RequiredSkills.AddRange(message.VolunteerTask.RequiredSkills.Where(mt => volunteerTask.RequiredSkills.All(ts => ts.SkillId != mt.SkillId)));
             }
-
-            _context.AddOrUpdate(volunteerTask);
 
             // Delete existing attachments
             if (message.VolunteerTask.DeleteAttachments.Count > 0)

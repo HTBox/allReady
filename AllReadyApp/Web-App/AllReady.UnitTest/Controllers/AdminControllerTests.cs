@@ -420,30 +420,6 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public void ForgotPasswordReturnsView()
-        {
-            var sut = CreateAdminControllerWithNoInjectedDependencies();
-            var result = sut.ForgotPassword();
-            Assert.IsType<ViewResult>(result);
-        }
-
-        [Fact]
-        public void ForgotPasswordHasHttpGetAttribute()
-        {
-            var sut = CreateAdminControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<HttpGetAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-        }
-
-        [Fact]
-        public void ForgotPasswordHasAllowAnonymousAttribute()
-        {
-            var sut = CreateAdminControllerWithNoInjectedDependencies();
-            var attribute = sut.GetAttributesOn(x => x.ForgotPassword()).OfType<AllowAnonymousAttribute>().SingleOrDefault();
-            Assert.NotNull(attribute);
-        }
-
-        [Fact]
         public async Task SendCodeGetInvokesGetTwoFactorAuthenticationUserAsync()
         {
             var signInManager = SignInManagerMockHelper.CreateSignInManagerMock();

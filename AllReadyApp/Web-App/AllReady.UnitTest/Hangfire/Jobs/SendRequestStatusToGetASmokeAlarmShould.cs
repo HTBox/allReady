@@ -1,4 +1,4 @@
-﻿using AllReady.Hangfire.Jobs;
+using AllReady.Hangfire.Jobs;
 using AllReady.Services;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using AllReady.Configuration;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace AllReady.UnitTest.Hangfire.Jobs
 {
@@ -25,13 +26,13 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void SendsValidHttpRequestMessage()
+        public async Task SendsValidHttpRequestMessage()
         {
             var mockedHttpClient = new Mock<IHttpClient>();
             var sendRequestStatusToGetASmokeAlarm = new SendRequestStatusToGetASmokeAlarm(_getASmokeAlarmApiSettings, mockedHttpClient.Object);
             try
             {
-                sendRequestStatusToGetASmokeAlarm.Send("request1", "new", false);
+                await sendRequestStatusToGetASmokeAlarm.Send("request1", "new", false);
             }
             catch { }
 
@@ -45,15 +46,15 @@ namespace AllReady.UnitTest.Hangfire.Jobs
         }
 
         [Fact]
-        public void ThrowsException_WhenOnNonSuccessHttpStatus()
+        public async Task ThrowsException_WhenOnNonSuccessHttpStatus()
         {
             var mockedHttpClient = new Mock<IHttpClient>();
             mockedHttpClient.Setup(x => x.SendAsync(It.IsAny<HttpRequestMessage>()))
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.BadRequest));
             var sendRequestStatusToGetASmokeAlarm = new SendRequestStatusToGetASmokeAlarm(_getASmokeAlarmApiSettings, mockedHttpClient.Object);
             
-            Assert.Throws<HttpRequestException>(
-                () => sendRequestStatusToGetASmokeAlarm.Send(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())
+            await Assert.ThrowsAsync<HttpRequestException>(
+                async () => await sendRequestStatusToGetASmokeAlarm.Send(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())
             );            
         }
     }

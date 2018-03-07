@@ -162,7 +162,7 @@ namespace AllReady.UnitTest.Controllers
             var sut = new AccountController(null, signInManager.Object, null, mediator.Object, null, null);
             await sut.Login(model);
 
-            signInManager.Verify(x => x.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false), Times.Once);
+            signInManager.Verify(x => x.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true), Times.Once);
         }
 
         [Fact]

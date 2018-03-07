@@ -1,4 +1,4 @@
-﻿///<reference path="../lib/jquery/dist/jquery.js" />
+///<reference path="../lib/jquery/dist/jquery.js" />
 ///<reference path="../lib/knockout/dist/knockout.js" />
 ///<reference path="../lib/moment/moment.js" />
 
@@ -36,12 +36,17 @@ ko.observableArray.fn.filterOnDateRange = function (beginDateProperty, endDatePr
     var dateInRange = ko.observable("");
     this.dateInRange = dateInRange;
 
+    this.displayedRange = ko.computed(function() {
+        var selectedDateRange = this.dateInRange();
+        return selectedDateRange.formattedDate;
+    }, this);
+
     return this.filterList(function (observableArray) {
-        var selectedDateRange, selectedBeginDate, selectedEndDate;
-        selectedDateRange = dateInRange();
-        if (selectedDateRange) {
-            selectedBeginDate = moment(selectedDateRange);
-            selectedEndDate = moment(selectedDateRange);
+        var selectedBeginDate, selectedEndDate;
+        var selectedDateRange = dateInRange();
+        if (selectedDateRange.begin && selectedDateRange.end) {
+            selectedBeginDate = moment(selectedDateRange.begin);
+            selectedEndDate = moment(selectedDateRange.end);
 
             selectedBeginDate.startOf("day");
             selectedEndDate.endOf("day");

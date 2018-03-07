@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using AllReady.Extensions;
 using AllReady.Models;
@@ -17,7 +17,13 @@ namespace AllReady.Areas.Admin.Features.Events
         }
         public async Task<int> Handle(EditEventCommand message)
         {
-            var campaignEvent = await GetEvent(message) ?? new Event();
+            var campaignEvent = await GetEvent(message);
+
+            if (campaignEvent == null)
+            {
+                campaignEvent = new Event();
+                _context.Events.Add(campaignEvent);
+            }
 
             campaignEvent.Name = message.Event.Name;
             campaignEvent.Description = message.Event.Description;
@@ -60,14 +66,9 @@ namespace AllReady.Areas.Admin.Features.Events
             if (message.Event.Location != null)
             {
                 campaignEvent.Location = campaignEvent.Location.UpdateModel(message.Event.Location);
-                _context.AddOrUpdate(campaignEvent.Location);
             }
-
             campaignEvent.Headline = message.Event.Headline;
-
-            _context.AddOrUpdate(campaignEvent);
             await _context.SaveChangesAsync();
-
             return campaignEvent.Id;
         }
 
@@ -76,6 +77,7 @@ namespace AllReady.Areas.Admin.Features.Events
             return await _context.Events
                 .Include(a => a.RequiredSkills)
                 .Include(a => a.VolunteerTasks)
+                .Include(a => a.Location)
                 .SingleOrDefaultAsync(c => c.Id == message.Event.Id);
         }
     }
