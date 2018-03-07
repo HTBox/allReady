@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -143,7 +143,7 @@ namespace AllReady.UnitTest.Areas.Admin.Features.Events
 
             var seattle = new Location
             {
-                Id = 1,
+                Id = 12,
                 Address1 = "123 Main Street",
                 Address2 = "Unit 2",
                 City = "Seattle",
