@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AllReady.Areas.Admin.Extensions;
 using AllReady.Models;
 using MediatR;
@@ -29,10 +31,51 @@ namespace AllReady.Areas.Admin.Features.Organizations
             org.DescriptionHtml = message.Organization.Description;
             org.Summary = message.Organization.Summary;
 
-            //TODO: mgmccarthy: pull code from ContactExtension.UpdateOrganizationContact into this handler as this the only code that uses it and it should not be in an extension method... espeically doing database access
-            org = await org.UpdateOrganizationContact(message.Organization, _context);
+            if (org.OrganizationContacts == null)
+            {
+                org.OrganizationContacts = new List<OrganizationContact>();
+            }
+
+            var primaryCampaignContact = org.OrganizationContacts.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary);
+            var contactId = primaryCampaignContact?.ContactId;
+            Contact primaryContact;
+
+            var contactInfo = string.Concat(message.Organization.PrimaryContactEmail?.Trim() + message.Organization.PrimaryContactFirstName?.Trim(), message.Organization.PrimaryContactLastName?.Trim(), message.Organization.PrimaryContactPhoneNumber?.Trim());
+            if (contactId == null)
+            {
+                primaryContact = new Contact();
+                _context.Contacts.Add(primaryContact);
+            }
+            else
+            {
+                primaryContact = await _context.Contacts.SingleAsync(c => c.Id == contactId);
+            }
+
+            if (string.IsNullOrWhiteSpace(contactInfo) && primaryCampaignContact != null)
+            {
+                //Delete
+                _context.OrganizationContacts.Remove(primaryCampaignContact);
+                _context.Remove(primaryCampaignContact.Contact);
+            }
+            else
+            {
+                primaryContact.Email = message.Organization.PrimaryContactEmail;
+                primaryContact.FirstName = message.Organization.PrimaryContactFirstName;
+                primaryContact.LastName = message.Organization.PrimaryContactLastName;
+                primaryContact.PhoneNumber = message.Organization.PrimaryContactPhoneNumber;
+              
+                if (primaryCampaignContact == null)
+                {
+                    primaryCampaignContact = new OrganizationContact
+                    {
+                        Contact = primaryContact,
+                        Organization = org,
+                        ContactType = (int)ContactTypes.Primary
+                    };
+                    org.OrganizationContacts.Add(primaryCampaignContact);
+                }
+            }
             org.Location = org.Location.UpdateModel(message.Organization.Location);
-            org.Location.PostalCode = message.Organization.Location.PostalCode;
 
             org.PrivacyPolicy = message.Organization.PrivacyPolicy;
             org.PrivacyPolicyUrl = message.Organization.PrivacyPolicyUrl;
