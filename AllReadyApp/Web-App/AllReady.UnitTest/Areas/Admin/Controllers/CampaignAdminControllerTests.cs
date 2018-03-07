@@ -26,6 +26,13 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 {
     public class CampaignAdminControllerTests
     {
+        private CampaignController GetInstance(IMediator mediator = null,
+            IImageService imageService = null)
+        {
+            return new CampaignController(mediator ?? new Mock<IMediator>().Object,
+                imageService ?? new Mock<IImageService>().Object);
+        }
+
         [Fact]
         public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsOrgAdmin()
         {
@@ -43,7 +50,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task IndexSendsIndexQueryWithCorrectData_WhenUserIsNotOrgAdmin()
         {
             var mockMediator = new Mock<IMediator>();
-
+        
             var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
             sut.MakeUserNotAnOrgAdmin();
             await sut.Index();
@@ -66,19 +73,22 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DetailsReturnsHttpNotFoundResultWhenVieModelIsNull()
         {
-            CampaignController sut;
-            MockMediatorCampaignDetailQuery(out sut);
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync((CampaignDetailViewModel)null).Verifiable();
+
+            CampaignController sut = GetInstance(mediator: mockMediator.Object);
             Assert.IsType<NotFoundResult>(await sut.Details(It.IsAny<int>()));
         }
 
         [Fact]
-        public async Task DetailsReturnsHttpForbiddResultIfUserIsNotAuthorized()
+        public async Task DetailsReturnsHttpForbiddenResultIfUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
             mediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignDetailQuery>())).ReturnsAsync(new CampaignDetailViewModel()).Verifiable();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
 
             var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
+
             Assert.IsType<ForbidResult>(await sut.Details(It.IsAny<int>()));
         }
 
@@ -149,7 +159,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
           var sut = CampaignAdminControllerBuilder.AllNullParamsInstance().WithToday(() => dateTimeNow).Build();
             sut.SetClaims(new List<Claim>{new Claim(ClaimTypes.TimeZoneId, TimeZoneId) });
-
             var view = (ViewResult)sut.Create();
             var viewModel = (CampaignSummaryViewModel)view.ViewData.Model;
 
@@ -165,6 +174,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mockMediator = new Mock<IMediator>();
 
             var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
+
             await sut.Edit(campaignId);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<CampaignSummaryQuery>(c => c.CampaignId == campaignId)));
@@ -173,8 +183,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task EditGetReturnsHttpNotFoundResultWhenViewModelIsNull()
         {
-            CampaignController sut;
-            MockMediatorCampaignSummaryQuery(out sut);
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null).Verifiable();
+
+            var sut = GetInstance(mediator: mockMediator.Object);
             Assert.IsType<NotFoundResult>(await sut.Edit(It.IsAny<int>()));
         }
 
@@ -317,7 +329,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
 
             var mediator = new Mock<IMediator>();
             mediator.Setup(x => x.SendAsync(It.IsAny<AuthorizableCampaignQuery>())).ReturnsAsync(new FakeAuthorizableCampaign(false, false, false, false));
-
+          
             var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
 
             var result = await sut.Edit(viewModel, null);
@@ -470,7 +482,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         }
 
         [Fact]
-        public void EditPostHasValidateAntiForgeryTokenttribute()
+        public void EditPostHasValidateAntiForgeryTokenAttribute()
         {
             var attr = (ValidateAntiForgeryTokenAttribute)typeof(CampaignController).GetMethod(nameof(CampaignController.Edit), new Type[] { typeof(CampaignSummaryViewModel), typeof(IFormFile) }).GetCustomAttribute(typeof(ValidateAntiForgeryTokenAttribute));
             Assert.NotNull(attr);
@@ -496,8 +508,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task PublishReturnsHttpNotFoundResultWhenCampaignIsNotFound()
         {
-            CampaignController sut;
-            MockMediatorCampaignSummaryQuery(out sut);
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null).Verifiable();
+
+            var sut = GetInstance(mediator: mockMediator.Object);
             Assert.IsType<NotFoundResult>(await sut.Publish(It.IsAny<int>()));
         }
 
@@ -565,8 +579,10 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         [Fact]
         public async Task DeleteReturnsHttpNotFoundResultWhenCampaignIsNotFound()
         {
-            CampaignController sut;
-            MockMediatorCampaignSummaryQuery(out sut);
+            var mockMediator = new Mock<IMediator>();
+            mockMediator.Setup(mock => mock.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync((CampaignSummaryViewModel)null).Verifiable();
+
+            var sut = GetInstance(mediator: mockMediator.Object);
             Assert.IsType<NotFoundResult>(await sut.Delete(It.IsAny<int>()));
         }
 
@@ -656,7 +672,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             var mediatorMock = new Mock<IMediator>();
             var imageServiceMock = new Mock<IImageService>();
             var sut = CampaignAdminControllerBuilder.WithInstances(mediatorMock.Object, imageServiceMock.Object).Build();
-
             const int campaignId = 2;
 
             await sut.DeleteCampaignImage(campaignId);
@@ -799,7 +814,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         {
             int id = 1;
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = id, OrganizationId = 100});
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = id, OrganizationId = 100 });
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false, 1));
             var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
             await sut.DeleteConfirmed(id);
@@ -811,7 +826,7 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
         public async Task DetailConfirmedReturnsForbidResultWhenUserIsNotAuthorized()
         {
             var mediator = new Mock<IMediator>();
-            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel {Id = 1, OrganizationId = 100});
+            mediator.Setup(x => x.SendAsync(It.IsAny<CampaignSummaryQuery>())).ReturnsAsync(new CampaignSummaryViewModel { Id = 1, OrganizationId = 100 });
             mediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, false, false));
 
             var sut = CampaignAdminControllerBuilder.WithMediator(mediator.Object).Build();
@@ -828,7 +843,6 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
             mockMediator.Setup(x => x.SendAsync(It.IsAny<AllReady.Areas.Admin.Features.Organizations.AuthorizableOrganizationQuery>())).ReturnsAsync(new FakeAuthorizableOrganization(false, false, true, false));
 
             var sut = CampaignAdminControllerBuilder.WithMediator(mockMediator.Object).Build();
-
             await sut.DeleteConfirmed(id);
 
             mockMediator.Verify(mock => mock.SendAsync(It.Is<DeleteCampaignCommand>(i => i.CampaignId == id)), Times.Once);
