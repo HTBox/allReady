@@ -28,9 +28,9 @@ namespace AllReady.UnitTest.Areas.Admin.Controllers
     {
         private CampaignController GetInstance(IMediator mediator = null,
             IImageService imageService = null)
-        {
-            return new CampaignController(mediator ?? new Mock<IMediator>().Object,
-                imageService ?? new Mock<IImageService>().Object);
+        {            
+            return CampaignAdminControllerBuilder.WithInstances(mediator ?? new Mock<IMediator>().Object,
+                imageService ?? new Mock<IImageService>().Object).Build();
         }
 
         [Fact]
