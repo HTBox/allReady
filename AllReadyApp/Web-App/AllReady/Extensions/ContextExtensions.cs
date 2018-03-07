@@ -5,6 +5,7 @@ namespace AllReady.Extensions
 {
     public static class ContextExtensions
     {
+        //TODO: This shouldn't be necessary and it kind of weird. I supsect this is from an early beta version
         /// <summary>
         /// Handles correctly attaching an object to the context for cases where it may be new or modified.
         /// </summary>

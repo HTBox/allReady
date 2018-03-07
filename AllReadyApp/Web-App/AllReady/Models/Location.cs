@@ -111,7 +111,7 @@ namespace AllReady.Models
                 }
                 else
                 {
-                    if (location == null || locationEditModel.Id.GetValueOrDefault() != 0)
+                    if (location == null || locationEditModel.Id.GetValueOrDefault() == 0)
                     {
                         location = new Location();
                     }
