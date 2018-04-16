@@ -22,6 +22,7 @@
                 <li><a asp-area="@AreaNames.Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
                 <li><a asp-area="Admin" asp-controller="Invite" asp-action="Index">Invites</a></li>
             }
+            <li><a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Lister">Events</a></li>
             <li><a asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
