@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace AllReady.Areas.Admin.ViewModels.Shared
 {
@@ -6,9 +6,9 @@ namespace AllReady.Areas.Admin.ViewModels.Shared
     {
         public int? Id { get; set; }
         [Required]
-        [Display(Name = "Address 1")]
+        [Display(Name = "Address Line 1")]
         public string Address1 { get; set; }
-        [Display(Name = "Address 2")]
+        [Display(Name = "Address Line 2")]
         public string Address2 { get; set; }
         [Required]
         public string City { get; set; }
