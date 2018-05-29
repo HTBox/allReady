@@ -1,0 +1,40 @@
+<!-- TODO 2231 Which of the follow four are necessary? -->
+@using AllReady.Constants
+@using AllReady.Security;
+@using AllReady.ViewModels.Manage
+@inject AllReady.Services.ISelectListService SelectListService
+
+@model AllReady.ViewModels.Manage.SkillsViewModel
+
+@using (Html.BeginForm("SaveSkills", "Manage"))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label asp-for="AssociatedSkills" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <div data-bind="foreach: skills">
+                    <div class="form-inline">
+                        <select class="form-control" data-bind="attr: { name: ControlName($index) }, options: $root.availableSkills, optionsText: 'Name', optionsValue: 'Id', value: Id"></select>
+                        <span class="fa fa-question-circle" data-bind="visible: Description, tooltip: { title: Description, placement: 'top' }" aria-hidden="true"></span>
+                        <a href="#" data-bind="click: $root.deleteSkill" title="Delete skill">
+                            <span class="fa fa-remove" aria-hidden="true"></span>
+                            Delete
+                        </a>
+                    </div>
+                </div>
+                <a href="#" data-bind="click: addSkill" title="Add skill">
+                    <span class="fa fa-plus" aria-hidden="true"></span>
+                    Add
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-default" data-bind="enable: skills.isValid">Save</button>
+                <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
+                <span class="label label-danger" data-bind="visible: !skills.isValid()">"@Html.DisplayNameFor(m => m.AssociatedSkills)" must be unique</span>
+            </div>
+        </div>
+    </div>
+}

@@ -131,7 +131,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task IndexPostSendsUserByUserIdQueryWithCorrectUserId()
+        public async Task SaveProfilePostSendsUserByUserIdQueryWithCorrectUserId()
         {           
             var userId = "userId";
 
@@ -139,34 +139,34 @@ namespace AllReady.UnitTest.Controllers
             ManageController controller = controllerAndMocks.controller;
             controller.SetFakeUser(userId);
 
-            var vm = new IndexViewModel();
+            var vm = new ProfileViewModel();
 
-            await controller.Index(vm);
+            await controller.SaveProfile(vm);
             controllerAndMocks.mediatorMock.Verify(m => m.SendAsync(It.Is<AllReady.Features.Manage.UserByUserIdQuery>(u => u.UserId == userId)), Times.Once);
         }
 
         [Fact]
-        public async Task IndexPostReturnsCorrectViewWhenModelStateIsInvalid()
+        public async Task SaveProfilePostReturnsCorrectViewWhenModelStateIsInvalid()
         {
             ManageController controller = InitializeControllerWithValidUser(new ApplicationUser()).controller;
             controller.SetFakeUser("userId");
-            IndexViewModel invalidVm = new IndexViewModel();
+            ProfileViewModel invalidVm = new ProfileViewModel();
             controller.ModelState.AddModelError("FirstName", "Can't be a number");
             
-            var result = await controller.Index(invalidVm);
+            var result = await controller.SaveProfile(invalidVm);
           
             Assert.IsType<ViewResult>(result);
         }
 
         [Fact]
-        public async Task IndexPostReturnsCorrectViewModelWhenModelStateIsInvalid()
+        public async Task SaveProfilePostReturnsCorrectViewModelWhenModelStateIsInvalid()
         {
             ManageController controller = InitializeControllerWithValidUser(new ApplicationUser()).controller;
             controller.SetFakeUser("userId");
-            IndexViewModel invalidVm = new IndexViewModel();
+            ProfileViewModel invalidVm = new ProfileViewModel();
             controller.ModelState.AddModelError("FirstName", "Can't be a number");
            
-            var result = await controller.Index(invalidVm);
+            var result = await controller.SaveProfile(invalidVm);
             var resultViewModel = ((ViewResult)result);
             var vm = (IndexViewModel)resultViewModel.ViewData.Model;
             
@@ -174,7 +174,7 @@ namespace AllReady.UnitTest.Controllers
         }
 
         [Fact]
-        public async Task IndexPostInvokesRemoveClaimsAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
+        public async Task SaveProfilePostInvokesRemoveClaimsAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
         {
             var user = new ApplicationUser { TimeZoneId = "timeZoneId" };
             var controllerAndMocks = InitializeControllerWithValidUser(user);
@@ -182,16 +182,16 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
             controllerAndMocks.userManagerMock.Setup(x => x.RemoveClaimsAsync(It.IsAny<ApplicationUser>(), It.IsAny<IEnumerable<Claim>>())).ReturnsAsync(IdentityResult.Success);
 
-            var vM = new IndexViewModel { TimeZoneId = "differentTimeZoneId" };
+            var vM = new ProfileViewModel { TimeZoneId = "differentTimeZoneId" };
            
-            await controller.Index(vM);
+            await controller.SaveProfile(vM);
          
             IEnumerable<Claim> claims = controller.User.Claims.Where(c => c.Type == AllReady.Security.ClaimTypes.TimeZoneId).ToList();
             controllerAndMocks.userManagerMock.Verify(x => x.RemoveClaimsAsync(user, claims), Times.Once);
         }
 
         [Fact]
-        public async Task IndexPostInvokesAddClaimAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
+        public async Task SaveProfilePostInvokesAddClaimAsyncWithCorrectParametersWhenUsersTimeZoneDoesNotEqualModelsTimeZone()
         {            
             var user = new ApplicationUser { TimeZoneId = "timeZoneId" };
             var controllerAndMocks = InitializeControllerWithValidUser(user);
@@ -199,9 +199,9 @@ namespace AllReady.UnitTest.Controllers
             controller.SetFakeUser("userId");
             controllerAndMocks.userManagerMock.Setup(x => x.AddClaimAsync(It.IsAny<ApplicationUser>(), It.IsAny<Claim>())).ReturnsAsync(IdentityResult.Success);
 
-            var vM = new IndexViewModel { TimeZoneId = "differentTimeZoneId" };
+            var vM = new ProfileViewModel { TimeZoneId = "differentTimeZoneId" };
             
-            await controller.Index(vM);
+            await controller.SaveProfile(vM);
            
             controllerAndMocks.userManagerMock.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c=>c.Type == AllReady.Security.ClaimTypes.TimeZoneId)), Times.Once);
         }
@@ -209,18 +209,23 @@ namespace AllReady.UnitTest.Controllers
         //TODO: come back to finsih these stubs... there is a lot going on in Index Post
 
         [Fact]
-        public void IndexPostHasHttpPostAttribute()
+        public void SaveProfilePostHasHttpPostAttribute()
         {
-            CheckManageControllerMethodAttribute<HttpPostAttribute>(nameof(ManageController.Index), new [] {typeof(IndexViewModel) });
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(
+                nameof(ManageController.SaveProfile), 
+                new [] {typeof(ProfileViewModel) });
         }
 
         [Fact]
-        public void IndexPostHasValidateAntiForgeryTokenAttribute()
+        public void SaveProfilePostHasValidateAntiForgeryTokenAttribute()
         {
-            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(nameof(ManageController.Index), new[] { typeof(IndexViewModel) });
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(
+                nameof(ManageController.SaveProfile), 
+                new[] { typeof(ProfileViewModel) });
         }
+
         [Fact]
-        public async Task IndexPostSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
+        public async Task SaveProfilePostSendsRemoveUserProfileIncompleteClaimCommandWithCorrectUserIdWhenUsersProfileIsComplete()
         {
             ApplicationUser user = new ApplicationUser
             {
@@ -234,17 +239,35 @@ namespace AllReady.UnitTest.Controllers
                 TimeZoneId = "TimeZonedID",
             };
 
-
             var controllerAndMocks = InitializeControllerWithValidUser(user);
             controllerAndMocks.signInManagerMock.Setup(m => m.RefreshSignInAsync(It.IsAny<ApplicationUser>())).Returns(Task.FromResult(user));
             controllerAndMocks.controller.SetFakeUser(user.Id);
             
-            var viewModel = new IndexViewModel { FirstName = "Name", LastName = "Last Name", TimeZoneId = "TimeZonedID"};
+            var viewModel = new ProfileViewModel { FirstName = "Name", LastName = "Last Name", TimeZoneId = "TimeZonedID"};
 
-            await controllerAndMocks.controller.Index(viewModel);
+            await controllerAndMocks.controller.SaveProfile(viewModel);
 
             controllerAndMocks.mediatorMock.Verify(m => m.SendAsync(It.Is<RemoveUserProfileIncompleteClaimCommand>(u => u.UserId == user.Id)), Times.Once);
         }
+
+
+        [Fact]
+        public void SaveSkillsPostHasHttpPostAttribute()
+        {
+            CheckManageControllerMethodAttribute<HttpPostAttribute>(
+                nameof(ManageController.SaveSkills), 
+                new [] {typeof(SkillsViewModel) });
+        }
+
+        [Fact]
+        public void SaveSkillsPostHasValidateAntiForgeryTokenAttribute()
+        {
+            CheckManageControllerMethodAttribute<ValidateAntiForgeryTokenAttribute>(
+                nameof(ManageController.SaveSkills), 
+                new[] { typeof(SkillsViewModel) });
+        }
+
+        // TODO 2231 Analyze what SaveSkills POST is doing; then add appropriate unit tests.
 
         [Fact]
         public async Task UpdateUserProfileCompletenessInvokesRefreshSignInAsyncWithCorrectUserWhenUsersProfileIsComplete()
@@ -273,9 +296,9 @@ namespace AllReady.UnitTest.Controllers
             manageController.SetFakeUser(user.Id);
 
             //Only set props required for modelstate to be valid.
-            IndexViewModel viewModel = new IndexViewModel { FirstName = "Name", LastName = "Last Name", TimeZoneId = "TimeZonedID" };
+            ProfileViewModel viewModel = new ProfileViewModel { FirstName = "Name", LastName = "Last Name", TimeZoneId = "TimeZonedID" };
 
-            await manageController.Index(viewModel);
+            await manageController.SaveProfile(viewModel);
 
             signInManagerMock.Verify(s=>s.RefreshSignInAsync(It.Is<ApplicationUser>(u=>u == user)),Times.AtLeastOnce);
         }

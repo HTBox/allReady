@@ -49,24 +49,39 @@ namespace AllReady.Controllers
             return View(await user.ToViewModel(_userManager, _signInManager));
         }
 
-        // POST: /Manage/Index
+        // POST: /Manage/SaveProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(IndexViewModel model)
+        public async Task<IActionResult> SaveProfile(ProfileViewModel model)
         {
-            var shouldRefreshSignin = false;
-
             var user = await GetCurrentUser();
 
             if (!ModelState.IsValid)
             {
-                var viewModelWithInputs = await user.ToViewModel(_userManager, _signInManager);
-                viewModelWithInputs.FirstName= model.FirstName;
-                viewModelWithInputs.LastName = model.LastName;
-                viewModelWithInputs.TimeZoneId = model.TimeZoneId;
-                viewModelWithInputs.AssociatedSkills = model.AssociatedSkills;
-                return View(viewModelWithInputs);
+                var vm = await user.ToViewModel(_userManager, _signInManager);
+
+                // TODO 2231 Adhere to the Law of Demeter.
+                vm.ProfileViewModel.FirstName = model.FirstName;
+                vm.ProfileViewModel.LastName = model.LastName;
+                vm.ProfileViewModel.TimeZoneId = model.TimeZoneId;
+
+                // TODO 2231 Solve the problem: When the model is invalid, the 
+                // address bar says "Manage/SaveProfile" when we would expect
+                // it to say "Manage/Index".
+                return View("Index", vm);
             }
+
+            await SaveProfile(model, user);
+
+            await _mediator.SendAsync(new UpdateUser { User = user });
+            await UpdateUserProfileCompleteness(user);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task SaveProfile(ProfileViewModel model, ApplicationUser user) 
+        {
+            bool shouldRefreshSignin = false;
 
             if (!string.IsNullOrEmpty(model.FirstName))
             {
@@ -88,24 +103,46 @@ namespace AllReady.Controllers
                 shouldRefreshSignin = true;
             }
 
-            user.AssociatedSkills.RemoveAll(usk => model.AssociatedSkills == null || !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
-            if (model.AssociatedSkills != null)
-            {
-                user.AssociatedSkills.AddRange(model.AssociatedSkills.Where(msk => !user.AssociatedSkills.Any(usk => usk.SkillId == msk.SkillId)));
-            }
-
-            user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
-
-            await _mediator.SendAsync(new UpdateUser { User = user });
-
             if (shouldRefreshSignin)
             {
                 await _signInManager.RefreshSignInAsync(user);
             }
+        }
 
-            await UpdateUserProfileCompleteness(user);
+        // POST: /Manage/SaveSkills
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveSkills(SkillsViewModel model)
+        {
+            var user = await GetCurrentUser();
 
+            SaveSkills(model, user);
+
+            // TODO 2231 Question: do we need to SendAsync for the saving of skills?
+            await _mediator.SendAsync(new UpdateUser { User = user });
             return RedirectToAction(nameof(Index));
+        }
+
+        private void SaveSkills(SkillsViewModel model, ApplicationUser user) 
+        {
+            // TODO 2231 Figure out what this expression is doing.
+            // Then consider breaking it out into a local function.
+            user.AssociatedSkills.RemoveAll(
+                usk => model.AssociatedSkills == null || 
+                !model.AssociatedSkills.Any(msk => msk.SkillId == usk.SkillId));
+
+            if (model.AssociatedSkills != null)
+            {
+                // TODO 2231 Figure out what this expression is doing.
+                // Then consider breaking it out into a local function.
+                var skillsToAdd = model.AssociatedSkills
+                    .Where(msk => !user.AssociatedSkills
+                        .Any(usk => usk.SkillId == msk.SkillId));
+
+                user.AssociatedSkills.AddRange(skillsToAdd);
+            }
+
+            user.AssociatedSkills?.ForEach(usk => usk.UserId = user.Id);
         }
 
         [HttpPost]

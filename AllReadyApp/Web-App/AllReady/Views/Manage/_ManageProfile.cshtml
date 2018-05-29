@@ -1,0 +1,178 @@
+<!-- TODO 2231 Which of the follow four are necessary? -->
+@using AllReady.Constants
+@using AllReady.Security;
+@using AllReady.ViewModels.Manage
+@inject AllReady.Services.ISelectListService SelectListService
+
+@model AllReady.ViewModels.Manage.ProfileViewModel
+
+<!-- Begin ManageController.ResentEmailConfirmation form -->
+
+<form asp-controller="Manage" asp-action="ResendEmailConfirmation">
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label asp-for="EmailAddress" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input type="hidden" asp-for="EmailAddress">
+                <p class="form-control-static">
+                    <span>
+                        <i class="@(Model.IsEmailAddressConfirmed ? "fa fa-check text-success" : "")"
+                        title="@(Model.IsEmailAddressConfirmed ? "Your email address has been confirmed" : "")"></i> @Model.EmailAddress
+                        @if (string.IsNullOrEmpty(Model.ProposedNewEmailAddress))
+                        {
+                            <span> | <a asp-controller="Manage" asp-action="ChangeEmail">Change</a></span>
+                        }
+                    </span>
+                    @if (!Model.IsEmailAddressConfirmed)
+                    {
+                        <br />
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fa fa-exclamation-circle"></i> Your email address has not been confirmed.
+                            <br />
+                            allReady cannot send you email notifications until your email address has been confirmed.
+                            <br />
+                            Check your inbox for a confirmation email.
+                            <br />
+                            <button class="btn btn-default" type="submit">Send me a new confirmation email</button>
+                        </div>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- End ManageController.ResentEmailConfirmation form -->
+
+@if (Model.ProposedNewEmailAddress != null)
+{
+    <div class="alert alert-warning" role="alert">
+        <p>
+            <i class="fa fa-exclamation-circle"></i> You have requested that your email address is changed to @Model.ProposedNewEmailAddress but this has not been confirmed.
+            <br />
+            allReady cannot update your email address until your new email address has been confirmed.
+            <br />
+            Check your inbox for a confirmation email.
+        </p>
+        <form asp-controller="Manage" asp-action="ResendChangeEmailConfirmation">
+            <br /><button class="btn btn-default" type="submit">Send me a new confirmation email</button>
+        </form>
+        <form asp-controller="Manage" asp-action="CancelChangeEmail">
+            <button class="btn btn-default" type="submit">Cancel email change</button>
+        </form>
+    </div>
+}
+
+<!-- Begin ManageController.Index form -->
+
+@using (Html.BeginForm("SaveProfile", "Manage"))
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label asp-for="FirstName" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input type="text" asp-for="FirstName" class="form-control"/>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="LastName" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <input type="text" asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Mobile phone number</label>
+            <div class="col-md-10">
+                <p class="form-control-static">
+                    @(Model.PhoneNumber ?? "None")
+                    @if (Model.PhoneNumber != null)
+                    {
+                        <a asp-controller="Manage" asp-action="AddPhoneNumber">Change</a>
+                            @: &nbsp;|&nbsp;
+                            <a asp-controller="Manage" asp-action="RemovePhoneNumber">Remove</a>
+                            @if (!Model.IsPhoneNumberConfirmed)
+                            {
+                                @: &nbsp;|&nbsp;
+                                <a asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-phoneNumber="@Model.PhoneNumber">Verify</a>
+                            }
+                    }
+                    else
+                    {
+                        <a asp-controller="Manage" asp-action="AddPhoneNumber">Add</a>
+                    }
+                    @if (!Model.IsPhoneNumberConfirmed && Model.PhoneNumber != null)
+                    {
+                        <br />
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fa fa-exclamation-circle"></i> Your mobile phone number has not been confirmed.
+                            <br />
+                            allReady cannot send you SMS notifications until your mobile phone number has been confirmed.
+                            <br />
+                            Please check your messages for your confirmation code.
+                        </div>
+                    }
+                </p>
+            </div>
+        </div>
+        @if (User.IsOrganizationAdmin())
+            {
+            @if (User.IsUserType(UserType.SiteAdmin))
+                {
+                <div class="form-group">
+                    <label class="control-label col-md-2">Approve users</label>
+                    <div class="col-md-10">
+                        <p class="form-control-static">
+                            <a asp-controller="Site" asp-action="Index" asp-area="@AreaNames.Admin">Find</a>
+                        </p>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="form-group">
+                <label class="control-label col-md-2">Social media logins</label>
+                <div class="col-md-10">
+                    <p class="form-control-static">
+                        @Model.Logins.Count [<a asp-controller="Manage" asp-action="ManageLogins">Manage</a>]
+                    </p>
+                </div>
+            </div>
+
+        }
+        <div class="form-group">
+            <label class="control-label col-md-2">Password</label>
+            <div class="col-md-10">
+                <p class="form-control-static">
+                    @if (Model.HasPassword)
+                    {
+                        <a asp-controller="Manage" asp-action="ChangePassword">Change</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Manage" asp-action="SetPassword">Create</a>
+                    }
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="TimeZoneId" class="control-label col-md-2"></label>
+            <div class="col-md-10">
+                <select asp-for="TimeZoneId" asp-items="@SelectListService.GetTimeZones()" class="form-control"></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-default">Save</button>
+                <a asp-controller="Manage" asp-action="Index" class="btn btn-danger">Cancel</a>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- End ManageController.Index form -->

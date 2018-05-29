@@ -241,3 +241,6 @@ bower_components
 /smoke-alarm-requests-sample-data-EMPTY.csv
 /smoke-alarm-requests-sample-data-DUPLICATE.csv
 /AllReadyApp/Web-App/AllReady/wwwroot/upload
+
+# VS Code Assets
+.vscode/

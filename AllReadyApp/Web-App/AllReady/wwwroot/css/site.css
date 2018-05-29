@@ -859,3 +859,7 @@ a:hover .myevents-block {
 .featured-campaign h4, p{
     color: black;
 }
+
+.nav-tabs {
+    margin-bottom:15px;
+}
