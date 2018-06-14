@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -52,6 +52,11 @@ namespace AllReady.Services
             }
 
             return Task.CompletedTask;
+        }
+
+        public Task<string> UploadOrganizationLogoAsync(int organizationId, IFormFile image)
+        {
+            return UploadFile(image);
         }
 
         private async Task<string> UploadFile(IFormFile image)

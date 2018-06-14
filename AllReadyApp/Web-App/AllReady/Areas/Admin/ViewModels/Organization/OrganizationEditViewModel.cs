@@ -11,8 +11,11 @@ namespace AllReady.Areas.Admin.ViewModels.Organization
         [Display(Name = "Organization Name")]
         public string Name { get; set; }
 
-        [Display(Name = "Logo URL")]
+        [Display(Name = "Exisiting Logo")]
         public string LogoUrl { get; set; }
+
+        [Display(Name = "Browse for image")]
+        public string FileUpload { get; set; }
 
         [Display(Name = "Website URL")]
         public string WebUrl { get; set; }

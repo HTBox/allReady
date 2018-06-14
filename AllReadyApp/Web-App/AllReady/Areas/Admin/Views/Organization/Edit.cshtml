@@ -44,7 +44,7 @@
     </div>
 </div>
 
-<form asp-controller="Organization" asp-area="@AreaNames.Admin" asp-action="Edit" method="post">
+<form asp-controller="Organization" asp-area="@AreaNames.Admin" asp-action="Edit" method="post" enctype="multipart/form-data">
     <div class="form-horizontal">
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -63,13 +63,41 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
         </div>
-        <div class="form-group">
-            <label asp-for="LogoUrl" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="LogoUrl" class="form-control" />
-                <span asp-validation-for="LogoUrl" class="text-danger"></span>
+    <div class="form-horizontal">
+        @if (!string.IsNullOrWhiteSpace(Model?.LogoUrl))
+        {
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-4">
+
+                    <div class="alert campaign-image-status-alert" style="display: none;"></div>
+                    <div class="panel panel-default" id="image-panel-container">
+                        <div class="panel-heading">
+                            <label asp-for="LogoUrl"></label>
+                        </div>
+                        <div class="panel-body" id="image-panel-body">
+                            <div id="image-wrapper">
+                                <img src="@Model.LogoUrl" class="img-responsive center-block" />
+                                <input type="hidden" asp-for="LogoUrl" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        
+            <div class="form-group">
+                <label asp-for="FileUpload" class="col-md-2 control-label"></label>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <input type="file" asp-for="FileUpload" class="control-label col-md-4" />
+                            <span asp-validation-for="FileUpload" class="text-danger col-md-12"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+
         <div class="form-group">
             <label asp-for="WebUrl" class="col-md-2 control-label"></label>
             <div class="col-md-10">

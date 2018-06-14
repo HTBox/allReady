@@ -1,13 +1,17 @@
-﻿using System.Linq;
+using System.Linq;
 using AllReady.Areas.Admin.Features.Organizations;
 using MediatR;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.Features.Campaigns;
 using AllReady.Areas.Admin.ViewModels.Organization;
 using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Constants;
+using AllReady.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AllReady.Models;
+using AllReady.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace AllReady.Areas.Admin.Controllers
 {
@@ -17,11 +21,14 @@ namespace AllReady.Areas.Admin.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IOrganizationEditModelValidator _organizationValidator;
+        private readonly IImageService _imageService;
 
-        public OrganizationController(IMediator mediator, IOrganizationEditModelValidator validator)
+        public OrganizationController(IMediator mediator, IOrganizationEditModelValidator validator,
+            IImageService imageService)
         {
             _mediator = mediator;
             _organizationValidator = validator;
+            this._imageService = imageService;
         }
 
         // GET: Organization
@@ -64,7 +71,7 @@ namespace AllReady.Areas.Admin.Controllers
         // POST: Organization/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(OrganizationEditViewModel organization)
+        public async Task<IActionResult> Edit(OrganizationEditViewModel organization, IFormFile fileUpload)
         {
             if (organization == null)
             {
@@ -79,14 +86,43 @@ namespace AllReady.Areas.Admin.Controllers
                 var isNameUnique = await _mediator.SendAsync(new OrganizationNameUniqueQuery { OrganizationName = organization.Name, OrganizationId = organization.Id });
                 if (isNameUnique)
                 {
+                   
+                    if (fileUpload != null)
+                    {
+                        if (fileUpload.IsAcceptableImageContentType())
+                        {
+                            await UploadOrganizationLogo(organization, fileUpload);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
+                            return View("Edit", organization);
+                        }
+                    }
+
                     var id = await _mediator.SendAsync(new EditOrganizationCommand { Organization = organization });
+
                     return RedirectToAction(nameof(Details), new { id, area = AreaNames.Admin });
                 }
 
                 ModelState.AddModelError(nameof(organization.Name), "Organization with same name already exists. Please use different name.");
             }
-
+            
             return View("Edit", organization);
+        }
+
+        private async Task UploadOrganizationLogo(OrganizationEditViewModel organization, IFormFile fileUpload)
+        {
+            var existingImageUrl = organization.LogoUrl;
+            var newImageUrl = await _imageService.UploadOrganizationLogoAsync(organization.Id, fileUpload);
+            if (!string.IsNullOrEmpty(newImageUrl))
+            {
+                organization.LogoUrl = newImageUrl;
+                if (existingImageUrl != null && existingImageUrl != newImageUrl)
+                {
+                    await _imageService.DeleteImageAsync(existingImageUrl);
+                }
+            }
         }
 
         // GET: Organization/Delete/5

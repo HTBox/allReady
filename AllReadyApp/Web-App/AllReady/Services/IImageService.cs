@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace AllReady.Services
@@ -9,5 +9,6 @@ namespace AllReady.Services
         Task<string> UploadCampaignImageAsync(int organizationId, int campaignId, IFormFile image);
         Task<string> UploadEventImageAsync(int organizationId, int eventId, IFormFile image);
         Task DeleteImageAsync(string imageUrl);
+        Task<string> UploadOrganizationLogoAsync(int organizationId, IFormFile image);
     }
 }

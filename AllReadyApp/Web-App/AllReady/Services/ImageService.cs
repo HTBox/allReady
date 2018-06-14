@@ -38,6 +38,12 @@ namespace AllReady.Services
             await blockBlob.DeleteAsync(ContainerName, imageUrl);
         }
 
+        public async Task<string> UploadOrganizationLogoAsync(int organizationId, IFormFile image)
+        {
+            var blobPath = organizationId + @"/organizationLogo/";
+            return await UploadAsync(blobPath, image);
+        }
+
         private async Task<string> UploadAsync(string blobPath, IFormFile image)
         {
             var fileName = ContentDispositionHeaderValue.Parse(image.ContentDisposition).FileName.ToString().Trim('"').ToLower();
