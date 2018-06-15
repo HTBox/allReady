@@ -120,7 +120,7 @@ module AdminOrganizationCreate =
     }
 
     let PopulateOrganizationDetails details =
-        "#LogoUrl" << details.LogoUrl
+        //"#LogoUrl" << details.LogoUrl
         "#Name" << details.Name 
         "#WebUrl" << details.WebUrl
         "#Location_Address1" << details.Address1
