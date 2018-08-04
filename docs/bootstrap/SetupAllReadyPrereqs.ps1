@@ -7,6 +7,14 @@ Function check_admin_privs() {
 	}
 }
 
+Function display_info() {
+		Write-Host "This script sets up prerequisites for working on Humanitarian Toolbox's allReady project."
+		       "This script installs Chocolatey and uses it to install several packages including Git, NodeJs,"
+			   "and .NET Core. Latest versions of all packages are installed."
+			   "NPM is also called to install Gulp and Bower."
+			   "Additionally you're asked if you need to set proxy environment variables."
+}
+
 
 Function install_chocolatey () {
 	Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
@@ -82,12 +90,13 @@ Function handle_errors($exitCode, $validExitCodes){
 	Exit $exitCode
 }
 
-check_admin_privs
-install_chocolatey
-install_config_git
-install_node_lts
-set_proxy_info
-install_bower
-install_gulp
-notify_visual_studio
-install_net_core
+#check_admin_privs
+#install_chocolatey
+#install_config_git
+#install_node_lts
+#set_proxy_info
+#install_bower
+#install_gulp
+#notify_visual_studio
+#install_net_core
+display_info
