@@ -13,17 +13,29 @@ Function display_info() {
 			   "and .NET Core. Latest versions of all packages are installed."
 			   "NPM is also called to install Gulp and Bower."
 			   "Additionally you're asked if you need to set proxy environment variables."
+        write-host "Press any key to continue..."
+		[void][System.Console]::ReadKey($true)
 }
 
+Function create_profile_if_needed() {
+    if (!(test-path $profile)) {
+        Write-Host "No profile found. Creating a default one."
+        new-item -type file -path $profile -force
+    }
+}
 
 Function install_chocolatey () {
 	Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+	# Source the new profile so it's in the shell
+	. $PROFILE
 	RefreshEnv
 }
 
 Function install_config_git() {
 	choco install -y git
 	check_choco_errors $LASTEXITCODE
+	# Source the new profile so it's in the shell
+	. $PROFILE
 	RefreshEnv
 	$username = Read-Host -prompt "Enter your name for Git config, eg 'Jim Holmes'"
 	$email = Read-Host -prompt "Enter your email for Git config, eg 'Jim@GuidepostSystems.com'"
@@ -61,7 +73,10 @@ Function install_gulp () {
 }
 
 Function notify_visual_studio() {
-	Read-Host -prompt "Make sure you have Visual Studio 2017 or higher. You'll need F# and ASP.NET features.`nPress Enter to continue."
+	Read-Host " Make sure you have Visual Studio 2017 or higher. You'll need F# and ASP.NET features."
+    write-host "Press any key to continue..."
+    [void][System.Console]::ReadKey($true)
+	
 }
 
 Function install_net_core() {
@@ -73,30 +88,34 @@ Function install_net_core() {
 
 Function check_choco_errors($exitCode) {
 	$validExitCodes = @(0, 1605, 1614, 1641, 3010)
-	handle_errors($exitCode, $validExitCodes)
+	handle_errors $exitCode $validExitCodes
 }
 
 Function check_npm_errors($exitCode) {
 	$validExitCodes = @(0)
-	handle_errors($exitCode, $validExitCodes)
+	handle_errors $exitCode $validExitCodes
 }
 
 Function handle_errors($exitCode, $validExitCodes){
 
 	if ($validExitCodes -contains $exitCode) {
+      Write-Host "OK"
 	  Return
 	}
 	Write-Host "`n`nProblem installing package. Stopping install script.`n`nExit code was: " $exitCode
 	Exit $exitCode
 }
 
-#check_admin_privs
-#install_chocolatey
-#install_config_git
-#install_node_lts
-#set_proxy_info
-#install_bower
-#install_gulp
-#notify_visual_studio
-#install_net_core
+
+check_admin_privs
 display_info
+create_profile_if_needed
+install_chocolatey
+install_config_git
+install_node_lts
+set_proxy_info
+install_bower
+install_gulp
+notify_visual_studio
+install_net_core
+
