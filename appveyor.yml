@@ -37,9 +37,9 @@ test_script:
  - cmd: dotnet test
 # === Run Integration Tests
 # Use the version of chromedriver.exe from the build server to ensure it matches the browser version
- - ps: (Get-Item (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release\chromedriver.exe")).VersionInfo.FileVersion
+ - ps: Write-Host (Get-Item (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release\chromedriver.exe")).VersionInfo.FileVersion
  - ps: Copy-Item "C:\Tools\WebDriver\chromedriver.exe" (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release")
- - ps: (Get-Item (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release\chromedriver.exe")).VersionInfo.FileVersion
+ - ps: Write-Host (Get-Item (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release\chromedriver.exe")).VersionInfo.FileVersion
  - ps: $env:Data:DefaultConnection:ConnectionString="Server=(local)\SQL2016;Database=master;User ID=sa;Password=Password12!"
  - ps: $env:Data:HangfireConnection:ConnectionString="Server=(local)\SQL2016;Database=master;User ID=sa;Password=Password12!"
  - ps: $env:ASPNETCORE_ENVIRONMENT="Development"
