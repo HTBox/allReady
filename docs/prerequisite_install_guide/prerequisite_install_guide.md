@@ -19,7 +19,7 @@ This guide will walk you through all of the software that needs to be installed 
   - [Bower](#bower)
   - [Gulp](#gulp)
   - [Visual Studio](#visual-studio)
-  - [Install .NET Core 2](#install-net-core-2)
+  - [Install .NET Core 2.1](#install-net-core-2)
   - [Configure Visual Studio External Web Tools](#configure-visual-studio-external-web-tools)
 - [Getting the Source Code](#getting-the-source-code)
   - [Forking the Repository](#forking-the-repository)
@@ -273,7 +273,7 @@ To verify that the gulp-cli was installed, run the command `gulp -v`.  As of thi
 
 ### Visual Studio
 
-allReady uses Visual Studio 2017 along with .NET Core 2.0.  This guide will be using the free Visual Studio 2017 Community Edition but any edition of Visual Studio 2017 will work and the steps are the same for all versions.  
+allReady uses Visual Studio 2017 along with .NET Core 2.1.  This guide will be using the free Visual Studio 2017 Community Edition but any edition of Visual Studio 2017 will work and the steps are the same for all versions.  
 
 ***Note**: we recommend using a minimum version number of Visual Studio 15.3.1 to have all the latest tools and facilities.*
 
@@ -315,12 +315,12 @@ Next click on Install at bottom right.
 
 _Note: You can add or remove components from your Visual Studio Installation anytime.  Type "Visual Studio Installer' from the Start Menu to run._
 
-### Install .NET Core 2 SDK
+### Install .NET Core 2.1 SDK
 
-allReady is currently using .NET Core 2 as a way to be future-proof but more importantly to enable any developer to contribute to the project. Independent on OS that a developer has choosen.
+allReady is currently using .NET Core 2.1 as a way to be future-proof but more importantly to enable any developer to contribute to the project. Independent on OS that a developer has choosen.
 (in this guide, the screenshots and examples will show Windows)
 
-To install the .NET Core 2 SDK, download the appropriate installer for your OS from [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core)
+To install the .NET Core 2.1 SDK, download the appropriate installer for your OS from [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core)
 
 ![Choosing the correct installer](images/net-core-2-picking-installer.png)
 
@@ -328,7 +328,7 @@ Launch the installer and follow the steps given. There's no extra settings that 
 
 **Important:** Before you can build the allReady project, you have to close Visual Studio for it to be able to find the recently installed SDK.
 
-> There's been some reported instances where after installing the .NET Core 2 SDK the project would not show the webpage, even though building the project works. This requires a computer reboot to resolve the issue.
+> There's been some reported instances where after installing the .NET Core 2.1 SDK the project would not show the webpage, even though building the project works. This requires a computer reboot to resolve the issue.
 
 ### Configure Visual Studio External Web Tools
 
