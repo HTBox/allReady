@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>AllReady</Description>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>AllReady</AssemblyName>
     <OutputType>Exe</OutputType>
