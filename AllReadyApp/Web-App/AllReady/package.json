@@ -12,6 +12,7 @@
     "gulp-cssmin": "0.1.7",
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "3.1.5",
+    "natives": "1.1.6",
     "rimraf": "2.2.8",
     "typescript": "2.2.1"
   },
