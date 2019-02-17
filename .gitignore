@@ -241,3 +241,7 @@ bower_components
 /smoke-alarm-requests-sample-data-EMPTY.csv
 /smoke-alarm-requests-sample-data-DUPLICATE.csv
 /AllReadyApp/Web-App/AllReady/wwwroot/upload
+/AllReadyApp/Web-App/AllReady/wwwroot/js/site.js
+/AllReadyApp/Web-App/AllReady/wwwroot/ts/mappingTools.js
+/AllReadyApp/Web-App/AllReady/wwwroot/ts/shapelist.js
+/AllReadyApp/Web-App/AllReady/wwwroot/ts/shapes.js
