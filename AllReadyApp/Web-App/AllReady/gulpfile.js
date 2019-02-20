@@ -40,13 +40,13 @@ gulp.task('build:lib', function () {
     function copyNodeModule(name) {
         gulp.src('node_modules/' + name + '/**/*')
             .pipe(gulp.dest('wwwroot/lib/' + name + '/'));
-    };
+    }
 
     var dependencies = getNPMDependencies();
     for (var i in dependencies) {
-        copyNodeModule(dependencies[i])
+        copyNodeModule(dependencies[i]);
     }
-})
+});
 
 gulp.task('build:ts', function () {
     var tsResult = tsProject.src()
