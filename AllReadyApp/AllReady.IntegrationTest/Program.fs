@@ -1,4 +1,4 @@
-﻿open canopy
+open canopy
 open runner
 open System
 
@@ -11,6 +11,7 @@ CreatingActivitiesForCampaigns.All Constants.UrlLocalHost
 
 //Chrome Driver: https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver
 canopy.configuration.chromeDir <- System.AppDomain.CurrentDomain.BaseDirectory
+canopy.configuration.elementTimeout <- 100.0
 let chromeOptions = OpenQA.Selenium.Chrome.ChromeOptions()
 chromeOptions.AddArgument("--disable-extensions")
 start <| ChromeWithOptions chromeOptions
