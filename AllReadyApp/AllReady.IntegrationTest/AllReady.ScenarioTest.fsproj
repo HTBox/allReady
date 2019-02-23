@@ -9,12 +9,13 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>AllReady.IntegrationTest</RootNamespace>
     <AssemblyName>AllReady.IntegrationTest</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.1.0</TargetFSharpCoreVersion>
     <Name>AllReady.ScenarioTest</Name>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
