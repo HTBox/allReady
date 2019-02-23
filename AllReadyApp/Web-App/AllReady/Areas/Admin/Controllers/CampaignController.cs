@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using AllReady.Areas.Admin.ViewModels.Validators;
 using AllReady.Constants;
 using AllReady.ViewModels.Campaign;
 
@@ -23,11 +24,13 @@ namespace AllReady.Areas.Admin.Controllers
 
         private readonly IMediator _mediator;
         private readonly IImageService _imageService;
+        private readonly IImageSizeValidator _imageSizeValidator;
 
-        public CampaignController(IMediator mediator, IImageService imageService)
+        public CampaignController(IMediator mediator, IImageService imageService, IImageSizeValidator imageSizeValidator)
         {
             _mediator = mediator;
             _imageService = imageService;
+            _imageSizeValidator = imageSizeValidator;
         }
 
         // GET: Campaign
@@ -132,23 +135,27 @@ namespace AllReady.Areas.Admin.Controllers
             {
                 if (fileUpload != null)
                 {
-                    if (fileUpload.IsAcceptableImageContentType())
-                    {
-                        var existingImageUrl = campaign.ImageUrl;
-                        var newImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
-                        if (!string.IsNullOrEmpty(newImageUrl))
-                        {
-                            campaign.ImageUrl = newImageUrl;
-                            if (existingImageUrl != null && existingImageUrl != newImageUrl)
-                            {
-                                await _imageService.DeleteImageAsync(existingImageUrl);
-                            }
-                        }
-                    }
-                    else
+                    if (!fileUpload.IsAcceptableImageContentType())
                     {
                         ModelState.AddModelError("ImageUrl", "You must upload a valid image file for the logo (.jpg, .png, .gif)");
                         return View(campaign);
+                    }
+
+                    if (_imageSizeValidator != null && fileUpload.Length > _imageSizeValidator.FileSizeInBytes)
+                    {
+                        ModelState.AddModelError("ImageUrl", $"File size must be less than {_imageSizeValidator.BytesToMb():#,##0.00}MB!");
+                        return View(campaign);
+                    }
+
+                    var existingImageUrl = campaign.ImageUrl;
+                    var newImageUrl = await _imageService.UploadCampaignImageAsync(campaign.OrganizationId, campaign.Id, fileUpload);
+                    if (!string.IsNullOrEmpty(newImageUrl))
+                    {
+                        campaign.ImageUrl = newImageUrl;
+                        if (existingImageUrl != null && existingImageUrl != newImageUrl)
+                        {
+                            await _imageService.DeleteImageAsync(existingImageUrl);
+                        }
                     }
                 }
 

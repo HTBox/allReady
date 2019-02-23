@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -29,6 +29,8 @@ namespace AllReady.Areas.Admin.Controllers
     [Authorize(nameof(UserType.SiteAdmin))]
     public class SiteController : Controller
     {
+        public Func<DateTime> DateTimeNow = () => DateTime.Now;
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<SiteController> _logger;
         private readonly IMediator _mediator;
@@ -52,7 +54,7 @@ namespace AllReady.Areas.Admin.Controllers
             var campaigns = await _mediator.SendAsync(new CampaignByApplicationUserIdQuery() { ApplicationUserId = userId });
             var events = await _mediator.SendAsync(new EventsByApplicationUserIdQuery() { ApplicationUserId = userId });
             var volunteerTasks = await _mediator.SendAsync(new VolunteerTasksByApplicationUserIdQuery() { ApplicationUserId = userId });
-            
+
             var viewModel = new DeleteUserViewModel
             {
                 UserId = userId,
@@ -149,6 +151,19 @@ namespace AllReady.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> UnlockUser(string userId)
+        {
+            var user = await GetUser(userId);
+            if (user?.LockoutEnd > DateTimeNow())
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeNow().Date.AddDays(-1));
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
 
         //TODO: This should be an HttpPost but that also requires changes to the view that is calling this
         [HttpGet]

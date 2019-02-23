@@ -1,10 +1,17 @@
-﻿@using AllReady.Constants
+@using AllReady.Constants
 @model AllReady.Areas.Admin.ViewModels.Campaign.CampaignDetailViewModel
 
 <div class="row">
     <div class="col-md-12">
-        <a asp-controller="Event" asp-action="Create" asp-area="@AreaNames.Admin" asp-route-campaignId="@Model.Id"
-           class="btn btn-default">Create New</a>
+        @if (Model.EndDate < DateTime.UtcNow)
+        {
+        <span>It is now past the end date for this campaign. No new events may be created.</span>
+        }
+        else
+        {
+            <a asp-controller="Event" asp-action="Create" asp-area="@AreaNames.Admin" asp-route-campaignId="@Model.Id"
+               class="btn btn-default">Create New</a>
+        }
     </div>
 </div>
 
@@ -23,10 +30,10 @@
                 </th>
             </tr>
             @foreach (var item in Model.Events)
-                {
+            {
                 <tr>
                     <td>
-                        <a asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.Id">@item.Name</a> 
+                        <a asp-controller="Event" asp-action="Details" asp-area="@AreaNames.Admin" asp-route-id="@item.Id">@item.Name</a>
                         @if (!string.IsNullOrEmpty(item.Description))
                         {
                             <br />
@@ -34,7 +41,7 @@
                         }
                     </td>
                     <td>
-                        <time value="item.StartDateTime"></time>                        
+                        <time value="item.StartDateTime"></time>
                     </td>
                     <td>
                         <time value="item.EndDateTime"></time>

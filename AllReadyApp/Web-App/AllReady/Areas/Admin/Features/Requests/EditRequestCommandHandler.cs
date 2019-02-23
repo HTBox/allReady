@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using AllReady.Models;
 using MediatR;
@@ -54,8 +54,6 @@ namespace AllReady.Areas.Admin.Features.Requests
                 request.Latitude = coordinates?.Latitude ?? 0;
                 request.Longitude = coordinates?.Longitude ?? 0;
             }
-
-            _context.AddOrUpdate(request);
 
             await _context.SaveChangesAsync();
 

@@ -55,6 +55,7 @@ namespace AllReady
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireDigit = true;
                     options.Password.RequireUppercase = false;
+                    options.Lockout.MaxFailedAccessAttempts = Convert.ToInt32(Configuration["Authentication:MaxFailedAccessAttempts"]);
                 })
                 .AddEntityFrameworkStores<AllReadyContext>()
                 .AddDefaultTokenProviders();
@@ -166,12 +167,12 @@ namespace AllReady
             // for production applications, this should either be set to false or deleted.
             if (purgeRefreshSampleData || Configuration["SampleData:InsertSampleData"] == "true")
             {
-                sampleData.InsertTestData();
+                sampleData.InsertTestData().GetAwaiter().GetResult();
             }
 
             if (Configuration["SampleData:InsertTestUsers"] == "true")
             {
-                sampleData.CreateAdminUser().GetAwaiter().GetResult();
+                Task.Run(() => sampleData.CreateAdminUser()).Wait();
             }
         }
     }
