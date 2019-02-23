@@ -58,18 +58,18 @@ let All baseUrl =
         let eventNameValue = read <| element eventNameSelector
         eventNameValue |> contains eventName
 
-    "The Org Admin can create task" &&& fun _ ->
-        let taskName = Utils.GetScenarioTestName "First Test Task"
-        AdminEventDetails.CreateNewTask()
-        AdminTaskCreate.PopulateTaskDetails
-            {AdminTaskCreate.DefaultTaskDetails with
-                Name = taskName
-            }
+    //"The Org Admin can create task" &&& fun _ ->
+    //    let taskName = Utils.GetScenarioTestName "First Test Task"
+    //    AdminEventDetails.CreateNewTask()
+    //    AdminTaskCreate.PopulateTaskDetails
+    //        {AdminTaskCreate.DefaultTaskDetails with
+    //            Name = taskName
+    //        }
 
-        AdminTaskCreate.Create()
+    //    AdminTaskCreate.Create()
 
-        on AdminEventDetails.RelativeUrl
-        "td a" *= taskName
+    //    on AdminEventDetails.RelativeUrl
+    //    "td a" *= taskName
 
     "The Org Admin can logout" &&& fun _ ->
         hover ".dropdown-account"
