@@ -1,5 +1,6 @@
 module Pages
-open canopy
+
+open canopy.classic
 
 module TopMenu =
     let private Campaigns = "Campaigns"
