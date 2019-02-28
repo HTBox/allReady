@@ -164,8 +164,12 @@ module AdminEventCreate =
 
     let PopulateEventdetails details =
         "#Name" << details.Name
-        "#StartDateTime" << details.StartDate.ToString("MM/dd/yyyy")
-        "#EndDateTime" << details.EndDate.ToString("MM/dd/yyyy")
+        // special handling for datetimepicker control
+        element("#StartDateTime").SendKeys(details.StartDate.ToString("MM/dd/yyyy"))
+        press tab
+        // special handling for datetimepicker control
+        element("#EndDateTime").SendKeys(details.EndDate.ToString("MM/dd/yyyy"))
+        press tab
         "#EventType" << details.EventType.ToString()
         "#Location_City" << details.City
         "#Location_State" << details.State
@@ -199,8 +203,10 @@ module AdminTaskCreate =
         "#Name" << details.Name
         "#Description" << details.Description
         "#NumberOfVolunteersRequired" << details.VolunteersRequired.ToString()
-        "#StartDateTime" << details.StartDate.ToString("MM/dd/yyyy h:mm tt")
-        "#EndDateTime" << details.EndDate.ToString("MM/dd/yyyy h:mm tt")
+        // special handling for datetimepicker control
+        element("#StartDateTime").SendKeys(details.StartDate.ToString("MM/dd/yyyy h:mm tt"))
+        // special handling for datetimepicker control
+        element("#EndDateTime").SendKeys(details.EndDate.ToString("MM/dd/yyyy h:mm tt"))
 
     let private createBtn = "Save"
 
