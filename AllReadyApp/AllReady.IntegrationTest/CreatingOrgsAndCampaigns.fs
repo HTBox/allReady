@@ -1,8 +1,7 @@
 module CreatingOrgsAndCampaigns
 
-open canopy
-open runner
-open System
+open canopy.classic
+open canopy.runner.classic
 open Pages
 
 let All baseUrl =
