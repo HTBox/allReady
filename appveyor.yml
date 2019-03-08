@@ -20,7 +20,7 @@ before_build:
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady\AllReady.csproj
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
- - nuget restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj -SolutionDirectory .\AllReadyApp
+ - cnd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
  - cmd: npm install gulp -g
 
 build_script:
@@ -29,7 +29,7 @@ build_script:
  - cmd: dotnet publish AllReadyApp\Web-App\AllReady\AllReady.csproj --output c:\Published
  - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
- - cmd: msbuild /p:Configuration=Release AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
+ - cmd: dotnet build -c Release AllReadyApp\AllReady.IntegrationTest
 
 test_script:
 # === Run Unit Tests
@@ -37,7 +37,7 @@ test_script:
  - cmd: dotnet test
 # === Run Integration Tests
 # Use the version of chromedriver.exe from the build server to ensure it matches the browser version
- - ps: Copy-Item "C:\Tools\WebDriver\chromedriver.exe" (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release")
+ - ps: Copy-Item "C:\Tools\WebDriver\chromedriver.exe" (Join-Path $env:APPVEYOR_BUILD_FOLDER "AllReadyApp\AllReady.IntegrationTest\bin\Release\netcoreapp2.1")
  - ps: $env:Data:DefaultConnection:ConnectionString="Server=(local)\SQL2016;Database=master;User ID=sa;Password=Password12!"
  - ps: $env:Data:HangfireConnection:ConnectionString="Server=(local)\SQL2016;Database=master;User ID=sa;Password=Password12!"
  - ps: $env:ASPNETCORE_ENVIRONMENT="Development"
@@ -52,7 +52,7 @@ test_script:
  - ps: Start-Sleep 30  # Wait for webserver to warm up
  - ps: cd $env:APPVEYOR_BUILD_FOLDER 
  - ps: Write-Host "== Running integration tests =="
- - ps: AllReadyApp\AllReady.IntegrationTest\bin\Release\AllReady.IntegrationTest.exe
+ - ps: dotnet run -p AllReadyApp\AllReady.IntegrationTest
  - ps: Write-Host "== Finished running integration tests =="
  - ps: |
      if(!$webhost.HasExited) {
