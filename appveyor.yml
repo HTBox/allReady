@@ -35,6 +35,7 @@ build_script:
  - cmd: msbuild /p:Configuration=Release AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
  - ps: Write-Host "Content of Published folder"
  - ps: dir c:\Published\wwwroot\
+ - ps: dir c:\Published\wwwroot\lib\
  
 test_script:
 # === Run Unit Tests
