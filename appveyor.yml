@@ -51,6 +51,8 @@ test_script:
  - ps: dotnet ef database update > (Join-Path $env:APPVEYOR_BUILD_FOLDER "db_update.log")
  - ps: Write-Host "== starting web server =="
  - ps: cd c:\Published
+ - ps: Write-Host "Content of Published folder"
+ - ps: dir
  - ps: $webhost = start-process "dotnet" "AllReady.dll" -PassThru -RedirectStandardOutput (Join-Path $env:APPVEYOR_BUILD_FOLDER kestrel.log)
  - ps: Start-Sleep 30  # Wait for webserver to warm up
  - ps: cd $env:APPVEYOR_BUILD_FOLDER 
