@@ -4,7 +4,7 @@ namespace AllReady.Api.Models.Output.Campaigns
 {
     public abstract class CampaignOutputModelBase
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
@@ -17,5 +17,7 @@ namespace AllReady.Api.Models.Output.Campaigns
         public DateTimeZone TimeZone { get; set; }
 
         public bool IsFeatured { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 }

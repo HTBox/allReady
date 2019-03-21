@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AllReady.Api.Models.Output.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -26,7 +26,7 @@ namespace AllReady.Api.Controllers
             {
                 new EventListerOutputModel
                 {
-                    Id = 1,
+                    Id = "052fa3e1-f8cd-4f0e-b5f2-3459b6f98c04",
                     Name = "Charity Event 1",
                     ShortDescription = "Marketing activities",
                     StartDateTime = new LocalDate(2019, 01, 01),
