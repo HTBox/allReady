@@ -1,32 +1,48 @@
 <template>
   <div class="home">
-      <h1>Welcome to AllReady</h1>
-      <ul>
-          <li v-for="c in upcomingCampaigns" :key="c.id">{{c.name}}</li>
-          </ul>
+    <v-container fluid grid-list-md>
+      <v-layout row wrap>
+        <v-flex v-for="campaign in upcomingCampaigns" :key="campaign.id">
+          <v-card>
+            <v-img :src="'https://picsum.photos/200/400/?random' + campaign.id" height="200px"></v-img>
+            <v-card-title primary-title>
+              <div>
+                <div class="headline">{{campaign.name}}</div>
+                <span class="grey--text">{{campaign.shortDescription}}</span>
+              </div>
+            </v-card-title>
+            <v-card-actions>
+              <v-btn flat color="primary" :to="'/campaign/' + campaign.id">More Info</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { State, Action, Getter } from 'vuex-class';
-import {CampaignState} from '@/store/modules/state';
+import { CampaignState } from '@/store/modules/state';
 import { Campaign } from '@/models/Campaign';
 
 @Component({
-  components: {
-  },
+  components: {}
 })
 export default class Home extends Vue {
-    @State('campaigns') private campaignState!: CampaignState;
+  @State('campaigns') private campaignState!: CampaignState;
 
-    @Action('getUpcomingCampaigns', { namespace: 'campaigns' })
-   private getUpcomingCampaigns!: () => void;
+  @Action('getUpcomingCampaigns', { namespace: 'campaigns' })
+  private getUpcomingCampaigns!: () => void;
 
-    protected mounted() {
-        this.getUpcomingCampaigns();
-    }
+  protected mounted() {
+    this.getUpcomingCampaigns();
+  }
 
-    private get upcomingCampaigns() : Campaign[];
+  private get upcomingCampaigns(): Campaign[] {
+    return this.campaignState.campaigns;
+  }
 }
 </script>
