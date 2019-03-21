@@ -2,7 +2,7 @@
     <div>
         <p>
         <router-link to="/about">About AllReady</router-link> /
-        <router-link to="about/aesop">Aesop's Tale</router-link>
+        <router-link to="/about/aesop">Aesop's Tale</router-link>
         </p>
 
         <router-view></router-view>
