@@ -1,5 +1,5 @@
 using AllReady.Api.Models.Output.Events;
-using AllReady.Api.Models.Output.Location;
+using AllReady.Api.Models.Output.Locations;
 using System.Collections.Generic;
 
 namespace AllReady.Api.Models.Output.Campaigns

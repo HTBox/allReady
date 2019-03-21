@@ -1,5 +1,5 @@
 
-namespace AllReady.Api.Models.Output.Location
+namespace AllReady.Api.Models.Output.Locations
 {
     public class LocationOutputModel
     {
