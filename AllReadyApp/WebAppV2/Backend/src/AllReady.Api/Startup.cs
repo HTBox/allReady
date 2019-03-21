@@ -19,6 +19,8 @@ namespace AllReady.Api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services.AddMvc()                
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
         }
@@ -28,6 +30,8 @@ namespace AllReady.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             }
             else
             {
