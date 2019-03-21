@@ -1,4 +1,4 @@
-Import-Module SQLPS -DisableNameChecking
+Import-Module SqlServer -DisableNameChecking
 
 Write-Host "Dropping AllReady Database"
 
