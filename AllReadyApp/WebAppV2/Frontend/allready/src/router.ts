@@ -17,10 +17,9 @@ export default new Router({
     },
     { path: '/campaign/:id',
       component: () => import(/* webpackChunkName: "campaign" */ './views/Campaign.vue')
-     }
-    ,
+    },
     {
-        path: '/about',
+        path: '/about/',
         name: 'about',
         component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
         children: [
@@ -40,4 +39,3 @@ export default new Router({
       },
     ],
 });
-
