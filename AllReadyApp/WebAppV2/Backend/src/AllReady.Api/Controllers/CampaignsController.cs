@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using AllReady.Api.Data;
+using AllReady.Api.Features.Commands;
+using AllReady.Api.Models.Input;
 using AllReady.Api.Models.Output.Campaigns;
 using AllReady.Api.Models.Output.Events;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using NodaTime;
@@ -13,10 +18,12 @@ namespace AllReady.Api.Controllers
     public class CampaignsController : ControllerBase
     {
         private readonly LinkGenerator _linkGenerator;
+        private readonly IMediator _mediator;
 
-        public CampaignsController(LinkGenerator linkGenerator)
+        public CampaignsController(LinkGenerator linkGenerator, IMediator mediator)
         {
             _linkGenerator = linkGenerator;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -93,6 +100,27 @@ namespace AllReady.Api.Controllers
             };
 
             return campaign;
+        }
+
+        [HttpPost, Route("Create")]
+        public async Task<ActionResult<CreateCommandResultOutputModel>> Post(CreateCampaignInputModel model)
+        {
+            // todo validation
+
+            var id = Guid.NewGuid();
+
+            var campaign = new Campaign { Name = model.Name };
+
+            var command = new CreateCampaignCommand(campaign);
+
+            await _mediator.Send(command);
+
+            var uri = _linkGenerator.GetPathByAction(
+                            HttpContext,
+                            "Get",
+                            values: new { id });
+
+            return Ok(new CreateCommandResultOutputModel { DataUri = uri });
         }
     }
 }

@@ -1,5 +1,8 @@
+using AllReady.Api.Data;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +23,11 @@ namespace AllReady.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+
+            services.AddMediatR(typeof(Startup));
+
+            services.AddDbContext<AllReadyDbContext>
+                (options => options.UseSqlServer(Configuration["Data:ConnectionString"]));
 
             services.AddMvc()                
                 .AddNewtonsoftJson(opt => opt.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb));
