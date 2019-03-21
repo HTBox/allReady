@@ -109,11 +109,29 @@ namespace AllReady.Api.Controllers
 
             var id = Guid.NewGuid();
 
-            var campaign = new Campaign { Name = model.Name };
+            var inputStartDate = model.StartDate.Value; // Model binding will have validated the presence of a date
+            var inputEndDate = model.EndDate.Value; // Model binding will have validated the presence of a date
+
+            var timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(model.TimeZoneId);
+
+            if (timeZone == null)
+                return BadRequest(); // todo RFC7807
+
+            var campaign = new Campaign
+            {
+                Id = id,
+                Name = model.Name,
+                StartDateTime = new LocalDate(inputStartDate.Year, inputStartDate.Month, inputStartDate.Day),
+                EndDateTime = new LocalDate(inputEndDate.Year, inputEndDate.Month, inputEndDate.Day),
+                ImageUrl = model.ImageUrl,
+                TimeZone = timeZone,
+                ShortDescription = model.ShortDescription,
+                FullDescription = model.FullDescription
+            };
 
             var command = new CreateCampaignCommand(campaign);
 
-            await _mediator.Send(command);
+            await _mediator.Send(command); // todo - handle exceptions
 
             var uri = _linkGenerator.GetPathByAction(
                             HttpContext,

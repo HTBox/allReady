@@ -32,7 +32,7 @@ namespace AllReady.Api.Features.Commands
         {
             _dbContext.Add(request.Campaign);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            var updated = await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
 }
