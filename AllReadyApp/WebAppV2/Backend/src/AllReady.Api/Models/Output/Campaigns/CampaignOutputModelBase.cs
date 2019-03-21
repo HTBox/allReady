@@ -15,5 +15,7 @@ namespace AllReady.Api.Models.Output.Campaigns
         public LocalDate EndDateTime { get; set; }
 
         public DateTimeZone TimeZone { get; set; }
+
+        public bool IsFeatured { get; set; }
     }
 }
