@@ -17,5 +17,7 @@ namespace AllReady.Api.Models.Output.Campaigns
         public DateTimeZone TimeZone { get; set; }
 
         public bool IsFeatured { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 }

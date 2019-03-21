@@ -37,7 +37,8 @@ namespace AllReady.Api.Controllers
                     Link = _linkGenerator.GetPathByAction(
                         HttpContext,
                         "Get",
-                        values: new { id = 1 })
+                        values: new { id = 1 }),
+                    ImageUrl = "https://picsum.photos/200/400/?random+8e4ee86d-7636-453a-89f2-6dab38279e66"
                 },
                 new CampaignListerOutputModel
                 {
@@ -50,7 +51,8 @@ namespace AllReady.Api.Controllers
                     Link = _linkGenerator.GetPathByAction(
                         HttpContext,
                         "Get",
-                        values: new { id = 2 })
+                        values: new { id = 2 }),
+                    ImageUrl = "https://picsum.photos/200/400/?random+2ad3998b-1b6c-4a05-b3d9-0142de9e0949"
                 }
             };
 
@@ -71,6 +73,7 @@ namespace AllReady.Api.Controllers
                 StartDateTime = new LocalDate(2019, 01, 01),
                 EndDateTime = new LocalDate(2019, 06, 30),
                 TimeZone = DateTimeZoneProviders.Tzdb["Europe/London"],
+                ImageUrl = "https://picsum.photos/200/400/?random+8e4ee86d-7636-453a-89f2-6dab38279e66",
                 Events = new List<EventListerOutputModel>
                 {
                     new EventListerOutputModel
