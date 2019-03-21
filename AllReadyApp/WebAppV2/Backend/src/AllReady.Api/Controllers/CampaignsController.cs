@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using AllReady.Api.Models.Output.Campaigns;
+using AllReady.Api.Models.Output.Events;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
 
 namespace AllReady.Api.Controllers
 {
@@ -19,13 +19,13 @@ namespace AllReady.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<CampaignListerViewModel>> Get()
+        public ActionResult<IEnumerable<CampaignListerOutputModel>> Get()
         {
             // todo - call a service to load this from a data store
 
-            var campaigns = new List<CampaignListerViewModel>
+            var campaigns = new List<CampaignListerOutputModel>
             {
-                new CampaignListerViewModel
+                new CampaignListerOutputModel
                 {
                     Id = 1,
                     Name = "Charity Campaign 1",
@@ -33,13 +33,12 @@ namespace AllReady.Api.Controllers
                     StartDateTime = new LocalDate(2019, 01, 01),
                     EndDateTime = new LocalDate(2019, 06, 30),
                     TimeZone = DateTimeZoneProviders.Tzdb["Europe/London"],
-                    Hidden = false,
-                    DatUri = _linkGenerator.GetPathByAction(
+                    Link = _linkGenerator.GetPathByAction(
                         HttpContext,
                         "Get",
                         values: new { id = 1 })
                 },
-                new CampaignListerViewModel
+                new CampaignListerOutputModel
                 {
                     Id = 2,
                     Name = "Charity Campaign 2",
@@ -47,8 +46,7 @@ namespace AllReady.Api.Controllers
                     StartDateTime = new LocalDate(2019, 04, 01),
                     EndDateTime = new LocalDate(2019, 05, 31),
                     TimeZone = DateTimeZoneProviders.Tzdb["Europe/London"],
-                    Hidden = false,
-                    DatUri = _linkGenerator.GetPathByAction(
+                    Link = _linkGenerator.GetPathByAction(
                         HttpContext,
                         "Get",
                         values: new { id = 2 })
@@ -59,11 +57,11 @@ namespace AllReady.Api.Controllers
         }
 
         [HttpGet, Route("{id}")]
-        public ActionResult<CampaignViewModel> Get(int id)
+        public ActionResult<CampaignOutputModel> Get(int id)
         {
             // todo - call a service to load this from a data store using the ID
 
-            var campaign = new CampaignViewModel
+            var campaign = new CampaignOutputModel
             {
                 Id = 1,
                 Name = "Charity Campaign 1",
@@ -72,7 +70,22 @@ namespace AllReady.Api.Controllers
                 StartDateTime = new LocalDate(2019, 01, 01),
                 EndDateTime = new LocalDate(2019, 06, 30),
                 TimeZone = DateTimeZoneProviders.Tzdb["Europe/London"],
-                Hidden = false
+                Events = new List<EventListerOutputModel>
+                {
+                    new EventListerOutputModel
+                    {
+                        Id = 1,
+                        Name = "Charity Event 1",
+                        ShortDescription = "Marketing activities",
+                        StartDateTime = new LocalDate(2019, 01, 01),
+                        EndDateTime = new LocalDate(2019, 01, 31),
+                        TimeZone = DateTimeZoneProviders.Tzdb["Europe/London"],
+                        Link = _linkGenerator.GetPathByAction(
+                            HttpContext,
+                            "Get",
+                            values: new { id = 1 })
+                    }
+                }
             };
 
             return campaign;

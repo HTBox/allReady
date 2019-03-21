@@ -1,8 +1,8 @@
-﻿using NodaTime;
+using NodaTime;
 
 namespace AllReady.Api.Models.Output.Campaigns
 {
-    public abstract class CampaignViewModelBase
+    public abstract class CampaignOutputModelBase
     {
         public int Id { get; set; }
 
@@ -10,12 +10,12 @@ namespace AllReady.Api.Models.Output.Campaigns
 
         public string ShortDescription { get; set; }
 
-        public bool Hidden { get; set; }
-
         public LocalDate StartDateTime { get; set; }
 
         public LocalDate EndDateTime { get; set; }
 
         public DateTimeZone TimeZone { get; set; }
+
+        public bool IsFeatured { get; set; }
     }
 }
