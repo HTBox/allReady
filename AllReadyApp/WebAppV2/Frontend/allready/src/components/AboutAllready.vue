@@ -42,6 +42,6 @@
 
         <h3>What's with the Logo?</h3>
 
-        <a href="todo">A Story by Aesop</a>
+        <router-link to="/about/aesop">A Story by Aesop</router-link>
   </div>
 </template>
