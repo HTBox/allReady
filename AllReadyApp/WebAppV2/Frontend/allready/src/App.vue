@@ -23,13 +23,17 @@
     <v-toolbar color="primary" dark fixed app>
       <v-toolbar-side-icon @click.stop="showDrawer = !showDrawer"></v-toolbar-side-icon>
       <v-toolbar-title>
-        <img src="./assets/Web-Logo-small.png">
+        <router-link to="/">
+          <img src="./assets/Web-Logo-small.png">
+        </router-link>
       </v-toolbar-title>
     </v-toolbar>
     <v-content>
       <v-container fluid fill-height>
         <v-layout justify-center align-center>
-          <router-view/>
+          <transition name="fade" mode="out-in">
+            <router-view/>
+          </transition>
         </v-layout>
       </v-container>
     </v-content>
@@ -53,18 +57,17 @@
         </a>
         <v-spacer></v-spacer>
         <div>
-        Powered by
-        <a href="http://www.htbox.org/" target="_blank">Humanitarian Toolbox</a>
-      </div>
+          Powered by
+          <a href="http://www.htbox.org/" target="_blank">Humanitarian Toolbox</a>
+        </div>
       </v-layout>
-
     </v-footer>
   </v-app>
 </template>
 
 <script>
 export default {
-  name: 'App',
+  name: "App",
   components: {},
   data() {
     return {
@@ -76,7 +79,19 @@ export default {
 </script>
 <style>
 .footer-icon {
-    margin: 5px;
+  margin: 5px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition-duration: 0.3s;
+  transition-property: opacity;
+  transition-timing-function: ease;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
 }
 </style>
 
