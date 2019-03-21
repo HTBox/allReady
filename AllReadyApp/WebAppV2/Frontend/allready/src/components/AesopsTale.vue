@@ -3,7 +3,7 @@
     <h3>Aesop's Tale</h3>
     <h1>A Story by Aesop</h1>
         <div style="background-color: #d58033;">
-            <img src="/assets/logo.png" alt="Logo image for the project" class="img-responsive center-block"/>
+            <img src="/assets/Web-Logo.png" alt="Logo image for the project" class="img-responsive center-block"/>
         </div>
         <h2>The Ant and the Grasshopper</h2>
         In a field one summer's day a Grasshopper was hopping about, chirping and singing to its heart's content. An Ant passed by, bearing along with great toil an ear of corn he was taking to the nest.
