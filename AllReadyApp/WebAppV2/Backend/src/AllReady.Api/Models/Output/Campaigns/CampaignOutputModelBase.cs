@@ -4,7 +4,7 @@ namespace AllReady.Api.Models.Output.Campaigns
 {
     public abstract class CampaignOutputModelBase
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         public string Name { get; set; }
 
