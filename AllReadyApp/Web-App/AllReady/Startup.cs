@@ -91,7 +91,7 @@ namespace AllReady
 
             //Hangfire
             services.AddHangfire(configuration => configuration.UseSqlServerStorage(Configuration["Data:HangfireConnection:ConnectionString"]));
-
+            
             services.AddScoped<IAllReadyUserManager, AllReadyUserManager>();
             services.AddScoped<IUserAuthorizationService, UserAuthorizationService>();
             services.AddScoped<IAuthorizableEventBuilder, AuthorizableEventBuilder>();
@@ -106,7 +106,6 @@ namespace AllReady
         {
             // Put first to avoid issues with OPTIONS when calling from Angular/Browser.
             app.UseCors("allReady");
-
             app.UseSession();
 
             // Add the following to the request pipeline only in development environment.

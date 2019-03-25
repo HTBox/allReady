@@ -1,0 +1,24 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug in Docker",
+            "type": "coreclr",
+            "request": "launch",           
+            "program": "/app/Web-App/AllReady/bin/Debug/netcoreapp2.0/AllReady.dll",          
+            "cwd": "/app/Web-App/AllReady",         
+            "sourceFileMap": {
+                "/app": "${workspaceRoot}"      
+            },
+            "pipeTransport": {
+                "pipeProgram": "docker",            
+                "pipeCwd": "${workspaceRoot}",
+                "pipeArgs": [
+                    "exec -i allreadyweb" 
+                ],
+                "quoteArgs": false,
+                "debuggerPath": "/root/vsdbg/vsdbg"      
+            }
+        }
+    ]
+}

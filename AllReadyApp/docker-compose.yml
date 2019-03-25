@@ -1,0 +1,28 @@
+version: "3"
+services:
+    web:
+        build: 
+            context: .
+            dockerfile: Web-App/AllReady/Dockerfile
+        container_name: allreadyweb
+        environment:
+            ASPNETCORE_ENVIRONMENT: Development
+            Data__DefaultConnection__ConnectionString: "Server=db,1433;Initial Catalog=master;Persist Security Info=False;User ID=sa;Password=yourStrong(!)Password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+            Data__HangfireConnection__ConnectionString: "Server=db,1433;Initial Catalog=master;Persist Security Info=False;User ID=sa;Password=yourStrong(!)Password;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+        ports:
+            - "8000:80"
+        depends_on:
+            - db
+    db:
+        image: "microsoft/mssql-server-linux:2017-CU3"
+        container_name: allreadysqlserver
+        volumes: 
+            - sql-server-data:/var/opt/mssql
+        ports: 
+            - "1433:1433"
+        environment:
+            SA_PASSWORD: "yourStrong(!)Password"
+            ACCEPT_EULA: "Y"
+
+volumes:
+    sql-server-data:
