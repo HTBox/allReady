@@ -26,6 +26,7 @@ before_build:
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - cnd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
+ - cnd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.BrowserTest.fsproj
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
@@ -34,6 +35,7 @@ build_script:
  - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - cmd: dotnet build -c Release AllReadyApp\AllReady.IntegrationTest
+ - cmd: dotnet build -c Release AllReadyApp\AllReady.BrowserTest
 
 test_script:
 # === Run Unit Tests
@@ -56,6 +58,12 @@ test_script:
  - ps: Start-Sleep 30  # Wait for webserver to warm up
  - ps: cd $env:APPVEYOR_BUILD_FOLDER 
  - ps: Write-Host "== Running integration tests =="
+ - ps: dotnet run -p AllReadyApp\AllReady.IntegrationTest
+ - ps: Write-Host "== Browser Tests =="
+ - ps: Push-Location
+ - ps: cd .\AllReadyApp\AllReady.BrowserTest\
+ - ps: dotnet test --no-build --verbosity normal
+ - ps: Pop-Location
  - ps: dotnet run -p AllReadyApp\AllReady.IntegrationTest
  - ps: Write-Host "== Finished running integration tests =="
  - ps: |
