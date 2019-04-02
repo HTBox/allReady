@@ -35,7 +35,7 @@ build_script:
  - cmd: dotnet build AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet build AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
  - cmd: dotnet build -c Release AllReadyApp\AllReady.IntegrationTest
- - cmd: dotnet build -c Release AllReadyApp\AllReady.BrowserTest
+ - cmd: dotnet build AllReadyApp\AllReady.BrowserTest
 
 test_script:
 # === Run Unit Tests
