@@ -59,13 +59,13 @@ test_script:
  - ps: cd $env:APPVEYOR_BUILD_FOLDER 
  - ps: Write-Host "== Running integration tests =="
  - ps: dotnet run -p AllReadyApp\AllReady.IntegrationTest
+ - ps: Write-Host "== Finished running integration tests =="
  - ps: Write-Host "== Browser Tests =="
  - ps: Push-Location
  - ps: cd .\AllReadyApp\AllReady.BrowserTest\
  - ps: dotnet test --no-build --verbosity normal
  - ps: Pop-Location
- - ps: dotnet run -p AllReadyApp\AllReady.IntegrationTest
- - ps: Write-Host "== Finished running integration tests =="
+ - ps: Write-Host "== Finished - Browser Tests =="
  - ps: |
      if(!$webhost.HasExited) {
        Write-Host "== stopping web server =="
