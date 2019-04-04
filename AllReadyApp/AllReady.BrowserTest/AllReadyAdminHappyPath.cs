@@ -227,6 +227,98 @@ namespace AllReady.BrowserTest
             Assert.Equal(expected, actual);
         }
 
+        [Fact, TestPriority(10)]
+        public void ShouldOpenCreateEventPage()
+        {
+            const string partialDestinationUrl = @"/Admin/Event/Create/";
+            // pre-condition - /Admin/Campaign/Details/
+            Assert.Contains(@"/Admin/Campaign/Details/", _driver.Url);
+            // find - href Admin/Event/Create/
+            _driver.FindElement(By.XPath($"//a[contains(@href, '{partialDestinationUrl}')]")).Click();
+            Assert.Contains(partialDestinationUrl, _driver.Url);
+        }
+
+        [Fact, TestPriority(11)]
+        public void ShouldCreateEvent()
+        {
+            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
+            string eventName = UniqueName("Event");
+
+            _driver.FindElement(By.Id("Name")).SendKeys(eventName);
+            _driver.FindElement(By.Id("Description")).SendKeys("description");
+            _driver.FindElement(By.Id("Headline")).SendKeys("headline");
+            new SelectElement(_driver.FindElement(By.Id("EventType")))
+                .SelectByText("Itinerary", true);
+            //var element = _driver.FindElement(By.Id("IsLimitVolunteers"));
+            //if (!element.Selected)
+            //{
+            //    element.Click();
+            //}
+
+            new SelectElement(_driver.FindElement(By.Id("TimeZoneId")))
+                .SelectByText("Pacific", true);
+
+            var element = _driver.FindElement(By.Id("StartDateTime"));
+            element.SendKeys(Keys.Control + "a");
+            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count > 0);
+            element.SendKeys("04/15/2019 9:00 AM");
+            element.SendKeys(Keys.Escape);
+            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count == 0);
+
+            // copy location from campaign
+            _driver.FindElement(By.Id("btnGetLocationInfo")).Click();
+            var confirmCopyContactModal = wait.Until<IWebElement>((_driver) =>
+            {
+                var e = _driver.FindElement(By.Id("confirmLocationModal"));
+                return e.Displayed ? e : null;
+            });
+            _driver.FindElement(By.Id("confirmOverwriteLocation")).Click();
+            wait.Until(_driver => !_driver.FindElement(By.Id("confirmLocationModal")).Displayed);
+
+            /// submit form
+            _driver.FindElement(By.ClassName("submit-form")).Submit();
+
+            var expected = $"{eventName} - allReady";
+            var actual = _driver.Title;
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact, TestPriority(12)]
+        public void ShouldOpenCreateVolunteerTaskPage()
+        {
+            const string partialDestinationUrl = @"/Admin/VolunteerTask/Create/";
+            Assert.Contains(@"/Admin/Event/Details/", _driver.Url);
+            _driver.FindElement(By.XPath($"//a[contains(@href, '{partialDestinationUrl}')]")).Click();
+            Assert.Contains(partialDestinationUrl, _driver.Url);
+        }
+
+        [Fact, TestPriority(13)]
+        public void ShouldCreateVolunteerTask()
+        {
+            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
+            string volunteerTaskName = UniqueName("Task");
+
+            _driver.FindElement(By.Id("Name")).SendKeys(volunteerTaskName);
+            _driver.FindElement(By.Id("Description")).SendKeys("description");
+            _driver.FindElement(By.Id("NumberOfVolunteersRequired")).SendKeys("2");
+
+            var element = _driver.FindElement(By.Id("StartDateTime"));
+            element.SendKeys(Keys.Control + "a");
+            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count > 0);
+            element.SendKeys("04/15/2019 9:00 AM");
+            element.SendKeys(Keys.Escape);
+            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count == 0);
+
+            var eventName = _driver.FindElement(By.XPath(@"//div[contains(@class,'form-group')]//label[contains(@for,'EventName')]/following-sibling::div[1]")).Text;
+
+            /// submit form
+            element.Submit();
+
+            var expected = $"{eventName} - allReady";
+            var actual = _driver.Title;
+            Assert.Equal(expected, actual);
+        }
+
         [Fact, TestPriority(99)]
         public void ShouldLogoff()
         {
