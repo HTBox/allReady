@@ -13,15 +13,13 @@ namespace AllReady.BrowserTest
     [TestCaseOrderer("AllReady.BrowserTest.PriorityOrderer", "AllReady.BrowserTest")]
     public class AllReadyAdminHappyPath : IClassFixture<BrowserFixture>
     {
-        BrowserFixture _fixture;
         IWebDriver _driver;
         IConfiguration _config;
 
         public AllReadyAdminHappyPath(BrowserFixture fixture)
         {
-            _fixture = fixture;
             _driver = fixture._driver;
-            _config = fixture._config;
+            _config = new ConfigurationFixture().Config;
         }
 
         [Fact, TestPriority(1)]
