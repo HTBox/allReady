@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Interactions;
@@ -14,17 +15,19 @@ namespace AllReady.BrowserTest
     {
         BrowserFixture _fixture;
         IWebDriver _driver;
+        IConfiguration _config;
 
         public AllReadyAdminHappyPath(BrowserFixture fixture)
         {
             _fixture = fixture;
             _driver = fixture._driver;
+            _config = fixture._config;
         }
 
         [Fact, TestPriority(1)]
         public void ShouldOpenHomePage()
         {
-            _driver.Navigate().GoToUrl(Configuration.HomePageURL);
+            _driver.Navigate().GoToUrl(_config["HomePageURL"]);
 
             var expected = "Home Page - allReady";
             var actual = _driver.Title;
@@ -43,8 +46,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(3)]
         public void ShouldLogin()
         {
-            _driver.FindElement(By.Id("Email")).SendKeys(Configuration.AllReadyAdministratorUserEmail);
-            _driver.FindElement(By.Id("Password")).SendKeys(Configuration.AllReadyAdministratorPassword);
+            _driver.FindElement(By.Id("Email")).SendKeys(_config["AllReadyAdministratorUserEmail"]);
+            _driver.FindElement(By.Id("Password")).SendKeys(_config["AllReadyAdministratorPassword"]);
             _driver.FindElement(By.Id("login-submit")).Click();
 
             var expected = "Site Admin - allReady";
