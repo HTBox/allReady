@@ -1,3 +1,4 @@
+using AllReady.BrowserTest.Pages;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -35,7 +36,9 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(2)]
         public void ShouldOpenLoginPage()
         {
-            _driver.FindElement(By.ClassName("log-in")).Click();
+            var homePage = new HomePage(_driver);
+            homePage.Menu.LoginMenuItem.Click();
+
             var expected = "Log in - allReady";
             var actual = _driver.Title;
             Assert.Equal(expected, actual);
@@ -44,9 +47,11 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(3)]
         public void ShouldLogin()
         {
-            _driver.FindElement(By.Id("Email")).SendKeys(_config["AllReadyAdministratorUserEmail"]);
-            _driver.FindElement(By.Id("Password")).SendKeys(_config["AllReadyAdministratorPassword"]);
-            _driver.FindElement(By.Id("login-submit")).Click();
+            var loginPage = new AccountLoginPage(_driver);
+
+            loginPage.UserEmail.SendKeys(_config["AllReadyAdministratorUserEmail"]);
+            loginPage.UserPassword.SendKeys(_config["AllReadyAdministratorPassword"]);
+            loginPage.LoginButton.Click();
 
             var expected = "Site Admin - allReady";
             var actual = _driver.Title;
@@ -56,19 +61,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(4)]
         public void ShouldOpenCurrentlyActiveOrganizationsPage()
         {
-            // hover over dropdown element until dropdown appears
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
-            var element = wait.Until<IWebElement>((_driver) =>
-            {
-                var e = _driver.FindElement(By.ClassName("dropdown-admin"));
-                return e.Displayed ? e : null;
-            });
-            Actions action = new Actions(_driver);
-            action.MoveToElement(element).Perform();
-
-            //
-            //_driver.FindElement(By.XPath(@"//a[(@href='/Admin/Organization')]")).Click();
-            _driver.FindElement(By.XPath(@"//li[contains(@class,'dropdown-admin')]//a[text()='Organizations']")).Click();
+            var homePage = new HomePage(_driver);
+            homePage.Menu.AdminOrganizationMenuItem.Click();
 
             var expected = "Currently active organizations - allReady";
             var actual = _driver.Title;
@@ -78,7 +72,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(5)]
         public void ShouldOpenCreateOrganizationPage()
         {
-            _driver.FindElement(By.LinkText("Create Organization")).Click();
+            var adminOrganizationPage = new AdminOgranizationPage(_driver);
+            adminOrganizationPage.CreateOrgranizationButton.Click();
 
             var expected = "Create Organization - allReady";
             var actual = _driver.Title;
@@ -323,18 +318,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(99)]
         public void ShouldLogoff()
         {
-            // hover over dropdown element until dropdown appears
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
-            var element = wait.Until<IWebElement>((_driver) =>
-            {
-                var e = _driver.FindElement(By.ClassName("dropdown-account"));
-                return e.Displayed ? e : null;
-            });
-            Actions action = new Actions(_driver);
-            action.MoveToElement(element).Perform();
-
-            // click log out button
-            _driver.FindElement(By.ClassName("log-out")).Click();
+            var homePage = new HomePage(_driver);
+            homePage.Menu.LogoffMenuItem.Click();
 
             var expected = "Home Page - allReady";
             var actual = _driver.Title;
