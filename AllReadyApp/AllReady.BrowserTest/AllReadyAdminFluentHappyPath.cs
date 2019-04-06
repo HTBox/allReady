@@ -11,14 +11,14 @@ namespace AllReady.BrowserTest
     public class AllReadyAdminFluentHappyPath
     {
         [Fact]
-        public void ShouldLoginAndLogoff()
+        public void ShouldLogonAndLogoff()
         {
             using (IWebDriver _driver = new BrowserFixture()._driver)
             {
                 IConfiguration _config = new ConfigurationFixture().Config;
                 _driver.Navigate().GoToUrl(_config["HomePageURL"]);
 
-                var homePage = new HomePage(_driver);
+                var homePage = new Page(_driver).Menu.OpenHomePage();
                 Assert.Equal("Home Page - allReady", _driver.Title);
 
                 var loginPage = homePage.Menu.OpenLoginPage();

@@ -1,9 +1,6 @@
 using AllReady.BrowserTest.Pages;
 using Microsoft.Extensions.Configuration;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,8 +33,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(2)]
         public void ShouldOpenLoginPage()
         {
-            var homePage = new HomePage(_driver);
-            homePage.Menu.LoginMenuItem.Click();
+            var page = new Page(_driver);
+            page.Menu.LoginMenuItem.Click();
 
             var expected = "Log in - allReady";
             var actual = _driver.Title;
@@ -61,8 +58,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(4)]
         public void ShouldOpenCurrentlyActiveOrganizationsPage()
         {
-            var homePage = new HomePage(_driver);
-            homePage.Menu.AdminOrganizationMenuItem.Click();
+            var page = new Page(_driver);
+            page.Menu.AdminOrganizationsMenuItem.Click();
 
             var expected = "Currently active organizations - allReady";
             var actual = _driver.Title;
@@ -93,38 +90,26 @@ namespace AllReady.BrowserTest
         {
             string organizationName = UniqueName("Organization");
 
-            /// filling in only required fields
-            // enter orgainization information
-            _driver.FindElement(By.Id("Name")).SendKeys(organizationName);
+            var adminOrganizationCreatePage = new AdminOrganizationCreatePage(_driver);
 
-            /// enter privacy policy text
-            // 
-            _driver.FindElement(By.Id("show-pp-text")).Click();
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
-            var element = wait.Until<IWebElement>((_driver) =>
-            {
-                var e = _driver.FindElement(By.Id("PrivacyPolicy_ifr"));
-                return e.Displayed ? e : null;
-            });
-            Actions action = new Actions(_driver);
-            action.MoveToElement(element).Perform();
-            // 
-            _driver.SwitchTo().Frame(_driver.FindElement(By.Id("PrivacyPolicy_ifr")));
-            _driver.FindElement(By.Id("tinymce")).SendKeys("Privacy for all");
-            _driver.SwitchTo().DefaultContent();
+            adminOrganizationCreatePage.Name.SendKeys(organizationName);
+
+            // choose to enter privacy policy text
+            adminOrganizationCreatePage.PrivacyPolicyTextButton.Click();
+            adminOrganizationCreatePage.PrivacyPolicy.SendKeys("Privacy for all");
 
             /// enter primary location information
-            _driver.FindElement(By.Id("Location_Address1")).SendKeys("123 Main St");
-            _driver.FindElement(By.Id("Location_City")).SendKeys("Hollywood");
-            _driver.FindElement(By.Id("Location_State")).SendKeys("CA");
-            _driver.FindElement(By.Id("Location_PostalCode")).SendKeys("99120");
-            _driver.FindElement(By.Id("Location_Country")).SendKeys("USA");
+            adminOrganizationCreatePage.LocationAddress1.SendKeys("123 Main St");
+            adminOrganizationCreatePage.LocationCity.SendKeys("Hollywood");
+            adminOrganizationCreatePage.LocationState.SendKeys("CA");
+            adminOrganizationCreatePage.LocationPostalCode.SendKeys("99120");
+            adminOrganizationCreatePage.LocationCountry.SendKeys("USA");
 
             /// enter primary contact information
             //
 
             /// submit form
-            element.Submit();
+            adminOrganizationCreatePage.Submit();
 
             var expected = $"{organizationName} - allReady";
             var actual = _driver.Title;
@@ -134,18 +119,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(7)]
         public void ShouldOpenCampaignsAdminPage()
         {
-            // hover over dropdown element until dropdown appears
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
-            var element = wait.Until<IWebElement>((_driver) =>
-            {
-                var e = _driver.FindElement(By.ClassName("dropdown-admin"));
-                return e.Displayed ? e : null;
-            });
-            Actions action = new Actions(_driver);
-            action.MoveToElement(element).Perform();
-
-            //
-            _driver.FindElement(By.XPath(@"//li[contains(@class,'dropdown-admin')]//a[text()='Campaigns']")).Click();
+            var page = new Page(_driver);
+            page.Menu.AdminCampaignsMenuItem.Click();
 
             var expected = "Campaigns - Admin - allReady";
             var actual = _driver.Title;
@@ -155,7 +130,8 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(8)]
         public void ShouldOpenCreateCampaignPage()
         {
-            _driver.FindElement(By.LinkText("Create Campaign")).Click();
+            var adminCampaignPage = new AdminCampaignPage(_driver);
+            adminCampaignPage.CreateCampaignButton.Click();
 
             var expected = "Create Campaign - allReady";
             var actual = _driver.Title;
@@ -165,58 +141,22 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(9)]
         public void ShouldCreateCampaign()
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
             string campaignName = UniqueName("Campaign");
 
-            _driver.FindElement(By.Id("Name")).SendKeys(campaignName);
-            _driver.FindElement(By.Id("Description")).SendKeys("description");
-            _driver.FindElement(By.Id("Headline")).SendKeys("headline");
+            var adminCampaignCreatePage = new AdminCampaignCreatePage(_driver);
 
-            _driver.SwitchTo().Frame(_driver.FindElement(By.Id("FullDescription_ifr")));
-            _driver.FindElement(By.Id("tinymce")).SendKeys("Longer desription of the campaign");
-            _driver.SwitchTo().DefaultContent();
+            adminCampaignCreatePage.Name.SendKeys(campaignName);
+            adminCampaignCreatePage.Description.SendKeys("Description");
+            adminCampaignCreatePage.Headline.SendKeys("Headline");
+            adminCampaignCreatePage.FullDesciption.SendKeys("Longer desription of the campaign");
+            adminCampaignCreatePage.TimeZone.SelectByText("Pacific", true);
+            adminCampaignCreatePage.StartDate.SendKeys("04/15/2019");
+            adminCampaignCreatePage.Organization.SelectLast();
+            adminCampaignCreatePage.Published.Checked(true);
+            adminCampaignCreatePage.CopyContactInfoButton.Click();
+            adminCampaignCreatePage.CopyConfirmDialog.ClickOK();
 
-            // set time zone from fixed dropdown list
-            new SelectElement(_driver.FindElement(By.Id("TimeZoneId")))
-                .SelectByText("Pacific", true);
-
-            // set start date
-            var d = _driver.FindElement(By.Id("StartDate"));
-            d.Click();
-            wait.Until<IWebElement>(_driver =>
-            {
-                var e = _driver.FindElement(By.ClassName("bootstrap-datetimepicker-widget"));
-                return e.Displayed ? e : null;
-            });
-            d = _driver.FindElement(By.Id("StartDate"));
-            d.SendKeys(Keys.Control + "a");
-            d.SendKeys("04/15/2019");
-
-            // select organization
-            var organizationList = new SelectElement(_driver.FindElement(By.Id("OrganizationId")));
-            organizationList.SelectByIndex(organizationList.Options.Count - 1);
-            //
-
-            _driver.FindElement(By.Id("Published")).Click();
-            // copy location from primary contact
-            _driver.FindElement(By.Id("btnGetContactInfo")).Click();
-            var confirmCopyContactModal = wait.Until<IWebElement>((_driver) =>
-            {
-                var e = _driver.FindElement(By.Id("confirmContactModal"));
-                return e.Displayed ? e : null;
-            });
-            Actions action = new Actions(_driver);
-            action.MoveToElement(confirmCopyContactModal).Perform();
-            //
-            _driver.FindElement(By.Id("confirmOverwriteContact")).Click();
-            //
-            wait.Until<IWebElement>((_driver) =>
-            {
-                return confirmCopyContactModal.Displayed ? null : confirmCopyContactModal;
-            });
-
-            /// submit form
-            _driver.FindElement(By.Id("campaign-form")).Submit();
+            adminCampaignCreatePage.Submit();
 
             var expected = $"{campaignName} - allReady";
             var actual = _driver.Title;
@@ -226,53 +166,34 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(10)]
         public void ShouldOpenCreateEventPage()
         {
-            const string partialDestinationUrl = @"/Admin/Event/Create/";
             // pre-condition - /Admin/Campaign/Details/
             Assert.Contains(@"/Admin/Campaign/Details/", _driver.Url);
-            // find - href Admin/Event/Create/
-            _driver.FindElement(By.XPath($"//a[contains(@href, '{partialDestinationUrl}')]")).Click();
+
+            // do the work
+            var adminCampaignDetailsPage = new AdminCampaignDetailsPage(_driver);
+            adminCampaignDetailsPage.CreateNewEvent.Click();
+
+            // check that we got there
+            const string partialDestinationUrl = @"/Admin/Event/Create/";
             Assert.Contains(partialDestinationUrl, _driver.Url);
         }
 
         [Fact, TestPriority(11)]
         public void ShouldCreateEvent()
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
             string eventName = UniqueName("Event");
 
-            _driver.FindElement(By.Id("Name")).SendKeys(eventName);
-            _driver.FindElement(By.Id("Description")).SendKeys("description");
-            _driver.FindElement(By.Id("Headline")).SendKeys("headline");
-            new SelectElement(_driver.FindElement(By.Id("EventType")))
-                .SelectByText("Itinerary", true);
-            //var element = _driver.FindElement(By.Id("IsLimitVolunteers"));
-            //if (!element.Selected)
-            //{
-            //    element.Click();
-            //}
-
-            new SelectElement(_driver.FindElement(By.Id("TimeZoneId")))
-                .SelectByText("Pacific", true);
-
-            var element = _driver.FindElement(By.Id("StartDateTime"));
-            element.SendKeys(Keys.Control + "a");
-            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count > 0);
-            element.SendKeys("04/15/2019 9:00 AM");
-            element.SendKeys(Keys.Escape);
-            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count == 0);
-
-            // copy location from campaign
-            _driver.FindElement(By.Id("btnGetLocationInfo")).Click();
-            var confirmCopyContactModal = wait.Until<IWebElement>((_driver) =>
-            {
-                var e = _driver.FindElement(By.Id("confirmLocationModal"));
-                return e.Displayed ? e : null;
-            });
-            _driver.FindElement(By.Id("confirmOverwriteLocation")).Click();
-            wait.Until(_driver => !_driver.FindElement(By.Id("confirmLocationModal")).Displayed);
-
-            /// submit form
-            _driver.FindElement(By.ClassName("submit-form")).Submit();
+            var adminEventCreatePage = new AdminEventCreatePage(_driver);
+            adminEventCreatePage.Name.SendKeys(eventName);
+            adminEventCreatePage.Description.SendKeys("Description");
+            adminEventCreatePage.Headline.SendKeys("Headline");
+            adminEventCreatePage.EventType.SelectByText("Itinerary", true);
+            adminEventCreatePage.IsLimitVolunteers.Checked(true);
+            adminEventCreatePage.TimeZone.SelectByText("Pacific", true);
+            adminEventCreatePage.StartDateTime.SendKeys("04/15/2019 9:00 AM");
+            adminEventCreatePage.CopyLocationFromCampaignButton.Click();
+            adminEventCreatePage.CopyConfirmDialog.ClickOK();
+            adminEventCreatePage.Submit();
 
             var expected = $"{eventName} - allReady";
             var actual = _driver.Title;
@@ -282,33 +203,34 @@ namespace AllReady.BrowserTest
         [Fact, TestPriority(12)]
         public void ShouldOpenCreateVolunteerTaskPage()
         {
-            const string partialDestinationUrl = @"/Admin/VolunteerTask/Create/";
+            // pre-condition
             Assert.Contains(@"/Admin/Event/Details/", _driver.Url);
-            _driver.FindElement(By.XPath($"//a[contains(@href, '{partialDestinationUrl}')]")).Click();
+
+            // do work
+            var adminEventDetailsPage = new AdminEventDetailsPage(_driver);
+            adminEventDetailsPage.CreateNewTask.Click();
+
+            // post-condition
+            const string partialDestinationUrl = @"/Admin/VolunteerTask/Create/";
             Assert.Contains(partialDestinationUrl, _driver.Url);
         }
 
         [Fact, TestPriority(13)]
         public void ShouldCreateVolunteerTask()
         {
-            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(1));
             string volunteerTaskName = UniqueName("Task");
 
-            _driver.FindElement(By.Id("Name")).SendKeys(volunteerTaskName);
-            _driver.FindElement(By.Id("Description")).SendKeys("description");
-            _driver.FindElement(By.Id("NumberOfVolunteersRequired")).SendKeys("2");
+            var adminVolunteerTaskCreatePage = new AdminVolunteerTaskCreatePage(_driver);
 
-            var element = _driver.FindElement(By.Id("StartDateTime"));
-            element.SendKeys(Keys.Control + "a");
-            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count > 0);
-            element.SendKeys("04/15/2019 9:00 AM");
-            element.SendKeys(Keys.Escape);
-            wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count == 0);
+            adminVolunteerTaskCreatePage.Name.SendKeys(volunteerTaskName);
+            adminVolunteerTaskCreatePage.Description.SendKeys("Description");
+            adminVolunteerTaskCreatePage.NumberOfVolunteersRequired.SendKeys("2");
+            adminVolunteerTaskCreatePage.StartDateTime.SendKeys("04/15/2019 9:00 AM");
 
             var eventName = _driver.FindElement(By.XPath(@"//div[contains(@class,'form-group')]//label[contains(@for,'EventName')]/following-sibling::div[1]")).Text;
 
             /// submit form
-            element.Submit();
+            adminVolunteerTaskCreatePage.Submit();
 
             var expected = $"{eventName} - allReady";
             var actual = _driver.Title;

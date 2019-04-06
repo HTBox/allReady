@@ -57,8 +57,16 @@ namespace AllReady.BrowserTest.Pages
             return element;
         }
 
-        public IWebElement AdminOrganizationMenuItem => AdminMenuDropDown("Organizations");
+        public IWebElement HomeMenuItem => _driver.FindElement(By.XPath("//a[@class='navbar-brand']"));
+        public IWebElement AdminOrganizationsMenuItem => AdminMenuDropDown("Organizations");
+        public IWebElement AdminCampaignsMenuItem => AdminMenuDropDown("Campaigns");
         public IWebElement LogoffMenuItem => AccountMenuDropDown("log-out");
+
+        public HomePage OpenHomePage()
+        {
+            HomeMenuItem.Click();
+            return new HomePage(_driver);
+        }
 
         /// <summary>
         /// Opens login page.
@@ -84,6 +92,7 @@ namespace AllReady.BrowserTest.Pages
 
         public AdminOgranizationPage OpenAdminOrganizationPage()
         {
+            AdminOrganizationsMenuItem.Click();
             return new AdminOgranizationPage(_driver);
         }
     }
