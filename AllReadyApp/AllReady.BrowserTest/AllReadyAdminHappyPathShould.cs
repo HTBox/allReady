@@ -8,20 +8,28 @@ using Xunit;
 
 namespace AllReady.BrowserTest
 {
+    /// <summary>
+    /// Happy path for AllReady Admin
+    /// <para>
+    /// This set of tests are stateful and run in priority order.
+    /// Preconditions of individual test are dependent on the previous
+    /// test being successful.
+    /// </para>
+    /// </summary>
     [TestCaseOrderer("AllReady.BrowserTest.PriorityOrderer", "AllReady.BrowserTest")]
-    public class AllReadyAdminHappyPath : IClassFixture<BrowserFixture>
+    public class AllReadyAdminHappyPathShould : IClassFixture<BrowserFixture>
     {
         IWebDriver _driver;
         IConfiguration _config;
 
-        public AllReadyAdminHappyPath(BrowserFixture fixture)
+        public AllReadyAdminHappyPathShould(BrowserFixture fixture)
         {
             _driver = fixture._driver;
             _config = new ConfigurationFixture().Config;
         }
 
         [Fact, TestPriority(1)]
-        public void ShouldOpenHomePage()
+        public void OpenHomePage()
         {
             _driver.Navigate().GoToUrl(_config["HomePageURL"]);
 
@@ -31,7 +39,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(2)]
-        public void ShouldOpenLoginPage()
+        public void OpenLoginPage()
         {
             var page = new Page(_driver);
             page.Menu.LoginMenuItem.Click();
@@ -42,7 +50,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(3)]
-        public void ShouldLogin()
+        public void Login()
         {
             var loginPage = new AccountLoginPage(_driver);
 
@@ -56,7 +64,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(4)]
-        public void ShouldOpenCurrentlyActiveOrganizationsPage()
+        public void OpenCurrentlyActiveOrganizationsPage()
         {
             var page = new Page(_driver);
             page.Menu.AdminOrganizationsMenuItem.Click();
@@ -67,7 +75,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(5)]
-        public void ShouldOpenCreateOrganizationPage()
+        public void OpenCreateOrganizationPage()
         {
             var adminOrganizationPage = new AdminOgranizationPage(_driver);
             adminOrganizationPage.CreateOrgranizationButton.Click();
@@ -86,7 +94,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(6)]
-        public void ShouldCreateOrganization()
+        public void CreateOrganization()
         {
             string organizationName = UniqueName("Organization");
 
@@ -117,7 +125,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(7)]
-        public void ShouldOpenCampaignsAdminPage()
+        public void OpenCampaignsAdminPage()
         {
             var page = new Page(_driver);
             page.Menu.AdminCampaignsMenuItem.Click();
@@ -128,7 +136,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(8)]
-        public void ShouldOpenCreateCampaignPage()
+        public void OpenCreateCampaignPage()
         {
             var adminCampaignPage = new AdminCampaignPage(_driver);
             adminCampaignPage.CreateCampaignButton.Click();
@@ -139,7 +147,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(9)]
-        public void ShouldCreateCampaign()
+        public void CreateCampaign()
         {
             string campaignName = UniqueName("Campaign");
 
@@ -164,7 +172,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(10)]
-        public void ShouldOpenCreateEventPage()
+        public void OpenCreateEventPage()
         {
             // pre-condition - /Admin/Campaign/Details/
             Assert.Contains(@"/Admin/Campaign/Details/", _driver.Url);
@@ -179,7 +187,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(11)]
-        public void ShouldCreateEvent()
+        public void CreateEvent()
         {
             string eventName = UniqueName("Event");
 
@@ -201,7 +209,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(12)]
-        public void ShouldOpenCreateVolunteerTaskPage()
+        public void OpenCreateVolunteerTaskPage()
         {
             // pre-condition
             Assert.Contains(@"/Admin/Event/Details/", _driver.Url);
@@ -216,7 +224,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(13)]
-        public void ShouldCreateVolunteerTask()
+        public void CreateVolunteerTask()
         {
             string volunteerTaskName = UniqueName("Task");
 
@@ -238,7 +246,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact, TestPriority(99)]
-        public void ShouldLogoff()
+        public void Logoff()
         {
             var homePage = new HomePage(_driver);
             homePage.Menu.LogoffMenuItem.Click();
