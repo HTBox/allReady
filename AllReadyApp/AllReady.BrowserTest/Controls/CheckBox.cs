@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AllReady.BrowserTest.Pages
+namespace AllReady.BrowserTest.Controls
 {
     class CheckBox
     {

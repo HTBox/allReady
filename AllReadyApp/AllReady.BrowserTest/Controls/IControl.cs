@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Text;
 
-namespace AllReady.BrowserTest.Pages
+namespace AllReady.BrowserTest.Controls
 {
     abstract class IControl
     {
