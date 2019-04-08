@@ -15,5 +15,11 @@ namespace AllReady.BrowserTest.Pages
         /// Click opens AdminOrganizationCreate page in browser
         /// </summary>
         public IWebElement CreateOrgranizationButton => _driver.FindElement(By.LinkText("Create Organization"));
+
+        public AdminOrganizationCreatePage ClickCreateNew()
+        {
+            CreateOrgranizationButton.Click();
+            return new AdminOrganizationCreatePage(_driver);
+        }
     }
 }

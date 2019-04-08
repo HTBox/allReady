@@ -1,3 +1,4 @@
+using AllReady.BrowserTest.Pages;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -5,13 +6,10 @@ using System.Text;
 
 namespace AllReady.BrowserTest
 {
-    class AdminOrganizationDetailsPage
+    class AdminOrganizationDetailsPage : Page
     {
-        IWebDriver _driver;
-
-        public AdminOrganizationDetailsPage(IWebDriver driver)
+        public AdminOrganizationDetailsPage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
         }
     }
 }

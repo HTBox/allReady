@@ -35,8 +35,8 @@ namespace AllReady.BrowserTest
             Assert.Equal("Log in - allReady", _driver.Title);
 
             var adminSitePage = loginPage
-                .SetUserEmail(_config["AllReadyAdministratorUserEmail"])
-                .SetUserPassword(_config["AllReadyAdministratorPassword"])
+                .Set(p => p.UserEmail, _config["AllReadyAdministratorUserEmail"])
+                .Set(p => p.UserPassword, _config["AllReadyAdministratorPassword"])
                 .Submit();
             Assert.Equal("Site Admin - allReady", _driver.Title);
 
@@ -56,34 +56,36 @@ namespace AllReady.BrowserTest
         public void ShouldCreateNewOrganization()
         {
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
+
             var adminSitePage = loginPage.LoginAs(_config["AllReadyAdministratorUserEmail"], _config["AllReadyAdministratorPassword"]);
+            Assert.Equal("Site Admin - allReady", _driver.Title);
 
             var adminOrganizationPage = adminSitePage.Menu.OpenAdminOrganizationPage();
-            adminOrganizationPage.CreateOrgranizationButton.Click();
+            Assert.Equal("Currently active organizations - allReady", _driver.Title);
+
+            var adminOrganizationCreatePage = adminOrganizationPage.ClickCreateNew();
             Assert.Equal("Create Organization - allReady", _driver.Title);
 
-            var adminOrganizationCreatePage = new AdminOrganizationCreatePage(_driver);
-
             string organizationName = UniqueName("Organization");
-            adminOrganizationCreatePage.Name.SendKeys(organizationName);
 
-            // choose to enter privacy policy text
-            adminOrganizationCreatePage.PrivacyPolicyTextButton.Click();
-            adminOrganizationCreatePage.PrivacyPolicy.SendKeys("Privacy for all");
+            var adminOrganizationDetatilsPage = adminOrganizationCreatePage
+                .Set(p => p.Name, organizationName)
+                // need to click privacy policy text button for PrivacyPolicy to appear
+                .Click(p => p.PrivacyPolicyTextButton)
+                .SetControl(p => p.PrivacyPolicy, "Privacy for all")
+                // location information
+                .Set(p => p.LocationAddress1, "123 Main St")
+                .Set(p => p.LocationCity, "Hollywood")
+                .Set(p => p.LocationState, "CA")
+                .Set(p => p.LocationPostalCode, "99120")
+                .Set(p => p.LocationCountry, "USA")
+                // 
+                .Submit();
 
-            /// enter primary location information
-            adminOrganizationCreatePage.LocationAddress1.SendKeys("123 Main St");
-            adminOrganizationCreatePage.LocationCity.SendKeys("Hollywood");
-            adminOrganizationCreatePage.LocationState.SendKeys("CA");
-            adminOrganizationCreatePage.LocationPostalCode.SendKeys("99120");
-            adminOrganizationCreatePage.LocationCountry.SendKeys("USA");
+            Assert.Equal($"{organizationName} - allReady", _driver.Title);
 
-            /// enter primary contact information
-            //
-
-            /// submit form
-            adminOrganizationCreatePage.Submit();
-
+            var homePage = adminOrganizationDetatilsPage.Menu.Logoff();
+            Assert.Equal("Home Page - allReady", _driver.Title);
         }
     }
 }
