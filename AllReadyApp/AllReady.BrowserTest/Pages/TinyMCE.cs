@@ -7,7 +7,7 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class TinyMCE
+    class TinyMCE : IControl
     {
         IWebElement _element;
         IWebDriver _driver;
@@ -38,6 +38,11 @@ namespace AllReady.BrowserTest.Pages
         {
             _element.SendKeys(text);
             _driver.SwitchTo().DefaultContent();
+        }
+
+        public override void Set(string s)
+        {
+            SendKeys(s);
         }
     }
 }

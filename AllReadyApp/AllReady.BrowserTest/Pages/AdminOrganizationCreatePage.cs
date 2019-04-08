@@ -5,13 +5,10 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class AdminOrganizationCreatePage
+    class AdminOrganizationCreatePage : Page
     {
-        IWebDriver _driver;
-
-        public AdminOrganizationCreatePage(IWebDriver driver)
+        public AdminOrganizationCreatePage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
         }
 
         public IWebElement Name => _driver.FindElement(By.Id("Name"));
