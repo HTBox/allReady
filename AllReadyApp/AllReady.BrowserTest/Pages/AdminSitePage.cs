@@ -9,6 +9,7 @@ namespace AllReady.BrowserTest.Pages
     {
         public AdminSitePage(IWebDriver driver) : base(driver)
         {
+            Title = "Site Admin - allReady";
         }
     }
 }

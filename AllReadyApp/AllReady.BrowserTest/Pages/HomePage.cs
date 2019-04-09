@@ -9,6 +9,7 @@ namespace AllReady.BrowserTest.Pages
     {
         public HomePage(IWebDriver driver) : base(driver)
         {
+            Title = "Home Page - allReady";
         }
     }
 }

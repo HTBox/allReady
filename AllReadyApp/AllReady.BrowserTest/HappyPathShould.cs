@@ -25,7 +25,7 @@ namespace AllReady.BrowserTest
         public void OpenHomePage()
         {
             var homePage = new Page(_driver).Menu.OpenHomePage();
-            Assert.Equal("Home Page - allReady", _driver.Title);
+            Assert.Equal(_driver.Title, homePage.Title);
         }
 
         /// <summary>
@@ -38,13 +38,13 @@ namespace AllReady.BrowserTest
         /// <param name="role">application role</param>
         /// <param name="roleReturnedPageTitle">partial title of page returned on successful login </param>
         [Theory]
-        [InlineData(User.Role.AllReadyAdministrator,"Site Admin")]
-        [InlineData(User.Role.OrganizationAdministrator,"Campaigns - Admin")]
+        [InlineData(User.Role.AllReadyAdministrator, "Site Admin")]
+        [InlineData(User.Role.OrganizationAdministrator, "Campaigns - Admin")]
         public void LogonAndLogoff(User.Role role, string roleReturnedPageTitle)
         {
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
-            Assert.Equal("Log in - allReady", _driver.Title);
+            Assert.Equal(_driver.Title, loginPage.Title);
 
             var page = loginPage
                 .Set(p => p.UserEmail, user.Name)
@@ -53,7 +53,7 @@ namespace AllReady.BrowserTest
             Assert.StartsWith(roleReturnedPageTitle, _driver.Title);
 
             var homePage = page.Menu.Logoff();
-            Assert.Equal("Home Page - allReady", _driver.Title);
+            Assert.Equal(_driver.Title, homePage.Title);
         }
 
         string UniqueName(string s)
@@ -71,14 +71,14 @@ namespace AllReady.BrowserTest
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
 
-            var adminSitePage = loginPage.LoginAs(user.Name, user.Password);
-            Assert.Equal("Site Admin - allReady", _driver.Title);
+            var page = loginPage.LoginAs(user.Name, user.Password);
+            Assert.Null(page.Title);
 
-            var adminOrganizationPage = adminSitePage.Menu.OpenAdminOrganizationPage();
-            Assert.Equal("Currently active organizations - allReady", _driver.Title);
+            var adminOrganizationPage = page.Menu.OpenAdminOrganizationPage();
+            Assert.Equal(_driver.Title, adminOrganizationPage.Title);
 
             var adminOrganizationCreatePage = adminOrganizationPage.ClickCreateNew();
-            Assert.Equal("Create Organization - allReady", _driver.Title);
+            Assert.Equal(_driver.Title, adminOrganizationCreatePage.Title);
 
             string organizationName = UniqueName("Organization");
 
@@ -99,7 +99,7 @@ namespace AllReady.BrowserTest
             Assert.Equal($"{organizationName} - allReady", _driver.Title);
 
             var homePage = adminOrganizationDetatilsPage.Menu.Logoff();
-            Assert.Equal("Home Page - allReady", _driver.Title);
+            Assert.Equal(_driver.Title, homePage.Title);
         }
     }
 }

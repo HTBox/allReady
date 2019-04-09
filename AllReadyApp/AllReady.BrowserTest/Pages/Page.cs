@@ -20,6 +20,9 @@ namespace AllReady.BrowserTest.Pages
         {
             _driver = driver;
             Menu = new Menu(driver);
+            Title = null;
         }
+
+        public string Title { get; protected set; }
     }
 }

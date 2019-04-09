@@ -10,6 +10,7 @@ namespace AllReady.BrowserTest.Pages
     {
         public AdminOrganizationCreatePage(IWebDriver driver) : base(driver)
         {
+            Title = "Create Organization - allReady";
         }
 
         public IWebElement Name => _driver.FindElement(By.Id("Name"));

@@ -9,23 +9,12 @@ namespace AllReady.BrowserTest.Pages
     {
         public AccountLoginPage(IWebDriver driver) : base(driver)
         {
+            Title = "Log in - allReady";
         }
 
         public IWebElement UserEmail => _driver.FindElement(By.Id("Email"));
         public IWebElement UserPassword => _driver.FindElement(By.Id("Password"));
         public IWebElement LoginButton => _driver.FindElement(By.Id("login-submit"));
-
-        //public AccountLoginPage SetUserEmail(string email)
-        //{
-        //    UserEmail.SendKeys(email);
-        //    return this;
-        //}
-
-        //public AccountLoginPage SetUserPassword(string password)
-        //{
-        //    UserPassword.SendKeys(password);
-        //    return this;
-        //}
 
         /// <summary>
         /// Clicks login button on page

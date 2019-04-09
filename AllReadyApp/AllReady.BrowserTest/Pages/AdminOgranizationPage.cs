@@ -9,6 +9,7 @@ namespace AllReady.BrowserTest.Pages
     {
         public AdminOgranizationPage(IWebDriver driver) : base(driver)
         {
+            Title = "Currently active organizations - allReady";
         }
 
         /// <summary>
