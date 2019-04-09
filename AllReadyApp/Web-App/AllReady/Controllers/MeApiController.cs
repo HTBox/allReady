@@ -15,6 +15,10 @@ namespace AllReady.Controllers
     [Route("api/me")]
     public class MeApiController : Controller
     {
+        private const string INVALID_LOGIN = "Unable to validate login information";
+        private const string TWO_FACTOR_NOT_SUPPORTED = "2 factor not supported yet!";
+        private const string ACCOUNT_LOCKED_OUT = "Account is locked out. Please try again later";
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IMediator _mediator;
@@ -35,7 +39,7 @@ namespace AllReady.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest("Unable to valid login information");
+                return BadRequest(INVALID_LOGIN);
             }
 
             // Require admin users to have a confirmed email before they can log on.
@@ -61,14 +65,14 @@ namespace AllReady.Controllers
 
             if (result.RequiresTwoFactor)
             {
-                return BadRequest("2 factor not supported yet!");
+                return BadRequest(TWO_FACTOR_NOT_SUPPORTED);
 
             }
 
             if (result.IsLockedOut)
             {
                 //return View("Lockout");
-                return BadRequest("Account is locked out.  Please try again later");
+                return BadRequest(ACCOUNT_LOCKED_OUT);
             }
 
             return Unauthorized();
