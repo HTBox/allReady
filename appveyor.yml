@@ -63,7 +63,8 @@ test_script:
  - ps: Write-Host "== Browser Tests =="
  - ps: Push-Location
  - ps: cd .\AllReadyApp\AllReady.BrowserTest\
- - ps: dotnet test --no-build --verbosity normal
+ - ps: dotnet test --no-build --verbosity normal --filter DisplayName~AllReady.BrowserTest.AllReadyAdminHappyPathShould
+ - ps: dotnet test --no-build --verbosity normal --filter DisplayName~AllReady.BrowserTest.HappyPathShould
  - ps: Pop-Location
  - ps: Write-Host "== Finished - Browser Tests =="
  - ps: |
