@@ -28,21 +28,21 @@ namespace AllReady.BrowserTest.Pages
         //}
 
         /// <summary>
-        /// opens admin site page
+        /// Clicks login button on page
         /// </summary>
-        /// <returns>admin site page</returns>
-        public AdminSitePage Submit()
+        /// <returns>Page based on the role of the logged in user</returns>
+        public Page Submit()
         {
             LoginButton.Click();
-            return new AdminSitePage(_driver);
+            return new Page(_driver);
         }
 
-        public AdminSitePage LoginAs(string userEmail, string userPassword)
+        public Page LoginAs(string userEmail, string userPassword)
         {
             UserEmail.SendKeys(userEmail);
             UserPassword.SendKeys(userPassword);
             LoginButton.Click();
-            return new AdminSitePage(_driver);
+            return new Page(_driver);
         }
     }
 }

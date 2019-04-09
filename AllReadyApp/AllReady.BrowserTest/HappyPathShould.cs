@@ -28,21 +28,31 @@ namespace AllReady.BrowserTest
             Assert.Equal("Home Page - allReady", _driver.Title);
         }
 
+        /// <summary>
+        /// Tests for successful logon and logoff
+        /// <para>
+        /// The login process will return different pages depending on the role
+        /// the logged in user.
+        /// </para>
+        /// </summary>
+        /// <param name="role">application role</param>
+        /// <param name="roleReturnedPageTitle">partial title of page returned on successful login </param>
         [Theory]
-        [InlineData(User.Role.AllReadyAdministrator)]
-        [InlineData(User.Role.OrganizationAdministrator)]
-        public void LogonAndLogoff(User.Role role)
+        [InlineData(User.Role.AllReadyAdministrator,"Site Admin")]
+        [InlineData(User.Role.OrganizationAdministrator,"Campaigns - Admin")]
+        public void LogonAndLogoff(User.Role role, string roleReturnedPageTitle)
         {
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
             Assert.Equal("Log in - allReady", _driver.Title);
 
-            var adminSitePage = loginPage
+            var page = loginPage
                 .Set(p => p.UserEmail, user.Name)
                 .Set(p => p.UserPassword, user.Password)
                 .Submit();
+            Assert.StartsWith(roleReturnedPageTitle, _driver.Title);
 
-            var homePage = adminSitePage.Menu.Logoff();
+            var homePage = page.Menu.Logoff();
             Assert.Equal("Home Page - allReady", _driver.Title);
         }
 
