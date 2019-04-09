@@ -28,17 +28,19 @@ namespace AllReady.BrowserTest
             Assert.Equal("Home Page - allReady", _driver.Title);
         }
 
-        [Fact]
-        public void ShouldLogonAndLogoff()
+        [Theory]
+        [InlineData(User.Role.AllReadyAdministrator)]
+        [InlineData(User.Role.OrganizationAdministrator)]
+        public void ShouldLogonAndLogoff(User.Role role)
         {
+            var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
             Assert.Equal("Log in - allReady", _driver.Title);
 
             var adminSitePage = loginPage
-                .Set(p => p.UserEmail, _config["AllReadyAdministratorUserEmail"])
-                .Set(p => p.UserPassword, _config["AllReadyAdministratorPassword"])
+                .Set(p => p.UserEmail, user.Name)
+                .Set(p => p.UserPassword, user.Password)
                 .Submit();
-            Assert.Equal("Site Admin - allReady", _driver.Title);
 
             var homePage = adminSitePage.Menu.Logoff();
             Assert.Equal("Home Page - allReady", _driver.Title);
@@ -52,12 +54,14 @@ namespace AllReady.BrowserTest
             return name;
         }
 
-        [Fact]
-        public void ShouldCreateNewOrganization()
+        [Theory]
+        [InlineData(User.Role.AllReadyAdministrator)]
+        public void ShouldCreateNewOrganization(User.Role role)
         {
+            var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
 
-            var adminSitePage = loginPage.LoginAs(_config["AllReadyAdministratorUserEmail"], _config["AllReadyAdministratorPassword"]);
+            var adminSitePage = loginPage.LoginAs(user.Name, user.Password);
             Assert.Equal("Site Admin - allReady", _driver.Title);
 
             var adminOrganizationPage = adminSitePage.Menu.OpenAdminOrganizationPage();
