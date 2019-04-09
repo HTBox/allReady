@@ -8,12 +8,12 @@ using Xunit;
 
 namespace AllReady.BrowserTest
 {
-    public class AllReadyAdminFluentHappyPath : IClassFixture<BrowserFixture>
+    public class HappyPathShould : IClassFixture<BrowserFixture>
     {
         IWebDriver _driver;
         IConfiguration _config;
 
-        public AllReadyAdminFluentHappyPath(BrowserFixture browserFixture)
+        public HappyPathShould(BrowserFixture browserFixture)
         {
             _driver = browserFixture._driver;
             _config = new ConfigurationFixture().Config;
@@ -22,7 +22,7 @@ namespace AllReady.BrowserTest
         }
 
         [Fact]
-        public void ShouldOpenHomePage()
+        public void OpenHomePage()
         {
             var homePage = new Page(_driver).Menu.OpenHomePage();
             Assert.Equal("Home Page - allReady", _driver.Title);
@@ -31,7 +31,7 @@ namespace AllReady.BrowserTest
         [Theory]
         [InlineData(User.Role.AllReadyAdministrator)]
         [InlineData(User.Role.OrganizationAdministrator)]
-        public void ShouldLogonAndLogoff(User.Role role)
+        public void LogonAndLogoff(User.Role role)
         {
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
@@ -56,7 +56,7 @@ namespace AllReady.BrowserTest
 
         [Theory]
         [InlineData(User.Role.AllReadyAdministrator)]
-        public void ShouldCreateNewOrganization(User.Role role)
+        public void CreateNewOrganization(User.Role role)
         {
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
