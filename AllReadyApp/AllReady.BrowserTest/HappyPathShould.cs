@@ -83,15 +83,22 @@ namespace AllReady.BrowserTest
             };
         }
 
-        [Theory]
-        [MemberData(nameof(TestDataForCreateNewOrganization))]
-        public void CreateNewOrganization(User.Role role, Organization organization)
+        Page Login(IWebDriver driver, User.Role role)
         {
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
 
             var page = loginPage.LoginAs(user.Name, user.Password);
             Assert.Null(page.Title);
+
+            return page;
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDataForCreateNewOrganization))]
+        public void CreateNewOrganization(User.Role role, Organization organization)
+        {
+            var page = Login(_driver, role);
 
             var adminOrganizationPage = page.Menu.OpenAdminOrganizationPage();
             Assert.Equal(_driver.Title, adminOrganizationPage.Title);
@@ -158,11 +165,7 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewCampaign))]
         public void CreateNewCampaign(User.Role role, Campaign campaign)
         {
-            var user = new User(role);
-            var loginPage = new Page(_driver).Menu.OpenLoginPage();
-
-            var page = loginPage.LoginAs(user.Name, user.Password);
-            Assert.Null(page.Title);
+            var page = Login(_driver, role);
 
             var adminCampaignPage = page.Menu.OpenAdminCampaignPage();
             Assert.Equal(_driver.Title, adminCampaignPage.Title);
