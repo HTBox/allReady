@@ -13,5 +13,11 @@ namespace AllReady.BrowserTest.Pages
 
         const string partialDestinationUrl = @"/Admin/Event/Create/";
         public IWebElement CreateNewEvent => _driver.FindElement(By.XPath($"//a[contains(@href, '{partialDestinationUrl}')]"));
+
+        public AdminEventCreatePage ClickCreateNewEvent()
+        {
+            CreateNewEvent.Click();
+            return new AdminEventCreatePage(_driver);
+        }
     }
 }

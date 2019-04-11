@@ -5,13 +5,10 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class AdminEventDetailsPage
+    class AdminEventDetailsPage : Page
     {
-        IWebDriver _driver;
-
-        public AdminEventDetailsPage(IWebDriver driver)
+        public AdminEventDetailsPage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
         }
 
         const string partialDestinationUrl = @"/Admin/VolunteerTask/Create/";

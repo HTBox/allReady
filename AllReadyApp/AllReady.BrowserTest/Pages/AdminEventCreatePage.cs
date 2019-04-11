@@ -6,13 +6,11 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class AdminEventCreatePage
+    class AdminEventCreatePage : Page
     {
-        IWebDriver _driver;
-
-        public AdminEventCreatePage(IWebDriver driver)
+        public AdminEventCreatePage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
+            Title = "Create Event - allReady";
         }
 
         public IWebElement Name => _driver.FindElement(By.Id("Name"));
@@ -25,9 +23,10 @@ namespace AllReady.BrowserTest.Pages
         public IWebElement CopyLocationFromCampaignButton => _driver.FindElement(By.Id("btnGetLocationInfo"));
         public AdminEventCreateCopyConfirmDialog CopyConfirmDialog => new AdminEventCreateCopyConfirmDialog(_driver);
 
-        public void Submit()
+        public AdminEventDetailsPage Submit()
         {
             _driver.FindElement(By.ClassName("submit-form")).Submit();
+            return new AdminEventDetailsPage(_driver);
         }
     }
 }

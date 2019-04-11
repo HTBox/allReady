@@ -189,5 +189,74 @@ namespace AllReady.BrowserTest
             var homePage = detailsPage.Menu.Logoff();
             Assert.Equal(_driver.Title, homePage.Title);
         }
+
+        public static IEnumerable<object[]> TestDataForCreateNewEvent()
+        {
+            yield return new object[]
+            {
+                User.Role.AllReadyAdministrator,
+                new Event
+                {
+                    Name = UniqueName("Event by Admin"),
+                    Description = "Description",
+                    Headline = "Headline",
+                    EventType = "Itinerary",
+                    IsLimitVolunteers = true,
+                    TimeZone = "(UTC-08:00) Pacific Time (US & Canada)",
+                    StartDateTime = DateTime.Now.AddDays(1).ToString("MM/dd/yyyy 9:00 AM"),
+                }
+            };
+            yield return new object[]
+            {
+                User.Role.OrganizationAdministrator,
+                new Event
+                {
+                    Name = UniqueName("Event by Admin"),
+                    Description = "Description",
+                    Headline = "Headline",
+                    EventType = "Itinerary",
+                    IsLimitVolunteers = true,
+                    TimeZone = "(UTC-08:00) Pacific Time (US & Canada)",
+                    StartDateTime = DateTime.Now.AddDays(1).ToString("MM/dd/yyyy 9:00 AM"),
+                }
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDataForCreateNewEvent))]
+        public void CreateNewEvent(User.Role role, Event @event)
+        {
+            var page = Login(_driver, role).Menu.OpenAdminCampaignPage();
+            Assert.Equal(_driver.Title, page.Title);
+
+            // select last campaign on list
+            var listOfCampaigns = page.ListOfCampaigns;
+            var lastCampaign = listOfCampaigns[listOfCampaigns.Count - 1].FindElements(By.TagName("a"))[1];
+            var expectedTitle = $"{lastCampaign.Text} - allReady";
+            lastCampaign.Click();
+            var adminCampaignDetailsPage = new AdminCampaignDetailsPage(_driver);
+            Assert.Equal(_driver.Title, expectedTitle);
+
+            // 
+            var createPage = adminCampaignDetailsPage.ClickCreateNewEvent();
+            Assert.Equal(_driver.Title, createPage.Title);
+
+            // fill in form
+            createPage.Name.SendKeys(@event.Name);
+            createPage.Description.SendKeys(@event.Description);
+            createPage.Headline.SendKeys(@event.Headline);
+            createPage.EventType.SelectByText(@event.EventType);
+            createPage.IsLimitVolunteers.Checked(@event.IsLimitVolunteers);
+            createPage.TimeZone.SelectByText(@event.TimeZone);
+            createPage.StartDateTime.SendKeys(@event.StartDateTime);
+            createPage.CopyLocationFromCampaignButton.Click();
+            createPage.CopyConfirmDialog.ClickOK();
+
+            var detailsPage = createPage.Submit();
+            Assert.Equal($"{@event.Name} - allReady", _driver.Title);
+
+            var homePage = detailsPage.Menu.Logoff();
+            Assert.Equal(_driver.Title, homePage.Title);
+        }
     }
 }
