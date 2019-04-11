@@ -8,13 +8,11 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class AdminCampaignCreatePage
+    class AdminCampaignCreatePage : Page
     {
-        IWebDriver _driver;
-
-        public AdminCampaignCreatePage(IWebDriver driver)
+        public AdminCampaignCreatePage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
+            Title = "Create Campaign - allReady";
         }
 
         public IWebElement Name => _driver.FindElement(By.Id("Name"));

@@ -22,6 +22,13 @@ namespace AllReady.BrowserTest.Pages
             return t;
         }
 
+        public static T Set<T, TProperty>(this T t, Func<T, TProperty> p, bool flag) where TProperty : CheckBox
+        {
+            p.Invoke(t).Checked(flag);
+
+            return t;
+        }
+
         public static T Click<T, TProperty>(this T t, Func<T, TProperty> p) where TProperty : IWebElement
         {
             p.Invoke(t).Click();

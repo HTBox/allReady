@@ -95,5 +95,11 @@ namespace AllReady.BrowserTest.Pages
             AdminOrganizationsMenuItem.Click();
             return new AdminOgranizationPage(_driver);
         }
+
+        public AdminCampaignPage OpenAdminCampaignPage()
+        {
+            AdminCampaignsMenuItem.Click();
+            return new AdminCampaignPage(_driver);
+        }
     }
 }

@@ -119,5 +119,80 @@ namespace AllReady.BrowserTest
             var homePage = adminOrganizationDetatilsPage.Menu.Logoff();
             Assert.Equal(_driver.Title, homePage.Title);
         }
+
+        public static IEnumerable<object[]> TestDataForCreateNewCampaign()
+        {
+            yield return new object[]
+            {
+                User.Role.AllReadyAdministrator,
+                new Campaign
+                {
+                    Name = UniqueName("Campaign by Admin"),
+                    Description = "Description",
+                    Headline = "Headline",
+                    FullDesciption = "Longer description of campaign",
+                    TimeZone = "(UTC-08:00) Pacific Time (US & Canada)",
+                    StartDate = "04/15/2019",
+                    Organization = "",
+                    Published = true
+                }
+            };
+            yield return new object[]
+            {
+                User.Role.OrganizationAdministrator,
+                new Campaign
+                {
+                    Name = UniqueName("Campaign by Org Admin"),
+                    Description = "Description",
+                    Headline = "Headline",
+                    FullDesciption = "Longer description of campaign",
+                    TimeZone = "(UTC-08:00) Pacific Time (US & Canada)",
+                    StartDate = "04/15/2019",
+                    Organization = "",
+                    Published = true
+                }
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDataForCreateNewCampaign))]
+        public void CreateNewCampaign(User.Role role, Campaign campaign)
+        {
+            var user = new User(role);
+            var loginPage = new Page(_driver).Menu.OpenLoginPage();
+
+            var page = loginPage.LoginAs(user.Name, user.Password);
+            Assert.Null(page.Title);
+
+            var adminCampaignPage = page.Menu.OpenAdminCampaignPage();
+            Assert.Equal(_driver.Title, adminCampaignPage.Title);
+
+            var adminCampaignCreatePage = adminCampaignPage.ClickCreateNew();
+            Assert.Equal(_driver.Title, adminCampaignCreatePage.Title);
+
+            //
+            campaign.Organization = adminCampaignCreatePage.Organization.GetLastItem();
+            // fill in form
+            var adminCampaigneDetatilsPage = adminCampaignCreatePage
+                .Set(p => p.Name, campaign.Name)
+                .Set(p => p.Description, campaign.Description)
+                .Set(p => p.Headline, campaign.Headline)
+                .SetControl(p => p.FullDesciption, campaign.FullDesciption)
+                .SetControl(p => p.TimeZone, campaign.TimeZone)
+                .SetControl(p => p.StartDate, "04/15/2019")
+                .SetControl(p => p.Organization, campaign.Organization)
+                .Set(p => p.Published, true)
+                .Click(p => p.CopyContactInfoButton);
+
+            adminCampaignCreatePage.CopyConfirmDialog.ClickOK();
+
+            adminCampaignCreatePage
+                .Submit();
+
+            Assert.Equal($"{campaign.Name} - allReady", _driver.Title);
+
+            var homePage = adminCampaigneDetatilsPage.Menu.Logoff();
+            Assert.Equal(_driver.Title, homePage.Title);
+        }
     }
 }

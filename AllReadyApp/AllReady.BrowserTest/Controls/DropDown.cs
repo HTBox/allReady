@@ -22,7 +22,12 @@ namespace AllReady.BrowserTest.Controls
             _selectElement.SelectByText(text, partialMatch);
         }
 
-        public void SelectLast()
+        public string GetLastItem()
+        {
+            return _selectElement.Options[_selectElement.Options.Count - 1].Text;
+        }
+
+        public void SelectLastItem()
         {
             _selectElement.SelectByIndex(_selectElement.Options.Count - 1);
         }

@@ -159,7 +159,7 @@ namespace AllReady.BrowserTest
             adminCampaignCreatePage.FullDesciption.SendKeys("Longer desription of the campaign");
             adminCampaignCreatePage.TimeZone.SelectByText("Pacific", true);
             adminCampaignCreatePage.StartDate.SendKeys("04/15/2019");
-            adminCampaignCreatePage.Organization.SelectLast();
+            adminCampaignCreatePage.Organization.SelectLastItem();
             adminCampaignCreatePage.Published.Checked(true);
             adminCampaignCreatePage.CopyContactInfoButton.Click();
             adminCampaignCreatePage.CopyConfirmDialog.ClickOK();
