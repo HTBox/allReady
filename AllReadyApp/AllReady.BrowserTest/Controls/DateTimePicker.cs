@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Controls
 {
-    class DateTimePicker : IControl
+    class DateTimePicker
     {
         IWebDriver _driver;
         IWebElement _element;
@@ -40,11 +40,6 @@ namespace AllReady.BrowserTest.Controls
             _element.SendKeys(text);
             _element.SendKeys(Keys.Enter);
             wait.Until(_driver => _driver.FindElements(By.ClassName("bootstrap-datetimepicker-widget")).Count == 0);
-        }
-
-        public override void Set(string s)
-        {
-            SendKeys(s);
         }
     }
 }

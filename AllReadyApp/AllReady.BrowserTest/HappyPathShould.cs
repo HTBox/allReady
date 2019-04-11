@@ -47,10 +47,10 @@ namespace AllReady.BrowserTest
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
             Assert.Equal(_driver.Title, loginPage.Title);
 
-            var page = loginPage
-                .Set(p => p.UserEmail, user.Name)
-                .Set(p => p.UserPassword, user.Password)
-                .Submit();
+            loginPage.UserEmail.SendKeys(user.Name);
+            loginPage.UserPassword.SendKeys(user.Password);
+
+            var page = loginPage.Submit();
             Assert.StartsWith(roleReturnedPageTitle, _driver.Title);
 
             var homePage = page.Menu.Logoff();
@@ -98,32 +98,28 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewOrganization))]
         public void CreateNewOrganization(User.Role role, Organization organization)
         {
-            var page = Login(_driver, role);
+            var page = Login(_driver, role).Menu.OpenAdminOrganizationPage();
+            Assert.Equal(_driver.Title, page.Title);
 
-            var adminOrganizationPage = page.Menu.OpenAdminOrganizationPage();
-            Assert.Equal(_driver.Title, adminOrganizationPage.Title);
-
-            var adminOrganizationCreatePage = adminOrganizationPage.ClickCreateNew();
-            Assert.Equal(_driver.Title, adminOrganizationCreatePage.Title);
+            var createPage = page.ClickCreateNew();
+            Assert.Equal(_driver.Title, createPage.Title);
 
             // fill in form
-            var adminOrganizationDetatilsPage = adminOrganizationCreatePage
-                .Set(p => p.Name, organization.Name)
-                // need to click privacy policy text button for PrivacyPolicy to appear
-                .Click(p => p.PrivacyPolicyTextButton)
-                .SetControl(p => p.PrivacyPolicy, organization.PrivacyPolicy)
-                // location information
-                .Set(p => p.LocationAddress1, organization.LocationAddress1)
-                .Set(p => p.LocationCity, organization.LocationCity)
-                .Set(p => p.LocationState, organization.LocationState)
-                .Set(p => p.LocationPostalCode, organization.LocationPostalCode)
-                .Set(p => p.LocationCountry, organization.LocationCountry)
-                // 
-                .Submit();
+            createPage.Name.SendKeys(organization.Name);
+            // need to click privacy policy text button for PrivacyPolicy to appear
+            createPage.PrivacyPolicyTextButton.Click();
+            createPage.PrivacyPolicy.SendKeys(organization.PrivacyPolicy);
+            // location information
+            createPage.LocationAddress1.SendKeys(organization.LocationAddress1);
+            createPage.LocationCity.SendKeys(organization.LocationCity);
+            createPage.LocationState.SendKeys(organization.LocationState);
+            createPage.LocationPostalCode.SendKeys(organization.LocationPostalCode);
+            createPage.LocationCountry.SendKeys(organization.LocationCountry);
 
+            var detailsPage = createPage.Submit();
             Assert.Equal($"{organization.Name} - allReady", _driver.Title);
 
-            var homePage = adminOrganizationDetatilsPage.Menu.Logoff();
+            var homePage = detailsPage.Menu.Logoff();
             Assert.Equal(_driver.Title, homePage.Title);
         }
 
@@ -165,37 +161,32 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewCampaign))]
         public void CreateNewCampaign(User.Role role, Campaign campaign)
         {
-            var page = Login(_driver, role);
+            var page = Login(_driver, role).Menu.OpenAdminCampaignPage();
+            Assert.Equal(_driver.Title, page.Title);
 
-            var adminCampaignPage = page.Menu.OpenAdminCampaignPage();
-            Assert.Equal(_driver.Title, adminCampaignPage.Title);
-
-            var adminCampaignCreatePage = adminCampaignPage.ClickCreateNew();
-            Assert.Equal(_driver.Title, adminCampaignCreatePage.Title);
+            var createPage = page.ClickCreateNew();
+            Assert.Equal(_driver.Title, createPage.Title);
 
             // need an organization to complete form
-            campaign.Organization = campaign.Organization ?? adminCampaignCreatePage.Organization.GetLastItem();
+            campaign.Organization = campaign.Organization ?? createPage.Organization.GetLastItem();
+
             // fill in form
-            var adminCampaigneDetatilsPage = adminCampaignCreatePage
-                .Set(p => p.Name, campaign.Name)
-                .Set(p => p.Description, campaign.Description)
-                .Set(p => p.Headline, campaign.Headline)
-                .SetControl(p => p.FullDesciption, campaign.FullDesciption)
-                .SetControl(p => p.TimeZone, campaign.TimeZone)
-                .SetControl(p => p.StartDate, campaign.StartDate)
-                .SetControl(p => p.Organization, campaign.Organization)
-                .Set(p => p.Published, true);
-
+            createPage.Name.SendKeys(campaign.Name);
+            createPage.Description.SendKeys(campaign.Description);
+            createPage.Headline.SendKeys(campaign.Headline);
+            createPage.FullDesciption.SendKeys(campaign.FullDesciption);
+            createPage.TimeZone.SelectByText(campaign.TimeZone);
+            createPage.StartDate.SendKeys(campaign.StartDate);
+            createPage.Organization.SelectByText(campaign.Organization);
+            createPage.Published.Checked(true);
             // copy contact information and confirm
-            adminCampaignCreatePage.CopyContactInfoButton.Click();
-            adminCampaignCreatePage.CopyConfirmDialog.ClickOK();
-
+            createPage.CopyContactInfoButton.Click();
+            createPage.CopyConfirmDialog.ClickOK();
             //
-            adminCampaignCreatePage.Submit();
-
+            var detailsPage = createPage.Submit();
             Assert.Equal($"{campaign.Name} - allReady", _driver.Title);
 
-            var homePage = adminCampaigneDetatilsPage.Menu.Logoff();
+            var homePage = detailsPage.Menu.Logoff();
             Assert.Equal(_driver.Title, homePage.Title);
         }
     }

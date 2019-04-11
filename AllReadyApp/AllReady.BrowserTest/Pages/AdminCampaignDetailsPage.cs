@@ -5,13 +5,10 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class AdminCampaignDetailsPage
+    class AdminCampaignDetailsPage : Page
     {
-        IWebDriver _driver;
-
-        public AdminCampaignDetailsPage(IWebDriver driver)
+        public AdminCampaignDetailsPage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
         }
 
         const string partialDestinationUrl = @"/Admin/Event/Create/";

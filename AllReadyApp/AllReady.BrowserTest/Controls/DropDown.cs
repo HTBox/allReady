@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Controls
 {
-    class DropDown : IControl
+    class DropDown
     {
         IWebDriver _driver;
         SelectElement _selectElement;
@@ -30,11 +30,6 @@ namespace AllReady.BrowserTest.Controls
         public void SelectLastItem()
         {
             _selectElement.SelectByIndex(_selectElement.Options.Count - 1);
-        }
-
-        public override void Set(string s)
-        {
-            SelectByText(s);
         }
     }
 }
