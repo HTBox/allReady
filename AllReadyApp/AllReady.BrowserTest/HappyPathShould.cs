@@ -139,8 +139,8 @@ namespace AllReady.BrowserTest
                     Headline = "Headline",
                     FullDesciption = "Longer description of campaign",
                     TimeZone = "(UTC-08:00) Pacific Time (US & Canada)",
-                    StartDate = "04/15/2019",
-                    Organization = "",
+                    StartDate = DateTime.Now.AddDays(1).ToString("MM/dd/yyyy"),
+                    Organization = null,
                     Published = true
                 }
             };
@@ -154,8 +154,8 @@ namespace AllReady.BrowserTest
                     Headline = "Headline",
                     FullDesciption = "Longer description of campaign",
                     TimeZone = "(UTC-08:00) Pacific Time (US & Canada)",
-                    StartDate = "04/15/2019",
-                    Organization = "",
+                    StartDate = DateTime.Now.AddDays(1).ToString("MM/dd/yyyy"),
+                    Organization = null,
                     Published = true
                 }
             };
@@ -173,8 +173,8 @@ namespace AllReady.BrowserTest
             var adminCampaignCreatePage = adminCampaignPage.ClickCreateNew();
             Assert.Equal(_driver.Title, adminCampaignCreatePage.Title);
 
-            //
-            campaign.Organization = adminCampaignCreatePage.Organization.GetLastItem();
+            // need an organization to complete form
+            campaign.Organization = campaign.Organization ?? adminCampaignCreatePage.Organization.GetLastItem();
             // fill in form
             var adminCampaigneDetatilsPage = adminCampaignCreatePage
                 .Set(p => p.Name, campaign.Name)
@@ -182,15 +182,16 @@ namespace AllReady.BrowserTest
                 .Set(p => p.Headline, campaign.Headline)
                 .SetControl(p => p.FullDesciption, campaign.FullDesciption)
                 .SetControl(p => p.TimeZone, campaign.TimeZone)
-                .SetControl(p => p.StartDate, "04/15/2019")
+                .SetControl(p => p.StartDate, campaign.StartDate)
                 .SetControl(p => p.Organization, campaign.Organization)
-                .Set(p => p.Published, true)
-                .Click(p => p.CopyContactInfoButton);
+                .Set(p => p.Published, true);
 
+            // copy contact information and confirm
+            adminCampaignCreatePage.CopyContactInfoButton.Click();
             adminCampaignCreatePage.CopyConfirmDialog.ClickOK();
 
-            adminCampaignCreatePage
-                .Submit();
+            //
+            adminCampaignCreatePage.Submit();
 
             Assert.Equal($"{campaign.Name} - allReady", _driver.Title);
 
