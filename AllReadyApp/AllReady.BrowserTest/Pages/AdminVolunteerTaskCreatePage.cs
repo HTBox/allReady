@@ -6,13 +6,11 @@ using System.Text;
 
 namespace AllReady.BrowserTest.Pages
 {
-    class AdminVolunteerTaskCreatePage
+    class AdminVolunteerTaskCreatePage : Page
     {
-        IWebDriver _driver;
-
-        public AdminVolunteerTaskCreatePage(IWebDriver driver)
+        public AdminVolunteerTaskCreatePage(IWebDriver driver) : base(driver)
         {
-            _driver = driver;
+            Title = "Create Task - allReady";
         }
 
         public IWebElement Name => _driver.FindElement(By.Id("Name"));
@@ -20,9 +18,10 @@ namespace AllReady.BrowserTest.Pages
         public Spinner NumberOfVolunteersRequired => new Spinner(_driver, "NumberOfVolunteersRequired");
         public DateTimePicker StartDateTime => new DateTimePicker(_driver, "StartDateTime");
 
-        public void Submit()
+        public AdminEventDetailsPage Submit()
         {
             Name.Submit();
+            return new AdminEventDetailsPage(_driver);
         }
     }
 }

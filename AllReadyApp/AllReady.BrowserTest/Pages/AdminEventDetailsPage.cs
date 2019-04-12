@@ -11,7 +11,13 @@ namespace AllReady.BrowserTest.Pages
         {
         }
 
-        const string partialDestinationUrl = @"/Admin/VolunteerTask/Create/";
-        public IWebElement CreateNewTask => _driver.FindElement(By.XPath($"//a[contains(@href, '{partialDestinationUrl}')]"));
+        public IWebElement CreateNewTask =>
+            _driver.FindElement(By.XPath($"//a[contains(@href, '{@"/Admin/VolunteerTask/Create/"}')]"));
+
+        public AdminVolunteerTaskCreatePage ClickCreateNewTask()
+        {
+            CreateNewTask.Click();
+            return new AdminVolunteerTaskCreatePage(_driver);
+        }
     }
 }

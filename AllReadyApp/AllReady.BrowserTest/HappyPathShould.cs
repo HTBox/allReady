@@ -211,7 +211,7 @@ namespace AllReady.BrowserTest
                 User.Role.OrganizationAdministrator,
                 new Event
                 {
-                    Name = UniqueName("Event by Admin"),
+                    Name = UniqueName("Event by Org Admin"),
                     Description = "Description",
                     Headline = "Headline",
                     EventType = "Itinerary",
@@ -254,6 +254,72 @@ namespace AllReady.BrowserTest
 
             var detailsPage = createPage.Submit();
             Assert.Equal($"{@event.Name} - allReady", _driver.Title);
+
+            var homePage = detailsPage.Menu.Logoff();
+            Assert.Equal(_driver.Title, homePage.Title);
+        }
+
+        public static IEnumerable<object[]> TestDataForCreateNewTask()
+        {
+            yield return new object[]
+            {
+                User.Role.AllReadyAdministrator,
+                new VolunteerTask
+                {
+                    Name = UniqueName("Task by Admin"),
+                    Description = "Description",
+                    NumberOfVolunteersRequired = 2,
+                    StartDateTime = DateTime.Now.AddDays(1).ToString("MM/dd/yyyy 9:00 AM"),
+                }
+            };
+            yield return new object[]
+            {
+                User.Role.OrganizationAdministrator,
+                new VolunteerTask
+                {
+                    Name = UniqueName("Task by Org Admin"),
+                    Description = "Description",
+                    NumberOfVolunteersRequired = 2,
+                    StartDateTime = DateTime.Now.AddDays(1).ToString("MM/dd/yyyy 9:00 AM"),
+                }
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(TestDataForCreateNewTask))]
+        public void CreateNewTask(User.Role role, VolunteerTask task)
+        {
+            var page = Login(_driver, role).Menu.OpenAdminCampaignPage();
+            Assert.Equal(_driver.Title, page.Title);
+
+            // select last campaign on list
+            var listOfCampaigns = page.ListOfCampaigns;
+            var lastCampaign = listOfCampaigns[listOfCampaigns.Count - 1].FindElements(By.TagName("a"))[1];
+            var expectedCampaignTitle = $"{lastCampaign.Text} - allReady";
+            lastCampaign.Click();
+            var adminCampaignDetailsPage = new AdminCampaignDetailsPage(_driver);
+            Assert.Equal(_driver.Title, expectedCampaignTitle);
+
+            // select last event created
+            var listOfEvents = adminCampaignDetailsPage.ListOfEvents;
+            var lastEvent = listOfEvents[listOfEvents.Count - 1].FindElement(By.TagName("a"));
+            var expectedEventTitle = $"{lastEvent.Text} - allReady";
+            lastEvent.Click();
+            var adminEventDetailsPage = new AdminEventDetailsPage(_driver);
+            Assert.Equal(_driver.Title, expectedEventTitle);
+
+            //
+            var createPage = adminEventDetailsPage.ClickCreateNewTask();
+            Assert.Equal(_driver.Title, createPage.Title);
+
+            // fill in form
+            createPage.Name.SendKeys(task.Name);
+            createPage.Description.SendKeys(task.Description);
+            createPage.NumberOfVolunteersRequired.SendKeys(task.NumberOfVolunteersRequired.ToString());
+            createPage.StartDateTime.SendKeys(task.StartDateTime);
+
+            var detailsPage = createPage.Submit();
+            Assert.Equal(_driver.Title, expectedEventTitle);
 
             var homePage = detailsPage.Menu.Logoff();
             Assert.Equal(_driver.Title, homePage.Title);
