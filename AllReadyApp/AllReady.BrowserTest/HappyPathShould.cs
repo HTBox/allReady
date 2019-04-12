@@ -9,6 +9,7 @@ using Xunit;
 
 namespace AllReady.BrowserTest
 {
+    [TestCaseOrderer("AllReady.BrowserTest.PriorityOrderer", "AllReady.BrowserTest")]
     public class HappyPathShould : IClassFixture<BrowserFixture>
     {
         IWebDriver _driver;
@@ -22,7 +23,7 @@ namespace AllReady.BrowserTest
             _driver.Navigate().GoToUrl(_config["HomePageURL"]);
         }
 
-        [Fact]
+        [Fact, TestPriority(1)]
         public void OpenHomePage()
         {
             var homePage = new Page(_driver).Menu.OpenHomePage();
@@ -38,7 +39,7 @@ namespace AllReady.BrowserTest
         /// </summary>
         /// <param name="role">application role</param>
         /// <param name="roleReturnedPageTitle">partial title of page returned on successful login </param>
-        [Theory]
+        [Theory, TestPriority(2)]
         [InlineData(User.Role.AllReadyAdministrator, "Site Admin")]
         [InlineData(User.Role.OrganizationAdministrator, "Campaigns - Admin")]
         public void LogonAndLogoff(User.Role role, string roleReturnedPageTitle)
@@ -94,7 +95,7 @@ namespace AllReady.BrowserTest
             return page;
         }
 
-        [Theory]
+        [Theory, TestPriority(3)]
         [MemberData(nameof(TestDataForCreateNewOrganization))]
         public void CreateNewOrganization(User.Role role, Organization organization)
         {
@@ -157,7 +158,7 @@ namespace AllReady.BrowserTest
             };
         }
 
-        [Theory]
+        [Theory, TestPriority(4)]
         [MemberData(nameof(TestDataForCreateNewCampaign))]
         public void CreateNewCampaign(User.Role role, Campaign campaign)
         {
@@ -222,7 +223,7 @@ namespace AllReady.BrowserTest
             };
         }
 
-        [Theory]
+        [Theory, TestPriority(5)]
         [MemberData(nameof(TestDataForCreateNewEvent))]
         public void CreateNewEvent(User.Role role, Event @event)
         {
@@ -285,7 +286,7 @@ namespace AllReady.BrowserTest
             };
         }
 
-        [Theory]
+        [Theory, TestPriority(6)]
         [MemberData(nameof(TestDataForCreateNewTask))]
         public void CreateNewTask(User.Role role, VolunteerTask task)
         {
