@@ -23,11 +23,20 @@ namespace AllReady.BrowserTest
             _driver.Navigate().GoToUrl(_config["HomePageURL"]);
         }
 
+        void TakeScreenShot(string inTest)
+        {
+            var folder = _config["ScreenShotFolder"];
+            Screenshot screenshot = (_driver as ITakesScreenshot).GetScreenshot();
+            string tag = DateTime.Now.ToString("yyyy.MM.dd.HH.mm.ss.fff");
+            screenshot.SaveAsFile($@"{folder}\{tag} {inTest}.png", ScreenshotImageFormat.Png);
+        }
+
         [Fact, TestPriority(1)]
         public void OpenHomePage()
         {
             var homePage = new Page(_driver).Menu.OpenHomePage();
             Assert.Equal(_driver.Title, homePage.Title);
+            TakeScreenShot("OpenHomePage");
         }
 
         /// <summary>
@@ -60,7 +69,7 @@ namespace AllReady.BrowserTest
 
         static string UniqueName(string s)
         {
-            string tag = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string tag = DateTime.Now.ToString("yyyy.MM.dd.HH.mm.ss");
             string name = $"[ST] {s} {tag}";
 
             return name;
