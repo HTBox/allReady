@@ -306,6 +306,7 @@ Navigation
 
 .navbar-nav > li > .dropdown-menu > li.active > a {
     font-weight: bold;
+    background-color: #cb7333;
 }
 
 .navbar-nav > li > .dropdown-menu > li:hover,

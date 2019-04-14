@@ -14,21 +14,21 @@
         <ul class="dropdown-menu">
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <li><a asp-area="@AreaNames.Admin" asp-controller="Organization" asp-action="Index">Organizations</a></li>
+                <li is-active-route asp-controller="Organization" asp-action="Index"><a asp-area="@AreaNames.Admin" asp-controller="Organization" asp-action="Index">Organizations</a></li>
             }
-            <li><a asp-area="@AreaNames.Admin" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
+            <li is-active-route asp-controller="Campaign" asp-action="Index"><a asp-area="@AreaNames.Admin" asp-controller="Campaign" asp-action="Index">Campaigns</a></li>
             @if (User.IsUserType(UserType.OrgAdmin))
             {
-                <li><a asp-area="@AreaNames.Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
-                <li><a asp-area="Admin" asp-controller="Invite" asp-action="Index">Invites</a></li>
+                <li is-active-route asp-controller="UnlinkedRequest" asp-action="List"><a asp-area="@AreaNames.Admin" asp-controller="UnlinkedRequest" asp-action="List">Unlinked Requests</a></li>
+                <li is-active-route asp-controller="Invite" asp-action="Index"><a asp-area="Admin" asp-controller="Invite" asp-action="Index">Invites</a></li>
             }
-            <li><a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Lister">Events</a></li>
-            <li><a asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
+            <li is-active-route asp-controller="Event" asp-action="Lister"><a asp-area="@AreaNames.Admin" asp-controller="Event" asp-action="Lister">Events</a></li>
+            <li is-active-route asp-controller="Skill" asp-action="Index"><a asp-area="@AreaNames.Admin" asp-controller="Skill" asp-action="Index">Skills</a></li>
             @if (User.IsUserType(UserType.SiteAdmin))
             {
-                <li><a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index">Site Admin</a></li>
+                <li is-active-route asp-controller="Site" asp-action="Index"><a asp-area="@AreaNames.Admin" asp-controller="Site" asp-action="Index">Site Admin</a></li>
             }
-            <li><a asp-area="@AreaNames.Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
+            <li is-active-route asp-controller="Import" asp-action="Index"><a asp-area="@AreaNames.Admin" asp-controller="Import" asp-action="Index">Import Data</a></li>
         </ul>
     </li>
 }
