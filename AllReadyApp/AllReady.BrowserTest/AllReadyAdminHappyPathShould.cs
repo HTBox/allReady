@@ -158,7 +158,7 @@ namespace AllReady.BrowserTest
             adminCampaignCreatePage.Headline.SendKeys("Headline");
             adminCampaignCreatePage.FullDesciption.SendKeys("Longer desription of the campaign");
             adminCampaignCreatePage.TimeZone.SelectByText("Pacific", true);
-            adminCampaignCreatePage.StartDate.SendKeys("04/15/2019");
+            adminCampaignCreatePage.StartDate.SendKeys(DateTime.Now.AddDays(1).ToString("MM/dd/yyyy"));
             adminCampaignCreatePage.Organization.SelectLastItem();
             adminCampaignCreatePage.Published.Checked(true);
             adminCampaignCreatePage.CopyContactInfoButton.Click();
@@ -198,7 +198,7 @@ namespace AllReady.BrowserTest
             adminEventCreatePage.EventType.SelectByText("Itinerary", true);
             adminEventCreatePage.IsLimitVolunteers.Checked(true);
             adminEventCreatePage.TimeZone.SelectByText("Pacific", true);
-            adminEventCreatePage.StartDateTime.SendKeys("04/15/2019 9:00 AM");
+            adminEventCreatePage.StartDateTime.SendKeys(DateTime.Now.AddDays(1).ToString("MM/dd/yyyy 9:00 AM"));
             adminEventCreatePage.CopyLocationFromCampaignButton.Click();
             adminEventCreatePage.CopyConfirmDialog.ClickOK();
             adminEventCreatePage.Submit();
@@ -233,7 +233,7 @@ namespace AllReady.BrowserTest
             adminVolunteerTaskCreatePage.Name.SendKeys(volunteerTaskName);
             adminVolunteerTaskCreatePage.Description.SendKeys("Description");
             adminVolunteerTaskCreatePage.NumberOfVolunteersRequired.SendKeys("2");
-            adminVolunteerTaskCreatePage.StartDateTime.SendKeys("04/15/2019 9:00 AM");
+            adminVolunteerTaskCreatePage.StartDateTime.SendKeys(DateTime.Now.AddDays(1).ToString("MM/dd/yyyy 9:00 AM"));
 
             var eventName = _driver.FindElement(By.XPath(@"//div[contains(@class,'form-group')]//label[contains(@for,'EventName')]/following-sibling::div[1]")).Text;
 
