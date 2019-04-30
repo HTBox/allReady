@@ -25,8 +25,8 @@ before_build:
  - cmd: cd ..\..\..
  - cmd: dotnet restore AllReadyApp\Web-App\AllReady.UnitTest\AllReady.UnitTest.csproj
  - cmd: dotnet restore AllReadyApp\AllReady.NotificationsWebJob\AllReady.NotificationsWebJob.csproj
- - cnd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
- - cnd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.BrowserTest.fsproj
+ - cmd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.ScenarioTest.fsproj
+ - cmd: dotnet restore AllReadyApp\AllReady.IntegrationTest\AllReady.BrowserTest.fsproj
 
 build_script:
  - ps: (Get-Content AllReadyApp\Web-App\AllReady\version.json).replace("GITVERSION", (git rev-parse --short HEAD)) | Set-Content AllReadyApp\Web-App\AllReady\version.json
