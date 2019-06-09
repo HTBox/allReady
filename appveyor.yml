@@ -62,6 +62,7 @@ test_script:
  - ps: Write-Host "== Browser Tests =="
  - ps: Push-Location
  - ps: cd .\AllReadyApp\AllReady.BrowserTest\
+ - ps: Copy-Item "C:\Tools\WebDriver\chromedriver.exe" .\bin\Debug\netcoreapp2.1
  - ps: dotnet test --no-build --verbosity normal --filter DisplayName~AllReady.BrowserTest.AllReadyAdminHappyPathShould
  - ps: dotnet test --no-build --verbosity normal --filter DisplayName~AllReady.BrowserTest.HappyPathShould
  - ps: Pop-Location
