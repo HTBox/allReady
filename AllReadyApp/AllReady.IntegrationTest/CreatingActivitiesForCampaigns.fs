@@ -1,12 +1,10 @@
 module CreatingActivitiesForCampaigns
 
-open canopy
-open runner
-open System
+open canopy.classic
+open canopy.runner.classic
 open Pages
 
 let All baseUrl =
-
 
     context "Organization Admin Activities"
 

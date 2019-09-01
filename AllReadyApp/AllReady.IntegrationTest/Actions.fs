@@ -1,8 +1,6 @@
-﻿module Actions
+module Actions
 
-open canopy
-open runner
-open System
+open canopy.classic
 
 let GoToHomePage baseUrl = 
     url baseUrl
