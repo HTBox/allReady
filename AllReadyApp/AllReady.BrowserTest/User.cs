@@ -21,7 +21,6 @@ namespace AllReady.BrowserTest
             var config = new ConfigurationFixture().Config;
 
             var prefix = role.ToString();
-            var Key = $"{prefix}UserName";
 
             Name = config[$"{prefix}UserEmail"];
             Password = config[$"{prefix}Password"];

@@ -12,8 +12,8 @@ namespace AllReady.BrowserTest
     [TestCaseOrderer("AllReady.BrowserTest.PriorityOrderer", "AllReady.BrowserTest")]
     public class HappyPathShould : IClassFixture<BrowserFixture>
     {
-        IWebDriver _driver;
-        IConfiguration _config;
+        readonly IWebDriver _driver;
+        readonly IConfiguration _config;
 
         public HappyPathShould(BrowserFixture browserFixture)
         {
@@ -93,7 +93,7 @@ namespace AllReady.BrowserTest
             };
         }
 
-        Page Login(IWebDriver driver, User.Role role)
+        Page Login(User.Role role)
         {
             var user = new User(role);
             var loginPage = new Page(_driver).Menu.OpenLoginPage();
@@ -108,7 +108,7 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewOrganization))]
         public void CreateNewOrganization(User.Role role, Organization organization)
         {
-            var page = Login(_driver, role).Menu.OpenAdminOrganizationPage();
+            var page = Login(role).Menu.OpenAdminOrganizationPage();
             Assert.Equal(_driver.Title, page.Title);
 
             var createPage = page.ClickCreateNew();
@@ -171,7 +171,7 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewCampaign))]
         public void CreateNewCampaign(User.Role role, Campaign campaign)
         {
-            var page = Login(_driver, role).Menu.OpenAdminCampaignPage();
+            var page = Login(role).Menu.OpenAdminCampaignPage();
             Assert.Equal(_driver.Title, page.Title);
 
             var createPage = page.ClickCreateNew();
@@ -236,7 +236,7 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewEvent))]
         public void CreateNewEvent(User.Role role, Event @event)
         {
-            var page = Login(_driver, role).Menu.OpenAdminCampaignPage();
+            var page = Login(role).Menu.OpenAdminCampaignPage();
             Assert.Equal(_driver.Title, page.Title);
 
             // select last campaign on list
@@ -299,7 +299,7 @@ namespace AllReady.BrowserTest
         [MemberData(nameof(TestDataForCreateNewTask))]
         public void CreateNewTask(User.Role role, VolunteerTask task)
         {
-            var page = Login(_driver, role).Menu.OpenAdminCampaignPage();
+            var page = Login(role).Menu.OpenAdminCampaignPage();
             Assert.Equal(_driver.Title, page.Title);
 
             // select last campaign on list
