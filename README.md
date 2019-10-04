@@ -43,6 +43,6 @@ To help make improvements to this project, you can just clone this repository an
 
 > **Important** Before jumping in, please review the [solution architecture](https://github.com/HTBox/allReady/wiki/Solution-architecture) and instructions below to [get started](https://github.com/HTBox/allReady/wiki/Solution-architecture#get-started-with-the-allready-solution). It contains critical information on how to configure the project to run locally and optionally deploy AllReady to Azure.
 
-Also we have a guide on setting up git for open source projects like allReady that can help you get started making contributions.  You can find the [guide in our docs folder](https://github.com/HTBox/allReady/blob/master/docs/git/gitprocess.md) and it also reference a number of blog posts written with additional information on contributing to projects like ours.
+Also we have a [contribution guide](https://github.com/HTBox/allReady/blob/master/CONTRIBUTING.md) on setting up git for open source projects like allReady that can help you get started making contributions.  You can find the [guide in our docs folder](https://github.com/HTBox/allReady/blob/master/docs/git/gitprocess.md) and it also reference a number of blog posts written with additional information on contributing to projects like ours.
 
 Thank you for considering supporting this open source project for humanitarian support.
