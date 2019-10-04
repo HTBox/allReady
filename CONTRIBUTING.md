@@ -26,10 +26,12 @@ To help make improvements to this project, you can just clone this repository an
 
 Before jumping in, please review the solution architecture and instructions below to [get started](#solution-architecture).
 
+Please follow the [Development Guide](https://github.com/HTBox/allReady/blob/master/docs/prerequisite_install_guide/prerequisite_install_guide.md) to setup your development environment and build the project for launch and testing. 
+
 As of this writing (week of 7/20/2015), we are focused on expanding and filling out our documentation, issues lists, milestones plan and supporting any issues that arise from community engagement with the codebase.  Additionally, you willl find issues of all types (simple bugs, new feature & requirements and architectural updates) upon which you can contribute to the project.  In the meantime, if you find any issues with the codebase or other content in our repository please log an issue and we will work with you to solve it.
 
 Thank you for considering supporting this open source project for humanitarian support.
 
 ## Solution architecture
 
-See the [Solution Architecture Guide](https://github.com/HTBox/allReady/wiki/Solution-architecture) for all of the details on how allReady is built.
+See the [Solution Architecture Guide](https://github.com/HTBox/allReady/wiki/Solution-architecture) for all of the details on how allReady is constructed, built, and tested.

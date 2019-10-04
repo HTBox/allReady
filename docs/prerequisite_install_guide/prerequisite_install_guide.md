@@ -468,6 +468,13 @@ It may take a few minutes to compile the solution the first time.
 
 If all has went well your solution compiled successfully and you are ready to run the web site.
 
+**Trouble Shooting**
+Sometimes the package dependencies will not be automatically restored by the Visual Studio at your first build attempt, and this could trigger the build process to fail with lots of error messages, basically claiming that certain dependent files could not be located. If you have run into this issue, you will need to manually restore the dependency packages. 
+
+To do this, go to Visual Studio's `Solution Explore`, expand the `Web` folder under the solution, then click the small triangle by the `Dependencies` to pen the dependency items tree, locate the `npm` entry, right click the entry, and click the `Restore Packages` from the context menu. This will launch the packages restoration process. After the status bar denote that the installations are complete, you can now build the solution again.
+
+ ![Manually Restore the Dependency Packages](image/web-11-manual-restore.png)
+
 ### Running The Web Site
 
 By default the Web project is set as the Startup Project.  You can verify this in Solution Explorer by looking at the Web\AllReady project and seeing that it is bolded.
