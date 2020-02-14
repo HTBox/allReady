@@ -128,8 +128,8 @@ module AdminOrganizationCreate =
         "#Location_State" << details.State
         "#Location_PostalCode" << details.PostalCode.ToString()
         "#Location_Country" << details.Country
-        click "Link to an external policy"
-        waitFor privicyPolicyFieldVisible
+        click "#show-pp-url"
+        waitFor <| fadedIn "#PrivacyPolicyUrl"
         "#PrivacyPolicyUrl" << details.PrivacyPolicyUrl
 
     let Save _ =
