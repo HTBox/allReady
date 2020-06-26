@@ -365,6 +365,9 @@ In order to make changes the first thing you need to do is create a copy of the 
 The reason that you need to fork the repository is because you do not have write access to the HTBox allReady repository.  When you fork the repository into your account, you have full write access to it to make changes and then you can send them back to the HTBox allReady repository by submitting a pull request.
 
 **Steps to Fork the Repository:**  
+0. Ensure you use github account that is not employer-sponsored or a professional account. Separate your personal, open-source contribution from your profession, employer-sponsored account.
+
+It is important to note there is a difference between github.com and github enterprise. Github enterprise is the on-premise version of github.com used in large-scale software development teams. For more details, visit [https://enterprise.github.com/faq#faq-1](https://enterprise.github.com/faq#faq-1).
 
 1. Navigate to [https://github.com/HTBox/allReady](https://github.com/HTBox/allReady)
 1. Click on the Fork button
