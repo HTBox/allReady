@@ -31,7 +31,7 @@
     "knockout": "3.3.0",
     "knockout-bootstrap": "0.2.0",
     "knockout-mapping": "2.5.0",
-    "moment": "2.19.3",
+    "moment": "2.29.2",
     "systemjs": "0.19.26",
     "tinymce": "^4.5.4",
     "tota11y": "0.1.3"
